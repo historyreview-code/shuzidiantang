@@ -27,17 +27,30 @@ jobs:
           retention-days: 7
 
   deploy-cloudflare:
-    name: 部署 Cloudflare Pages（备案过渡 / 海外备份）
+    name: 部署 Cloudflare Pages（配置密钥后自动启用）
     needs: assemble
     runs-on: ubuntu-latest
-    # 未配置 CF 密钥时自动跳过；配置后即可部署
-    if: ${{ secrets.CF_ACCOUNT_ID != '' && secrets.CF_API_TOKEN != '' && secrets.CF_PROJECT_NAME != '' }}
     steps:
-      - uses: actions/download-artifact@v4
+      - name: 检查 Cloudflare 配置
+        id: cf
+        # 注意：secrets 不能用于 job 级 if，只能在步骤内检查
+        run: |
+          if [ -n "${{ secrets.CF_ACCOUNT_ID }}" ] && [ -n "${{ secrets.CF_API_TOKEN }}" ] && [ -n "${{ secrets.CF_PROJECT_NAME }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: 跳过部署（未配置密钥）
+        if: steps.cf.outputs.ready == 'false'
+        run: echo "未配置 CF_ACCOUNT_ID / CF_API_TOKEN / CF_PROJECT_NAME，跳过 Cloudflare 部署"
+      - name: 下载产物
+        if: steps.cf.outputs.ready == 'true'
+        uses: actions/download-artifact@v4
         with:
           name: site
           path: dist
       - name: 发布到 Cloudflare Pages
+        if: steps.cf.outputs.ready == 'true'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
