@@ -26,7 +26,12 @@ const STATIC_PATHS = [
 
 function run(cmd, cwd = ROOT) {
   console.log(`\n$ ${cmd}`);
-  execSync(cmd, { cwd, stdio: 'inherit' });
+  // 独立缓存目录：绕开本机 npm 缓存被 root 属主污染的问题（EPERM）
+  const env = {
+    ...process.env,
+    npm_config_cache: path.join(ROOT, '.cache', 'npm-cache'),
+  };
+  execSync(cmd, { cwd, stdio: 'inherit', env });
 }
 
 // 1. 清理 + 复制静态页面
@@ -46,7 +51,7 @@ if (existsSync(path.join(CACHE, '.git'))) {
   run(`git clone --depth 1 ${MONOREPO} ${CACHE}`);
 }
 const pnpm = process.env.PNPM_CMD || 'npx --yes pnpm@9';
-run(`${pnpm} install --frozen-lockfile=false`, CACHE);
+run(`${pnpm} install --frozen-lockfile=false --store-dir ${path.join(ROOT, '.cache', 'pnpm-store')}`, CACHE);
 run(`${pnpm} --filter @digital-earth/portal build`, CACHE);
 
 const portalDist = path.join(CACHE, 'apps', 'portal', 'dist');
