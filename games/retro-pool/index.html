@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#14092b">
+<title>像素桌球 · RETRO POOL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-ball">🎱</span>
+      <div>
+        <h1>像素桌球</h1>
+        <p>RETRO POOL</p>
+      </div>
+    </div>
+    <button class="icon-btn" id="musicBtn" title="音乐开关">🎵</button>
+  </header>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-cell"><span class="hud-label" id="hudL1">分数</span><b id="hudV1">0</b></div>
+    <div class="hud-cell"><span class="hud-label" id="hudL2">杆数</span><b id="hudV2">0</b></div>
+    <div class="hud-cell"><span class="hud-label" id="hudL3">目标</span><b id="hudV3">0/6</b></div>
+  </div>
+
+  <!-- 球桌 -->
+  <div class="table-wrap" id="tableWrap">
+    <canvas id="game" width="360" height="700"></canvas>
+    <div class="power-meter" id="powerMeter"><div class="power-fill" id="powerFill"></div></div>
+  </div>
+
+  <div class="hint" id="hint">按住拖动瞄准 · 拉远加力 · 松手击球</div>
+
+  <!-- 开始界面 -->
+  <div class="overlay show" id="startScreen">
+    <div class="panel">
+      <div class="logo-ball">🎱</div>
+      <h2 class="title-glitch">像素桌球</h2>
+      <p class="subtitle">RETRO POOL ARCADE</p>
+      <div class="best-line" id="bestLine">BEST --</div>
+      <button class="btn btn-big blink" id="startBtn">▶ 点击开始 ◀</button>
+      <p class="insert-coin">INSERT COIN · 1 CREDIT</p>
+    </div>
+  </div>
+
+  <!-- 模式选择 -->
+  <div class="overlay" id="modeScreen">
+    <div class="panel">
+      <h2>选择模式</h2>
+      <div class="mode-list">
+        <button class="mode-card" data-mode="classic">
+          <span class="mode-icon">🎱</span>
+          <b>经典清台</b>
+          <i>6 颗球全部打进，挑战最少杆数</i>
+        </button>
+        <button class="mode-card" data-mode="time">
+          <span class="mode-icon">⏱️</span>
+          <b>限时 60 秒</b>
+          <i>连击加分，星星球 +300，炸弹球狂欢</i>
+        </button>
+        <button class="mode-card" data-mode="puzzle">
+          <span class="mode-icon">🧩</span>
+          <b>解谜关卡</b>
+          <i>黑洞 · 炸弹 · 保险杠 · 一杆清台</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关卡选择 -->
+  <div class="overlay" id="levelScreen">
+    <div class="panel">
+      <h2>选择关卡</h2>
+      <div class="level-grid" id="levelGrid"></div>
+      <button class="btn btn-text" id="levelBackBtn">← 返回</button>
+    </div>
+  </div>
+
+  <!-- 结算界面 -->
+  <div class="overlay" id="resultScreen">
+    <div class="panel">
+      <div class="result-emoji" id="resultEmoji">🏆</div>
+      <h2 id="resultTitle">完成！</h2>
+      <p class="result-sub" id="resultSub"></p>
+      <div class="result-stats" id="resultStats"></div>
+      <button class="btn btn-big" id="resultPrimary">再来一次</button>
+      <button class="btn btn-ghost2" id="resultNext" style="display:none">下一关 →</button>
+      <button class="btn btn-text" id="resultMenu">返回菜单</button>
+    </div>
+  </div>
+</div>
+
+<!-- CRT 滤镜 -->
+<div class="crt" aria-hidden="true"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
