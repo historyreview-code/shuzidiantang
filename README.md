@@ -41,6 +41,13 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 不设 Secrets 也能用：直接在 Cloudflare Pages 控制台连接本仓库，
 构建命令 `npm run assemble`、输出目录 `dist`。
 
+> ⚠️ GitHub Actions 工作流文件（`.github/workflows/deploy.yml`）因当前 gh 登录令牌缺
+> `workflow` 权限暂未入库。启用自动部署需在本地执行一次：
+> ```bash
+> gh auth refresh -h github.com -s workflow   # 浏览器授权一次
+> cd 数字殿堂 && git add .github && git commit -m "启用 CI" && git push
+> ```
+
 ---
 
 ## 馆主操作清单（人工步骤，按顺序执行）
