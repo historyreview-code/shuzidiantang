@@ -1,0 +1,10 @@
+{
+  "name": "shuzidiantang",
+  "version": "0.1.0",
+  "private": true,
+  "description": "数字殿堂 · 一座收藏数字作品的殿堂（总站门户）",
+  "scripts": {
+    "assemble": "node scripts/assemble.mjs",
+    "preview": "npx serve dist"
+  }
+}

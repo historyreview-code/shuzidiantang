@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>深海漫游 · Ocean Drift</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif;
+  background:#0a2540;touch-action:none;overscroll-behavior:none;
+}
+canvas{display:block;position:fixed;inset:0}
+#hud{
+  position:fixed;top:18px;left:18px;right:18px;z-index:10;
+  display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;
+}
+#pearlBox{
+  display:flex;align-items:center;gap:9px;
+  background:rgba(255,255,255,.12);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:30px;padding:8px 18px 8px 12px;
+  color:#fff;font-size:clamp(.95rem,4vw,1.15rem);font-weight:700;
+}
+#pearlBox.pop{animation:pop .35s ease}
+@keyframes pop{50%{transform:scale(1.18)}}
+#pearlIcon{
+  width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff,#ffd9e8 60%,#f0a8c8);
+  box-shadow:0 0 10px rgba(255,200,220,.8);
+}
+#muteBtn{
+  pointer-events:auto;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.12);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:1.15rem;cursor:pointer;color:#fff;transition:transform .15s;
+}
+#muteBtn:hover{transform:scale(1.1)}
+#toast{
+  position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:10;
+  color:#fff;font-size:clamp(.9rem,3.8vw,1.1rem);font-weight:700;letter-spacing:2px;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.25);
+  padding:10px 26px;border-radius:24px;white-space:nowrap;
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+#toast.show{opacity:1}
+#hint{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10;
+  color:rgba(255,255,255,.75);font-size:clamp(.75rem,3.2vw,.95rem);letter-spacing:2px;
+  background:rgba(10,40,70,.35);backdrop-filter:blur(6px);
+  padding:10px 24px;border-radius:24px;pointer-events:none;
+  width:max-content;max-width:88vw;text-align:center;
+  transition:opacity 1.5s;animation:hintFloat 3s ease-in-out infinite;
+}
+@keyframes hintFloat{50%{transform:translateX(-50%) translateY(-6px)}}
+#hint.fade{opacity:0}
+#overlay{
+  position:fixed;inset:0;z-index:20;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:rgba(8,30,55,.55);backdrop-filter:blur(10px);
+  transition:opacity .6s;padding:20px;
+}
+#overlay.hidden{opacity:0;pointer-events:none}
+h1{
+  font-size:clamp(1.9rem,9vw,3.2rem);font-weight:900;letter-spacing:clamp(3px,1.5vw,12px);
+  background:linear-gradient(90deg,#a8e8f8,#fff0f5,#a8e8f8);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 24px rgba(150,220,250,.5));
+  animation:titleFloat 4s ease-in-out infinite;
+}
+@keyframes titleFloat{50%{transform:translateY(-8px)}}
+.subtitle{
+  color:rgba(200,230,245,.85);font-size:clamp(.82rem,3.6vw,1rem);
+  letter-spacing:clamp(1px,.5vw,3px);text-align:center;line-height:2.1;
+}
+#startBtn{
+  margin-top:10px;padding:clamp(12px,3vw,15px) clamp(34px,9vw,52px);
+  font-size:clamp(.95rem,4vw,1.1rem);font-weight:700;letter-spacing:4px;
+  color:#0a3050;background:linear-gradient(90deg,#a8e0f0,#d0f0f8);
+  border:none;border-radius:40px;cursor:pointer;font-family:inherit;
+  box-shadow:0 0 30px rgba(150,220,250,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+#startBtn:hover{transform:scale(1.06);box-shadow:0 0 45px rgba(150,220,250,.65)}
+.tip{font-size:.8rem;color:rgba(160,200,220,.6);letter-spacing:2px}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud">
+  <div id="pearlBox"><span id="pearlIcon"></span><span id="count">0</span></div>
+  <button id="muteBtn">🔊</button>
+</div>
+<div id="toast"></div>
+<div id="hint">移动鼠标引导小鲸鱼 · 双击吐泡泡</div>
+<div id="overlay">
+  <h1>深海漫游</h1>
+  <div class="subtitle">OCEAN DRIFT<br><br>
+    引导小鲸鱼在无边的海洋中自在漫游<br>
+    遇见海蛇与章鱼 · 探索火山与礁石<br>
+    世界左右相连 · 没有失败，慢慢游就好
+  </div>
+  <button id="startBtn">开始漫游</button>
+  <div class="tip">🎧 建议开启声音，聆听海洋的旋律</div>
+</div>
+
+<script>
+'use strict';
+
+/* ================= 工具 ================= */
+const lerp=(a,b,t)=>a+(b-a)*t;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const TAU=Math.PI*2;
+function lerpColor(c1,c2,t){
+  return [lerp(c1[0],c2[0],t)|0,lerp(c1[1],c2[1],t)|0,lerp(c1[2],c2[2],t)|0];
+}
+const rgb=c=>`rgb(${c[0]},${c[1]},${c[2]})`;
+function angleLerp(a,b,t){
+  let d=b-a;
+  while(d>Math.PI)d-=TAU;
+  while(d<-Math.PI)d+=TAU;
+  return a+d*clamp(t,0,1);
+}
+
+/* ================= 世界（水平循环） ================= */
+const WORLD_W=3200, WORLD_H=1800;
+/* x 坐标环绕到 [0, WORLD_W) */
+function wrapX(x){ return ((x%WORLD_W)+WORLD_W)%WORLD_W; }
+/* from→to 的最短水平距离（考虑环绕） */
+function wrapDx(from,to){
+  let dx=to-from;
+  if(dx>WORLD_W/2)dx-=WORLD_W;
+  if(dx<-WORLD_W/2)dx+=WORLD_W;
+  return dx;
+}
+/* 对世界坐标 x 的每个可见屏幕位置执行回调（环绕渲染） */
+function eachScreenX(worldX,camX,margin,cb){
+  const sx=((worldX-camX)%WORLD_W+WORLD_W)%WORLD_W;
+  for(let x=sx-WORLD_W;x<W+margin;x+=WORLD_W)
+    if(x>-margin) cb(x);
+}
+
+/* ================= 画布（DPR 高清适配） ================= */
+const canvas=document.getElementById('game');
+const ctx=canvas.getContext('2d');
+let W,H;
+function resize(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  W=window.innerWidth; H=window.innerHeight;
+  canvas.width=Math.round(W*dpr);
+  canvas.height=Math.round(H*dpr);
+  canvas.style.width=W+'px';
+  canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',resize);
+resize();
+
+/* ================= 音频引擎 ================= */
+const Sound={
+  ctx:null, master:null, muted:false,
+  PENTA:[523.25,587.33,659.25,783.99,880.00,1046.50,1174.66,1318.51],
+  CHORDS:[
+    [130.81,164.81,196.00,246.94],
+    [110.00,130.81,164.81,196.00],
+    [174.61,220.00,261.63,329.63],
+    [196.00,246.94,293.66,329.63],
+  ],
+  BELLS:[1046.50,1174.66,1318.51,1567.98,1760.00],
+  init(){
+    if(this.ctx) return;
+    this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+    this.master=this.ctx.createGain();
+    this.master.gain.value=0.9;
+    this.master.connect(this.ctx.destination);
+    const delay=this.ctx.createDelay(1); delay.delayTime.value=0.38;
+    const fb=this.ctx.createGain(); fb.gain.value=0.42;
+    const wet=this.ctx.createGain(); wet.gain.value=0.32;
+    this.master.connect(delay);
+    delay.connect(fb); fb.connect(delay);
+    delay.connect(wet); wet.connect(this.ctx.destination);
+  },
+  tone(freq,dur,vol,type='sine',attack=0.02){
+    if(!this.ctx||this.muted) return;
+    const t=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+attack);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+dur+0.1);
+  },
+  chord(notes){
+    notes.forEach((f,i)=>{ setTimeout(()=>this.tone(f,7,0.028,'sine',1.8),i*150); });
+    this.tone(notes[0]/2,7,0.02,'sine',2);
+  },
+  bell(freq){ this.tone(freq,3,rand(0.015,0.03),'sine',0.01); },
+  collect(combo){
+    const f=this.PENTA[clamp(combo,0,7)];
+    this.tone(f,0.9,0.09,'sine',0.01);
+    this.tone(f*2,0.5,0.03,'sine',0.01);
+  },
+  soft(){ this.tone(rand(600,900),0.4,0.03,'sine',0.05); },
+  spray(){
+    if(!this.ctx||this.muted) return;
+    const t=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(300,t);
+    o.frequency.exponentialRampToValueAtTime(900,t+0.25);
+    g.gain.setValueAtTime(0.04,t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.3);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.35);
+  },
+  blow(){
+    for(let i=0;i<4;i++){
+      setTimeout(()=>{
+        if(!this.ctx||this.muted) return;
+        const t=this.ctx.currentTime;
+        const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+        o.type='sine';
+        const f=rand(400,700);
+        o.frequency.setValueAtTime(f,t);
+        o.frequency.exponentialRampToValueAtTime(f*1.8,t+0.12);
+        g.gain.setValueAtTime(0.05,t);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+0.15);
+        o.connect(g); g.connect(this.master);
+        o.start(t); o.stop(t+0.2);
+      },i*70);
+    }
+  },
+  gem(){
+    if(!this.ctx||this.muted) return;
+    [523.25,659.25,783.99,1046.50].forEach((f,i)=>
+      setTimeout(()=>this.tone(f,0.7,0.07,'sine',0.01),i*70));
+    setTimeout(()=>this.tone(1318.51,1.2,0.06,'sine',0.01),300);
+    setTimeout(()=>this.tone(1567.98,1.4,0.04,'sine',0.01),420);
+  },
+  /* 火山低鸣 */
+  rumble(){
+    if(!this.ctx||this.muted) return;
+    const t=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(80,t);
+    o.frequency.exponentialRampToValueAtTime(40,t+0.8);
+    g.gain.setValueAtTime(0.06,t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+1);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+1.1);
+  },
+  /* 泡泡破裂声 */
+  pop(){
+    if(!this.ctx||this.muted) return;
+    const t=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(rand(600,1200),t);
+    o.frequency.exponentialRampToValueAtTime(rand(300,600),t+0.08);
+    g.gain.setValueAtTime(0.06,t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.1);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+0.15);
+  },
+  /* 海洋环境环绕声 */
+  ocean(){
+    if(!this.ctx||this.muted) return;
+    const t=this.ctx.currentTime;
+    const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(60,t);
+    o.frequency.exponentialRampToValueAtTime(50,t+4);
+    g.gain.setValueAtTime(0.03,t);
+    g.gain.linearRampToValueAtTime(0.02,t+2);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+5);
+    o.connect(g); g.connect(this.master);
+    o.start(t); o.stop(t+5.5);
+    const o2=this.ctx.createOscillator(), g2=this.ctx.createGain();
+    o2.type='sine';
+    o2.frequency.setValueAtTime(95,t);
+    o2.frequency.exponentialRampToValueAtTime(85,t+5);
+    g2.gain.setValueAtTime(0.015,t);
+    g2.gain.exponentialRampToValueAtTime(0.0001,t+5);
+    o2.connect(g2); g2.connect(this.master);
+    o2.start(t); o2.stop(t+5.5);
+  },
+  /* 鲸鱼开心叫声 */
+  happy(){
+    if(!this.ctx||this.muted) return;
+    const t=this.ctx.currentTime;
+    [400,500,630,800].forEach((f,i)=>{
+      const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+i*0.06);
+      g.gain.linearRampToValueAtTime(0.04,t+i*0.06+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.06+0.2);
+      o.connect(g); g.connect(this.master);
+      o.start(t+i*0.06); o.stop(t+i*0.06+0.3);
+    });
+  },
+  toggleMute(){
+    this.muted=!this.muted;
+    if(this.master) this.master.gain.value=this.muted?0:0.9;
+    return this.muted;
+  }
+};
+
+/* ================= 粒子 ================= */
+let particles=[];
+function burst(x,y,color,n=12){
+  if(particles.length>280) return;
+  for(let i=0;i<n;i++){
+    const a=Math.random()*TAU, s=rand(20,90);
+    particles.push({type:'dot',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
+      life:1,decay:rand(1.2,2),size:rand(2,5),color});
+  }
+}
+function heartBurst(x,y){
+  for(let i=0;i<5;i++){
+    particles.push({type:'heart',x:x+rand(-8,8),y,
+      vx:rand(-15,15),vy:rand(-70,-40),
+      life:1,decay:rand(0.5,0.9),size:rand(2.5,4.5),color:'#ffb8d0'});
+  }
+}
+function updateParticles(dt){
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx*dt; p.y+=p.vy*dt;
+    if(p.type==='dot'){ p.vx*=0.96; p.vy*=0.96; }
+    p.life-=p.decay*dt;
+    if(p.life<=0) particles.splice(i,1);
+  }
+}
+function drawHeart(x,y,s,color){
+  ctx.save(); ctx.translate(x,y); ctx.scale(s/4,s/4);
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.moveTo(0,3);
+  ctx.bezierCurveTo(-4,-2,-1.5,-5,0,-2.5);
+  ctx.bezierCurveTo(1.5,-5,4,-2,0,3);
+  ctx.fill(); ctx.restore();
+}
+function drawStar(x,y,r,color){
+  ctx.save(); ctx.translate(x,y);
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  for(let i=0;i<8;i++){
+    const a=i*Math.PI/4-Math.PI/2;
+    const rr=i%2===0?r:r*0.38;
+    i===0?ctx.moveTo(Math.cos(a)*rr,Math.sin(a)*rr):ctx.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);
+  }
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function drawParticles(cam){
+  for(const p of particles){
+    eachScreenX(p.x,cam.x,30,sx=>{
+      const sy=p.y-cam.y;
+      if(sy<-30||sy>H+30) return;
+      ctx.globalAlpha=Math.max(0,p.life);
+      if(p.type==='heart') drawHeart(sx,sy,p.size,p.color);
+      else if(p.type==='star') drawStar(sx,sy,Math.max(0.5,p.size*p.life),p.color);
+      else if(p.type==='zzz'){
+        ctx.fillStyle='rgba(255,255,255,0.9)';
+        ctx.font=`bold ${Math.round(14*p.size/4)}px sans-serif`;
+        ctx.fillText('z',sx,sy);
+      }else{
+        ctx.fillStyle=p.color;
+        ctx.beginPath(); ctx.arc(sx,sy,p.size*p.life,0,TAU); ctx.fill();
+      }
+    });
+  }
+  ctx.globalAlpha=1;
+}
+
+/* ================= ★ 泡泡攻击系统 ================= */
+/* 被攻击泡泡击中的生物：头晕翻滚 + 下坠5秒 */
+function checkBubbleHit(entity,bubbles){
+  if(entity.stunT>0) return false;
+  /* ★ 兼容 cx/cy（鱼群）与 x/y */
+  const ex=entity.cx!==undefined?entity.cx:entity.x;
+  const ey=entity.cy!==undefined?entity.cy:entity.y;
+  for(const b of bubbles){
+    if(b.dead||b.hit||!b.attack) continue;  /* ★ 只有攻击泡泡有效 */
+    const dx=wrapDx(b.x,ex), dy=ey-b.y;
+    if(Math.hypot(dx,dy)<entity.hitRadius+Math.max(b.r,2)){
+      b.hit=true;
+      b.dead=true;  /* 泡泡破裂 */
+      entity.stunT=5;
+      entity.stunRot=0;
+      entity.stunDir=(Math.random()<0.5?1:-1);
+      burst(b.x,b.y,'#fff0a0',8);
+      burst(b.x,b.y,'#ffffff',4);
+      Sound.pop();
+      for(let i=0;i<3;i++)
+        particles.push({type:'star',x:b.x+rand(-10,10),y:b.y-rand(5,15),
+          vx:rand(-8,8),vy:rand(-20,-10),life:1,decay:rand(0.5,0.8),
+          size:rand(3,5),color:'#fff0a0'});
+      return true;
+    }
+  }
+  return false;
+}
+
+/* ================= 小鲸鱼 ================= */
+class Whale{
+  constructor(x,y){
+    this.x=x; this.y=y;
+    this.vx=0; this.vy=0;
+    this.facing=1; this.tilt=0;
+    this.tailT=0; this.breatheT=0;
+    this.blinkT=2; this.blink=0;
+    this.sprayT=5;
+    this.idleT=0; this.sleepy=false; this.zzzT=0;
+    this.bubbleT=0; this.happy=0;
+    this.sparkle=0; this.sparkleT=0;
+    this.size=34;
+  }
+  blowBubbles(){
+    this.sleepy=false; this.idleT=0;
+    this.happy=1;
+    Sound.blow();
+    const n=6+Math.floor(rand(0,4));
+    const mx=this.x+this.facing*this.size*1.05;
+    const my=this.y+this.size*0.15;
+    for(let i=0;i<n;i++)
+      game.spawnBubble(mx+rand(-4,4),my+rand(-4,4),rand(3,7),
+        this.facing*rand(50,110),rand(-70,-20));
+  }
+  update(dt,target,keys){
+    let ix=0,iy=0;
+    if(keys.ArrowLeft||keys.KeyA) ix-=1;
+    if(keys.ArrowRight||keys.KeyD) ix+=1;
+    if(keys.ArrowUp||keys.KeyW) iy-=1;
+    if(keys.ArrowDown||keys.KeyS) iy+=1;
+    const hasKeys=ix!==0||iy!==0;
+    const ease=1-Math.pow(0.001,dt);
+
+    if(hasKeys){
+      const len=Math.hypot(ix,iy), ACC=600;
+      this.vx+=ix/len*ACC*dt; this.vy+=iy/len*ACC*dt;
+      const sp=Math.hypot(this.vx,this.vy), MAX=200;
+      if(sp>MAX){ this.vx*=MAX/sp; this.vy*=MAX/sp; }
+    }else if(target){
+      /* ★ 环绕最短路径跟随 */
+      const dx=wrapDx(this.x,target.x), dy=target.y-this.y, d=Math.hypot(dx,dy);
+      if(d>12){
+        const sp=Math.min(d*1.5,190);
+        this.vx=lerp(this.vx,dx/d*sp,ease);
+        this.vy=lerp(this.vy,dy/d*sp,ease);
+      }else{ this.vx*=Math.pow(0.02,dt); this.vy*=Math.pow(0.02,dt); }
+    }else{
+      this.vx*=Math.pow(0.1,dt); this.vy*=Math.pow(0.1,dt);
+    }
+
+    /* ★ 水平无限环绕，垂直仍有边界 */
+    this.x=wrapX(this.x+this.vx*dt);
+    this.y=clamp(this.y+this.vy*dt,50,WORLD_H-50);
+
+    const speed=Math.hypot(this.vx,this.vy);
+    if(Math.abs(this.vx)>4) this.facing=this.vx>0?1:-1;
+    this.tilt=lerp(this.tilt,clamp(this.vy*0.0022,-0.35,0.35)*this.facing,ease);
+
+    this.tailT+=dt*(1.5+speed*0.025);
+    this.breatheT+=dt*(this.sleepy?1:2.2);
+
+    this.blinkT-=dt;
+    if(this.blinkT<0){ this.blink=1; this.blinkT=rand(2,4.5); }
+    if(this.blink>0) this.blink=Math.max(0,this.blink-dt*7);
+
+    if(!this.sleepy){
+      this.sprayT-=dt;
+      if(this.sprayT<0){
+        this.sprayT=rand(6,12);
+        heartBurst(this.x+this.facing*10,this.y-this.size*0.8);
+        Sound.spray();
+      }
+    }
+    if(speed>70){
+      this.bubbleT-=dt;
+      if(this.bubbleT<0){
+        this.bubbleT=0.18;
+        game.spawnBubble(this.x-this.facing*40,this.y+rand(-6,6),rand(1.5,3.5));
+      }
+    }
+    if(!hasKeys&&!target&&speed<15){
+      this.idleT+=dt;
+      if(this.idleT>6){
+        this.sleepy=true;
+        this.zzzT-=dt;
+        if(this.zzzT<0){
+          this.zzzT=1.4;
+          particles.push({type:'zzz',x:this.x+18,y:this.y-32,
+            vx:5,vy:-18,life:1,decay:0.4,size:rand(3,5),color:'#fff'});
+        }
+      }
+    }else{ this.idleT=0; this.sleepy=false; }
+
+    if(this.sparkle>0){
+      this.sparkle-=dt;
+      this.sparkleT-=dt;
+      if(this.sparkleT<=0){
+        this.sparkleT=0.1;
+        particles.push({type:'star',x:this.x+rand(-40,40),y:this.y+rand(-28,28),
+          vx:rand(-10,10),vy:rand(-25,-10),life:1,decay:rand(1,1.8),
+          size:rand(3,6),color:Math.random()<0.5?'#fff8d0':'#ffe8f0'});
+      }
+    }
+    if(this.happy>0) this.happy-=dt*3;
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,130,sx=>this.drawAt(sx,this.y-cam.y));
+  }
+  drawAt(sx,sy){
+    const s=this.size;
+    const breathe=1+Math.sin(this.breatheT)*(this.sleepy?0.035:0.02);
+    const happyScale=1+Math.max(0,this.happy)*0.12;
+
+    ctx.save();
+    ctx.translate(sx,sy);
+
+    if(this.sparkle>0){
+      const glowR=s*2.3+Math.sin(this.breatheT*2)*7;
+      const gg=ctx.createRadialGradient(0,0,s*0.5,0,0,glowR);
+      gg.addColorStop(0,'rgba(255,248,200,0.38)');
+      gg.addColorStop(1,'rgba(255,248,200,0)');
+      ctx.fillStyle=gg;
+      ctx.beginPath(); ctx.arc(0,0,glowR,0,TAU); ctx.fill();
+    }
+
+    ctx.rotate(this.tilt);
+    ctx.scale(this.facing*breathe*happyScale,breathe*happyScale);
+
+    if(this.sparkle>0){
+      ctx.shadowColor='rgba(255,248,210,0.85)';
+      ctx.shadowBlur=22;
+    }
+
+    const swing=Math.sin(this.tailT*4)*0.32;
+    ctx.save();
+    ctx.translate(-s*1.0,0); ctx.rotate(swing);
+    ctx.fillStyle='#8fc8e0';
+    ctx.beginPath();
+    ctx.moveTo(2,0);
+    ctx.quadraticCurveTo(-s*0.5,-s*0.6,-s*0.8,-s*0.5);
+    ctx.quadraticCurveTo(-s*0.58,0,-s*0.8,s*0.5);
+    ctx.quadraticCurveTo(-s*0.5,s*0.6,2,0);
+    ctx.fill(); ctx.restore();
+
+    const g=ctx.createLinearGradient(0,-s*0.8,0,s*0.8);
+    g.addColorStop(0,'#9fd4e8'); g.addColorStop(0.55,'#a8d8ea'); g.addColorStop(1,'#e8f4fa');
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.ellipse(0,0,s*1.15,s*0.78,0,0,TAU); ctx.fill();
+
+    ctx.shadowBlur=0;
+
+    ctx.fillStyle='#f5fbfd';
+    ctx.beginPath(); ctx.ellipse(s*0.12,s*0.34,s*0.72,s*0.36,0,0,TAU); ctx.fill();
+
+    ctx.fillStyle='#8fc8e0';
+    ctx.beginPath();
+    ctx.moveTo(-s*0.1,-s*0.68);
+    ctx.quadraticCurveTo(-s*0.32,-s*1.02,-s*0.52,-s*0.72);
+    ctx.quadraticCurveTo(-s*0.3,-s*0.6,-s*0.1,-s*0.58);
+    ctx.fill();
+
+    const fin=Math.sin(this.tailT*4+1.2)*0.28;
+    ctx.save();
+    ctx.translate(s*0.02,s*0.4); ctx.rotate(0.6+fin);
+    ctx.fillStyle='#8fc8e0';
+    ctx.beginPath(); ctx.ellipse(0,s*0.18,s*0.15,s*0.32,0,0,TAU); ctx.fill();
+    ctx.restore();
+
+    const eyeX=s*0.55, eyeY=-s*0.16;
+    let eyeOpen=this.blink>0?Math.max(0.12,1-this.blink*1.2):1;
+    if(this.sleepy) eyeOpen=0.1;
+    if(eyeOpen>0.25){
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.ellipse(eyeX,eyeY,s*0.15,s*0.15*eyeOpen,0,0,TAU); ctx.fill();
+      ctx.fillStyle='#2a4a5e';
+      ctx.beginPath(); ctx.arc(eyeX+s*0.04,eyeY+s*0.02,s*0.075,0,TAU); ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(eyeX+s*0.065,eyeY-s*0.02,s*0.028,0,TAU); ctx.fill();
+    }else{
+      ctx.strokeStyle='#2a4a5e'; ctx.lineWidth=2; ctx.lineCap='round';
+      ctx.beginPath(); ctx.arc(eyeX,eyeY-s*0.05,s*0.12,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+    }
+
+    ctx.fillStyle='rgba(255,165,185,0.5)';
+    ctx.beginPath(); ctx.ellipse(s*0.66,s*0.14,s*0.11,s*0.07,0,0,TAU); ctx.fill();
+
+    ctx.strokeStyle='#5a8aa8'; ctx.lineWidth=2.2; ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(s*0.62,s*0.16);
+    ctx.quadraticCurveTo(s*0.78,s*0.3,s*0.95,s*0.12);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+/* ================= 珍珠 / 宝石 ================= */
+class Pearl{
+  constructor(x,y){ this.x=x; this.y=y; this.t=rand(0,10); this.dead=false; }
+  update(dt,whale){
+    this.t+=dt;
+    const dx=wrapDx(this.x,whale.x), dy=whale.y-this.y, d=Math.hypot(dx,dy);
+    if(d<95&&d>1){
+      const pull=(1-d/95)*300;
+      this.x=wrapX(this.x+dx/d*pull*dt); this.y+=dy/d*pull*dt;
+    }
+    if(d<32){ this.dead=true; game.onCollect(this.x,this.y); }
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,40,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-40||sy>H+40) return;
+      const pulse=1+Math.sin(this.t*2.5)*0.12, r=9*pulse;
+      const glow=ctx.createRadialGradient(sx,sy,0,sx,sy,r*3.2);
+      glow.addColorStop(0,'rgba(255,220,235,0.5)');
+      glow.addColorStop(1,'rgba(255,220,235,0)');
+      ctx.fillStyle=glow;
+      ctx.beginPath(); ctx.arc(sx,sy,r*3.2,0,TAU); ctx.fill();
+      const body=ctx.createRadialGradient(sx-r*0.3,sy-r*0.3,r*0.1,sx,sy,r);
+      body.addColorStop(0,'#ffffff'); body.addColorStop(0.7,'#ffe8f2'); body.addColorStop(1,'#f8c8dc');
+      ctx.fillStyle=body;
+      ctx.beginPath(); ctx.arc(sx,sy,r,0,TAU); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.9)';
+      ctx.beginPath(); ctx.arc(sx-r*0.35,sy-r*0.35,r*0.22,0,TAU); ctx.fill();
+    });
+  }
+}
+const GEM_COLORS=[
+  {main:'#7ad8f8',light:'#c8f0ff',glow:'rgba(120,220,250,0.5)'},
+  {main:'#f8a8d0',light:'#ffd8ec',glow:'rgba(250,170,210,0.5)'},
+  {main:'#a8e8b8',light:'#d8f8e0',glow:'rgba(150,230,170,0.5)'},
+  {main:'#c8a8f8',light:'#e8d8ff',glow:'rgba(200,170,250,0.5)'},
+];
+class Gem{
+  constructor(x,y){
+    this.x=x; this.y=y; this.t=rand(0,10);
+    this.color=GEM_COLORS[Math.floor(rand(0,GEM_COLORS.length))];
+    this.dead=false;
+  }
+  update(dt,whale){
+    this.t+=dt;
+    const dx=wrapDx(this.x,whale.x), dy=whale.y-this.y, d=Math.hypot(dx,dy);
+    if(d<110&&d>1){
+      const pull=(1-d/110)*280;
+      this.x=wrapX(this.x+dx/d*pull*dt); this.y+=dy/d*pull*dt;
+    }
+    if(d<34){ this.dead=true; game.onGem(this.x,this.y,this.color); }
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,60,sx=>{
+      const sy=this.y-cam.y+Math.sin(this.t*2)*4;
+      if(sy<-60||sy>H+60) return;
+      const glow=ctx.createRadialGradient(sx,sy,0,sx,sy,42);
+      glow.addColorStop(0,this.color.glow);
+      glow.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=glow;
+      ctx.beginPath(); ctx.arc(sx,sy,42,0,TAU); ctx.fill();
+      ctx.save();
+      ctx.translate(sx,sy);
+      ctx.rotate(Math.sin(this.t*1.5)*0.18);
+      const s=13;
+      const grad=ctx.createLinearGradient(0,-s*1.4,0,s*1.2);
+      grad.addColorStop(0,this.color.light);
+      grad.addColorStop(0.5,this.color.main);
+      grad.addColorStop(1,this.color.main);
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.moveTo(0,-s*1.4);
+      ctx.lineTo(s*0.95,-s*0.25);
+      ctx.lineTo(0,s*1.2);
+      ctx.lineTo(-s*0.95,-s*0.25);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=1.2;
+      ctx.beginPath();
+      ctx.moveTo(0,-s*1.4); ctx.lineTo(0,s*1.2);
+      ctx.moveTo(-s*0.95,-s*0.25); ctx.lineTo(s*0.95,-s*0.25);
+      ctx.stroke();
+      const tw=Math.sin(this.t*3)*0.5+0.5;
+      ctx.globalAlpha=0.5+tw*0.5;
+      drawStar(0,-s*0.7,3.5+tw*2,'#ffffff');
+      ctx.globalAlpha=1;
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= 鱼群 ================= */
+function drawFish(x,y,angle,t,color,size){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(angle);
+  const swing=Math.sin(t*7)*0.45;
+  ctx.fillStyle=color;
+  ctx.save();
+  ctx.translate(-size*0.9,0); ctx.rotate(swing);
+  ctx.beginPath();
+  ctx.moveTo(0,0); ctx.lineTo(-size*0.7,-size*0.45); ctx.lineTo(-size*0.7,size*0.45);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+  ctx.beginPath(); ctx.ellipse(0,0,size,size*0.55,0,0,TAU); ctx.fill();
+  ctx.fillStyle='rgba(40,50,70,0.85)';
+  ctx.beginPath(); ctx.arc(size*0.45,-size*0.12,size*0.13,0,TAU); ctx.fill();
+  ctx.restore();
+}
+class FishSchool{
+  constructor(x,y,color){
+    this.cx=x; this.cy=y; this.color=color;
+    this.hitRadius=18;
+    this.stunT=0; this.stunAngle=0; this.stunRot=0;
+    this.stunDir=1; this.stunFallSpeed=0;
+    this.dir=rand(0,TAU); this.wanderT=0; this.followT=0;
+    this.fish=[];
+    const n=4+Math.floor(rand(0,3));
+    for(let i=0;i<n;i++)
+      this.fish.push({ox:rand(-55,55),oy:rand(-32,32),t:rand(0,10),size:rand(7,10),wob:rand(0.5,1.5)});
+  }
+  update(dt,whale){
+    checkBubbleHit(this,game.bubbles);
+    if(this.stunT>0){ this.stunT-=dt; this.stunRot+=dt*8; this.cx=wrapX(this.cx+Math.cos(this.stunAngle)*this.stunFallSpeed*dt); this.cy=clamp(this.cy+Math.sin(this.stunAngle)*this.stunFallSpeed*dt,60,WORLD_H-120); for(const f of this.fish) f.t+=dt; return; }
+    this.wanderT-=dt;
+    if(this.wanderT<0){ this.wanderT=rand(2,5); this.dir+=rand(-1,1); }
+    const dx=wrapDx(this.cx,whale.x), dy=whale.y-this.cy;
+    const d=Math.hypot(dx,dy);
+    if(d<(whale.sparkle>0?280:160)) this.followT=2.5;
+    const ease=1-Math.pow(0.05,dt);
+    if(this.followT>0){
+      this.followT-=dt;
+      const tx=wrapX(whale.x-whale.facing*90);
+      this.cx=wrapX(this.cx+wrapDx(this.cx,tx)*ease);
+      this.cy=lerp(this.cy,whale.y+20,ease);
+      this.dir=Math.atan2(dy,dx);
+    }else{
+      this.cx=wrapX(this.cx+Math.cos(this.dir)*28*dt);
+      this.cy+=Math.sin(this.dir)*18*dt;
+    }
+    this.cy=clamp(this.cy,60,WORLD_H-120);
+    for(const f of this.fish) f.t+=dt;
+  }
+  draw(cam){
+    for(const f of this.fish){
+      const fx=wrapX(this.cx+f.ox+Math.sin(f.t*0.9*f.wob+f.ox)*12);
+      const fy=this.cy+f.oy+Math.cos(f.t*0.7*f.wob+f.oy)*8;
+      eachScreenX(fx,cam.x,40,sx=>{
+        const sy=fy-cam.y;
+        if(sy<-40||sy>H+40) return;
+        drawFish(sx,sy,this.dir+Math.sin(f.t*2+f.ox)*0.25,f.t,this.color,f.size);
+      });
+    }
+  }
+}
+
+/* ================= 水母 ================= */
+class Jelly{
+  constructor(x,y,color){
+    this.baseX=x; this.baseY=y; this.x=x; this.y=y;
+    this.color=color; this.t=rand(0,10);
+    this.hitRadius=22;
+    this.stunT=0; this.stunAngle=0; this.stunRot=0;
+    this.stunDir=1; this.stunFallSpeed=0;
+    this.glow=0; this.range=rand(60,140);
+  }
+  update(dt,whale){
+    checkBubbleHit(this,game.bubbles);
+    if(this.stunT>0){ this.stunT-=dt; this.stunRot+=dt*8; this.y=this.baseY+Math.sin(this.t*0.4)*this.range; this.x=wrapX(this.baseX+Math.sin(this.t*0.3)*30); if(this.glow>0) this.glow-=dt*0.4; return; }
+    this.t+=dt;
+    this.y=this.baseY+Math.sin(this.t*0.4)*this.range;
+    this.x=wrapX(this.baseX+Math.sin(this.t*0.3)*30);
+    const d=Math.hypot(wrapDx(this.x,whale.x),whale.y-this.y);
+    if(d<(whale.sparkle>0?90:55)&&this.glow<=0.01){
+      this.glow=1; Sound.soft();
+      burst(this.x,this.y,this.color,6);
+    }
+    if(this.glow>0) this.glow-=dt*0.4;
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,80,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-80||sy>H+80) return;
+      const pulse=Math.sin(this.t*2.2), sq=1+pulse*0.1, st=1-pulse*0.08;
+      ctx.save(); ctx.translate(sx,sy);
+      ctx.shadowColor=this.color;
+      ctx.shadowBlur=14+this.glow*30;
+      ctx.fillStyle=this.color;
+      ctx.globalAlpha=0.55+this.glow*0.3;
+      ctx.beginPath(); ctx.ellipse(0,0,24*sq,17*st,0,Math.PI,TAU); ctx.fill();
+      ctx.beginPath();
+      for(let i=0;i<=6;i++){
+        const a=Math.PI+i/6*Math.PI;
+        const px=Math.cos(a)*24*sq;
+        const py=Math.sin(a)*17*st*0.3+Math.sin(this.t*3+i*2)*2;
+        i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+      }
+      ctx.lineTo(-24*sq,0); ctx.fill();
+      ctx.globalAlpha=1; ctx.shadowBlur=0;
+      ctx.strokeStyle=this.color; ctx.globalAlpha=0.5;
+      ctx.lineWidth=2; ctx.lineCap='round';
+      for(let i=-2;i<=2;i++){
+        ctx.beginPath(); ctx.moveTo(i*9,4);
+        for(let j=1;j<=7;j++)
+          ctx.lineTo(i*9+Math.sin(this.t*2.5+j*0.9+i*1.3)*4.5, 4+j*6.5);
+        ctx.stroke();
+      }
+      ctx.globalAlpha=1; ctx.restore();
+    });
+  }
+}
+
+/* ================= 八爪鱼 ================= */
+class Octopus{
+  constructor(x,y){
+    this.baseX=x; this.baseY=y; this.x=x; this.y=y;
+    this.t=rand(0,10);
+    this.hue=rand(330,350);
+    this.hitRadius=26;
+    this.stunT=0; this.stunAngle=0; this.stunRot=0;
+    this.stunDir=1; this.stunFallSpeed=0;
+    this.excited=0;
+  }
+  update(dt,whale){
+    this.t+=dt;
+    this.y=this.baseY+Math.sin(this.t*0.5)*40;
+    this.x=wrapX(this.baseX+Math.sin(this.t*0.3)*25);
+    const d=Math.hypot(wrapDx(this.x,whale.x),whale.y-this.y);
+    if(d<120){
+      if(this.excited<0.1) Sound.soft();
+      this.excited=Math.min(1,this.excited+dt*2);
+      if(Math.random()<dt*1.5) game.spawnBubble(this.x,this.y-20,rand(2,4));
+    }else{
+      this.excited=Math.max(0,this.excited-dt);
+    }
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,100,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-100||sy>H+100) return;
+      ctx.save(); ctx.translate(sx,sy);
+      const exc=this.excited;
+      const bodyCol=`hsl(${this.hue},${60+exc*25}%,${68+exc*10}%)`;
+      const darkCol=`hsl(${this.hue},55%,58%)`;
+      ctx.strokeStyle=darkCol; ctx.lineWidth=5; ctx.lineCap='round';
+      for(let i=0;i<8;i++){
+        const bx=(i-3.5)*7;
+        const wave=Math.sin(this.t*(2+exc*2)+i*0.9)*(4+exc*4);
+        ctx.beginPath();
+        ctx.moveTo(bx,10);
+        ctx.quadraticCurveTo(bx+wave,22,bx+wave*1.5,32+Math.sin(this.t+i)*3);
+        ctx.stroke();
+      }
+      ctx.fillStyle=bodyCol;
+      ctx.beginPath();
+      ctx.moveTo(-22,8);
+      ctx.quadraticCurveTo(-24,-20,0,-24);
+      ctx.quadraticCurveTo(24,-20,22,8);
+      ctx.quadraticCurveTo(12,14,0,14);
+      ctx.quadraticCurveTo(-12,14,-22,8);
+      ctx.fill();
+      const eyeY=-6;
+      if(exc>0.5){
+        ctx.strokeStyle='#3a2a3e'; ctx.lineWidth=2.2; ctx.lineCap='round';
+        for(const s of[-1,1]){
+          ctx.beginPath();
+          ctx.arc(s*8,eyeY+2,4,Math.PI*1.15,Math.PI*1.85);
+          ctx.stroke();
+        }
+      }else{
+        for(const s of[-1,1]){
+          ctx.fillStyle='#fff';
+          ctx.beginPath(); ctx.arc(s*8,eyeY,5,0,TAU); ctx.fill();
+          ctx.fillStyle='#3a2a3e';
+          ctx.beginPath(); ctx.arc(s*8,eyeY+1,2.5,0,TAU); ctx.fill();
+        }
+      }
+      ctx.fillStyle=`rgba(255,150,170,${0.4+exc*0.4})`;
+      for(const s of[-1,1]){
+        ctx.beginPath(); ctx.ellipse(s*15,2,4,2.5,0,0,TAU); ctx.fill();
+      }
+      ctx.strokeStyle='#3a2a3e'; ctx.lineWidth=1.8; ctx.lineCap='round';
+      ctx.beginPath(); ctx.arc(0,2,3.5,0.2,Math.PI-0.2); ctx.stroke();
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= 螃蟹 ================= */
+class Crab{
+  constructor(x){
+    this.x=x; this.y=WORLD_H-18;
+    this.dir=Math.random()<0.5?1:-1;
+    this.speed=rand(15,30);
+    this.t=rand(0,10);
+    this.pauseT=0; this.wave=0;
+    this.hitRadius=20;
+    this.stunT=0; this.stunAngle=0; this.stunRot=0;
+    this.stunDir=1; this.stunFallSpeed=0;
+  }
+  update(dt,whale){
+    checkBubbleHit(this,game.bubbles);
+    if(this.stunT>0){ this.stunT-=dt; this.stunRot+=dt*10; this.wave=Math.max(0,this.wave-dt); return; }
+    this.t+=dt;
+    if(this.pauseT>0) this.pauseT-=dt;
+    else{
+      this.x=wrapX(this.x+this.dir*this.speed*dt);
+      if(Math.random()<dt*0.3) this.pauseT=rand(0.5,2);
+      if(Math.random()<dt*0.2) this.dir*=-1;
+    }
+    const d=Math.hypot(wrapDx(this.x,whale.x),whale.y-this.y);
+    if(d<130){
+      if(this.wave<0.1) Sound.soft();
+      this.wave=Math.min(1,this.wave+dt*3);
+      if(Math.random()<dt*2) game.spawnBubble(this.x,this.y-25,rand(1.5,3));
+    }else{
+      this.wave=Math.max(0,this.wave-dt*2);
+    }
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,80,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-80||sy>H+80) return;
+      ctx.save(); ctx.translate(sx,sy);
+      const legMove=this.pauseT>0?0.2:1;
+      ctx.strokeStyle='#d06048'; ctx.lineWidth=2.5; ctx.lineCap='round';
+      for(const side of[-1,1]){
+        for(let i=0;i<3;i++){
+          const lx=side*(8+i*5);
+          const swing=Math.sin(this.t*8+i*1.5)*3*legMove;
+          ctx.beginPath();
+          ctx.moveTo(lx*0.7,2);
+          ctx.lineTo(lx+side*4,6+swing);
+          ctx.stroke();
+        }
+      }
+      for(const side of[-1,1]){
+        const raise=this.wave*(side===1?1:0.6);
+        ctx.save();
+        ctx.translate(side*14,-2);
+        ctx.rotate(side*(-0.4-raise*0.9));
+        ctx.strokeStyle='#e07050'; ctx.lineWidth=4; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(side*8,-6); ctx.stroke();
+        ctx.fillStyle='#e07050';
+        ctx.beginPath(); ctx.arc(side*10,-8,5.5,0,TAU); ctx.fill();
+        ctx.strokeStyle='#c85840'; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.moveTo(side*10,-8); ctx.lineTo(side*14,-11); ctx.stroke();
+        ctx.restore();
+      }
+      ctx.fillStyle='#e87858';
+      ctx.beginPath(); ctx.ellipse(0,0,16,10,0,0,TAU); ctx.fill();
+      for(const s of[-1,1]){
+        ctx.strokeStyle='#d06048'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(s*5,-8); ctx.lineTo(s*6,-15); ctx.stroke();
+        ctx.fillStyle='#fff';
+        ctx.beginPath(); ctx.arc(s*6,-17,3.5,0,TAU); ctx.fill();
+        ctx.fillStyle='#2a2a3e';
+        ctx.beginPath(); ctx.arc(s*6,-16.5,1.8,0,TAU); ctx.fill();
+      }
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= 海星 ================= */
+class Starfish{
+  constructor(x){
+    this.x=x; this.y=WORLD_H-12;
+    this.hue=rand(20,40);
+    this.glow=0;
+  }
+  update(dt,whale){
+    const d=Math.hypot(wrapDx(this.x,whale.x),whale.y-this.y);
+    if(d<70&&this.glow<=0.01){
+      this.glow=1; Sound.soft();
+      burst(this.x,this.y-10,'#ffd9a0',8);
+    }
+    if(this.glow>0) this.glow-=dt*0.5;
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,40,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-40||sy>H+40) return;
+      ctx.save(); ctx.translate(sx,sy);
+      const r=11+this.glow*2;
+      const col=`hsl(${this.hue},70%,${62+this.glow*15}%)`;
+      if(this.glow>0){ ctx.shadowColor='#ffd9a0'; ctx.shadowBlur=15*this.glow; }
+      ctx.fillStyle=col;
+      ctx.strokeStyle=col; ctx.lineWidth=4; ctx.lineJoin='round';
+      ctx.beginPath();
+      for(let i=0;i<10;i++){
+        const a=i*Math.PI/5-Math.PI/2;
+        const rr=i%2===0?r:r*0.45;
+        i===0?ctx.moveTo(Math.cos(a)*rr,Math.sin(a)*rr):ctx.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.shadowBlur=0;
+      ctx.fillStyle=`hsl(${this.hue},60%,72%)`;
+      ctx.beginPath(); ctx.arc(0,0,3,0,TAU); ctx.fill();
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= ★ 贝壳 ================= */
+class Shell{
+  constructor(x){
+    this.x=x; this.y=WORLD_H-10;
+    this.hue=rand(300,340);
+    this.open=0;
+  }
+  update(dt,whale){
+    const d=Math.hypot(wrapDx(this.x,whale.x),whale.y-this.y);
+    if(d<80){
+      if(this.open<0.1){ Sound.soft(); burst(this.x,this.y-12,'#ffe0ee',6); }
+      this.open=Math.min(1,this.open+dt*2);
+      if(Math.random()<dt*3) game.spawnBubble(this.x,this.y-15,rand(1.5,3));
+    }else this.open=Math.max(0,this.open-dt);
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,50,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-50||sy>H+50) return;
+      ctx.save(); ctx.translate(sx,sy);
+      const col=`hsl(${this.hue},60%,72%)`;
+      const dark=`hsl(${this.hue},55%,62%)`;
+      /* 下壳 */
+      ctx.fillStyle=dark;
+      ctx.beginPath();
+      ctx.moveTo(-14,0);
+      ctx.quadraticCurveTo(-14,-8,0,-8);
+      ctx.quadraticCurveTo(14,-8,14,0);
+      ctx.closePath(); ctx.fill();
+      /* 珍珠（打开时可见发光） */
+      if(this.open>0.1){
+        ctx.shadowColor='#fff0f5'; ctx.shadowBlur=12*this.open;
+        ctx.fillStyle='#fff5f8';
+        ctx.beginPath(); ctx.arc(0,-7,4*this.open+1,0,TAU); ctx.fill();
+        ctx.shadowBlur=0;
+      }
+      /* 上壳（随 open 张开） */
+      ctx.save();
+      ctx.translate(0,0);
+      ctx.rotate(-this.open*0.9);
+      ctx.fillStyle=col;
+      ctx.beginPath();
+      ctx.moveTo(-14,0);
+      ctx.quadraticCurveTo(-14,-12,0,-12);
+      ctx.quadraticCurveTo(14,-12,14,0);
+      ctx.closePath(); ctx.fill();
+      /* 壳纹 */
+      ctx.strokeStyle=dark; ctx.lineWidth=1.2;
+      for(let i=-2;i<=2;i++){
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(i*5.5,-10);
+        ctx.stroke();
+      }
+      ctx.restore();
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= 灯笼鱼 ================= */
+class AnglerFish{
+  constructor(){
+    this.x=rand(0,WORLD_W);
+    this.y=rand(WORLD_H*0.65,WORLD_H*0.88);
+    this.dir=Math.random()<0.5?1:-1;
+    this.speed=rand(15,25);
+    this.t=rand(0,10);
+    this.turnT=rand(3,6);
+  }
+  update(dt){
+    this.t+=dt;
+    this.turnT-=dt;
+    if(this.turnT<0){ this.turnT=rand(3,7); this.dir*=-1; }
+    this.x=wrapX(this.x+this.dir*this.speed*dt);
+    this.y+=Math.sin(this.t*0.8)*8*dt;
+    this.y=clamp(this.y,WORLD_H*0.6,WORLD_H*0.92);
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,80,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-80||sy>H+80) return;
+      ctx.save(); ctx.translate(sx,sy); ctx.scale(this.dir,1);
+      const glow=ctx.createRadialGradient(16,-16,0,16,-16,26);
+      glow.addColorStop(0,'rgba(255,240,180,0.7)');
+      glow.addColorStop(1,'rgba(255,240,180,0)');
+      ctx.fillStyle=glow;
+      ctx.beginPath(); ctx.arc(16,-16,26,0,TAU); ctx.fill();
+      ctx.strokeStyle='#5a7a9a'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(4,-10); ctx.quadraticCurveTo(12,-20,16,-16); ctx.stroke();
+      ctx.fillStyle='#fff0b0';
+      ctx.beginPath(); ctx.arc(16,-16,3.5,0,TAU); ctx.fill();
+      const swing=Math.sin(this.t*5)*0.4;
+      ctx.fillStyle='#6a8aaa';
+      ctx.save(); ctx.translate(-14,0); ctx.rotate(swing);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-9,-6); ctx.lineTo(-9,6); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle='#7a9aba';
+      ctx.beginPath(); ctx.ellipse(0,0,15,11,0,0,TAU); ctx.fill();
+      ctx.fillStyle='#9ab8d0';
+      ctx.beginPath(); ctx.ellipse(2,4,9,5,0,0,TAU); ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(7,-3,4.5,0,TAU); ctx.fill();
+      ctx.fillStyle='#2a3a4e';
+      ctx.beginPath(); ctx.arc(8,-3,2.2,0,TAU); ctx.fill();
+      ctx.strokeStyle='#4a6a8a'; ctx.lineWidth=1.5; ctx.lineCap='round';
+      ctx.beginPath(); ctx.arc(11,2,3,0.3,Math.PI*0.7); ctx.stroke();
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= 海龟 ================= */
+class Turtle{
+  constructor(){ this.respawn(); }
+  respawn(){
+    this.t=rand(0,10);
+    this.dir=Math.random()<0.5?0:Math.PI;
+    this.facing=this.dir===0?1:-1;
+    this.x=rand(0,WORLD_W);
+    this.y=rand(WORLD_H*0.35,WORLD_H*0.85);
+    this.speed=rand(16,26);
+    this.hitRadius=28;
+    this.stunT=0; this.stunAngle=0; this.stunRot=0;
+    this.stunDir=1; this.stunFallSpeed=0;
+  }
+  update(dt,whale){
+    checkBubbleHit(this,game.bubbles);
+    if(this.stunT>0){ this.stunT-=dt; this.stunRot+=dt*6; return; }
+    this.t+=dt;
+    this.x=wrapX(this.x+Math.cos(this.dir)*this.speed*dt);
+    this.y+=Math.sin(this.t*0.6)*4*dt;
+    if(Math.hypot(wrapDx(this.x,whale.x),whale.y-this.y)<70&&Math.random()<dt*2)
+      game.spawnBubble(this.x+this.facing*30,this.y-10,rand(2,4));
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,100,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-100||sy>H+100) return;
+      ctx.save(); ctx.translate(sx,sy); ctx.scale(this.facing,1);
+      const paddle=Math.sin(this.t*2.2)*0.45;
+      ctx.fillStyle='#93b98a';
+      ctx.save(); ctx.translate(-16,8); ctx.rotate(0.6-paddle*0.5);
+      ctx.beginPath(); ctx.ellipse(-5,0,8,4,0,0,TAU); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.translate(12,8); ctx.rotate(0.5+paddle);
+      ctx.beginPath(); ctx.ellipse(7,3,11,4.5,0.4,0,TAU); ctx.fill(); ctx.restore();
+      ctx.fillStyle='#a9cf9a';
+      ctx.beginPath(); ctx.arc(27,-3,8,0,TAU); ctx.fill();
+      ctx.fillStyle='#2a4a3e';
+      ctx.beginPath(); ctx.arc(29.5,-5,1.8,0,TAU); ctx.fill();
+      ctx.fillStyle='#7fae74';
+      ctx.beginPath(); ctx.ellipse(0,0,24,16,0,0,TAU); ctx.fill();
+      ctx.fillStyle='#97c48a';
+      ctx.beginPath(); ctx.ellipse(0,-2,19,12,0,0,TAU); ctx.fill();
+      ctx.strokeStyle='rgba(90,130,85,0.6)'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.ellipse(0,-2,11,7,0,0,TAU); ctx.stroke();
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= ★ 大海蛇 ================= */
+class Shark{
+  constructor(){
+    this.x=rand(0,WORLD_W);
+    this.y=rand(WORLD_H*0.3,WORLD_H*0.6);
+    this.angle=rand(0,TAU);
+    this.targetAngle=this.angle;
+    this.speed=rand(55,75);
+
+
+    this.t=rand(0,10);
+    this.turnT=rand(2,5);
+    this.size=rand(32,42);
+    this.stunT=0; this.stunAngle=0; this.stunRot=0;
+    this.stunDir=1; this.stunFallSpeed=0;
+    this.hitRadius=32;
+    this.friendly=0;
+    this.segments=[];
+    for(let i=0;i<this.numSegs;i++)
+      this.segments.push({x:wrapX(this.x-i*this.segLen),y:this.y});
+  }
+  update(dt,whale){
+    this.t+=dt;
+    if(this.stunT>0){
+      this.stunT-=dt; this.stunRot+=dt*8;
+      this.x=wrapX(this.x+Math.cos(this.stunAngle)*50*dt);
+      this.y=clamp(this.y+Math.sin(this.stunAngle)*50*dt,80,WORLD_H-140);
+      return;
+    }
+    checkBubbleHit(this,game.bubbles);
+    this.turnT-=dt;
+    if(this.turnT<0){
+      this.turnT=rand(2,5);
+      this.targetAngle=this.angle+rand(-0.8,0.8);
+    }
+    const dx=wrapDx(this.x,whale.x), dy=whale.y-this.y;
+    const d=Math.hypot(dx,dy);
+    /* 小鲨鱼会远离鲸鱼，靠近时加速游走 */
+    if(d<250){
+      this.speed=lerp(this.speed,rand(70,90),dt*2);
+      this.angle=angleLerp(this.angle,Math.atan2(dy,dx)+Math.PI,dt*0.6);
+    }else if(d<450){
+      this.speed=lerp(this.speed,rand(50,65),dt);
+      this.angle=angleLerp(this.angle,this.targetAngle,dt*0.3);
+    }else{
+      this.speed=lerp(this.speed,rand(40,55),dt*0.5);
+      this.angle=angleLerp(this.angle,this.targetAngle,dt*0.2);
+    }
+    const wobble=Math.sin(this.t*3)*0.3;
+    const ma=this.angle+wobble;
+    this.x=wrapX(this.x+Math.cos(ma)*this.speed*dt);
+    this.y=clamp(this.y+Math.sin(ma)*this.speed*dt,80,WORLD_H-100);
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,120,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-120||sy>H+120) return;
+      ctx.save(); ctx.translate(sx,sy);
+      /* 眩晕效果：旋转+下坠 */
+      if(this.stunT>0){
+        ctx.rotate(Math.sin(this.stunRot)*0.5);
+        ctx.translate(0,Math.sin(this.stunRot*2)*6);
+      }
+      const s=this.size;
+      /* 身体 */
+      const bodyGrad=ctx.createLinearGradient(0,-s*0.5,0,s*0.5);
+      bodyGrad.addColorStop(0,'#6a8a9a');
+      bodyGrad.addColorStop(0.6,'#7a9aaa');
+      bodyGrad.addColorStop(1,'#b0c8d0');
+      ctx.fillStyle=bodyGrad;
+      ctx.beginPath();
+      ctx.moveTo(s*0.15,-s*0.1);
+      ctx.quadraticCurveTo(s*0.3,-s*0.55,0,-s*0.35);
+      ctx.quadraticCurveTo(-s*0.7,-s*0.25,-s*0.9,0);
+      ctx.quadraticCurveTo(-s*0.7,s*0.25,0,s*0.35);
+      ctx.quadraticCurveTo(s*0.3,s*0.55,s*0.15,s*0.1);
+      ctx.closePath(); ctx.fill();
+      /* 背鳍 */
+      ctx.fillStyle='#5a7a8a';
+      ctx.beginPath();
+      ctx.moveTo(-s*0.15,-s*0.25);
+      ctx.quadraticCurveTo(-s*0.3,-s*0.7,-s*0.05,-s*0.55);
+      ctx.quadraticCurveTo(0,-s*0.5,-s*0.15,-s*0.25);
+      ctx.fill();
+      /* 尾鳍 */
+      const tail=Math.sin(this.t*4)*0.35;
+      ctx.fillStyle='#5a7a8a';
+      ctx.save(); ctx.translate(-s*0.9,0); ctx.rotate(tail*0.6);
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(-s*0.3,-s*0.4);
+      ctx.lineTo(-s*0.1,0);
+      ctx.lineTo(-s*0.3,s*0.4);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+      /* 胸鳍 */
+      ctx.fillStyle='#7a9aaa';
+      ctx.save(); ctx.translate(-s*0.3,s*0.15); ctx.rotate(0.3+Math.sin(this.t*3)*0.1);
+      ctx.beginPath(); ctx.ellipse(0,0,s*0.25,s*0.08,0,0,TAU); ctx.fill();
+      ctx.restore();
+      /* 眼睛 */
+      if(this.stunT>0){
+        ctx.strokeStyle='#2a3a4e'; ctx.lineWidth=2;
+        for(let e of[-1,1]){
+          const ex=e*s*0.16, ey=-s*0.08;
+          ctx.beginPath(); ctx.arc(ex,ey,4.5,0,TAU); ctx.stroke();
+          ctx.beginPath(); ctx.arc(ex-2,ey-1,2,0,TAU); ctx.stroke();
+          ctx.beginPath(); ctx.arc(ex+2,ey+1,1.5,0,TAU); ctx.stroke();
+        }
+      }else{
+        ctx.fillStyle='#fff';
+        for(let e of[-1,1]){
+          ctx.beginPath(); ctx.arc(e*s*0.16,-s*0.08,5,0,TAU); ctx.fill();
+        }
+        ctx.fillStyle='#2a3a4e';
+        ctx.beginPath(); ctx.arc(-s*0.15,-s*0.08,2.5,0,TAU); ctx.fill();
+        ctx.beginPath(); ctx.arc(s*0.17,-s*0.08,2.5,0,TAU); ctx.fill();
+      }
+      /* 嘴巴 */
+      ctx.strokeStyle='#3a4a5a'; ctx.lineWidth=1.8; ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(s*0.1,s*0.05);
+      ctx.quadraticCurveTo(s*0.25,s*0.1,s*0.15,s*0.12);
+      ctx.stroke();
+      /* 牙齿 */
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.moveTo(s*0.1,s*0.05); ctx.lineTo(s*0.15,s*0.02); ctx.lineTo(s*0.14,s*0.07); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(s*0.17,s*0.06); ctx.lineTo(s*0.21,s*0.03); ctx.lineTo(s*0.2,s*0.08); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    });
+  }
+}
+
+/* ================= ★ 小火山 ================= */
+class Volcano{
+  constructor(x){
+    this.x=x;
+    this.h=rand(80,140);
+    this.w=this.h*rand(1.2,1.6);
+    this.t=rand(0,10);
+    this.bubbleT=rand(0,2);
+    this.eruptT=rand(6,14);
+    this.erupting=0;
+  }
+  update(dt){
+    this.t+=dt;
+    this.bubbleT-=dt;
+    if(this.bubbleT<0){
+      this.bubbleT=rand(0.3,1.0);
+      game.spawnBubble(this.x+rand(-8,8),WORLD_H-this.h+5,rand(2,5),rand(-15,15),rand(-70,-40));
+    }
+    this.eruptT-=dt;
+    if(this.eruptT<0){
+      this.eruptT=rand(6,12);
+      this.erupting=2.5;
+      Sound.rumble();
+    }
+    if(this.erupting>0){
+      this.erupting-=dt;
+      /* 喷发粒子：火花 + 熔岩弹 */
+      if(Math.random()<dt*25){
+        const a=-Math.PI/2+rand(-1.2,1.2);
+        const spd=rand(60,150);
+        particles.push({type:'dot',x:this.x+rand(-8,8),y:WORLD_H-this.h-5,
+          vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,life:1,decay:rand(0.5,1.0),
+          size:rand(2,6),color:['#ff6a20','#ff9a40','#ffcc60','#ff4420'][Math.floor(rand(0,4))]});
+      }
+      /* 喷发烟雾粒子 */
+      if(Math.random()<dt*10){
+        particles.push({type:'dot',x:this.x+rand(-15,15),y:WORLD_H-this.h-rand(5,20),
+          vx:rand(-15,15),vy:rand(-40,-15),life:1.5,decay:rand(0.15,0.3),
+          size:rand(6,12),color:'rgba(80,70,60,0.5)'});
+      }
+      /* 熔岩弹飞溅 */
+      if(Math.random()<dt*6)
+        game.spawnBubble(this.x+rand(-15,15),WORLD_H-this.h-rand(0,10),rand(4,9),rand(-40,40),rand(-120,-50));
+    }
+    /* 火山口脉冲 */
+    if(this.erupting>0.5){
+      this.pulseGlow=0.7+Math.sin(this.t*8)*0.3;
+    }else{
+      this.pulseGlow=0.2+Math.sin(this.t*2)*0.1;
+    }
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,250,sx=>{
+      const baseY=WORLD_H-cam.y;
+      if(baseY<-250||baseY>H+250) return;
+      const pulseY=this.erupting>0?Math.sin(this.t*8)*4:0;
+      /* 山体（深色） */
+      ctx.fillStyle='#3a3a4c';
+      ctx.beginPath();
+      ctx.moveTo(sx-this.w/2,baseY);
+      ctx.lineTo(sx-14,baseY-this.h+pulseY);
+      ctx.lineTo(sx+14,baseY-this.h+pulseY);
+      ctx.lineTo(sx+this.w/2,baseY);
+      ctx.closePath(); ctx.fill();
+      /* 受光面 */
+      ctx.fillStyle='#4a4a5e';
+      ctx.beginPath();
+      ctx.moveTo(sx-this.w/2,baseY);
+      ctx.lineTo(sx-14,baseY-this.h+pulseY);
+      ctx.lineTo(sx,baseY-this.h+pulseY);
+      ctx.lineTo(sx,baseY);
+      ctx.closePath(); ctx.fill();
+      /* 火山口熔岩光晕 */
+      const glowIntensity=0.3+this.erupting*0.35+(this.pulseGlow||0)*0.15;
+      const glowR=28+this.erupting*18;
+      const glow=ctx.createRadialGradient(sx,baseY-this.h+pulseY,0,sx,baseY-this.h+pulseY,glowR);
+      glow.addColorStop(0,`rgba(255,140,60,${glowIntensity})`);
+      glow.addColorStop(0.4,`rgba(255,80,20,${glowIntensity*0.6})`);
+      glow.addColorStop(1,'rgba(255,60,10,0)');
+      ctx.fillStyle=glow;
+      ctx.beginPath(); ctx.arc(sx,baseY-this.h+pulseY,glowR,0,TAU); ctx.fill();
+      /* 喷发火焰（动态羽焰） */
+      if(this.erupting>0.3){
+        const flameH=this.erupting*rand(25,45);
+        const flameGrad=ctx.createLinearGradient(sx,baseY-this.h+pulseY,sx,baseY-this.h-flameH);
+        flameGrad.addColorStop(0,`rgba(255,200,80,${0.4+this.erupting*0.3})`);
+        flameGrad.addColorStop(0.3,`rgba(255,120,40,${0.3+this.erupting*0.2})`);
+        flameGrad.addColorStop(1,'rgba(255,50,10,0)');
+        ctx.fillStyle=flameGrad;
+        ctx.beginPath();
+        ctx.moveTo(sx-10,baseY-this.h+pulseY);
+        for(let fy=0;fy<1;fy+=0.1){
+          const ff=fy*flameH;
+          ctx.lineTo(sx+Math.sin(this.t*12+fy*10)*(4+fy*12),baseY-this.h+pulseY-ff);
+        }
+        ctx.lineTo(sx+10,baseY-this.h+pulseY);
+        ctx.closePath(); ctx.fill();
+      }
+      /* 熔岩口 */
+      const lr=0.6+Math.sin(this.t*3)*0.2+this.erupting*0.5+(this.pulseGlow||0)*0.2;
+      ctx.fillStyle=`rgba(255,${Math.round(130+Math.sin(this.t*4)*40)},60,${clamp(lr,0,1)})`;
+      ctx.beginPath();
+      ctx.ellipse(sx,baseY-this.h+pulseY+3,14+this.erupting*3,5+this.erupting,0,0,TAU);
+      ctx.fill();
+      /* 熔岩流（沿山体流下） */
+      if(this.erupting>0.8){
+        ctx.strokeStyle=`rgba(255,${Math.round(100+Math.sin(this.t*5)*30)},40,${0.2+this.erupting*0.15})`;
+        ctx.lineWidth=2+this.erupting*1.5;
+        ctx.beginPath();
+        ctx.moveTo(sx+8,baseY-this.h+pulseY);
+        ctx.quadraticCurveTo(sx+14,baseY-this.h*0.6,sx+20,baseY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(sx-6,baseY-this.h+pulseY);
+        ctx.quadraticCurveTo(sx-20,baseY-this.h*0.5,sx-16,baseY);
+        ctx.stroke();
+      }
+    });
+  }
+}
+
+/* ================= ★ 巨型礁石 ================= */
+class Rock{
+  constructor(x){
+    this.x=x;
+    this.h=rand(160,420);
+    this.w=rand(80,180);
+    this.hue=rand(210,230);
+    this.blobs=[];
+    let y=0;
+    while(y<this.h){
+      const r=rand(this.w*0.3,this.w*0.55);
+      this.blobs.push({ox:rand(-this.w*0.2,this.w*0.2),oy:-y,r});
+      y+=r*rand(0.9,1.3);
+    }
+    /* 顶部长小珊瑚 */
+    this.corals=[];
+    if(Math.random()<0.7){
+      const n=1+Math.floor(rand(0,3));
+      for(let i=0;i<n;i++)
+        this.corals.push({ox:rand(-20,20),oy:-this.h+rand(-8,8),hue:rand(330,360),s:rand(0.6,1)});
+    }
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,260,sx=>{
+      const baseY=WORLD_H-cam.y;
+      if(baseY+60<-this.h||baseY>H+80) return;
+      for(const b of this.blobs){
+        const by=baseY+b.oy;
+        /* 主体 */
+        ctx.fillStyle=`hsl(${this.hue},25%,${20+b.r*0.06}%)`;
+        ctx.beginPath(); ctx.arc(sx+b.ox,by,b.r,0,TAU); ctx.fill();
+        /* 高光面 */
+        ctx.fillStyle=`hsl(${this.hue},30%,${30+b.r*0.06}%)`;
+        ctx.beginPath(); ctx.arc(sx+b.ox-b.r*0.25,by-b.r*0.25,b.r*0.6,0,TAU); ctx.fill();
+      }
+      /* 顶部小珊瑚 */
+      for(const c of this.corals){
+        ctx.strokeStyle=`hsl(${c.hue},65%,68%)`;
+        ctx.lineWidth=3*c.s; ctx.lineCap='round';
+        const cy=baseY+c.oy;
+        for(let i=-1;i<=1;i++){
+          ctx.beginPath();
+          ctx.moveTo(sx+c.ox,cy);
+          ctx.quadraticCurveTo(sx+c.ox+i*6*c.s,cy-10*c.s,sx+c.ox+i*10*c.s,cy-16*c.s);
+          ctx.stroke();
+        }
+      }
+    });
+  }
+}
+
+/* ================= 环境 ================= */
+class Bubble{
+  constructor(x,y,r,vx=0,vy=0){
+    this.x=wrapX(x); this.y=y; this.r=r;
+    this.vx=vx; this.vy=vy;
+    this.t=rand(0,TAU); this.speed=rand(25,55); this.dead=false;
+    this.hit=false;
+  }
+  update(dt){
+    this.t+=dt*3;
+    this.vx*=Math.pow(0.05,dt);
+    this.vy=lerp(this.vy,-this.speed,1-Math.pow(0.05,dt));
+    this.x=wrapX(this.x+(this.vx+Math.sin(this.t)*10)*dt);
+    this.y+=this.vy*dt;
+    if(this.y<40) this.dead=true;
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,20,sx=>{
+      const sy=this.y-cam.y;
+      if(sy<-20||sy>H+20) return;
+      ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.arc(sx,sy,this.r,0,TAU); ctx.stroke();
+      const pulse=1+Math.sin(this.t*3)*0.15;
+      ctx.fillStyle=`rgba(255,255,255,${0.2+Math.sin(this.t)*0.1})`;
+      ctx.beginPath(); ctx.arc(sx,sy,this.r*pulse,0,TAU); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.4)';
+      ctx.beginPath(); ctx.arc(sx-this.r*0.3*pulse,sy-this.r*0.3*pulse,this.r*0.3*pulse,0,TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx-this.r*0.3,sy-this.r*0.3,this.r*0.3,0,TAU); ctx.fill();
+    });
+  }
+}
+class Seaweed{
+  constructor(x){
+    this.x=x; this.h=rand(70,170);
+    this.seg=5+Math.floor(rand(0,3)); this.phase=rand(0,TAU);
+    this.color=`hsl(${rand(150,175)},${rand(35,50)}%,${rand(30,42)}%)`;
+    this.w=rand(4,6);
+  }
+  draw(cam,t){
+    eachScreenX(this.x,cam.x,50,sx=>{
+      const baseY=WORLD_H-cam.y;
+      if(baseY<-this.h-20) return;
+      ctx.strokeStyle=this.color; ctx.lineWidth=this.w; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(sx,baseY);
+      const segH=this.h/this.seg;
+      let px=sx, py=baseY;
+      for(let i=1;i<=this.seg;i++){
+        const nx=sx+Math.sin(t*0.9+this.phase+i*0.55)*i*4, ny=baseY-i*segH;
+        ctx.quadraticCurveTo(px,py-segH*0.5,nx,ny);
+        px=nx; py=ny;
+      }
+      ctx.stroke();
+    });
+  }
+}
+class Coral{
+  constructor(x){
+    this.x=x;
+    this.color=`hsl(${rand(340,360)},${rand(60,75)}%,${rand(62,72)}%)`;
+    this.branches=[];
+    const n=3+Math.floor(rand(0,3));
+    for(let i=0;i<n;i++)
+      this.branches.push({angle:-Math.PI/2+rand(-0.8,0.8),len:rand(25,55),w:rand(4,7),curve:rand(-15,15)});
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,80,sx=>{
+      const baseY=WORLD_H-cam.y;
+      if(baseY<-80) return;
+      ctx.strokeStyle=this.color; ctx.lineCap='round';
+      for(const b of this.branches){
+        ctx.lineWidth=b.w;
+        const ex=sx+Math.cos(b.angle)*b.len, ey=baseY+Math.sin(b.angle)*b.len;
+        ctx.beginPath(); ctx.moveTo(sx,baseY);
+        ctx.quadraticCurveTo((sx+ex)/2+b.curve,(baseY+ey)/2,ex,ey); ctx.stroke();
+        ctx.fillStyle=this.color;
+        ctx.beginPath(); ctx.arc(ex,ey,b.w*0.6,0,TAU); ctx.fill();
+      }
+    });
+  }
+}
+class SeaFan{
+  constructor(x){
+    this.x=x; this.hue=rand(280,320);
+    this.branches=[];
+    for(let i=0;i<7;i++)
+      this.branches.push({a:-Math.PI/2+(i-3)*0.28+rand(-0.05,0.05),len:rand(30,55)});
+  }
+  draw(cam){
+    eachScreenX(this.x,cam.x,80,sx=>{
+      const baseY=WORLD_H-cam.y;
+      if(baseY<-80) return;
+      ctx.strokeStyle=`hsla(${this.hue},55%,65%,0.85)`;
+      ctx.lineWidth=2.5; ctx.lineCap='round';
+      for(const b of this.branches){
+        ctx.beginPath();
+        ctx.moveTo(sx,baseY);
+        ctx.lineTo(sx+Math.cos(b.a)*b.len,baseY+Math.sin(b.a)*b.len);
+        ctx.stroke();
+      }
+    });
+  }
+}
+/* 光束改为屏幕坐标（循环世界无接缝） */
+class LightRay{
+  constructor(){
+    this.x=rand(0,1);
+    this.w=rand(50,110);
+    this.phase=rand(0,TAU);
+    this.speed=rand(0.15,0.35);
+  }
+  draw(cam,t){
+    const fade=clamp(1-cam.y/700,0,1);
+    if(fade<=0.01) return;
+    const sx=this.x*W+Math.sin(t*this.speed+this.phase)*40;
+    ctx.save(); ctx.globalAlpha=fade;
+    const g=ctx.createLinearGradient(sx,0,sx+this.w*0.25,H*0.85);
+    g.addColorStop(0,'rgba(255,252,230,0.22)');
+    g.addColorStop(1,'rgba(255,252,230,0)');
+    ctx.fillStyle=g;
+    ctx.beginPath();
+    ctx.moveTo(sx-this.w/2,-20); ctx.lineTo(sx+this.w/2,-20);
+    ctx.lineTo(sx+this.w*1.6,H*0.85); ctx.lineTo(sx-this.w*0.35,H*0.85);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+}
+class Dust{
+  constructor(){
+    this.x=rand(0,W); this.y=rand(0,H);
+    this.r=rand(0.8,2.2); this.phase=rand(0,TAU);
+    this.vx=rand(-6,6); this.vy=rand(-4,4);
+  }
+  update(dt){
+    this.x+=this.vx*dt; this.y+=this.vy*dt;
+    if(this.x<-10)this.x=W+10; if(this.x>W+10)this.x=-10;
+    if(this.y<-10)this.y=H+10; if(this.y>H+10)this.y=-10;
+  }
+  draw(t){
+    const a=0.12+Math.sin(t*1.5+this.phase)*0.1;
+    ctx.fillStyle=`rgba(255,255,255,${Math.max(0.02,a)})`;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,TAU); ctx.fill();
+  }
+}
+
+/* ================= 游戏主类 ================= */
+class Game{
+  constructor(){
+    this.state='ready';
+    this.count=0; this.combo=0; this.comboT=0;
+    this.whale=new Whale(WORLD_W/2,WORLD_H*0.3);
+    this.cam={x:wrapX(this.whale.x-W/2),y:this.whale.y-H/2};
+    this.mouse=null; this.keys={}; this.t=0;
+
+    this.pearls=[];
+    for(let i=0;i<14;i++) this.spawnPearl();
+    this.gems=[];
+    for(let i=0;i<3;i++) this.spawnGem();
+
+    this.schools=[
+      new FishSchool(400,400,'#ffb8a0'), new FishSchool(1800,600,'#ffd9a0'),
+      new FishSchool(900,1200,'#c8b8e8'), new FishSchool(2600,1300,'#a0e0d0'),
+      new FishSchool(3000,500,'#f0b8d0'),
+    ];
+    this.jellies=[];
+    const jc=['rgba(248,180,210,1)','rgba(180,210,248,1)','rgba(220,190,248,1)','rgba(180,240,220,1)'];
+    for(let i=0;i<7;i++)
+      this.jellies.push(new Jelly(rand(200,WORLD_W-200),rand(200,WORLD_H-300),jc[i%4]));
+
+    this.octos=[
+      new Octopus(rand(300,800),WORLD_H*0.6),
+      new Octopus(rand(1400,2000),WORLD_H*0.68),
+      new Octopus(rand(2400,3000),WORLD_H*0.55),
+    ];
+    this.crabs=[new Crab(300),new Crab(1200),new Crab(2100),new Crab(2900)];
+    this.stars=[];
+    for(let i=0;i<7;i++) this.stars.push(new Starfish(rand(100,WORLD_W-100)));
+    this.shells=[];
+    for(let i=0;i<5;i++) this.shells.push(new Shell(rand(100,WORLD_W-100)));
+    this.anglers=[new AnglerFish(),new AnglerFish(),new AnglerFish()];
+    this.serpent=new Shark();
+
+    /* ★ 环境：火山与礁石 */
+    this.volcanoes=[new Volcano(600),new Volcano(1700),new Volcano(2700)];
+    this.rocks=[];
+    for(let i=0;i<5;i++) this.rocks.push(new Rock(rand(150,WORLD_W-150)));
+
+    this.turtles=[new Turtle()];
+    this.bubbles=[];
+    this.weeds=[];
+    for(let x=60;x<WORLD_W;x+=rand(90,160)) this.weeds.push(new Seaweed(x+rand(-20,20)));
+    this.corals=[];
+    for(let i=0;i<12;i++) this.corals.push(new Coral(rand(100,WORLD_W-100)));
+    this.seaFans=[];
+    for(let i=0;i<7;i++) this.seaFans.push(new SeaFan(rand(100,WORLD_W-100)));
+    this.rays=[];
+    for(let i=0;i<5;i++) this.rays.push(new LightRay());
+    this.dust=[];
+    for(let i=0;i<50;i++) this.dust.push(new Dust());
+
+    this.ambientBubbleT=0;
+    this.chordT=1; this.chordI=0; this.bellT=4;
+    this.hintT=8;
+    this.oceanSoundT=4;
+    this.happySound=false;
+  }
+  spawnPearl(){
+    let x,y,tries=0;
+    do{
+      x=rand(80,WORLD_W-80); y=rand(80,WORLD_H-160); tries++;
+    }while(Math.hypot(wrapDx(x,this.whale.x),y-this.whale.y)<220&&tries<20);
+    this.pearls.push(new Pearl(x,y));
+  }
+  spawnGem(){
+    let x,y,tries=0;
+    do{
+      x=rand(100,WORLD_W-100); y=rand(WORLD_H*0.25,WORLD_H-150); tries++;
+    }while(Math.hypot(wrapDx(x,this.whale.x),y-this.whale.y)<300&&tries<20);
+    this.gems.push(new Gem(x,y));
+  }
+  spawnBubble(x,y,r,vx=0,vy=0,attack=false){
+    if(this.bubbles.length<150) this.bubbles.push(new Bubble(x,y,r,vx,vy,attack));
+    if(this.bubbles.length<150) this.bubbles.push(new Bubble(x,y,r,vx,vy));
+  }
+  updateCount(n){
+    this.count+=n;
+    const el=document.getElementById('count');
+    el.textContent=this.count;
+    el.parentElement.classList.remove('pop');
+    void el.parentElement.offsetWidth;
+    el.parentElement.classList.add('pop');
+  }
+  showToast(msg){
+    const el=document.getElementById('toast');
+    el.textContent=msg;
+    el.classList.add('show');
+    clearTimeout(this.toastTimer);
+    this.toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+  }
+  onCollect(x,y){
+    this.combo=Math.min(this.combo+1,7); this.comboT=2.2;
+    Sound.collect(this.combo);
+    burst(x,y,'#ffe0ee',14); burst(x,y,'#ffffff',6);
+    this.whale.happy=1;
+    this.updateCount(1);
+    setTimeout(()=>{ if(this.state==='playing') this.spawnPearl(); },2500);
+  }
+  onGem(x,y,color){
+    this.whale.sparkle=8;
+    this.whale.happy=1;
+    Sound.gem();
+    burst(x,y,color.main,18); burst(x,y,'#ffffff',8);
+    this.updateCount(5);
+    this.showToast('✨ 捡到宝石！闪闪发光 ✨');
+    setTimeout(()=>{ if(this.state==='playing') this.spawnGem(); },4000);
+  }
+  update(dt){
+    this.t+=dt;
+    let target=null;
+    if(this.mouse) target={x:this.mouse.x+this.cam.x,y:this.mouse.y+this.cam.y};
+
+    this.whale.update(dt,target,this.keys);
+
+    /* ★ 摄像机水平环绕跟随 */
+    const camEase=1-Math.pow(0.01,dt);
+    this.cam.x=wrapX(this.cam.x+wrapDx(this.cam.x,this.whale.x-W/2)*camEase);
+    this.cam.y=clamp(lerp(this.cam.y,this.whale.y-H/2,camEase),0,Math.max(0,WORLD_H-H));
+
+    for(let i=this.pearls.length-1;i>=0;i--){
+      this.pearls[i].update(dt,this.whale);
+      if(this.pearls[i].dead) this.pearls.splice(i,1);
+    }
+    for(let i=this.gems.length-1;i>=0;i--){
+      this.gems[i].update(dt,this.whale);
+      if(this.gems[i].dead) this.gems.splice(i,1);
+    }
+    for(const s of this.schools) s.update(dt,this.whale);
+    for(const j of this.jellies) j.update(dt,this.whale);
+    for(const o of this.octos) o.update(dt,this.whale);
+    for(const c of this.crabs) c.update(dt,this.whale);
+    for(const s of this.stars) s.update(dt,this.whale);
+    for(const s of this.shells) s.update(dt,this.whale);
+    for(const a of this.anglers) a.update(dt);
+    this.serpent.update(dt,this.whale);
+    for(const v of this.volcanoes) v.update(dt);
+    for(const tr of this.turtles) tr.update(dt,this.whale);
+    for(let i=this.bubbles.length-1;i>=0;i--){
+      this.bubbles[i].update(dt);
+      if(this.bubbles[i].dead) this.bubbles.splice(i,1);
+    }
+    for(const d of this.dust) d.update(dt);
+    updateParticles(dt);
+
+    this.ambientBubbleT-=dt;
+    if(this.ambientBubbleT<0){
+      this.ambientBubbleT=rand(0.3,0.9);
+      this.spawnBubble(rand(this.cam.x,this.cam.x+W),this.cam.y+H+10,rand(1.5,4));
+    }
+
+    if(this.comboT>0){ this.comboT-=dt; if(this.comboT<=0) this.combo=0; }
+
+    if(this.combo>=3&&!this.happySound){
+      this.happySound=true;
+      Sound.happy();
+    }
+    if(this.combo<3) this.happySound=false;
+    this.chordT-=dt;
+    if(this.chordT<=0){
+      this.chordT=6;
+      Sound.chord(Sound.CHORDS[this.chordI]);
+      this.chordI=(this.chordI+1)%Sound.CHORDS.length;
+    }
+    /* 海洋环境声（循环） */
+    this.oceanSoundT-=dt;
+    if(this.oceanSoundT<=0){
+      this.oceanSoundT=rand(9,15);
+      Sound.ocean();
+    }
+    this.bellT-=dt;
+    if(this.bellT<=0){
+      this.bellT=rand(2.5,6);
+      Sound.bell(Sound.BELLS[Math.floor(rand(0,Sound.BELLS.length))]);
+    }
+
+    if(this.hintT>0){
+      this.hintT-=dt;
+      if(this.hintT<=0) document.getElementById('hint').classList.add('fade');
+    }
+  }
+  render(){
+    const cam=this.cam;
+    const depth=clamp(cam.y/Math.max(1,WORLD_H-H),0,1);
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,rgb(lerpColor([150,224,236],[36,88,138],depth)));
+    g.addColorStop(0.5,rgb(lerpColor([74,166,204],[22,62,108],depth)));
+    g.addColorStop(1,rgb(lerpColor([26,70,112],[10,28,58],depth)));
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    for(const d of this.dust) d.draw(this.t);
+    for(const r of this.rays) r.draw(cam,this.t);
+
+    const groundY=WORLD_H-cam.y;
+    if(groundY<H){
+      const gg=ctx.createLinearGradient(0,groundY-60,0,groundY+40);
+      gg.addColorStop(0,'rgba(20,50,80,0)');
+      gg.addColorStop(1,'rgba(15,40,66,0.9)');
+      ctx.fillStyle=gg;
+      ctx.fillRect(0,groundY-60,W,H-groundY+60);
+    }
+
+    /* 由远及近绘制 */
+    for(const r of this.rocks) r.draw(cam);
+    for(const v of this.volcanoes) v.draw(cam);
+    for(const c of this.corals) c.draw(cam);
+    for(const f of this.seaFans) f.draw(cam);
+    for(const w of this.weeds) w.draw(cam,this.t);
+    for(const s of this.stars) s.draw(cam);
+    for(const s of this.shells) s.draw(cam);
+    for(const c of this.crabs) c.draw(cam);
+    for(const p of this.pearls) p.draw(cam);
+    for(const gm of this.gems) gm.draw(cam);
+    for(const j of this.jellies) j.draw(cam);
+    for(const o of this.octos) o.draw(cam);
+    for(const a of this.anglers) a.draw(cam);
+    this.serpent.draw(cam);
+    for(const s of this.schools) s.draw(cam);
+    for(const tr of this.turtles) tr.draw(cam);
+    this.whale.draw(cam);
+    for(const b of this.bubbles) b.draw(cam);
+    drawParticles(cam);
+
+    const surfaceFade=clamp(1-cam.y/300,0,1);
+    if(surfaceFade>0.01){
+      const sg=ctx.createLinearGradient(0,0,0,120);
+      sg.addColorStop(0,`rgba(255,255,245,${0.35*surfaceFade})`);
+      sg.addColorStop(1,'rgba(255,255,245,0)');
+      ctx.fillStyle=sg; ctx.fillRect(0,0,W,120);
+    }
+  }
+}
+
+const game=new Game();
+
+/* ================= 输入 ================= */
+function startGame(){
+  Sound.init();
+  if(Sound.ctx.state==='suspended') Sound.ctx.resume();
+  game.state='playing';
+  document.getElementById('overlay').classList.add('hidden');
+}
+document.getElementById('startBtn').addEventListener('click',startGame);
+document.getElementById('muteBtn').addEventListener('click',()=>{
+  document.getElementById('muteBtn').textContent=Sound.toggleMute()?'🔇':'🔊';
+});
+document.getElementById('hint').textContent=
+  ('ontouchstart' in window)?
+  '滑动手指引导小鲸鱼 · 快速双击吐泡泡':
+  '移动鼠标引导小鲸鱼 · 双击吐泡泡';
+
+window.addEventListener('keydown',e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
+  game.keys[e.code]=true;
+  if(e.code==='Space'&&game.state==='ready') startGame();
+});
+window.addEventListener('keyup',e=>{ game.keys[e.code]=false; });
+
+canvas.addEventListener('mousemove',e=>{ game.mouse={x:e.clientX,y:e.clientY}; });
+canvas.addEventListener('mouseleave',()=>{ game.mouse=null; });
+canvas.addEventListener('dblclick',e=>{
+  e.preventDefault();
+  if(game.state==='playing') game.whale.blowBubbles();
+});
+
+let lastTapTime=0;
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const t=e.touches[0]; game.mouse={x:t.clientX,y:t.clientY};
+},{passive:false});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const t=e.touches[0]; game.mouse={x:t.clientX,y:t.clientY};
+},{passive:false});
+canvas.addEventListener('touchend',e=>{
+  e.preventDefault();
+  const now=performance.now();
+  if(now-lastTapTime<320&&game.state==='playing'){
+    game.whale.blowBubbles();
+    lastTapTime=0;
+  }else{
+    lastTapTime=now;
+  }
+  game.mouse=null;
+},{passive:false});
+
+/* ================= 主循环 ================= */
+let lastTime=performance.now();
+function loop(t){
+  const dt=Math.min((t-lastTime)/1000,0.05);
+  lastTime=t;
+  game.update(dt);
+  game.render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
