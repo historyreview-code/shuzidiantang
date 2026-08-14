@@ -1,0 +1,50 @@
+name: assemble-and-deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 每日 02:00 UTC 重建（地球厅数据由 GitHub Actions 每日更新，见 digital-earth-series）
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  assemble:
+    name: 组装全站
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 组装 dist/
+        run: npm run assemble
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          retention-days: 7
+
+  deploy-cloudflare:
+    name: 部署 Cloudflare Pages（备案过渡 / 海外备份）
+    needs: assemble
+    runs-on: ubuntu-latest
+    # 未配置 CF 密钥时自动跳过；配置后即可部署
+    if: ${{ secrets.CF_ACCOUNT_ID != '' && secrets.CF_API_TOKEN != '' && secrets.CF_PROJECT_NAME != '' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist
+      - name: 发布到 Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: ${{ secrets.CF_PROJECT_NAME }}
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  # 国内主站：EdgeOne Pages 直接连接本仓库（控制台操作），
+  # 构建命令 npm run assemble，输出目录 dist —— 无需在此配置。
