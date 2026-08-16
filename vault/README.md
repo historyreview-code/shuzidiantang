@@ -13,6 +13,7 @@
 | `novels/`（仓库根目录） | 文学馆：《崤山》《玦·秦晋之好》 | 暂不对外，作品待打磨 |
 | `maps/`（仓库根目录） | 地图馆：旅游计划工具 | 内部开发，定位未定 |
 | `vault/notes-template.html` | 手记/随笔文章模板 | 发布新一期手记时复制此模板 |
+| `vault/twikoo-评论系统部署方案.md` | 手记游客评论（Twikoo Docker 自建）定稿方案 | **备案通过后实施**（过渡期不接评论） |
 | `vault/invest-article-template.html` | 投资研究文章模板（暗室） | 发布投资笔记时复制此模板 |
 | `vault/earth-themes-voyage/` | 大航海时代 SEO 落地页 | 主题暂下线（个人储备），代码仍在 monorepo `packages/themes/voyage` |
 

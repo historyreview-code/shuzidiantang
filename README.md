@@ -127,6 +127,11 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 1. 腾讯企业邮箱免费版：绑定 `shuzidiantang.com` → 开通 `hello@shuzidiantang.com`，按引导加 MX 解析
 2. 轻量服务器上部署 Umami 统计（Docker 一条命令），首页注入统计脚本
 
+### ⑧ 手记游客评论（备案通过后，约 1 小时）
+- Twikoo Docker 自建（零新增月费、游客匿名、人工审核）：DNS `comment` → 服务器 →
+  `docker run imaegoo/twikoo` → 腾讯云免费证书 + Nginx 反代 → 管理面板开审核 → assemble 注入前端
+- 完整定稿步骤见 `vault/twikoo-评论系统部署方案.md`（过渡期不接入）
+
 ---
 
 ## 作品来源
