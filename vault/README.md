@@ -12,8 +12,16 @@
 | `vault/games/retro-pool/` | 像素桌球 | 待打磨精选 |
 | `novels/`（仓库根目录） | 文学馆：《崤山》《玦·秦晋之好》 | 暂不对外，作品待打磨 |
 | `maps/`（仓库根目录） | 地图馆：旅游计划工具 | 内部开发，定位未定 |
+| `vault/notes-template.html` | 手记/随笔文章模板 | 发布新一期手记时复制此模板 |
 
 ## 恢复发布的方法
 
 - 游戏：把文件移回 `games/` 并在 `games/index.html` 加卡片
 - 文学馆/地图馆：把目录名加回 `scripts/assemble.mjs` 的 `STATIC_PATHS`，并在各页导航/首页恢复入口
+
+## 发布一期手记的方法
+
+1. 复制 `vault/notes-template.html` → `about/notes/YYYY-MM-DD-短标题.html`（如 `2026-08-20-first-note.html`）
+2. 填写标题 / meta 摘要 / 日期期数 / 正文
+3. 在 `about/index.html` 的"手记 · 随笔"feed 列表里加一条：`<a class="item" href="notes/文件名">…</a>`
+4. push 后 CI 自动上线（约 1 分钟）
