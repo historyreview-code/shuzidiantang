@@ -110,16 +110,14 @@ function renderFeedItems(items, hrefPrefix, limit, placeholderHtml) {
     )
     .join('\n      ');
 }
-function injectFeed(htmlFile, containerId, html) {
+function injectFeed(htmlFile, marker, html) {
   if (!existsSync(htmlFile)) return false;
   const t = readFileSync(htmlFile, 'utf8');
-  const re = new RegExp(`(<div class="feed" id="${containerId}">)[\\s\\S]*?(<\\/div>\\s*<\\/section>)`);
-  const updated = t.replace(re, `$1\n      ${html}\n    $2`);
-  if (updated !== t) {
-    writeFileSync(htmlFile, updated);
-    return true;
-  }
-  return false;
+  const re = new RegExp(`<!-- AUTO:${marker} -->[\\s\\S]*?<!-- \\/AUTO:${marker} -->`);
+  if (!re.test(t)) return false;
+  const updated = t.replace(re, `<!-- AUTO:${marker} -->\n      ${html}\n      <!-- /AUTO:${marker} -->`);
+  writeFileSync(htmlFile, updated);
+  return true;
 }
 
 // --- 公开手记 ---
@@ -128,10 +126,10 @@ const publicItems = collectNotes(PUBLIC_NOTES_DIR, /\s*·\s*数字殿堂.*$/);
 const placeholderPublic =
   '<div class="item"><span class="date">筹备中</span><span class="txt">第一篇手记撰写中<small>每天一篇 · 敬请期待</small></span></div>';
 
-if (injectFeed(path.join(DIST, 'index.html'), 'notes-feed', renderFeedItems(publicItems, 'notes/', 12, placeholderPublic))) {
+if (injectFeed(path.join(DIST, 'index.html'), 'NOTES_FEED', renderFeedItems(publicItems, 'notes/', 12, placeholderPublic))) {
   console.log(`  首页手记列表已生成: ${Math.min(publicItems.length, 12)} 篇 (最新在前)`);
 }
-if (injectFeed(path.join(DIST, 'notes', 'index.html'), 'notes-list', renderFeedItems(publicItems, '', 0, placeholderPublic))) {
+if (injectFeed(path.join(DIST, 'notes', 'index.html'), 'NOTES_LIST', renderFeedItems(publicItems, '', 0, placeholderPublic))) {
   console.log(`  手记频道列表已生成: ${publicItems.length} 篇 (最新在前)`);
 }
 
@@ -186,7 +184,7 @@ const investItems = collectNotes(
 );
 if (injectFeed(
   path.join(DIST, 'hidden', 'invest', 'index.html'),
-  'invest-notes',
+  'INVEST_NOTES',
   renderFeedItems(investItems, 'notes/', 0, '<div class="item"><span class="date">筹备中</span><span class="txt">第一期笔记撰写中<small>每周更新 · 敬请期待</small></span></div>'),
 )) {
   console.log(`  投资研究笔记列表已生成: ${investItems.length} 篇 (最新在前)`);
