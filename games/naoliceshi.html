@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<title>短期记忆自测 - 脑力训练游戏</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #fef7ee;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --primary: #d97706;
+    --primary-hover: #b45309;
+    --success: #d97706;
+    --danger: #dc2626;
+    --muted: #92400e;
+    --border: #fde68a;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --fs-base: 20px;
+    --fs-lg: 22px;
+    --fs-xl: 26px;
+  }
+  body.large-text { --fs-base: 22px; --fs-lg: 24px; --fs-xl: 28px; }
+  body.high-contrast { --bg: #1a0f05; --card: #1c1308; --text: #fde68a; --border: #92400e; --muted: #d97706; --shadow: 0 0 0 1px #92400e; }
+  body.high-contrast .option-btn { background: #222; border-color: #555; color: #eee; }
+  body.high-contrast .option-btn:hover { background: #333; }
+  body.high-contrast .step-info { background: #1a1a1a; }
+  body.high-contrast .object-card { background: #1a1a1a; border-color: #555; }
+  body.high-contrast .result-detail { background: #1a1a1a; }
+  body.high-contrast .suggestion-box { background: #1a1a1a; border-color: #555; color: #ccc; }
+  body.high-contrast .phase-badge { background: #222; color: #4ade80; }
+  body.high-contrast #progress-bar-wrap { background: #222; }
+  body.high-contrast .history-item { background: #1a1a1a; border-color: #333; }
+  body.high-contrast .toggle-btn { background: #222; border-color: #555; color: #eee; }
+  body.high-contrast .diff-btn { background: #222; color: #eee; }
+  body.high-contrast .diff-btn:hover { border-color: #4ade80; background: #1a3a1a; }
+  body.high-contrast .diff-btn.selected { border-color: #4ade80; background: #0d2f0d; color: #4ade80; }
+  body.high-contrast .diff-btn .diff-sub { color: #aaa; }
+  body.high-contrast .study-ring-bg { stroke: #333; }
+  body.high-contrast .recall-confirm-box { background: #111; border: 1px solid #555; }
+  body.high-contrast .phase-notice-inner { background: #111; border: 1px solid #555; }
+
+  .diff-selector { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
+  .diff-btn { flex: 1; max-width: 120px; padding: 12px 8px; border: 2px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .diff-btn:hover { border-color: var(--primary); background: #fffbeb; }
+  .diff-btn.selected { border-color: var(--primary); background: #fef3c7; color: #92400e; }
+  .diff-btn .diff-sub { display: block; font-size: 0.7rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
+
+  .study-ring-wrap { position: relative; width: 100px; height: 100px; margin: 16px auto; }
+  .study-ring-svg { transform: rotate(-90deg); }
+  .study-ring-bg { fill: none; stroke: #fde68a; stroke-width: 6; }
+  .study-ring-bar { fill: none; stroke: #d97706; stroke-width: 6; stroke-linecap: round; }
+  .study-ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: 700; color: #d97706; }
+
+  .recall-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.2s ease-out; padding: 20px; }
+  .recall-confirm-box { background: var(--card); border-radius: var(--radius); padding: 28px 24px; max-width: 300px; width: 100%; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+  .recall-confirm-box p { font-size: 1rem; color: var(--text); margin-bottom: 16px; }
+  .recall-confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+  .result-score.success { color: #d97706; }
+  .result-score.pass { color: var(--warning); }
+  .result-score.fail { color: var(--danger); }
+
+  .screen { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .result-score { animation: scorePop 0.4s ease-out; }
+  @keyframes scorePop { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+
+  .phase-notice { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.25s ease-out; padding: 24px; }
+  .phase-notice-inner { background: var(--card); border-radius: var(--radius); padding: 32px 28px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.2); animation: scorePop 0.35s ease-out; }
+  .phase-notice-inner h2 { font-size: 1.4rem; margin-bottom: 8px; }
+  .phase-notice-inner p { font-size: 0.95rem; margin-bottom: 16px; }
+  .phase-notice-inner .phase-notice-detail { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+  .chart-wrap { margin: 12px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .chart-inner { display: flex; align-items: flex-end; gap: 4px; height: 100px; min-width: 100%; padding: 0 4px; }
+  .chart-bar { flex: 1; min-width: 12px; background: var(--primary); border-radius: 4px 4px 0 0; position: relative; transition: height 0.3s; cursor: pointer; }
+  .chart-bar:hover { opacity: 0.8; }
+  .chart-bar .chart-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 0.5rem; white-space: nowrap; color: var(--muted); }
+  .chart-bar .chart-val { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .share-result { margin-top: 12px; }
+  .share-btn { background: #1da1f2; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.9rem; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: opacity 0.15s; }
+  .share-btn:active { opacity: 0.8; }
+  .share-btn.copy { background: var(--primary); }
+
+  .tts-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; margin-left: 6px; vertical-align: middle; transition: background 0.2s; }
+  .tts-indicator.on { background: var(--success); }
+  .tts-indicator.off { background: #d1d5db; }
+  .btn-gray { background: var(--muted); }
+  .btn-gray:hover { background: #4b5563; }
+  .btn, .option-btn, .toggle-btn, .diff-btn, .share-btn { touch-action: manipulation; }
+
+  @media (max-width: 420px) {
+    body { padding: 10px; }
+    .card { padding: 20px 16px; border-radius: 10px; }
+    .objects-grid { gap: 8px; }
+    .object-card { width: 80px; max-width: 30vw; flex: 0 0 calc(50% - 6px); padding: 10px 8px; }
+    .object-card .emoji { font-size: 2.4rem; }
+    .object-card .label { font-size: 0.85rem; }
+    .btn { padding: 14px 36px; font-size: 1.1rem; }
+    .timer { font-size: 1.8rem; }
+    h1 { font-size: calc(var(--fs-xl, 1.6rem) * 0.9); }
+    .diff-btn { font-size: 0.85rem; padding: 10px 6px; }
+    .toggle-btn { padding: 6px 10px; font-size: 0.75rem; }
+  }
+  @media (max-width: 360px) {
+    .object-card { width: 72px; flex: 0 0 calc(50% - 5px); max-width: 28vw; padding: 8px 6px; }
+    .object-card .emoji { font-size: 1.8rem; }
+    .object-card .label { font-size: 0.75rem; }
+    .btn { padding: 12px 28px; font-size: 1rem; }
+    .option-btn { padding: 12px 16px; font-size: 0.95rem; }
+  }
+
+  html { font-size: var(--fs-base); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .container { max-width: 680px; width: 100%; }
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px 28px;
+    text-align: center;
+    transition: background 0.2s;
+  }
+
+  h1 { font-size: var(--fs-xl, 1.6rem); font-weight: 700; margin-bottom: 8px; }
+  h2 { font-size: calc(var(--fs-base) * 1.25); font-weight: 600; margin-bottom: 12px; }
+  p  { font-size: 1rem; color: var(--muted); margin-bottom: 20px; }
+
+  .btn {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 16px 52px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { background: var(--primary-hover); }
+  .btn:active { transform: scale(0.97); }
+  .btn-sm { padding: 12px 28px; font-size: 1rem; }
+  .btn-success { background: var(--success); }
+  .btn-success:hover { background: #15803d; }
+
+  .hidden { display: none !important; }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .toggle-btn {
+    background: #f3f4f6;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.12s;
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .toggle-btn:hover { background: #e5e7eb; }
+  .toggle-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  /* Progress bar */
+  #progress-bar-wrap {
+    display: flex; align-items: center; gap: 0;
+    background: #e5e7eb; border-radius: 10px; overflow: hidden;
+    height: 28px; margin-bottom: 18px; padding: 0;
+    font-size: 0.7rem; font-weight: 600;
+  }
+  .progress-seg {
+    flex: 1; height: 100%; display: flex; align-items: center;
+    justify-content: center; transition: background 0.3s, color 0.3s;
+    color: var(--muted); border-right: 1px solid rgba(0,0,0,0.08);
+    white-space: nowrap; overflow: hidden;
+  }
+  .progress-seg:last-child { border-right: none; }
+  .progress-seg.active { background: var(--primary); color: #fff; }
+  .progress-seg.done { background: #fde68a; color: #92400e; }
+
+  /* Timer */
+  .timer {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 16px 0;
+  }
+  .timer.warning { color: var(--danger); animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+  /* Objects display */
+  .objects-grid {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 12px 0;
+  }
+  .object-card {
+    background: #fffbeb; border: 2px solid var(--border); border-radius: 10px;
+    padding: 10px 8px; width: 80px; max-width: 30vw; text-align: center; transition: transform 0.2s;
+  }
+  .object-card .emoji { font-size: 2.8rem; display: block; margin-bottom: 4px; line-height: 1.2; }
+  .object-card .label { font-size: 1rem; font-weight: 700; color: var(--text); }
+
+  .phase-badge {
+    display: inline-block; background: #e0e7ff; color: var(--primary);
+    font-size: 0.85rem; font-weight: 600; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
+  }
+
+  /* Question */
+  .question-text { font-size: 1.35rem; font-weight: 600; margin: 16px 0; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .option-btn {
+    background: #f3f4f6; border: 2px solid var(--border); border-radius: 10px;
+    padding: 14px 20px; font-size: 1.05rem; cursor: pointer; transition: all 0.12s; text-align: left;
+  }
+  .option-btn:hover { background: #e5e7eb; border-color: var(--primary); }
+  .option-btn:active { transform: scale(0.98); }
+  .option-btn.selected { background: #dbeafe; border-color: var(--primary); }
+  .option-btn.correct { background: #dcfce7; border-color: var(--success); }
+  .option-btn.wrong { background: #fee2e2; border-color: var(--danger); }
+  .feedback-text { font-size: 0.95rem; margin-top: 8px; font-weight: 600; }
+  .feedback-text.correct { color: var(--success); }
+  .feedback-text.wrong { color: var(--danger); }
+
+  /* Recall input */
+  .recall-grid {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 16px 0;
+  }
+  .recall-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .recall-slot label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+  .recall-slot input {
+    width: 120px; padding: 10px 12px; font-size: 1.1rem;
+    border: 2px solid var(--border); border-radius: 8px; text-align: center;
+    outline: none; transition: border-color 0.12s;
+  }
+  .recall-slot input:focus { border-color: var(--primary); }
+  body.large-text .recall-slot input { width: 150px; }
+
+  .step-info {
+    font-size: 0.85rem; color: var(--muted); margin-top: 12px;
+    padding: 8px; background: #f9fafb; border-radius: 8px;
+  }
+
+  /* Results */
+  .result-score { font-size: 2.5rem; font-weight: 800; margin: 16px 0; }
+  .result-score.pass { color: var(--success); }
+  .result-score.fail { color: var(--danger); }
+  .result-detail { text-align: left; margin: 12px 0; padding: 12px 16px; background: #f9fafb; border-radius: 8px; font-size: 0.95rem; }
+  .result-detail li { list-style: none; padding: 4px 0; }
+  .result-detail li::before { content: "• "; color: var(--muted); }
+
+  .suggestion-box {
+    background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px;
+    padding: 16px; margin: 16px 0; text-align: left; font-size: 0.95rem; color: #9a3412;
+  }
+  .suggestion-box strong { display: block; margin-bottom: 6px; }
+
+  /* History */
+  .history-section { margin-top: 16px; text-align: left; }
+  .history-section summary { cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--muted); padding: 4px 0; }
+  .history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; background: #f9fafb; border-radius: 8px; margin: 6px 0;
+    font-size: 0.85rem;
+  }
+  .history-item .h-date { color: var(--muted); }
+  .history-item .h-score { font-weight: 700; }
+  .history-item .h-score.good { color: var(--success); }
+  .history-item .h-score.mid { color: #d97706; }
+  .history-item .h-score.bad { color: var(--danger); }
+
+  /* Resume banner */
+  #resume-banner {
+    background: #fef9c3; border: 1px solid #fde047; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 16px; font-size: 0.9rem; color: #854d0e;
+  }
+  #resume-banner .btn { margin: 6px 4px 0; font-size: 0.9rem; padding: 8px 20px; }
+
+  @media (max-width: 480px) {
+    body { font-size: 17px; }
+    .card { padding: 24px 18px; }
+    .object-card { width: 80px; padding: 10px 8px; }
+    .object-card .emoji { font-size: 2.2rem; }
+    .recall-slot input { width: 100px; }
+    body.large-text .recall-slot input { width: 130px; }
+    .container { max-width: 100%; }
+    .progress-seg { font-size: 0.6rem; }
+    .toolbar { gap: 4px; }
+    .toggle-btn { font-size: 0.8rem; padding: 4px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card" id="app">
+
+
+
+
+
+  <!-- Resume banner -->
+  <div id="resume-banner" class="hidden"></div>
+
+    <div id="screen-welcome">
+    <h1>短期记忆自测</h1>
+    <p style="margin-bottom:16px">记忆物品，完成干扰题，<br>然后在不同时间点回忆物品。</p>
+    <div style="margin:4px 0 16px;font-size:0.85rem;color:var(--muted);background:#f3f4f6;border-radius:8px;padding:10px 14px;text-align:left;line-height:1.7">
+      <strong>测试流程：</strong><br>
+      ① 记忆物品（倒计时） → ② 答题干扰（约2.5分钟）<br>
+      ③ 立即回忆（30秒后） → ④ 延迟回忆（约2分钟后）
+    </div>
+    <div style="font-size:0.9rem;font-weight:600;margin:4px 0 8px">选择难度：</div>
+    <div class="diff-selector">
+      <button class="diff-btn" data-diff="easy" onclick="selectDifficulty('easy')">😊 简单<span class="diff-sub">记忆2个物品</span></button>
+      <button class="diff-btn selected" data-diff="normal" onclick="selectDifficulty('normal')">🤔 中等<span class="diff-sub">记忆3个物品</span></button>
+      <button class="diff-btn" data-diff="hard" onclick="selectDifficulty('hard')">🧐 困难<span class="diff-sub">记忆4个物品</span></button>
+    </div>
+    <button class="btn" onclick="startTest()" style="margin-top:8px">开始测试 →</button>
+
+    <!-- History -->
+    <div class="history-section hidden" id="history-section">
+      <details>
+        <summary>📋 历史记录</summary>
+        <div id="history-list"></div>
+      </details>
+    </div>
+  </div>
+
+  <div id="screen-study" class="screen hidden">
+      <div class="toolbar">
+        <button class="toggle-btn" id="btn-large" onclick="toggleLarge()">🔤 大字</button>
+        <button class="toggle-btn" id="btn-contrast" onclick="toggleContrast()">👁 高对比</button>
+        <button class="toggle-btn" id="btn-tts" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator"></span></button>
+      </div>
+      <div id="progress-bar-wrap" class="hidden">
+        <div class="progress-seg">学习</div>
+        <div class="progress-seg">干扰</div>
+        <div class="progress-seg">回忆</div>
+        <div class="progress-seg">延迟</div>
+        <div class="progress-seg">结果</div>
+      </div>
+      <h2 style="color:var(--muted);font-size:1rem;font-weight:400;margin-bottom:4px">📖 请记忆以下物品</h2>
+      <p>倒计时结束后将进入答题环节</p>
+      <div class="study-ring-wrap">
+        <svg class="study-ring-svg" width="100" height="100" viewBox="0 0 100 100">
+          <circle class="study-ring-bg" cx="50" cy="50" r="42"/>
+          <circle class="study-ring-bar" id="study-ring-bar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
+        </svg>
+        <div class="study-ring-text" id="study-timer">30</div>
+      </div>
+      <div class="objects-grid" id="study-objects"></div>
+      <button class="btn btn-sm" id="btn-ready" onclick="studyReady()" style="margin-top:12px;background:var(--muted);font-size:0.9rem;padding:8px 24px">
+        准备好了 →
+      </button>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px">倒计时自动进入下一步，也可点击上方按钮提前</p>
+    </div>
+
+  <div id="screen-distract" class="screen hidden">
+      <div class="toolbar">
+        <button class="toggle-btn" id="btn-large2" onclick="toggleLarge()">🔤 大字</button>
+        <button class="toggle-btn" id="btn-contrast2" onclick="toggleContrast()">👁 高对比</button>
+        <button class="toggle-btn" id="btn-tts2" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator2"></span></button>
+      </div>
+      <div id="progress-bar-wrap2" class="hidden">
+        <div class="progress-seg done">学习</div>
+        <div class="progress-seg active">干扰</div>
+        <div class="progress-seg">回忆</div>
+        <div class="progress-seg">延迟</div>
+        <div class="progress-seg">结果</div>
+      </div>
+      <div class="step-info">
+        <span class="phase-badge">🧠 干扰题</span>
+        <span style="font-size:0.85rem;color:var(--muted)">边答题边等待回忆阶段</span>
+      </div>
+      <div class="timer" id="distract-timer"></div>
+      <div id="question-area"></div>
+    </div>
+
+  <div id="screen-recall1" class="screen hidden">
+      <div class="toolbar">
+        <button class="toggle-btn" id="btn-large3" onclick="toggleLarge()">🔤 大字</button>
+        <button class="toggle-btn" id="btn-contrast3" onclick="toggleContrast()">👁 高对比</button>
+        <button class="toggle-btn" id="btn-tts3" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator3"></span></button>
+      </div>
+      <div id="progress-bar-wrap3" class="hidden">
+        <div class="progress-seg done">学习</div>
+        <div class="progress-seg done">干扰</div>
+        <div class="progress-seg active">回忆</div>
+        <div class="progress-seg">延迟</div>
+        <div class="progress-seg">结果</div>
+      </div>
+      <div class="step-info">
+        <span class="phase-badge">📝 立即回忆</span>
+        <span style="font-size:0.85rem;color:var(--muted)">请选出刚才记忆的物品</span>
+      </div>
+      <div class="recall-hint" id="recall-hint1"></div>
+      <div id="recall-targets1" class="recall-slots"></div>
+      <div id="recall-pool1" class="recall-pool"></div>
+      <button class="btn" id="recall1-submit" onclick="submitRecall1()" style="margin-top:16px">提交回忆 →</button>
+    </div>
+
+  <div id="screen-recall2" class="screen hidden">
+      <div class="toolbar">
+        <button class="toggle-btn" id="btn-large4" onclick="toggleLarge()">🔤 大字</button>
+        <button class="toggle-btn" id="btn-contrast4" onclick="toggleContrast()">👁 高对比</button>
+        <button class="toggle-btn" id="btn-tts4" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator4"></span></button>
+      </div>
+      <div id="progress-bar-wrap4" class="hidden">
+        <div class="progress-seg done">学习</div>
+        <div class="progress-seg done">干扰</div>
+        <div class="progress-seg done">回忆</div>
+        <div class="progress-seg active">延迟</div>
+        <div class="progress-seg">结果</div>
+      </div>
+      <div class="step-info">
+        <span class="phase-badge">⏳ 延迟回忆</span>
+        <span style="font-size:0.85rem;color:var(--muted)">再请选出刚才记忆的物品</span>
+      </div>
+      <div class="recall-hint" id="recall-hint2"></div>
+      <div id="recall-targets2" class="recall-slots"></div>
+      <div id="recall-pool2" class="recall-pool"></div>
+      <button class="btn" id="recall2-submit" onclick="submitRecall2()" style="margin-top:16px">提交回忆 →</button>
+    </div>
+
+  <div id="screen-result" class="screen hidden">
+      <div class="toolbar">
+        <button class="toggle-btn" id="btn-large5" onclick="toggleLarge()">🔤 大字</button>
+        <button class="toggle-btn" id="btn-contrast5" onclick="toggleContrast()">👁 高对比</button>
+        <button class="toggle-btn" id="btn-tts5" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator5"></span></button>
+      </div>
+      <div id="progress-bar-wrap5" class="hidden">
+        <div class="progress-seg done">学习</div>
+        <div class="progress-seg done">干扰</div>
+        <div class="progress-seg done">回忆</div>
+        <div class="progress-seg done">延迟</div>
+        <div class="progress-seg active">结果</div>
+      </div>
+      <div id="result-badge" style="margin-bottom:4px"></div>
+      <div id="result-score" class="result-score">0</div>
+      <p style="color:var(--muted);font-size:0.9rem">分</p>
+      <div id="result-summary" class="result-detail"></div>
+      <div id="result-suggestion" class="suggestion-box hidden">
+        <strong>💡 建议</strong><br>
+        <span id="suggestion-text"></span>
+      </div>
+      <div class="share-result">
+        <button class="share-btn copy" onclick="shareResult()">📤 分享结果</button>
+      </div>
+      <button class="btn" onclick="resetTest()" style="margin-top:20px">重新测试</button>
+    </div>
+
+</div>
+</div>
+
+<script>
+// ===================================================================
+// DATA
+// ===================================================================
+const OBJECT_POOL = [
+  { emoji: '🍎', name: '苹果' }, { emoji: '🔑', name: '钥匙' },
+  { emoji: '⌚', name: '手表' }, { emoji: '✂️', name: '剪刀' },
+  { emoji: '📖', name: '书本' }, { emoji: '☎️', name: '电话' },
+  { emoji: '🕯️', name: '蜡烛' }, { emoji: '🧲', name: '磁铁' },
+  { emoji: '🪞', name: '镜子' }, { emoji: '💡', name: '灯泡' },
+  { emoji: '🧸', name: '小熊' }, { emoji: '🖼️', name: '画框' },
+  { emoji: '🧴', name: '瓶子' }, { emoji: '🧩', name: '拼图' },
+  { emoji: '🪑', name: '椅子' }, { emoji: '🧵', name: '针线' },
+  { emoji: '🎒', name: '背包' }, { emoji: '🧢', name: '帽子' },
+  { emoji: '🥄', name: '勺子' }, { emoji: '🔔', name: '铃铛' },
+  { emoji: '🧦', name: '袜子' }, { emoji: '🎨', name: '调色板' },
+  { emoji: '📷', name: '相机' }, { emoji: '⏰', name: '闹钟' },
+];
+let currentObjects = [];
+let selectedDifficulty = 2;
+
+const QUESTIONS = [
+  { q: '25 + 17 = ?', opts: ['38', '42', '43', '32'], ans: 1 },
+  { q: '64 - 29 = ?', opts: ['45', '33', '35', '37'], ans: 2 },
+  { q: '7 x 8 = ?', opts: ['48', '56', '64', '54'], ans: 1 },
+  { q: '13 + 29 = ?', opts: ['38', '42', '43', '41'], ans: 1 },
+  { q: '81 - 37 = ?', opts: ['44', '46', '54', '43'], ans: 0 },
+  { q: '6 x 9 = ?', opts: ['45', '54', '63', '56'], ans: 1 },
+  { q: '15 + 38 = ?', opts: ['53', '52', '55', '43'], ans: 0 },
+  { q: '73 - 48 = ?', opts: ['25', '35', '23', '27'], ans: 0 },
+  { q: '36 + 47 = ?', opts: ['73', '83', '82', '93'], ans: 1 },
+  { q: '55 - 18 = ?', opts: ['47', '37', '38', '27'], ans: 1 },
+  { q: '8 x 6 = ?', opts: ['46', '48', '54', '42'], ans: 1 },
+  { q: '5 x 12 = ?', opts: ['50', '60', '72', '55'], ans: 1 },
+  { q: '14 + 28 = ?', opts: ['42', '52', '32', '44'], ans: 0 },
+  { q: '90 - 46 = ?', opts: ['54', '44', '46', '43'], ans: 1 },
+  { q: '7 x 9 = ?', opts: ['56', '63', '72', '54'], ans: 1 },
+  { q: '我们通常用什么来切菜？', opts: ['铅笔', '菜刀', '梳子', '毛巾'], ans: 1 },
+  { q: '下雨天出门应该带什么？', opts: ['扇子', '帽子', '雨伞', '墨镜'], ans: 2 },
+  { q: '生病了应该去看什么？', opts: ['老师', '警察', '医生', '司机'], ans: 2 },
+  { q: '煮面条之前应该先干什么？', opts: ['切菜', '烧水', '洗米', '切肉'], ans: 1 },
+  { q: '一年有多少个月？', opts: ['10', '11', '12', '13'], ans: 2 },
+  { q: '一周有几天？', opts: ['5', '6', '7', '8'], ans: 2 },
+  { q: '太阳从哪个方向升起？', opts: ['西方', '南方', '北方', '东方'], ans: 3 },
+  { q: '春节通常在哪个季节？', opts: ['夏天', '冬天', '春天', '秋天'], ans: 2 },
+  { q: '水在多少度结冰？', opts: ['4度', '-1度', '0度', '10度'], ans: 2 },
+  { q: '人体有多少颗牙齿（成年人）？', opts: ['28', '30', '32', '34'], ans: 2 },
+  { q: '中国有多少个省级行政区？', opts: ['32', '33', '34', '35'], ans: 2 },
+  { q: '一公斤等于多少克？', opts: ['500', '100', '1000', '2000'], ans: 2 },
+  { q: '三角形有几个角？', opts: ['2', '3', '4', '5'], ans: 1 },
+  { q: '地球绕太阳转一圈需要多久？', opts: ['一个月', '半年', '一年', '两年'], ans: 2 },
+];
+
+// ===================================================================
+// STATE
+// ===================================================================
+let state = {
+  phase: 'welcome', recall1Results: [], recall2Results: [],
+  recall1Done: false, recall2Done: false,
+  questionsAsked: 0, totalQuestions: 0, correctAnswers: 0,
+  questionTimerInterval: null, objectsTimerInterval: null,
+  studyStartTime: null, distractStartTime: null,
+  currentDistractIndex: 0, distractQuestions: [],
+};
+
+let prefs = { largeText: false, highContrast: false, ttsEnabled: false };
+
+// ===================================================================
+// PREFERENCES
+// ===================================================================
+function loadPrefs() {
+  try { const d = JSON.parse(localStorage.getItem('brain_prefs')); if (d) prefs = d; } catch(e) {}
+}
+function savePrefs() {
+  try { localStorage.setItem('brain_prefs', JSON.stringify(prefs)); } catch(e) {}
+}
+function toggleLarge() {
+  prefs.largeText = !prefs.largeText;
+  document.body.classList.toggle('large-text', prefs.largeText);
+  document.getElementById('btn-large').classList.toggle('active', prefs.largeText);
+  if (document.getElementById('btn-large2')) document.getElementById('btn-large2').classList.toggle('active', prefs.largeText);
+  if (document.getElementById('btn-large3')) document.getElementById('btn-large3').classList.toggle('active', prefs.largeText);
+  if (document.getElementById('btn-large4')) document.getElementById('btn-large4').classList.toggle('active', prefs.largeText);
+  if (document.getElementById('btn-large5')) document.getElementById('btn-large5').classList.toggle('active', prefs.largeText);
+  savePrefs();
+}
+function toggleContrast() {
+  prefs.highContrast = !prefs.highContrast;
+  ['btn-contrast','btn-contrast2','btn-contrast3','btn-contrast4','btn-contrast5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', prefs.highContrast);
+  });
+  document.body.classList.toggle('high-contrast', prefs.highContrast);
+  savePrefs();
+}
+function toggleTTS() {
+  prefs.ttsEnabled = !prefs.ttsEnabled;
+  ['btn-tts','btn-tts2','btn-tts3','btn-tts4','btn-tts5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', prefs.ttsEnabled);
+  });
+  updateTTSIndicator();
+  savePrefs();
+}
+function updateTTSIndicator() {
+  document.querySelectorAll('.tts-indicator').forEach(el => {
+    el.className = 'tts-indicator ' + (prefs.ttsEnabled ? 'on' : 'off');
+  });
+}
+function speak(text) {
+  try {
+    if (!prefs.ttsEnabled || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN';
+    u.rate = 0.9;
+    u.onerror = function() {};
+    window.speechSynthesis.speak(u);
+  } catch(e) { /* TTS not available */ }
+}
+function playBeep() {
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    var ctx = new AC();
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = 800;
+    g.gain.value = 0.15;
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + 0.12);
+  } catch(e) {}
+}
+function vibrate(pattern) {
+  try { if (navigator.vibrate) navigator.vibrate(pattern || 15); } catch(e) {}
+}
+// ===================================================================
+// DIFFICULTY
+// ===================================================================
+function selectDifficulty(level) {
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector('.diff-btn[data-diff="' + level + '"]').classList.add('selected');
+  if (level === 'easy') selectedDifficulty = 2;
+  else if (level === 'normal') selectedDifficulty = 3;
+  else selectedDifficulty = 4;
+  speak('已选择' + (level === 'easy' ? '简单' : level === 'normal' ? '中等' : '困难') + '模式');
+}
+
+// ===================================================================
+// PROGRESS
+// ===================================================================
+function showProgress(activePhase) {
+  const phases = ['学习','干扰','回忆','延迟','结果'];
+  for (let i = 0; i < 5; i++) {
+    for (let j = 1; j <= 5; j++) {
+      const wrap = document.getElementById('progress-bar-wrap' + (j > 1 ? j : ''));
+      if (!wrap) continue;
+      const seg = wrap.children[i];
+      if (!seg) continue;
+      seg.className = 'progress-seg';
+      const idx = phases.indexOf(activePhase);
+      if (i < idx) seg.classList.add('done');
+      else if (i === idx) seg.classList.add('active');
+    }
+  }
+}
+
+// ===================================================================
+// BACKUP / RESUME
+// ===================================================================
+function backupState() {
+  try {
+    sessionStorage.setItem('ad_backup', JSON.stringify({
+      currentObjects: currentObjects.map(o => ({ emoji: o.emoji, name: o.name })),
+      studyStartTime: state.studyStartTime,
+      recall1Done: state.recall1Done,
+      recall2Done: state.recall2Done,
+      questionsAsked: state.questionsAsked,
+      totalQuestions: state.totalQuestions,
+      correctAnswers: state.correctAnswers,
+    }));
+  } catch(e) {}
+}
+function clearBackup() {
+  try { sessionStorage.removeItem('ad_backup'); } catch(e) {}
+}
+
+// ===================================================================
+// HISTORY
+// ===================================================================
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem('brain_history')) || []; } catch(e) { return []; }
+}
+function saveToHistory(entry) {
+  try {
+    const h = loadHistory();
+    h.push(entry);
+    if (h.length > 30) h.splice(0, h.length - 30);
+    localStorage.setItem('brain_history', JSON.stringify(h));
+  } catch(e) {}
+}
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (!el) return;
+  const h = loadHistory();
+  if (h.length === 0) { el.innerHTML = '<p style="font-size:0.85rem;color:var(--muted)">暂无历史记录</p>'; return; }
+
+  // Chart
+  const recent = h.slice(-10);
+  const maxScore = Math.max(...recent.map(e => e.score));
+  let chartHtml = '<div class="chart-wrap"><div class="chart-inner">';
+  recent.forEach((e, i) => {
+    const pct = maxScore > 0 ? (e.score / maxScore) * 100 : 0;
+    const d = new Date(e.date);
+    const label = (d.getMonth()+1) + '/' + d.getDate();
+    chartHtml += '<div class="chart-bar" style="height:' + Math.max(pct, 3) + '%" title="' + d.toLocaleDateString('zh-CN') + ' ' + e.score + '分">'
+      + '<span class="chart-val">' + e.score + '</span>'
+      + '<span class="chart-label">' + label + '</span>'
+      + '</div>';
+  });
+  chartHtml += '</div></div>';
+  el.innerHTML = chartHtml + '<div style="margin-top:8px;font-size:0.75rem;color:var(--muted)">最近' + recent.length + '次测试得分趋势</div>';
+}
+
+// ===================================================================
+// HELPERS
+// ===================================================================
+function showScreen(id) {
+  window.scrollTo(0, 0);
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+}
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return m > 0 ? m + '分' + s + '秒' : s + '秒';
+}
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function isMatch(input, target) {
+  return input.emoji === target.emoji && input.name === target.name;
+}
+
+// ===================================================================
+// PHASE TRANSITION NOTICE
+// ===================================================================
+function showPhaseNotice(title, message, detail, callback) {
+  const overlay = document.createElement('div');
+  overlay.className = 'phase-notice';
+  overlay.innerHTML = '<div class="phase-notice-inner">'
+    + '<h2>' + title + '</h2>'
+    + '<p>' + message + '</p>'
+    + '<div class="phase-notice-detail">' + detail + '</div>'
+    + '<button class="btn" onclick="this.closest(\'.phase-notice\').remove(); (' + callback + ')()">继续</button>'
+    + '</div>';
+  document.body.appendChild(overlay);
+  speak(title);
+}
+
+// ===================================================================
+// STUDY PHASE
+// ===================================================================
+function startTest() {
+  // Reset state
+  clearBackup();
+  state = { phase:'study', recall1Results:[], recall2Results:[], recall1Done:false, recall2Done:false,
+    questionsAsked:0, totalQuestions:0, correctAnswers:0, questionTimerInterval:null, objectsTimerInterval:null,
+    studyStartTime:null, distractStartTime:null, currentDistractIndex:0, distractQuestions:[] };
+
+  // Select objects based on difficulty
+  const shuffled = shuffle([...OBJECT_POOL]);
+  currentObjects = shuffled.slice(0, selectedDifficulty);
+
+  renderStudyPhase();
+}
+
+function renderStudyPhase() {
+  window.scrollTo(0, 0);
+  // Hide welcome card elements to free up space
+  const welcomeEl = document.getElementById('screen-welcome');
+  if (welcomeEl) welcomeEl.style.display = 'none';
+  showScreen('screen-study');
+  document.querySelectorAll('#progress-bar-wrap, #progress-bar-wrap2, #progress-bar-wrap3, #progress-bar-wrap4, #progress-bar-wrap5').forEach(el => el.classList.remove('hidden'));
+  showProgress('学习');
+  document.getElementById('btn-large').classList.toggle('active', prefs.largeText);
+  document.getElementById('btn-contrast').classList.toggle('active', prefs.highContrast);
+  document.getElementById('btn-tts').classList.toggle('active', prefs.ttsEnabled);
+  updateTTSIndicator();
+
+  var readyBtn = document.getElementById('btn-ready');
+  if (readyBtn) readyBtn.classList.add('hidden');
+
+  const grid = document.getElementById('study-objects');
+  grid.innerHTML = currentObjects.map(o => '<div class="object-card">'
+    + '<span class="emoji">' + o.emoji + '</span>'
+    + '<span class="label">' + o.name + '</span></div>').join('');
+
+  // Ring animation
+  const ring = document.getElementById('study-ring-bar');
+  const circumference = 2 * Math.PI * 42;
+  const totalSec = 30;
+  let secLeft = totalSec;
+  const timerEl = document.getElementById('study-timer');
+  timerEl.textContent = secLeft;
+
+  speak('请记忆以下物品。记忆倒计时30秒。');
+  playBeep();
+  // Show ready button
+  readyBtn = document.getElementById('btn-ready');
+  if (readyBtn) readyBtn.classList.remove('hidden');
+  // Hide ready button after click
+  readyBtn = document.getElementById('btn-ready');
+
+  // Start countdown
+  if (state.objectsTimerInterval) clearInterval(state.objectsTimerInterval);
+  state.objectsTimerInterval = setInterval(function() {
+    secLeft--;
+    timerEl.textContent = secLeft;
+    const offset = circumference * (1 - secLeft / totalSec);
+    ring.style.strokeDashoffset = offset;
+
+    if (secLeft <= 5) {
+      timerEl.style.color = '#b45309';
+      if (secLeft <= 3) playBeep();
+    }
+
+    if (secLeft <= 0) {
+      clearInterval(state.objectsTimerInterval);
+      state.objectsTimerInterval = null;
+      state.studyStartTime = Date.now();
+      backupState();
+      checkAndTriggerRecall();
+    }
+  }, 1000);
+}
+
+// Skip waiting when player clicks "准备好了"
+function studyReady() {
+  if (state.objectsTimerInterval) {
+    clearInterval(state.objectsTimerInterval);
+    state.objectsTimerInterval = null;
+  }
+  state.studyStartTime = Date.now();
+  var readyBtn = document.getElementById('btn-ready');
+  if (readyBtn) readyBtn.classList.add('hidden');
+  backupState();
+  checkAndTriggerRecall();
+}
+
+// ===================================================================
+// TRANSITION / CHECK
+// ===================================================================
+function checkAndTriggerRecall() {
+  const elapsed = Date.now() - state.studyStartTime;
+  if (!state.recall1Done && elapsed >= 30000) {
+    // Transition to recall1
+    showPhaseNotice('📝 立即回忆', '请选出刚才记忆的物品', '现在测试您的即时记忆能力。\n从下方选择您记住的物品。', 'goToRecall1');
+    return;
+  }
+  if (state.recall1Done && !state.recall2Done && elapsed >= 210000) {
+    showPhaseNotice('⏳ 延迟回忆', '再次选出刚才记忆的物品', '延迟回忆测试：\n过了约2分钟，您还能记住哪些物品？', 'goToRecall2');
+    return;
+  }
+  // Otherwise do distraction
+  startDistractionPhase(false);
+}
+
+// ===================================================================
+// DISTRACTION PHASE
+// ===================================================================
+function startDistractionPhase(resuming) {
+  state.phase = 'distract';
+  showScreen('screen-distract');
+  showProgress('干扰');
+  document.getElementById('btn-large2').classList.toggle('active', prefs.largeText);
+  document.getElementById('btn-contrast2').classList.toggle('active', prefs.highContrast);
+  document.getElementById('btn-tts2').classList.toggle('active', prefs.ttsEnabled);
+  updateTTSIndicator();
+
+  if (!resuming) {
+    state.distractQuestions = shuffle([...QUESTIONS]);
+    state.currentDistractIndex = 0;
+  }
+
+  const distractTimerEl = document.getElementById('distract-timer');
+
+  if (state.questionTimerInterval) clearInterval(state.questionTimerInterval);
+
+  function updateTimers() {
+    const elapsed = Date.now() - state.studyStartTime;
+    const recall1Due = !state.recall1Done && elapsed >= 30000;
+    const recall2Due = state.recall1Done && !state.recall2Done && elapsed >= 210000;
+
+    // Show elapsed time
+    const remaining1 = Math.max(0, 30 - Math.floor(elapsed / 1000));
+    if (!state.recall1Done) {
+      distractTimerEl.textContent = '回忆倒计时: ' + remaining1 + 's';
+      if (remaining1 <= 0) distractTimerEl.textContent = '🟢 回忆已就绪!';
+      if (remaining1 <= 5 && remaining1 > 0) distractTimerEl.classList.add('warning');
+      else distractTimerEl.classList.remove('warning');
+    } else if (!state.recall2Done) {
+      const elapsedQ = Math.floor((elapsed - 30000) / 1000);
+      const remaining2 = Math.max(0, 180 - elapsedQ);
+      distractTimerEl.textContent = '延迟回忆倒计时: ' + formatTime(remaining2);
+      if (remaining2 <= 0) distractTimerEl.textContent = '🟢 延迟回忆已就绪!';
+      if (remaining2 <= 10 && remaining2 > 0) distractTimerEl.classList.add('warning');
+      else distractTimerEl.classList.remove('warning');
+    } else {
+      distractTimerEl.textContent = '';
+    }
+
+    if (recall1Due) {
+      clearInterval(state.questionTimerInterval);
+      state.questionTimerInterval = null;
+      showPhaseNotice('📝 立即回忆', '请选出刚才记忆的物品', '现在测试您的即时记忆能力。\n从下方选择您记住的物品。', 'goToRecall1');
+      return;
+    }
+    if (recall2Due) {
+      clearInterval(state.questionTimerInterval);
+      state.questionTimerInterval = null;
+      showPhaseNotice('⏳ 延迟回忆', '再次选出刚才记忆的物品', '延迟回忆测试：\n过了约2分钟，您还能记住哪些物品？', 'goToRecall2');
+      return;
+    }
+  }
+
+  presentDistractQuestion();
+
+  state.questionTimerInterval = setInterval(updateTimers, 1000);
+  updateTimers();
+}
+
+function presentDistractQuestion() {
+  const area = document.getElementById('question-area');
+  const idx = state.currentDistractIndex;
+  const qs = state.distractQuestions;
+  if (idx >= qs.length) {
+    // Re-shuffle
+    state.distractQuestions = shuffle([...QUESTIONS]);
+    state.currentDistractIndex = 0;
+    presentDistractQuestion();
+    return;
+  }
+  const q = qs[idx];
+  area.innerHTML = '<div style="text-align:left;max-width:500px;margin:0 auto">'
+    + '<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">第 ' + (state.questionsAsked + 1) + ' 题 / 共 ' + (state.questionsAsked + 99) + ' 题</div>'
+    + '<div class="question-text">' + q.q + '</div>'
+    + '<div class="options" id="q-options">'
+    + q.opts.map((o, i) => '<button class="option-btn" onclick="answerDistractQuestion(' + i + ')">' + o + '</button>').join('')
+    + '</div>'
+    + '<div id="q-feedback" class="feedback-text" style="min-height:1.6em"></div></div>';
+}
+
+function answerDistractQuestion(selected) {
+  const q = state.distractQuestions[state.currentDistractIndex];
+  state.questionsAsked++;
+  state.totalQuestions++;
+  const correct = selected === q.ans;
+  if (correct) state.correctAnswers++;
+
+  // Disable all buttons
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('q-feedback');
+  if (correct) {
+    fb.textContent = '✅ 正确！';
+    fb.style.color = 'var(--success)';
+    vibrate(10);
+  } else {
+    fb.textContent = '❌ 错误。正确答案：' + q.opts[q.ans];
+    fb.style.color = 'var(--danger)';
+  }
+
+  state.currentDistractIndex++;
+  backupState();
+
+  // Next question after short delay
+  setTimeout(function() {
+    if (state.phase === 'distract') {
+      presentDistractQuestion();
+    }
+  }, 800);
+}
+
+// ===================================================================
+// RECALL 1
+// ===================================================================
+function goToRecall1() {
+  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
+  state.recall1Done = true;
+  state.phase = 'recall1';
+  showScreen('screen-recall1');
+  showProgress('回忆');
+  document.getElementById('btn-large3').classList.toggle('active', prefs.largeText);
+  document.getElementById('btn-contrast3').classList.toggle('active', prefs.highContrast);
+  document.getElementById('btn-tts3').classList.toggle('active', prefs.ttsEnabled);
+  updateTTSIndicator();
+  backupState();
+
+  const needed = selectedDifficulty;
+  const hint = document.getElementById('recall-hint1');
+  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 0/' + needed + '）';
+  hint.style.fontSize = '0.9rem'; hint.style.color = 'var(--muted)'; hint.style.marginBottom = '10px';
+
+  // Build pool: correct objects + random distractors
+  const pool = shuffle([
+    ...currentObjects,
+    ...shuffle(OBJECT_POOL.filter(o => !currentObjects.some(c => c.name === o.name))).slice(0, Math.max(4, needed + 2))
+  ]);
+
+  const targets = document.getElementById('recall-targets1');
+  targets.innerHTML = '';
+  for (let i = 0; i < needed; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'recall-slot';
+    slot.id = 'recall1-slot-' + i;
+    slot.innerHTML = '<div style="font-size:1.8rem;opacity:0.25">⬜</div><div style="font-size:0.7rem;color:var(--muted)">物品 ' + (i+1) + '</div>';
+    slot.dataset.filled = 'false';
+    targets.appendChild(slot);
+  }
+
+  const poolEl = document.getElementById('recall-pool1');
+  poolEl.innerHTML = '<div class="recall-grid" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px">'
+    + pool.map(o => '<button class="option-btn recall-opt" data-emoji="' + o.emoji + '" data-name="' + o.name + '">'
+      + o.emoji + ' ' + o.name + '</button>').join('') + '</div>';
+
+  document.querySelectorAll('#recall-pool1 .recall-opt').forEach(btn => {
+    btn.onclick = function() {
+      const emoji = this.dataset.emoji;
+      const name = this.dataset.name;
+      if (this.disabled) return;
+      // Find first empty slot
+      for (let i = 0; i < needed; i++) {
+        const slot = document.getElementById('recall1-slot-' + i);
+        if (slot.dataset.filled === 'false') {
+          state.recall1Results[i] = { emoji: emoji, name: name };
+          slot.innerHTML = '<div style="font-size:1.8rem">' + emoji + '</div><div style="font-size:0.7rem;color:var(--text)">' + name + '</div>';
+          slot.dataset.filled = 'true';
+          this.disabled = true;
+          this.style.opacity = '0.4';
+          updateRecallHint1();
+          playBeep();
+          break;
+        }
+      }
+    };
+  });
+}
+
+function updateRecallHint1() {
+  const filled = document.querySelectorAll('#recall-targets1 .recall-slot[data-filled="true"]').length;
+  const needed = selectedDifficulty;
+  const hint = document.getElementById('recall-hint1');
+  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 ' + filled + '/' + needed + '）';
+  if (filled === needed) hint.style.color = 'var(--success)';
+  else hint.style.color = 'var(--muted)';
+}
+
+function submitRecall1() {
+  const filled = document.querySelectorAll('#recall-targets1 .recall-slot[data-filled="true"]').length;
+  const needed = selectedDifficulty;
+  if (filled < needed) {
+    speak('请选够' + needed + '个物品');
+    return;
+  }
+  // Show confirm overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'recall-confirm-overlay';
+  overlay.innerHTML = '<div class="recall-confirm-box">'
+    + '<p>确认提交回忆结果？<br><span style="font-size:0.85rem;color:var(--muted)">提交后不能修改</span></p>'
+    + '<div class="recall-confirm-actions">'
+    + '<button class="btn btn-sm" onclick="doSubmitRecall1()">确认提交</button>'
+    + '<button class="btn btn-sm" style="background:#6b7280" onclick="this.closest(\'.recall-confirm-overlay\').remove()">再想想</button>'
+    + '</div></div>';
+  document.body.appendChild(overlay);
+}
+
+function doSubmitRecall1() {
+  document.querySelectorAll('.recall-confirm-overlay').forEach(e => e.remove());
+  // Grade results
+  let correct = 0;
+  for (let i = 0; i < selectedDifficulty; i++) {
+    const res = state.recall1Results[i];
+    if (res && currentObjects.some(c => c.name === res.name && c.emoji === res.emoji)) {
+      correct++;
+    }
+  }
+  state.recall1Correct = correct;
+
+  const correctCount = correct;
+  const total = selectedDifficulty;
+  speak('即时回忆完成，正确' + correctCount + '个，共' + total + '个');
+
+  // Show inline result
+  const area = document.getElementById('recall1-submit');
+  const resultDiv = document.createElement('div');
+  resultDiv.style.cssText = 'margin:12px 0;padding:12px;background:#f0fdf4;border-radius:8px;font-size:0.9rem';
+  resultDiv.innerHTML = '✅ 即时回忆结果：正确 <strong>' + correctCount + '</strong>/' + total + ' 个'
+    + '<br><span style="font-size:0.8rem;color:var(--muted)">正确答案: ' + currentObjects.map(o => o.emoji + o.name).join('、') + '</span>';
+
+  // Check if we should go to distract2
+  if (!state.recall2Done) {
+    area.parentNode.insertBefore(resultDiv, area);
+    document.getElementById('recall1-submit').classList.add('hidden');
+    showPhaseNotice('⏳ 延迟回忆阶段', '请继续答题，约2分钟后会再次测试', '继续完成干扰题，等待延迟回忆倒计时结束。\n您可以在干扰阶段继续答题。', 'startDistractionPhase');
+  }
+}
+
+// ===================================================================
+// RECALL 2
+// ===================================================================
+function goToRecall2() {
+  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
+  state.recall2Done = true;
+  state.phase = 'recall2';
+  showScreen('screen-recall2');
+  showProgress('延迟');
+  document.getElementById('btn-large4').classList.toggle('active', prefs.largeText);
+  document.getElementById('btn-contrast4').classList.toggle('active', prefs.highContrast);
+  document.getElementById('btn-tts4').classList.toggle('active', prefs.ttsEnabled);
+  updateTTSIndicator();
+  backupState();
+
+  const needed = selectedDifficulty;
+  const hint = document.getElementById('recall-hint2');
+  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 0/' + needed + '）';
+  hint.style.fontSize = '0.9rem'; hint.style.color = 'var(--muted)'; hint.style.marginBottom = '10px';
+
+  // Build pool (different arrangement from recall1 for variety)
+  const pool = shuffle([
+    ...currentObjects,
+    ...shuffle(OBJECT_POOL.filter(o => !currentObjects.some(c => c.name === o.name))).slice(0, Math.max(4, needed + 2))
+  ]);
+
+  const targets = document.getElementById('recall-targets2');
+  targets.innerHTML = '';
+  for (let i = 0; i < needed; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'recall-slot';
+    slot.id = 'recall2-slot-' + i;
+    slot.innerHTML = '<div style="font-size:1.8rem;opacity:0.25">⬜</div><div style="font-size:0.7rem;color:var(--muted)">物品 ' + (i+1) + '</div>';
+    slot.dataset.filled = 'false';
+    targets.appendChild(slot);
+  }
+
+  const poolEl = document.getElementById('recall-pool2');
+  poolEl.innerHTML = '<div class="recall-grid" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px">'
+    + pool.map(o => '<button class="option-btn recall-opt" data-emoji="' + o.emoji + '" data-name="' + o.name + '">'
+      + o.emoji + ' ' + o.name + '</button>').join('') + '</div>';
+
+  document.querySelectorAll('#recall-pool2 .recall-opt').forEach(btn => {
+    btn.onclick = function() {
+      const emoji = this.dataset.emoji;
+      const name = this.dataset.name;
+      if (this.disabled) return;
+      for (let i = 0; i < needed; i++) {
+        const slot = document.getElementById('recall2-slot-' + i);
+        if (slot.dataset.filled === 'false') {
+          state.recall2Results[i] = { emoji: emoji, name: name };
+          slot.innerHTML = '<div style="font-size:1.8rem">' + emoji + '</div><div style="font-size:0.7rem;color:var(--text)">' + name + '</div>';
+          slot.dataset.filled = 'true';
+          this.disabled = true;
+          this.style.opacity = '0.4';
+          updateRecallHint2();
+          playBeep();
+          break;
+        }
+      }
+    };
+  });
+}
+
+function updateRecallHint2() {
+  const filled = document.querySelectorAll('#recall-targets2 .recall-slot[data-filled="true"]').length;
+  const needed = selectedDifficulty;
+  const hint = document.getElementById('recall-hint2');
+  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 ' + filled + '/' + needed + '）';
+  if (filled === needed) hint.style.color = 'var(--success)';
+  else hint.style.color = 'var(--muted)';
+}
+
+function submitRecall2() {
+  const filled = document.querySelectorAll('#recall-targets2 .recall-slot[data-filled="true"]').length;
+  const needed = selectedDifficulty;
+  if (filled < needed) {
+    speak('请选够' + needed + '个物品');
+    return;
+  }
+  // Confirm
+  const overlay = document.createElement('div');
+  overlay.className = 'recall-confirm-overlay';
+  overlay.innerHTML = '<div class="recall-confirm-box">'
+    + '<p>确认提交延迟回忆结果？<br><span style="font-size:0.85rem;color:var(--muted)">提交后不能修改</span></p>'
+    + '<div class="recall-confirm-actions">'
+    + '<button class="btn btn-sm" onclick="doSubmitRecall2()">确认提交</button>'
+    + '<button class="btn btn-sm" style="background:#6b7280" onclick="this.closest(\'.recall-confirm-overlay\').remove()">再想想</button>'
+    + '</div></div>';
+  document.body.appendChild(overlay);
+}
+
+function doSubmitRecall2() {
+  document.querySelectorAll('.recall-confirm-overlay').forEach(e => e.remove());
+  let correct = 0;
+  for (let i = 0; i < selectedDifficulty; i++) {
+    const res = state.recall2Results[i];
+    if (res && currentObjects.some(c => c.name === res.name && c.emoji === res.emoji)) {
+      correct++;
+    }
+  }
+  state.recall2Correct = correct;
+  speak('延迟回忆完成，正确' + correct + '个，共' + selectedDifficulty + '个');
+  showResults();
+}
+
+// ===================================================================
+// SHARE
+// ===================================================================
+function shareResult() {
+  var btn = document.querySelector('.share-btn');
+  btn.disabled = true;
+  btn.textContent = '生成海报中...';
+
+  var r1 = state.recall1Correct || 0;
+  var r2 = state.recall2Correct || 0;
+  var total = selectedDifficulty;
+  var totalPossibleRecall = total * 2;
+  var recallScore = (r1 + r2) / totalPossibleRecall * 60;
+  var questionScore = state.totalQuestions > 0 ? (state.correctAnswers / state.totalQuestions) * 40 : 0;
+  var totalScore = Math.round(recallScore + questionScore);
+
+  var badge, encourage, badgeIcon;
+  if (totalScore >= 85) {
+    badge = '优秀'; badgeIcon = '⭐';
+    encourage = '记忆力非常棒！继续保持健康的生活方式，\n多阅读、多动脑，大脑会越来越灵活！';
+  } else if (totalScore >= 65) {
+    badge = '良好'; badgeIcon = '🌱';
+    encourage = '记忆力状态不错！坚持脑力锻炼，\n如数独、阅读、学习新技能，会越来越好！';
+  } else if (totalScore >= 50) {
+    badge = '一般'; badgeIcon = '🌿';
+    encourage = '记忆有些减退迹象，建议增加脑力锻炼。\n每天做些简单的计算或记忆练习会有帮助。';
+  } else {
+    badge = '建议关注'; badgeIcon = '🍂';
+    encourage = '建议关注自己的记忆变化，\n如有持续下降趋势可咨询医生做进一步评估。';
+  }
+
+  var W = 600, H = 850;
+  var canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  // Background gradient
+  var grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#f0fdf4'); grad.addColorStop(0.5, '#f5f3ef'); grad.addColorStop(1, '#ecfdf5');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+
+  // Decorative circles
+  ctx.globalAlpha = 0.08; ctx.fillStyle = '#16a34a';
+  ctx.beginPath(); ctx.arc(80, 80, 120, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W-60, 200, 90, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W/2, H-60, 150, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Icon & Title
+  ctx.font = '48px serif'; ctx.textAlign = 'center';
+  ctx.fillText('\uD83E\uDDE0', W/2, 70);
+  ctx.font = 'bold 28px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillText('短期记忆自测结果', W/2, 120);
+
+  // Date
+  var now = new Date();
+  var dateStr = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日 ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  ctx.font = '14px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#9ca3af'; ctx.fillText(dateStr, W/2, 150);
+
+  // Line
+  ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80, 170); ctx.lineTo(W-80, 170); ctx.stroke();
+
+  // Score circle
+  ctx.beginPath(); ctx.arc(W/2, 280, 70, 0, Math.PI*2);
+  ctx.fillStyle = '#ffffff'; ctx.shadowColor = 'rgba(22,163,74,0.15)'; ctx.shadowBlur = 20; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(W/2, 280, 70, 0, Math.PI*2);
+  ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 4; ctx.stroke();
+
+  ctx.font = 'bold 44px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#16a34a'; ctx.fillText(totalScore, W/2, 288);
+  ctx.font = '16px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#6b7280'; ctx.fillText('分', W/2, 316);
+
+  // Badge
+  ctx.font = 'bold 20px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#374151'; ctx.fillText(badgeIcon + ' ' + badge, W/2, 370);
+
+  // Line
+  ctx.strokeStyle = '#e5e7eb';
+  ctx.beginPath(); ctx.moveTo(80, 395); ctx.lineTo(W-80, 395); ctx.stroke();
+
+  // Detail cards
+  var details = [
+    { icon: '\uD83D\uDCDD', label: '即时回忆', val: r1 + '/' + total + ' 正确' },
+    { icon: '\u23F3', label: '延迟回忆', val: r2 + '/' + total + ' 正确' },
+    { icon: '\u2705', label: '答题正确率', val: state.correctAnswers + '/' + state.totalQuestions },
+  ];
+  var difficultyLabel = total === 2 ? '简单' : total === 3 ? '中等' : '困难';
+  details.push({ icon: '\uD83C\uDFAF', label: '难度', val: difficultyLabel });
+
+  var cardW = 240, cardH = 52, gap = 10, sx = (W - cardW) / 2;
+  details.forEach(function(item, i) {
+    var y = 430 + i * (cardH + gap);
+    ctx.fillStyle = '#ffffff'; ctx.shadowColor = 'rgba(0,0,0,0.05)'; ctx.shadowBlur = 6;
+    roundRect(ctx, sx, y, cardW, cardH, 8); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.font = '20px serif'; ctx.textAlign = 'left';
+    ctx.fillText(item.icon, sx + 14, y + 32);
+    ctx.font = '13px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+    ctx.fillStyle = '#9ca3af'; ctx.fillText(item.label, sx + 46, y + 24);
+    ctx.font = 'bold 16px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+    ctx.fillStyle = '#1f2937'; ctx.fillText(item.val, sx + 46, y + 44);
+  });
+
+  // Objects
+  if (currentObjects && currentObjects.length > 0) {
+    var objStrs = []; for (var k = 0; k < currentObjects.length; k++) { objStrs.push(currentObjects[k].emoji); }
+    ctx.font = '13px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+    ctx.fillStyle = '#9ca3af'; ctx.textAlign = 'center';
+    ctx.fillText('本次记忆物品：' + objStrs.join(' '), W/2, 430 + 4 * (cardH + gap) + 25);
+  }
+
+  // Encouragement card
+  var ey = 430 + 4 * (cardH + gap) + 55;
+  ctx.fillStyle = '#f0fdf4'; ctx.shadowColor = 'rgba(22,163,74,0.08)'; ctx.shadowBlur = 8;
+  roundRect(ctx, 50, ey, W-100, 95, 12); ctx.fill(); ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#bbf7d0'; ctx.lineWidth = 1;
+  roundRect(ctx, 50, ey, W-100, 95, 12); ctx.stroke();
+
+  ctx.font = '14px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#166534'; ctx.textAlign = 'center';
+  var lines = encourage.split('\n');
+  for (var li = 0; li < lines.length; li++) { ctx.fillText(lines[li], W/2, ey + 30 + li * 28); }
+
+  // Footer
+  ctx.font = '12px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+  ctx.fillStyle = '#d1d5db'; ctx.textAlign = 'center';
+  ctx.fillText('本测试仅为初步筛查，不能代替专业诊断', W/2, H - 28);
+
+  // Save as download
+  canvas.toBlob(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url; link.download = '短期记忆自测结果.png';
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    btn.textContent = '✅ 已保存到相册';
+    btn.disabled = false;
+    setTimeout(function() { btn.textContent = '📤 保存结果海报'; }, 3000);
+  }, 'image/png');
+}
+
+// Helper: Canvas roundRect polyfill
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+
+function downloadCanvas(canvas, btn) {
+  // Create download link
+  const link = document.createElement('a');
+  link.download = '短期记忆自测结果.png';
+  link.href = canvas.toDataURL('image/png');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  btn.textContent = '已保存到相册';
+  setTimeout(function() { btn.textContent = '📤 分享结果'; }, 2000);
+}
+// ===================================================================
+// RESULTS
+// ===================================================================
+function showResults() {
+  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
+  if (state.objectsTimerInterval) { clearInterval(state.objectsTimerInterval); state.objectsTimerInterval = null; }
+  state.phase = 'result';
+  clearBackup();
+  showScreen('screen-result');
+  showProgress('结果');
+  document.getElementById('btn-large5').classList.toggle('active', prefs.largeText);
+  document.getElementById('btn-contrast5').classList.toggle('active', prefs.highContrast);
+  document.getElementById('btn-tts5').classList.toggle('active', prefs.ttsEnabled);
+  updateTTSIndicator();
+
+  const r1 = state.recall1Correct || 0;
+  const r2 = state.recall2Correct || 0;
+  const total = selectedDifficulty;
+  const objectsNamed = currentObjects.map(o => o.emoji + o.name).join('、');
+  const totalPossibleRecall = total * 2;
+
+  // Scoring: recall accounts for 60%, questions for 40%
+  const recallScore = (r1 + r2) / totalPossibleRecall * 60;
+  const questionScore = state.totalQuestions > 0 ? (state.correctAnswers / state.totalQuestions) * 40 : 0;
+  const totalScore = Math.round(recallScore + questionScore);
+
+  const badgeEl = document.getElementById('result-badge');
+  const scoreEl = document.getElementById('result-score');
+  const summaryEl = document.getElementById('result-summary');
+  const suggestEl = document.getElementById('result-suggestion');
+  const suggestText = document.getElementById('suggestion-text');
+
+  scoreEl.textContent = totalScore;
+
+  if (totalScore >= 85) {
+    scoreEl.className = 'result-score success';
+    badgeEl.textContent = '🌟 优秀';
+    summaryEl.innerHTML = '短期记忆功能良好。<br>'
+      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
+      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
+      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
+    suggestEl.classList.add('hidden');
+  } else if (totalScore >= 65) {
+    scoreEl.className = 'result-score pass';
+    badgeEl.textContent = '🌱 良好';
+    summaryEl.innerHTML = '短期记忆基本正常。<br>'
+      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
+      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
+      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
+    suggestEl.classList.remove('hidden');
+    suggestText.textContent = '保持健康生活方式，多进行脑力锻炼，如阅读、数独、学习新技能。';
+  } else if (totalScore >= 50) {
+    scoreEl.className = 'result-score pass';
+    badgeEl.textContent = '🌱 一般';
+    summaryEl.innerHTML = '短期记忆有部分减损迹象。<br>'
+      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
+      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
+      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
+    suggestEl.classList.remove('hidden');
+    suggestText.textContent = '建议多进行脑力锻炼，如阅读、数独、学习新技能。如有持续记忆下降，建议咨询医生做进一步评估。';
+  } else {
+    scoreEl.className = 'result-score fail';
+    badgeEl.textContent = '🍂 建议关注';
+    summaryEl.innerHTML = '短期记忆有明显减损迹象。<br>'
+      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
+      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
+      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
+    suggestEl.classList.remove('hidden');
+    suggestText.textContent = '本测试仅为初步筛查，不能代替专业诊断。强烈建议您咨询神经内科或老年科医生。早期发现、早期干预非常重要。';
+  }
+
+  saveToHistory({
+    date: new Date().toISOString(),
+    score: totalScore,
+    recall1: r1,
+    recall2: r2,
+    correctRate: state.correctAnswers,
+    totalQ: state.totalQuestions,
+    objects: objectsNamed,
+  });
+  renderHistory();
+
+  speak('测试完成。' + badgeEl.textContent);
+}
+
+// ===================================================================
+// RESUME CHECK
+// ===================================================================
+function checkResume() {
+  try {
+    var data = JSON.parse(sessionStorage.getItem('ad_backup'));
+    if (!data || !data.studyStartTime) return;
+    const elapsed = Date.now() - data.studyStartTime;
+    if (elapsed > 300000) { clearBackup(); return; }
+    const banner = document.getElementById('resume-banner');
+    banner.classList.remove('hidden');
+    banner.innerHTML = '⏸ 检测到未完成的测试，是否继续？<br>'
+      + '<button class="btn btn-sm" onclick="resumeTest()">继续测试</button> '
+      + '<button class="btn btn-sm" style="background:#6b7280" onclick="clearBackup();banner.classList.add(\'hidden\')">放弃</button>';
+  } catch(e) {}
+}
+
+function resumeTest() {
+  try {
+    const data = JSON.parse(sessionStorage.getItem('ad_backup'));
+    if (!data) return;
+    currentObjects = data.currentObjects || OBJECT_POOL.slice(0, 3);
+    state.studyStartTime = data.studyStartTime;
+    state.recall1Done = data.recall1Done;
+    state.recall2Done = data.recall2Done;
+    state.questionsAsked = data.questionsAsked || 0;
+    state.totalQuestions = data.totalQuestions || 0;
+    state.correctAnswers = data.correctAnswers || 0;
+    state.recall1Results = [];
+    state.recall2Results = [];
+
+    document.getElementById('resume-banner').classList.add('hidden');
+
+    if (state.recall1Done && state.recall2Done) {
+      showResults();
+      return;
+    }
+
+    const elapsed = Date.now() - state.studyStartTime;
+    if (!state.recall1Done && elapsed >= 30000) {
+      goToRecall1();
+      return;
+    }
+    if (state.recall1Done && !state.recall2Done && elapsed >= 210000) {
+      goToRecall2();
+      return;
+    }
+    startDistractionPhase(true);
+  } catch(e) { clearBackup(); }
+}
+
+// ===================================================================
+// RESET
+// ===================================================================
+function resetTest() {
+  if (state.objectsTimerInterval) { clearInterval(state.objectsTimerInterval); state.objectsTimerInterval = null; }
+  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
+  clearBackup();
+  state = { phase:'welcome', recall1Results:[], recall2Results:[], recall1Done:false, recall2Done:false,
+    questionsAsked:0, totalQuestions:0, correctAnswers:0, questionTimerInterval:null, objectsTimerInterval:null,
+    studyStartTime:null, distractStartTime:null, currentDistractIndex:0, distractQuestions:[] };
+  // Restore welcome display
+  const welcomeEl = document.getElementById('screen-welcome');
+  if (welcomeEl) welcomeEl.style.display = '';
+  showScreen('screen-welcome');
+  document.querySelectorAll('#progress-bar-wrap, #progress-bar-wrap2, #progress-bar-wrap3, #progress-bar-wrap4, #progress-bar-wrap5').forEach(el => el.classList.add('hidden'));
+}
+
+// ===================================================================
+// INIT
+// ===================================================================
+loadPrefs();
+document.body.classList.toggle('large-text', prefs.largeText);
+document.getElementById('btn-large').classList.toggle('active', prefs.largeText);
+document.body.classList.toggle('high-contrast', prefs.highContrast);
+document.getElementById('btn-contrast').classList.toggle('active', prefs.highContrast);
+document.getElementById('btn-tts').classList.toggle('active', prefs.ttsEnabled);
+updateTTSIndicator();
+renderHistory();
+checkResume();
+
+</script>
+</body>
+</html>

@@ -13,6 +13,7 @@
 ├── cosmos/ about/               # 天文馆 / 馆主手记
 ├── novels/               # 文学馆（暂不对外，作品待打磨）
 ├── maps/                 # 地图馆（旅游计划工具，内部开发，暂不发布）
+├── hidden/               # 暗室（不公开入口的主题，如投资研究；robots 屏蔽）
 ├── vault/                # 暂存区（未达发布标准的游戏机台等，不参与组装）
 ├── scripts/assemble.mjs  # 组装脚本：静态页 + 地球厅构建产物 → dist/
 ├── .github/workflows/deploy.yml    # CI：每日组装 + GitHub Pages 部署
@@ -25,6 +26,18 @@
 npm run assemble    # 组装全站到 dist/（会拉取 digital-earth-series 并构建门户）
 npm run preview     # 本地预览 dist/
 ```
+
+## 暗室（隐藏入口）
+
+不对外展示的主题（如投资研究）放在 `hidden/` 下：首页/导航/站点地图均无入口，
+`robots.txt` 已屏蔽搜索引擎。发布新暗室：
+
+1. 建 `hidden/<名字>/index.html`（可复制 `hidden/index.html` 改内容；页面自带 noindex）
+2. 直接访问 `https://shuzidiantang.com/hidden/<名字>/`，把地址只发给想给的人
+
+> ⚠️ 说明：这是"路径隐藏"而非真正的鉴权——知道地址即可访问（GitHub Pages 纯静态无法做
+> 密码验证）。若未来需要真保护：备案通过后在轻量服务器用 Nginx basic-auth，或使用带
+> 口令的静态页（前端校验，防君子不防小人）。
 
 ## 部署（双轨）
 

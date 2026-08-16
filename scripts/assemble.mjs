@@ -21,7 +21,7 @@ const DIST = path.join(ROOT, 'dist');
 
 const STATIC_PATHS = [
   'index.html', '404.html', 'robots.txt', 'sitemap.xml',
-  'assets', 'games', 'cosmos', 'about',
+  'assets', 'games', 'cosmos', 'about', 'hidden',
 ];
 
 function run(cmd, cwd = ROOT) {
