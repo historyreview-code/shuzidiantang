@@ -120,11 +120,49 @@ function injectFeed(htmlFile, marker, html) {
   return true;
 }
 
+// 给手记页注入 og:image（朋友圈/微信链接卡片用）:
+//   有专属配图 (notes/og/<slug>.png, 由 scripts/share.py 生成) 用专属图,
+//   没有则回退全站品牌图。绝对 URL, 微信抓取更稳。
+function injectOgImage(notesDistDir, file, stem) {
+  const p = path.join(notesDistDir, file);
+  if (!existsSync(p)) return false;
+  let t = readFileSync(p, 'utf8');
+  if (/property="og:image"/.test(t)) return false; // 已手动声明则尊重原文
+  const img = existsSync(path.join(notesDistDir, 'og', stem + '.png'))
+    ? `https://shuzidiantang.com/notes/og/${stem}.png`
+    : 'https://shuzidiantang.com/assets/og/brand.png';
+  const meta = [
+    `<meta property="og:type" content="article">`,
+    `<meta property="og:image" content="${img}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:image" content="${img}">`,
+  ].join('\n');
+  // 锚点: meta description 之后; 没有 description 则插到 <meta charset 之后
+  if (/<meta name="description"[^>]*>/i.test(t)) {
+    t = t.replace(/<meta name="description"[^>]*>/i, (m) => m + '\n' + meta);
+  } else {
+    t = t.replace(/<meta charset="UTF-8"[^>]*>/i, (m) => m + '\n' + meta);
+  }
+  writeFileSync(p, t);
+  return true;
+}
+
 // --- 公开手记 ---
 const PUBLIC_NOTES_DIR = path.join(ROOT, 'notes');
 const publicItems = collectNotes(PUBLIC_NOTES_DIR, /\s*·\s*数字殿堂.*$/);
 const placeholderPublic =
   '<div class="item"><span class="date">筹备中</span><span class="txt">第一篇手记撰写中<small>每天一篇 · 敬请期待</small></span></div>';
+
+// 手记页 og:image 注入 (朋友圈/微信分享卡片)
+{
+  const distNotes = path.join(DIST, 'notes');
+  let ogCount = 0;
+  for (const it of publicItems) {
+    const m = it.file.match(/^(\d{4}-\d{2}-\d{2}-.+)\.html$/);
+    if (m && injectOgImage(distNotes, it.file, m[1])) ogCount++;
+  }
+  console.log(`  手记页 og:image 已注入: ${ogCount} 篇`);
+}
 
 if (injectFeed(path.join(DIST, 'index.html'), 'NOTES_FEED', renderFeedItems(publicItems, 'notes/', 12, placeholderPublic))) {
   console.log(`  首页手记列表已生成: ${Math.min(publicItems.length, 12)} 篇 (最新在前)`);

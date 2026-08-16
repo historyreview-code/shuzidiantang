@@ -27,9 +27,13 @@
 1. 复制 `vault/notes-template.html` → `notes/YYYY-MM-DD-短标题.html`
    （文件名日期决定排序，**务必**用 `YYYY-MM-DD-` 开头，如 `2026-08-20-quota-cockpit.html`）
 2. 填写标题（`<title>` 和 `<h1>`）、meta 摘要、日期、分类、正文
-3. push → CI 自动上线（约 1 分钟）
+3. （可选）生成朋友圈发布包：`python3 scripts/share.py`
+   - 每篇生成专属 OG 分享图 → `notes/og/<slug>.png`（提交仓库，微信链接卡片用）
+   - 生成本地发布包 → `share/<slug>/`（朋友圈文案.txt + 配图.png + 发布说明.txt，本地不入库）
+4. push → CI 自动上线（约 1 分钟）
    - **列表自动更新**：`scripts/assemble.mjs` 扫描 notes/ 目录按日期倒序，
      自动生成 ① 首页"最新手记"列表（前 12 条）② `/notes/` 全部列表 ③ `feed.xml` RSS ④ sitemap 条目
+   - **分享卡片自动就绪**：assembler 为每篇手记注入 og:image（有专属图用专属图，没有回退品牌图）
    - 最新一篇自动置顶，以往文章自动下沉，无需手动改任何列表
 
 ## 发布一期投资研究笔记的方法（暗室 · 自动博客流）
