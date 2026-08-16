@@ -75,12 +75,26 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 4. 等待管局审核；期间**域名不可解析到境内服务器**，走⑤的海外过渡
 
 ### ⑤ Cloudflare Pages 过渡上线（备案等待期，约 30 分钟）
-1. [dash.cloudflare.com](https://dash.cloudflare.com) 注册免费账号
-2. Workers & Pages → Create → Pages → Connect to Git → 授权 GitHub
-3. 选择 `historyreview-code/shuzidiantang` 仓库
-4. 构建命令 `npm run assemble`，输出目录 `dist`，保存并部署
-5. 部署成功后：自定义域添加 `shuzidiantang.com` + `www` → 按提示把 DNS 交给 Cloudflare（此时 DNS 托管在 CF，暂不解析国内线路）
-6. 全球即可访问 https://shuzidiantang.com ✅
+
+> ⚠️ 2026-08 实测：新注册账号遭遇 **pages.dev 子域账号级封锁**（Cloudflare 反钓鱼风控，
+> 任何项目名都报 "Subdomain is blocked"，社区大量同类报告）。
+> 已改走 **GitHub Pages** 过渡（自动部署见 `.github/workflows/deploy.yml`），步骤：
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) 注册免费账号（已完成，但 pages.dev 被账号级封锁，暂不可用；已向 abusereply 申诉备用）
+2. GitHub Pages 自动部署：仓库已启用 Pages（source: GitHub Actions），每次 push main / 每日 02:00 UTC 自动组装发布
+3. 自定义域名：已在仓库 Pages 设置绑定 `shuzidiantang.com`（GitHub 自动签发 HTTPS 证书）
+4. DNSPod 添加解析（见下方记录），全球即可访问 https://shuzidiantang.com ✅
+5. 若日后 Cloudflare 解封：可再建 Pages 项目（构建命令 `npm run assemble`、输出目录 `dist`）作海外备份
+
+#### DNSPod 解析记录（GitHub Pages）
+
+| 主机记录 | 类型 | 记录值 |
+|---|---|---|
+| @ | A | 185.199.108.153 |
+| @ | A | 185.199.109.153 |
+| @ | A | 185.199.110.153 |
+| @ | A | 185.199.111.153 |
+| www | CNAME | historyreview-code.github.io |
 
 ### ⑥ 备案通过后：切国内主站（约 1 小时）
 1. 腾讯云 → DNSPod → 添加域名 `shuzidiantang.com`，接管 DNS（把域名 NS 从 Cloudflare 改到 DNSPod 提供的 NS）
