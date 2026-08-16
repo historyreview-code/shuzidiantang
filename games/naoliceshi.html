@@ -580,8 +580,20 @@ function updateTTSIndicator() {
   });
 }
 function speak(text) {
+  if (!prefs.ttsEnabled) return;
+  const key = (text || '').replace(/[^\u4e00-\u9fa5A-Za-z0-9%.,。！？]/g, '').replace(/\s+/g, '');
+  const file = TTS_MAP[key];
+  if (file) {
+    try {
+      if (window.__naoliAudio) { try { window.__naoliAudio.pause(); } catch(e) {} }
+      window.__naoliAudio = new Audio('tts-naoli/' + file + '.mp3');
+      const pp = window.__naoliAudio.play();
+      if (pp && pp.catch) pp.catch(function() {});
+      return;
+    } catch(e) {}
+  }
   try {
-    if (!prefs.ttsEnabled || !window.speechSynthesis) return;
+    if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
     u.lang = 'zh-CN';
@@ -590,6 +602,49 @@ function speak(text) {
     window.speechSynthesis.speak(u);
   } catch(e) { /* TTS not available */ }
 }
+
+// 预录配音（edge-tts · zh-CN-XiaoxiaoNeural 晓晓女声，tts-naoli/ 目录按需加载）
+const TTS_MAP = {
+  '已选择简单模式': 'p00',
+  '已选择中等模式': 'p01',
+  '已选择困难模式': 'p02',
+  '立即回忆': 'p03',
+  '延迟回忆': 'p04',
+  '延迟回忆阶段': 'p05',
+  '请记忆以下物品。记忆倒计时30秒。': 'p06',
+  '请选够1个物品': 'p07',
+  '请选够2个物品': 'p08',
+  '请选够3个物品': 'p09',
+  '请选够4个物品': 'p10',
+  '即时回忆完成，正确0个，共2个': 'p11',
+  '延迟回忆完成，正确0个，共2个': 'p12',
+  '即时回忆完成，正确1个，共2个': 'p13',
+  '延迟回忆完成，正确1个，共2个': 'p14',
+  '即时回忆完成，正确2个，共2个': 'p15',
+  '延迟回忆完成，正确2个，共2个': 'p16',
+  '即时回忆完成，正确0个，共3个': 'p17',
+  '延迟回忆完成，正确0个，共3个': 'p18',
+  '即时回忆完成，正确1个，共3个': 'p19',
+  '延迟回忆完成，正确1个，共3个': 'p20',
+  '即时回忆完成，正确2个，共3个': 'p21',
+  '延迟回忆完成，正确2个，共3个': 'p22',
+  '即时回忆完成，正确3个，共3个': 'p23',
+  '延迟回忆完成，正确3个，共3个': 'p24',
+  '即时回忆完成，正确0个，共4个': 'p25',
+  '延迟回忆完成，正确0个，共4个': 'p26',
+  '即时回忆完成，正确1个，共4个': 'p27',
+  '延迟回忆完成，正确1个，共4个': 'p28',
+  '即时回忆完成，正确2个，共4个': 'p29',
+  '延迟回忆完成，正确2个，共4个': 'p30',
+  '即时回忆完成，正确3个，共4个': 'p31',
+  '延迟回忆完成，正确3个，共4个': 'p32',
+  '即时回忆完成，正确4个，共4个': 'p33',
+  '延迟回忆完成，正确4个，共4个': 'p34',
+  '测试完成。优秀': 'p35',
+  '测试完成。良好': 'p36',
+  '测试完成。一般': 'p37',
+  '测试完成。建议关注': 'p38'
+};
 function playBeep() {
   try {
     var AC = window.AudioContext || window.webkitAudioContext;
