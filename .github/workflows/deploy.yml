@@ -8,6 +8,15 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   assemble:
     name: 组装全站
@@ -19,45 +28,24 @@ jobs:
           node-version: 22
       - name: 组装 dist/
         run: npm run assemble
-      - name: 上传产物
-        uses: actions/upload-artifact@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
           name: site
           path: dist
-          retention-days: 7
 
-  deploy-cloudflare:
-    name: 部署 Cloudflare Pages（配置密钥后自动启用）
+  deploy:
+    name: 部署 GitHub Pages（海外过渡）
     needs: assemble
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: 检查 Cloudflare 配置
-        id: cf
-        # 注意：secrets 不能用于 job 级 if，只能在步骤内检查
-        run: |
-          if [ -n "${{ secrets.CF_ACCOUNT_ID }}" ] && [ -n "${{ secrets.CF_API_TOKEN }}" ] && [ -n "${{ secrets.CF_PROJECT_NAME }}" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: 跳过部署（未配置密钥）
-        if: steps.cf.outputs.ready == 'false'
-        run: echo "未配置 CF_ACCOUNT_ID / CF_API_TOKEN / CF_PROJECT_NAME，跳过 Cloudflare 部署"
-      - name: 下载产物
-        if: steps.cf.outputs.ready == 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: site
-          path: dist
-      - name: 发布到 Cloudflare Pages
-        if: steps.cf.outputs.ready == 'true'
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: ${{ secrets.CF_PROJECT_NAME }}
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - id: deployment
+        uses: actions/deploy-pages@v4
 
-  # 国内主站：EdgeOne Pages 直接连接本仓库（控制台操作），
-  # 构建命令 npm run assemble，输出目录 dist —— 无需在此配置。
+  # 说明：
+  # - Cloudflare Pages 因账号级 pages.dev 子域封锁暂不可用（见 README ⑤），
+  #   已改走 GitHub Pages 过渡，备案通过后按 ⑥ 切 EdgeOne Pages 国内主站。
+  # - EdgeOne Pages 直接连接本仓库（控制台操作），构建命令 npm run assemble，输出目录 dist。
