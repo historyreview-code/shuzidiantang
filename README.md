@@ -92,9 +92,9 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 |---|---|---|
 | @ | A | 185.199.108.153 |
 | @ | A | 185.199.109.153 |
-| @ | A | 185.199.110.153 |
-| @ | A | 185.199.111.153 |
 | www | CNAME | historyreview-code.github.io |
+
+> 注：DNSPod 免费版同一主机最多 2 条 A 记录（负载均衡限额），GitHub Pages 4 个 IP 配 2 个即可，无需升级套餐。
 
 ### ⑥ 备案通过后：切国内主站（约 1 小时）
 1. 腾讯云 → DNSPod → 添加域名 `shuzidiantang.com`，接管 DNS（把域名 NS 从 Cloudflare 改到 DNSPod 提供的 NS）
