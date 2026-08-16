@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用好AI工具，你也可以拥有个人网站 · 数字殿堂</title>
+<meta name="description" content="从作品散落各处，到 AI 全程协助下三天建成自己的网站：域名、备案、过渡上线的全过程，附建站清单。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0d18' stroke='%23d8b45a'/><path fill='%23d8b45a' d='M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z'/></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .note { max-width: 760px; margin: 0 auto; }
+  .note h1 { font-family: var(--serif); font-size: 1.9rem; letter-spacing: 2px; color: var(--gold-bright); margin: 12px 0 8px; }
+  .note .meta { color: var(--text-dim); font-size: .85rem; margin-bottom: 26px; }
+  .note h2 { font-family: var(--serif); letter-spacing: 2px; color: var(--gold-bright); font-size: 1.2rem; margin: 30px 0 10px; padding-left: 10px; border-left: 3px solid var(--gold); }
+  .note p { color: var(--text); font-size: .95rem; margin: 12px 0; }
+  .note li { color: var(--text); font-size: .95rem; margin: 6px 0; }
+  .note ul, .note ol { padding-left: 24px; margin: 10px 0; }
+  .note blockquote { border-left: 3px solid var(--gold-dim); padding-left: 14px; color: var(--text-dim); margin: 14px 0; }
+  .note code { background: rgba(216,180,90,.08); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: .85em; }
+  .note a { color: var(--gold-bright); }
+  .note-back { display: inline-block; margin-top: 36px; font-size: .88rem; color: var(--gold); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span class="mark" title="数字殿堂"><svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><path fill="#d8b45a" d="M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z"/></svg></span>
+    <span class="name">数字殿堂<small>DIGITAL HALL</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/earth/">地球厅</a>
+    <a href="/games/">游戏厅</a>
+    <a href="/cosmos/">天文馆</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article class="note">
+    <h1>用好AI工具，你也可以拥有个人网站</h1>
+    <p class="meta">2026-08-16 · 分类：观点</p>
+
+    <p>2026 年，AI 大模型的更新迭代日新月异，每个人的生活都在被技术改变。</p>
+
+    <p>我在学习 AI 的过程中完成了一些项目：旅行视频自动化生成工具、旅行规划路线可视化工具、AI 全自动短剧生成工具、复古小游戏、天文科普视频、数字化地球展示作品……战线越来越长。</p>
+
+    <p>作品多了，分享却成了问题。GitHub 仓库很多朋友访问不便；MiniMax 可以生成临时网址发布作品，但发布后无法修改，每次都是随机网址，随用随丢。</p>
+
+    <p>于是，我有了建立自己网站的想法。</p>
+
+    <p>对于非专业人士，建站的门槛很高。买什么服务器、服务器基础架构怎么选、域名解析怎么设置、备案期间如何过渡上线、Cloudflare 和 GitHub 报错如何查原因……很多细节都要重新学习，学习成本是一个障碍。如果是以前，做这件事对我来说可能不是半途而废，而是初步了解就望而却步了。</p>
+
+    <p>域名申请和网站备案是例行程序。备案手续严密，有关部门会打来电话核实本人情况，但流程清楚，照做即可，不会遇到障碍。</p>
+
+    <p>费用方面也算不上门槛：域名、轻量服务器、备案这一套，首年只要 200 多元。</p>
+
+    <p>真正的难点，是网站建设需要的专有知识，非专业人士根本无从下手。你需要让 AI 24 小时全流程协助和指导：每一步该去哪里、做什么、需要注意什么，都手把手教你；遇到意外情况，AI 会思考、探索新的方案，还会去 IT 社区调研找原因，直到上线完全成功。从 2026-08-14 首次提交代码，到 08-16 最新一次提交，一共 24 次 commit、不到 42 小时（其中真正用于建站工作的时间应该不到 8 个小时），网站就从零变成了一个有很多层级和内容的门户网站。</p>
+
+    <p>现在网站已经在备案当中，通过过渡计划，我们实现了网站的提前上线。注册网站这几天，AI 把我最近几个月的作品都搬进了网站，这就是你们现在看到的样子。</p>
+
+    <p>我的体会是：AI 时代，个人的能力会极大地增强。以往需要企业的组织能力才能完成的工作，现在完全有可能被个人加人工智能所替代。</p>
+
+    <p>未来的人们，重要的是保持好奇心和想象力——提出问题，提出需求，把"怎么实现"交给智能工具。</p>
+
+    <h2>附：建站清单</h2>
+
+    <p><strong>1. 双轨部署路线</strong></p>
+
+    <p>注册腾讯云实名 → 购买域名（主域名 + .cn 保护）→ 轻量服务器（备案凭证 + 未来后端）→ 提交备案 → 等待期用 GitHub Pages 过渡上线（自定义域名 + GitHub Actions 每日自动部署）→ 备案通过后切腾讯云 EdgeOne Pages 主站 → 页脚补备案号 → 可选：域名邮箱、访问统计。</p>
+
+    <p>总费用：首年 200 多元。</p>
+
+    <p><strong>2. DNS 解析记录</strong>（GitHub Pages 过渡期实测，DNSPod 免费版限 2 条 A 记录）</p>
+
+    <ul>
+      <li>主机记录 @ · 类型 A · 记录值 185.199.108.153</li>
+      <li>主机记录 @ · 类型 A · 记录值 185.199.109.153</li>
+      <li>主机记录 www · 类型 CNAME · 记录值 historyreview-code.github.io</li>
+    </ul>
+
+    <p><strong>3. 三条经验</strong></p>
+
+    <ol>
+      <li>先备好过渡方案再启动：备案周期 2～4 周，别让等待期变成空窗期。</li>
+      <li>免费平台的风控没有道理可讲（我遭遇过 Cloudflare 账号级封锁），多留一条退路。</li>
+      <li>用 git 记录一切：提交历史就是你的建站日记，也是最好的写作素材。</li>
+    </ol>
+
+    <a class="note-back" href="/notes/">← 返回手记</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>数字殿堂 · 手记</p>
+  <p class="icp">（ICP 备案号待备案通过后展示）</p>
+</footer>
+</body>
+</html>
