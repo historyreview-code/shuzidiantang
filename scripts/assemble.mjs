@@ -61,5 +61,12 @@ if (!existsSync(portalDist)) {
 }
 cpSync(portalDist, path.join(DIST, 'earth'), { recursive: true });
 
+// 2.5 主题 SEO 静态落地页 → /earth/themes/<id>/ (叠加在门户之上, 供搜索引擎收录)
+const themesSrc = path.join(ROOT, 'earth', 'themes');
+if (existsSync(themesSrc)) {
+  cpSync(themesSrc, path.join(DIST, 'earth', 'themes'), { recursive: true });
+  console.log('  主题 SEO 落地页已叠加 → dist/earth/themes/');
+}
+
 console.log('\n✅ 组装完成 → dist/');
 console.log('   本地预览：npx serve dist');
