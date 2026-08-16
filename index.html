@@ -4,14 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>数字殿堂 · 一座收藏数字作品的殿堂</title>
-<meta name="description" content="数字殿堂——一个人的数字作品馆：数字地球、游戏厅、天文馆。旋转数字地球，答案尽在掌握。">
+<meta name="description" content="数字殿堂——每天一篇手记，分享作品开发与经验；数字地球、游戏、天文三大作品展厅。">
 <meta property="og:title" content="数字殿堂 · 一座收藏数字作品的殿堂">
-<meta property="og:description" content="数字地球 · 游戏 · 宇宙——三馆齐开，作品入馆。">
+<meta property="og:description" content="每天一篇手记 · 经验与观点 · 数字地球/游戏/天文作品展厅">
 <meta property="og:type" content="website">
 <meta property="og:image" content="assets/og/brand.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="数字殿堂 · 手记 RSS" href="/feed.xml">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0d18' stroke='%23d8b45a'/><path fill='%23d8b45a' d='M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z'/></svg>">
 <link rel="stylesheet" href="assets/style.css">
+<style>
+  .hero { padding: 56px 16px 40px; }
+  .link-all { display: inline-block; margin-top: 16px; font-size: .88rem; color: var(--gold); letter-spacing: 1px; }
+  .works-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; padding: 4px 0 8px; }
+  .works-grid .hall { padding: 22px 20px; }
+</style>
 </head>
 <body>
 <header class="site-header">
@@ -21,10 +28,11 @@
   </a>
   <nav class="site-nav">
     <a class="active" href="/">首页</a>
+    <a href="/notes/">手记</a>
     <a href="/earth/">地球厅</a>
     <a href="/games/">游戏厅</a>
     <a href="/cosmos/">天文馆</a>
-    <a href="/about/">馆主手记</a>
+    <a href="/about/">关于</a>
   </nav>
 </header>
 
@@ -33,47 +41,42 @@
     <span class="lintel">DIGITAL HALL · EST. 2026</span>
     <h1>数字殿堂</h1>
     <p class="slogan">一座收藏数字作品的殿堂</p>
-    <p class="sub">地球 · 游戏 · 宇宙 —— 三馆齐开，欢迎入馆</p>
-  </section>
-
-  <section class="halls">
-    <a class="hall" href="/earth/">
-      <span class="tag hot">旗舰 · 环游地球</span>
-      <div class="glyph">🌐</div>
-      <h2>地球厅</h2>
-      <p>3D 数字地球：世界遗产、地震火山、全球大学、500 强总部、大航海时代航线……旋转数字地球，答案尽在掌握。</p>
-      <span class="go">入厅旋转 →</span>
-    </a>
-    <a class="hall" href="/games/">
-      <span class="tag">精选 · 益智</span>
-      <div class="glyph">🕹️</div>
-      <h2>游戏厅</h2>
-      <p>数字扫雷、像素打砖块——精选成熟机台，即开即玩，无需下载。</p>
-      <span class="go">入厅开玩 →</span>
-    </a>
-    <a class="hall" href="/cosmos/">
-      <span class="tag">3D 科普</span>
-      <div class="glyph">🔭</div>
-      <h2>天文馆</h2>
-      <p>太阳系漫游、宇宙简史、大爆炸到今天的 3D 沉浸旅程——头顶的奇珍在此展开。</p>
-      <span class="go">入馆仰望 →</span>
-    </a>
-    <a class="hall" href="/about/">
-      <span class="tag">关于</span>
-      <div class="glyph">✒️</div>
-      <h2>馆主手记</h2>
-      <p>谁在经营这座作品馆、作品如何诞生——碳硅共创的故事，与联系方式。</p>
-      <span class="go">入馆相识 →</span>
-    </a>
+    <p class="sub">每天一篇手记 · 分享经验与观点 · 作品陈列三厅</p>
   </section>
 
   <section class="section">
-    <h2>最新入馆</h2>
-    <div class="feed">
-      <div class="item"><span class="date">2026-08-16</span><span class="txt">门户改版：三馆齐开 · 游戏厅精选上线<small>天文馆馆内放映 · 文学馆/地图馆打磨中</small></span></div>
-      <div class="item"><span class="date">2026-08-14</span><span class="txt">财富世界 500 强总部主题上线地球厅<small>500 点 · 坐标 100% 覆盖</small></span></div>
-      <div class="item"><span class="date">2026-08-13</span><span class="txt">UNESCO 世界遗产 Top 151 入馆<small>含濒危名录警示</small></span></div>
-      <div class="item"><span class="date">2026-08-12</span><span class="txt">地震火山主题与全球大学 200 强同日开厅<small>1600 震 + 500 火山 + 200 校</small></span></div>
+    <h2>最新手记</h2>
+    <div class="feed" id="notes-feed">
+      <div class="item"><span class="date">筹备中</span><span class="txt">第一篇手记撰写中<small>每天一篇 · 敬请期待</small></span></div>
+    </div>
+    <a class="link-all" href="/notes/">全部手记 →</a>
+    <a class="link-all" href="/feed.xml" style="margin-left:16px">RSS 订阅 ↗</a>
+  </section>
+
+  <section class="section">
+    <h2>作品展厅</h2>
+    <div class="works-grid">
+      <a class="hall" href="/earth/">
+        <span class="tag hot">旗舰 · 环游地球</span>
+        <div class="glyph">🌐</div>
+        <h2>地球厅</h2>
+        <p>3D 数字地球：世界遗产、地震火山、全球大学、500 强总部——旋转数字地球，答案尽在掌握。</p>
+        <span class="go">入厅旋转 →</span>
+      </a>
+      <a class="hall" href="/games/">
+        <span class="tag">精选 · 益智</span>
+        <div class="glyph">🕹️</div>
+        <h2>游戏厅</h2>
+        <p>数字扫雷、像素打砖块、记忆自测——精选成熟机台，即开即玩。</p>
+        <span class="go">入厅开玩 →</span>
+      </a>
+      <a class="hall" href="/cosmos/">
+        <span class="tag">3D 科普</span>
+        <div class="glyph">🔭</div>
+        <h2>天文馆</h2>
+        <p>太阳系漫游、宇宙简史、大爆炸到今天——馆内直接放映的 3D 沉浸旅程。</p>
+        <span class="go">入馆仰望 →</span>
+      </a>
     </div>
   </section>
 </main>

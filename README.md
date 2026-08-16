@@ -7,7 +7,8 @@
 
 ```
 数字殿堂/
-├── index.html            # 首页（三馆门户首页）
+├── index.html            # 首页（手记文章流 + 作品展厅）
+├── notes/                # 手记频道（公开文章，文件名 YYYY-MM-DD- 开头，自动列表+RSS+sitemap）
 ├── assets/style.css      # 夜幕金殿主题
 ├── games/                # 游戏厅（精选机台：数字扫雷 / 像素打砖块）
 ├── cosmos/ about/               # 天文馆 / 馆主手记

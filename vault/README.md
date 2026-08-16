@@ -21,12 +21,15 @@
 - 游戏：把文件移回 `games/` 并在 `games/index.html` 加卡片
 - 文学馆/地图馆：把目录名加回 `scripts/assemble.mjs` 的 `STATIC_PATHS`，并在各页导航/首页恢复入口
 
-## 发布一期手记的方法
+## 发布一篇公开手记的方法（自动博客流）
 
-1. 复制 `vault/notes-template.html` → `about/notes/YYYY-MM-DD-短标题.html`（如 `2026-08-20-first-note.html`）
-2. 填写标题 / meta 摘要 / 日期期数 / 正文
-3. 在 `about/index.html` 的"手记 · 随笔"feed 列表里加一条：`<a class="item" href="notes/文件名">…</a>`
-4. push 后 CI 自动上线（约 1 分钟）
+1. 复制 `vault/notes-template.html` → `notes/YYYY-MM-DD-短标题.html`
+   （文件名日期决定排序，**务必**用 `YYYY-MM-DD-` 开头，如 `2026-08-20-quota-cockpit.html`）
+2. 填写标题（`<title>` 和 `<h1>`）、meta 摘要、日期、分类、正文
+3. push → CI 自动上线（约 1 分钟）
+   - **列表自动更新**：`scripts/assemble.mjs` 扫描 notes/ 目录按日期倒序，
+     自动生成 ① 首页"最新手记"列表（前 12 条）② `/notes/` 全部列表 ③ `feed.xml` RSS ④ sitemap 条目
+   - 最新一篇自动置顶，以往文章自动下沉，无需手动改任何列表
 
 ## 发布一期投资研究笔记的方法（暗室 · 自动博客流）
 
