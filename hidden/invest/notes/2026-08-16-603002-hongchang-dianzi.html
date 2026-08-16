@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<!-- 分类：个股研究 -->
+<title>宏昌电子(603002) 个股研究 · 真实数据版</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"
+  onerror="this.remove();var s=document.createElement('script');s.src='https://cdn.bootcdn.net/ajax/libs/echarts/5.5.0/echarts.min.js';document.head.appendChild(s)"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--card2:#1c2128;--border:#30363d;--t1:#e6edf3;--t2:#8b949e;--t3:#6e7683;--red:#f85149;--blue:#58a6ff;--orange:#d29922;--green:#3fb950;--purple:#bc8cff;--redbg:rgba(248,81,73,.12);--bluebg:rgba(88,166,255,.12);--greenbg:rgba(63,185,80,.12);--orangebg:rgba(210,153,34,.14);--purplebg:rgba(188,140,255,.12)}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:"SF Mono",Menlo,Consolas,monospace}
+.hero{padding:48px 0 32px;border-bottom:1px solid var(--border)}
+.hero h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
+.hero h1 .code{color:var(--t2);font-weight:500;font-size:.65em}
+.hero .sub{color:var(--t2);font-size:14px;margin-top:8px}
+.badge{display:inline-block;background:var(--bluebg);color:var(--blue);border:1px solid rgba(88,166,255,.3);padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+.kpi.g::before{background:var(--green)}.kpi.o::before{background:var(--orange)}.kpi.p::before{background:var(--purple)}.kpi.r::before{background:var(--red)}
+.kpi .v{font-size:24px;font-weight:800;letter-spacing:-.5px}.kpi .l{color:var(--t2);font-size:12.5px;margin-top:4px}.kpi .s{color:var(--t3);font-size:11px;margin-top:2px}
+section{padding:42px 0;border-bottom:1px solid var(--border)}
+.stitle{font-size:20px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:10px}
+.stitle .num{background:var(--card2);border:1px solid var(--border);width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:var(--blue)}
+.sdesc{color:var(--t2);font-size:13px;margin-bottom:24px}
+.findings{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:.2s}
+.fc:hover{border-color:var(--blue);transform:translateY(-2px)}
+.fc .tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:5px;display:inline-block;margin-bottom:9px}
+.fc .tag.r{background:var(--redbg);color:var(--red)}.fc .tag.o{background:var(--orangebg);color:var(--orange)}.fc .tag.b{background:var(--bluebg);color:var(--blue)}.fc .tag.g{background:var(--greenbg);color:var(--green)}.fc .tag.p{background:var(--purplebg);color:var(--purple)}
+.fc h3{font-size:15.5px;font-weight:700;margin-bottom:9px}.fc p{color:var(--t2);font-size:13px}
+.hi{color:var(--t1);font-weight:600}.rd{color:var(--red);font-weight:600}.gn{color:var(--green);font-weight:600}.bl{color:var(--blue);font-weight:600}.og{color:var(--orange);font-weight:600}.pu{color:var(--purple);font-weight:600}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.chart-card .ct{font-size:14px;font-weight:600;margin-bottom:3px}.chart-card .cd{color:var(--t2);font-size:12px;margin-bottom:12px}
+.echart{width:100%;height:400px}.echart.sm{height:300px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--t2);font-size:12px;font-weight:600;background:var(--card2)}
+td .sm{color:var(--t3);font-size:11.5px}
+tr.hl td{background:rgba(88,166,255,.07)}
+.quote{background:var(--card);border-left:3px solid var(--orange);border-radius:0 12px 12px 0;padding:18px 22px;margin:18px 0;color:var(--t2);font-size:14px}
+.quote b{color:var(--t1)}
+.src{color:var(--t3);font-size:11.5px;margin-top:8px}
+.src a{color:#58a6ff;text-decoration:none}
+.tl{position:relative;margin:24px 0;padding-left:26px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--border)}
+.tl .ev{position:relative;margin-bottom:16px}
+.tl .ev::before{content:"";position:absolute;left:-24px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid var(--blue)}
+.tl .ev.done::before{border-color:var(--green);background:var(--green)}
+.tl .ev.now::before{border-color:var(--orange);box-shadow:0 0 8px rgba(210,153,34,.6)}
+.tl .ev .t{font-size:12px;color:var(--t3)}
+.tl .ev .n{font-size:14px;font-weight:700;margin:2px 0}
+.tl .ev .d{font-size:12.5px;color:var(--t2)}
+.warn{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--t2);margin:14px 0}
+footer{padding:32px 0 50px;color:var(--t3);font-size:12px}
+footer p{margin-bottom:5px}
+@media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.findings{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<div class="hero"><span class="badge">个股研究 · 真实财务/行情数据 · 2026-08-16</span>
+<h1>宏昌电子 <span class="code mono">603002</span>：阵痛之后，拐点已现</h1>
+<p class="sub">环氧树脂龙头 × 高端覆铜板新军 × GBF 膜替代者 ｜ 数据：baostock 日线(后复权) + 东方财富 F10 财务 + 公司公告（截至 2026-08-14 收盘）</p>
+<div class="kpis">
+<div class="kpi g"><div class="v">15.99 元</div><div class="l">最新收盘（08-14，+5.7%）</div><div class="s">年内 <span style="color:var(--green)">+111.3%</span>｜52周区间(后复权) 12.45 ~ 48.54</div></div>
+<div class="kpi g"><div class="v">+136~146%</div><div class="l">2026H1 业绩预增</div><div class="s">预净利 3,860~4,018万，主因覆铜板需求向好</div></div>
+<div class="kpi o"><div class="v">617 倍</div><div class="l">PE-TTM（08-14）</div><div class="s">PB 5.25 ｜ 利润基数极低，市场买的是未来</div></div>
+<div class="kpi r"><div class="v">4.9% vs 59%</div><div class="l">毛利率：宏昌 vs 宏和(26Q1)</div><div class="s">同赛道不同命，见第 03 节</div></div>
+</div></div>
+
+<!-- 01 -->
+<section><div class="stitle"><span class="num">01</span>核心结论（数据更新后）</div>
+<p class="sdesc">用户提供的研究逻辑经真实数据核验——大方向成立，且拐点比预期来得更早。</p>
+<div class="findings">
+<div class="fc"><span class="tag g">已验证</span><h3>① "增收不增利"被数据坐实，且已现拐点</h3><p>2025年营收 <span class="hi">30.76亿(+43.5%)</span> 但归母仅 <span class="hi">0.354亿(-30.1%)</span>；2026Q1 更极端：营收 +76.8%，归母 <span class="rd">仅46.9万(-92.7%)</span>。但 <b>7/15 业绩预增公告</b>：2026H1 净利 3,860~4,018万（<span class="gn">+136~146%</span>），倒算 <b>Q2 单季约 3,813~3,971万</b>——环比 Q1 暴增约 <span class="gn">80倍</span>，公司明确归因"<span class="hi">覆铜板行业需求向好</span>"。阵痛期结束的信号已经出现。</p></div>
+<div class="fc"><span class="tag g">已验证</span><h3>② 覆铜板产线与认证属实（AMD 已核实）</h3><p>2025年报+投资者互动确认：无锡宏仁设计产能<span class="gn">高阶覆铜板 1440万张/年</span>；珠海宏仁新建 <span class="gn">720万张/年</span> 已投产；<span class="hi">GA-680 满足 AMD 平台 A1 等级</span>、GA-686 满足 AMD 更高等级；高速板已通过客户认证并<span class="gn">取得小量订单</span>。<span class="rd">注：Intel 认证未见公开披露核实</span>，以"AMD 体系认证+客户认证"表述更严谨。</p></div>
+<div class="fc"><span class="tag p">部分验证</span><h3>③ GBF 膜替代 ABF：验证中，属实</h3><p>GBF 增层膜与<span class="hi">中国台湾晶化科技合作开发</span>，低损耗环氧体系，处于<span class="og">客户验证/终端认证阶段，尚未放量</span>。外部催化：味之素 ABF 对华砍单 30%，业内预计未来 2-3 年是国产积层膜验证与产能释放窗口。另有 500 吨级 PPO/碳氢树脂中试线调试完成。</p></div>
+<div class="fc"><span class="tag o">新增发现</span><h3>④ 股价已先行，且波动极端</h3><p>年内 <span class="gn">+111%</span>，但路径剧烈：6月冲至后复权 <span class="rd">48.5</span>（两个月 3 倍），7月腰斩至 <span class="rd">22.8</span>（-49%），当前 29.6。当前 PE-TTM <span class="rd">617倍</span>——市场已在为覆铜板+GBF 定价，<b>逻辑兑现有安全垫，估值没有</b>。</p></div>
+</div>
+</section>
+
+<!-- 02 -->
+<section><div class="stitle"><span class="num">02</span>财务真容：一张表看清五年</div>
+<p class="sdesc">东方财富 F10 主要指标，单位：亿元 ｜ 灰色小字为同比</p>
+<div class="chart-card">
+<table>
+<tr><th>报告期</th><th>营收</th><th>同比</th><th>归母净利</th><th>同比</th><th>毛利率</th></tr>
+<tr><td>2021年报</td><td>44.53</td><td>+77.8%</td><td>3.75</td><td>+67.2%</td><td>14.6%</td></tr>
+<tr><td>2022年报</td><td>30.22</td><td>-32.1%</td><td>5.57 *</td><td>+48.6%</td><td>9.1%</td></tr>
+<tr><td>2023年报</td><td>22.40</td><td>-25.9%</td><td>0.87</td><td>-84.4%</td><td>8.2%</td></tr>
+<tr><td>2024年报</td><td>21.44</td><td>-4.3%</td><td>0.51</td><td>-41.6%</td><td>6.8%</td></tr>
+<tr><td>2025年报</td><td>30.76</td><td class="gn">+43.5%</td><td>0.35</td><td class="rd">-30.1%</td><td>5.7%</td></tr>
+<tr class="hl"><td>2026Q1</td><td>9.89</td><td class="gn">+76.8%</td><td class="rd">0.005</td><td class="rd">-92.7%</td><td class="rd">4.9%</td></tr>
+<tr class="hl"><td>2026H1 预告</td><td>—</td><td>—</td><td class="gn">0.39~0.40</td><td class="gn">+136~146%</td><td>—</td></tr>
+</table>
+<p class="src">* 2022 年归母 5.57亿 远超当年毛利 2.76亿，含大额非经常性损益，不代表经营利润。<b>毛利率 = 毛利/营收（据 F10 毛利额计算）</b></p>
+</div>
+<div class="chart-card"><div class="ct">营收 vs 归母净利（2021-2026Q1）</div>
+<div class="cd">左轴营收(亿)，右轴归母(亿)——收入扩张与利润坍缩的剪刀差，2026H1 预告首次收敛</div>
+<div class="echart sm" id="c1"></div></div>
+<div class="findings">
+<div class="fc"><span class="tag r">诊断</span><h3>利润去哪了？</h3><p>毛利率从 2021 年 <span class="rd">14.6% 一路滑至 4.9%</span>：① 环氧树脂价格战压价；② 新产线折旧前置（无锡/珠海宏仁、珠海 15.5万吨树脂）；③ 爬坡期利用率不足。三项均属<span class="hi">时间可解</span>的投入期成本，而非资产减值式的结构性恶化。</p></div>
+<div class="fc"><span class="tag g">信号</span><h3>Q2 单季利润的量级跳变</h3><p>Q1 归母 46.9万 → Q2 单季约 <span class="gn">3,900万</span>。若 H2 环比持平，2026 全年归母约 <span class="hi">0.8亿+</span>（同比 +130%+）；若覆铜板继续放量，弹性更大。<b>这是"爬坡兑现"最直接的财务证据。</b></p></div>
+</div>
+</section>
+
+<!-- 03 -->
+<section><div class="stitle"><span class="num">03</span>宏昌 vs 宏和：数据版的"同姓不同命"</div>
+<p class="sdesc">同一个产业链，技术路线不同，财务曲线完全分岔</p>
+<div class="chart-card">
+<table>
+<tr><th>指标（2026 最新）</th><th>宏昌电子 603002</th><th>宏和科技 603256</th></tr>
+<tr><td>2026 营收增速</td><td>Q1 +76.8%</td><td class="gn">H1 +90.4%</td></tr>
+<tr><td>2026 归母净利</td><td class="rd">Q1 46.9万 / H1预告 0.39亿</td><td class="gn">H1 3.80亿 (+334%)</td></tr>
+<tr><td>毛利率（2026）</td><td class="rd">4.9% (Q1)</td><td class="gn">59.3% (H1)</td></tr>
+<tr><td>PE-TTM（08-14）</td><td>617 倍</td><td>282 倍</td></tr>
+<tr><td>PB（08-14）</td><td class="gn">5.25</td><td class="rd">47.3</td></tr>
+<tr><td>年内涨幅</td><td class="gn">+111%</td><td class="gn">+306%</td></tr>
+<tr><td>所处技术路线</td><td class="og">环氧体系，不在 M8(GPU) 路线内</td><td class="gn">二代电子布 = M8 主流材料，日本紧缺替代</td></tr>
+</table></div>
+<div class="chart-card"><div class="ct">股价对比（2024-01 = 100，后复权月线）</div>
+<div class="cd">宏和 2025-06 起飞（M8 紧缺逻辑），宏昌 2026-01 跟随（覆铜板+GBF 逻辑）——启动差了半年</div>
+<div class="echart sm" id="c2"></div></div>
+<div class="quote">
+<b>为什么宏昌此前不如宏和——数据完全支持原判断：</b>宏和吃的是"紧缺涨价"（毛利率 59%），宏昌的环氧树脂在价格战里（毛利率 4.9%）。<b>但注意一个新事实：</b>宏和 PB 已达 <span class="rd">47倍</span>，宏昌仅 <span class="gn">5.3倍</span>——市场对宏和的紧缺定价已非常充分，而宏昌的覆铜板/GBF 兑现才刚开始进入报表。<b>赔率结构已经逆转。</b>
+</div>
+</section>
+
+<!-- 04 -->
+<section><div class="stitle"><span class="num">04</span>两大看点：公告级事实核查</div>
+<p class="sdesc">每一条都标注来源与核实状态，区分"已证实"与"未证实"</p>
+<div class="chart-card"><div class="ct">看点一：覆铜板——"生益模式"的组件已就位</div>
+<table>
+<tr><th>要素</th><th>状态</th><th>事实（来源）</th></tr>
+<tr><td>上游树脂</td><td class="gn">自有</td><td>珠海宏昌环氧树脂总产能 15.5万吨/年（公司披露）</td></tr>
+<tr><td>电子布协同</td><td class="og">生态</td><td>与宏和同处电子材料上游生态，"树脂+布→板"垂直整合逻辑成立（逻辑推断，非股权绑定表述）</td></tr>
+<tr><td>产能</td><td class="gn">已建成</td><td>无锡宏仁 1440万张/年 + 珠海宏仁 720万张/年已投产（投资者互动 2026-04-23）</td></tr>
+<tr><td>AMD 认证</td><td class="gn">已证实</td><td>GA-680 满足 AMD 平台 A1 等级，GA-686 对应更高等级（2025年报）</td></tr>
+<tr><td>Intel 认证</td><td class="rd">未核实</td><td>公开渠道未见披露，建议以公司互动平台答复为准</td></tr>
+<tr><td>订单</td><td class="gn">已落地</td><td>高速板通过客户认证，取得小量订单（2025年报/财联社）</td></tr>
+<tr><td>需求兑现</td><td class="gn">进行中</td><td>2026H1 预增公告明确归因"覆铜板行业需求向好"</td></tr>
+</table></div>
+<div class="chart-card"><div class="ct">看点二：GBF 增层膜——ABF 国产替代期权</div>
+<table>
+<tr><th>要素</th><th>状态</th><th>事实（来源）</th></tr>
+<tr><td>合作开发</td><td class="gn">已证实</td><td>与中国台湾晶化科技合作，低损耗环氧体系（浙商证券深度报告）</td></tr>
+<tr><td>验证状态</td><td class="og">验证中</td><td>处于客户验证/终端认证阶段，尚未放量（行业报告）</td></tr>
+<tr><td>外部催化</td><td class="gn">已发生</td><td>味之素 ABF 对华砍单 30%，国产替代窗口 2-3 年（中财网/电子技术应用）</td></tr>
+<tr><td>配套树脂</td><td class="og">中试完成</td><td>500 吨级 PPO/碳氢树脂中试线调试完成</td></tr>
+<tr><td>潜在优势</td><td class="og">待验证</td><td>有信息称与玻璃基板结合性优于 ABF，华为玻璃基载板试用（未经公司公告证实）</td></tr>
+</table></div>
+<div class="quote" style="border-left-color:var(--purple)">
+<b>推理时代的卡位逻辑保留：</b>训练时代（GPU/英伟达/M8）宏昌的环氧体系够不到；推理时代（CPU/Intel+AMD）板材要求相对友好，而宏昌恰好拿的是 <b>AMD 体系认证</b>（Intel 待核实），产能又是现成的——<b>如果时代切换，宏昌是高端覆铜板的边际增量</b>。这个逻辑方向合理，但兑现节奏取决于推理服务器出货，需持续跟踪。
+</div>
+</section>
+
+<!-- 05 -->
+<section><div class="stitle"><span class="num">05</span>交易结构：情绪驱动的极端波动</div>
+<p class="sdesc">宏昌电子非融资融券标的，本节聚焦筹码与情绪结构</p>
+<div class="warn">
+<b>⚠️ 该股非两融标的，无杠杆资金参与</b>，股价波动完全由<span class="hi">游资/散户情绪</span>驱动——这与 6-7 月"两个月3倍→腰斩"的极端走势特征一致（08-14 换手率仍高达 8.7%）。没有融资盘的"出清-见底"信号可参考，顶部与底部都更难用杠杆指标预判，只能靠趋势与量能判断。
+</div>
+<div class="chart-card"><div class="ct">宏昌电子月线（后复权，2024-2026）</div>
+<div class="cd">2026-06 冲顶 48.5 → 07 腰斩至 22.8 → 当前 29.6：典型的题材股情绪周期</div>
+<div class="echart sm" id="c3"></div></div>
+</section>
+
+<!-- 06 -->
+<section><div class="stitle"><span class="num">06</span>风险清单（按杀伤力排序）</div>
+<p class="sdesc">真实数据暴露出的、比概念阶段更具体的风险</p>
+<div class="findings">
+<div class="fc"><span class="tag r">风险一</span><h3>估值风险：617 倍 PE 已透支大量预期</h3><p>Q2 拐点已被市场提前定价（年内 +111%）。若 H2 环比走平而非续增，或覆铜板放量节奏放缓，估值收缩的空间很大——7 月那次 -49% 就是预演。</p></div>
+<div class="fc"><span class="tag r">风险二</span><h3>GBF 验证失败/延期</h3><p>ABF 垄断十年未破，国产积层膜尚无放量先例。GBF 是估值期权的最大成分，验证不通过则期权归零。该部分应按风险投资估值，不给确定性溢价。</p></div>
+<div class="fc"><span class="tag o">风险三</span><h3>毛利率修复不及预期</h3><p>毛利率连续五年下滑（14.6%→4.9%），H1 预增主要靠覆铜板"量"，若环氧价格战继续拖后腿，净利率修复会被稀释。跟踪中报毛利率是否止跌。</p></div>
+<div class="fc"><span class="tag o">风险四</span><h3>筹码不稳，情绪退潮流动性风险大</h3><p>高换手（8.7%）+ 纯情绪驱动的筹码结构极不稳定，缺乏长线资金沉淀；题材热度退潮时回撤会远超基本面变化幅度，仓位控制比逻辑判断更重要。</p></div>
+</div>
+</section>
+
+<!-- 07 -->
+<section><div class="stitle"><span class="num">07</span>结论与跟踪清单</div>
+<div class="findings">
+<div class="fc"><span class="tag b">定性</span><h3>一家"报表拐点刚出现"的路线卡位型标的</h3><p>原判断"已经历阵痛、即将迎来硕果"被数据升级为：<span class="gn">阵痛结束的财务证据（Q2 利润跳变）已出现</span>，硕果（覆铜板放量+GBF 达产）在途。基本盘（环氧）现金牛失血中但可控，成长（CCL）开始进报表，期权（GBF）未定价完成。与宏和相比，<b>宏和胜率高原赔率低，宏昌胜率渐升而赔率高</b>。</p></div>
+<div class="fc"><span class="tag g">Catalyst Watch</span><h3>五个可证伪的跟踪点</h3><p>① 8月底中报：毛利率是否止跌、覆铜板收入单独披露；② GBF 验证结果/达产公告；③ AMD 平台高速板订单从"小量"到"批量"的公告措辞变化；④ Intel 认证有无官方确认；⑤ 环氧树脂价格指数企稳信号。任何一条证伪都应重检逻辑。</p></div>
+</div>
+<div class="quote" style="border-left-color:var(--green)">
+<b>一句话收尾：</b>真实数据把故事改写成了进度条——覆铜板已从"认证"走到"订单进报表"，GBF 从"概念"走到"验证中"。阵痛已过是真的，但 617 倍 PE 提醒你：<b>好消息已经不便宜，仓位要给跟踪留余地。</b>
+</div>
+</section>
+
+<footer>
+<p><b style="color:var(--t2)">数据来源</b>：baostock 日线（后复权，截至 2026-08-14）｜东方财富 F10 财务主要指标｜公司公告（2025年报、2026-07-15 业绩预增、2026-04-23 投资者互动）</p>
+<p><b style="color:var(--t2)">公开资料</b>：<a href="https://www.nbd.com.cn/articles/2026-04-23/4354845.html">每经·产能披露</a>｜<a href="https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-07-15/603002_20260715_C4VM.pdf">上交所·业绩预增公告</a>｜<a href="https://www.cls.cn/detail/2353622">财联社·高速板认证</a>｜<a href="https://www.vzkoo.com/read/1136841468780001f4b5c1c532f8.html">浙商证券·深度报告</a>｜<a href="https://www.cfi.net.cn/p20260808000095.html">中财网·ABF国产替代</a>｜<a href="https://xueqiu.com/9592056077/376772888">雪球·GBF讨论</a></p>
+<p><b style="color:var(--t2)">免责声明</b>：本报告基于公开数据与用户提供的研究逻辑整理，Intel 认证未获公开核实。不构成投资建议。</p>
+<p style="margin-top:12px">生成时间 2026-08-16 ｜ v2 真实数据版</p>
+</footer>
+</div>
+
+<script>
+const A={textStyle:{color:'#8b949e'},tooltip:{backgroundColor:'#161b22',borderColor:'#30363d',textStyle:{color:'#e6edf3'}}};
+function mk(id,opt){const c=echarts.init(document.getElementById(id));c.setOption({...A,...opt});return c}
+const M=["24-01","24-02","24-03","24-04","24-05","24-06","24-07","24-08","24-09","24-10","24-11","24-12","25-01","25-02","25-03","25-04","25-05","25-06","25-07","25-08","25-09","25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08"];
+const HC=[8.89,9.14,10.2,8.83,8.81,8.64,9.0,8.02,9.62,10.16,10.78,9.9,9.95,11.41,10.93,10.27,10.34,12.15,13.0,15.11,14.24,13.58,13.06,13.67,17.15,21.35,18.2,25.56,30.67,44.73,22.78,29.59];
+const HH=[6.72,6.49,7.9,7.28,7.47,7.34,7.1,7.47,8.21,8.75,10.49,8.68,8.95,9.61,8.93,9.38,11.61,15.41,24.47,43.96,36.25,36.8,33.4,38.26,56.3,82.94,72.82,123.81,210.14,275.92,133.24,160.33];
+const charts=[];
+// c1 营收vs净利
+charts.push(mk('c1',{tooltip:{...A.tooltip,trigger:'axis'},legend:{data:['营收(亿)','归母净利(亿)'],textStyle:{color:'#8b949e'},top:0},
+grid:{left:50,right:55,top:36,bottom:28},
+xAxis:{type:'category',data:['2021','2022','2023','2024','2025','2026Q1','2026H1E'],axisLine:{lineStyle:{color:'#30363d'}}},
+yAxis:[{type:'value',splitLine:{lineStyle:{color:'#21262d'}}},{type:'value',splitLine:{show:false}}],
+series:[
+{name:'营收(亿)',type:'bar',data:[44.53,30.22,22.40,21.44,30.76,9.89,null],itemStyle:{color:'#58a6ff',borderRadius:[4,4,0,0]}},
+{name:'归母净利(亿)',type:'line',yAxisIndex:1,smooth:true,data:[3.75,5.57,0.87,0.51,0.35,0.005,0.395],lineStyle:{width:3,color:'#f85149'},itemStyle:{color:'#f85149'},
+markPoint:{data:[{coord:['2026Q1',0.005],symbolSize:52,itemStyle:{color:'#d29922'},label:{formatter:'Q1谷底',color:'#0d1117',fontWeight:700,fontSize:10}},{coord:['2026H1E',0.395],symbolSize:52,itemStyle:{color:'#3fb950'},label:{formatter:'拐点',color:'#0d1117',fontWeight:700,fontSize:10}}]}}]}));
+// c2 归一化对比
+const n=a=>a.map(v=>+(v/a[0]*100).toFixed(1));
+charts.push(mk('c2',{tooltip:{...A.tooltip,trigger:'axis'},legend:{data:['宏昌电子','宏和科技'],textStyle:{color:'#8b949e'},top:0},
+grid:{left:50,right:20,top:36,bottom:28},
+xAxis:{type:'category',data:M,axisLine:{lineStyle:{color:'#30363d'}}},
+yAxis:{type:'value',name:'2024-01=100',splitLine:{lineStyle:{color:'#21262d'}}},
+series:[
+{name:'宏昌电子',type:'line',smooth:true,data:n(HC),lineStyle:{width:2.5,color:'#58a6ff'},itemStyle:{color:'#58a6ff'},showSymbol:false,
+markPoint:{data:[{coord:['26-06',503],itemStyle:{color:'#58a6ff'},label:{formatter:'+403%',color:'#0d1117',fontWeight:700,fontSize:10}}]}},
+{name:'宏和科技',type:'line',smooth:true,data:n(HH),lineStyle:{width:2.5,color:'#3fb950'},itemStyle:{color:'#3fb950'},showSymbol:false,
+markPoint:{data:[{coord:['26-05',3129],itemStyle:{color:'#3fb950'},label:{formatter:'+3029%',color:'#0d1117',fontWeight:700,fontSize:10}}]}}]}));
+// c3 宏昌月线
+charts.push(mk('c3',{tooltip:{...A.tooltip,trigger:'axis'},grid:{left:50,right:20,top:24,bottom:28},
+xAxis:{type:'category',data:M,axisLine:{lineStyle:{color:'#30363d'}}},
+yAxis:{type:'value',name:'后复权价',splitLine:{lineStyle:{color:'#21262d'}}},
+series:[{type:'line',smooth:true,data:HC,lineStyle:{width:2.5,color:'#bc8cff'},itemStyle:{color:'#bc8cff'},showSymbol:false,areaStyle:{color:'rgba(188,140,255,.12)'},
+markPoint:{data:[{coord:['26-06',44.73],itemStyle:{color:'#f85149'},label:{formatter:'顶 44.7',color:'#0d1117',fontWeight:700,fontSize:10}},{coord:['26-07',22.78],itemStyle:{color:'#d29922'},label:{formatter:'-49%',color:'#0d1117',fontWeight:700,fontSize:10}},{coord:['26-08',29.59],itemStyle:{color:'#3fb950'},label:{formatter:'15.99',color:'#0d1117',fontWeight:700,fontSize:10}}]}}]}));
+window.addEventListener('resize',()=>charts.forEach(c=>c.resize()));
+</script>
+<div style="max-width:1180px;margin:0 auto;padding:8px 24px 48px;"><div style="padding:12px 16px;border:1px solid #30363d;border-radius:8px;background:rgba(210,153,34,.06);color:#8b949e;font-size:13px;line-height:1.7;">⚠️ <strong style="color:#d29922">免责声明</strong>：本文为个人学习与研究记录，不构成任何投资建议。市场有风险，据此操作盈亏自负。</div></div>
+</body></html>
