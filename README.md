@@ -136,5 +136,5 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 | 地球厅 | [digital-earth-series](https://github.com/historyreview-code/digital-earth-series)（monorepo，构建注入） |
 | 游戏厅 | [Numsweeper](https://github.com/historyreview-code/Numsweeper)（数字扫雷）· 像素打砖块（收录于 games/）；其余机台暂存 vault/games/ 打磨 |
 | 文学馆（未发布） | [xiaoshan](https://github.com/historyreview-code/xiaoshan) · [wenyin](https://github.com/historyreview-code/wenyin)（作品待打磨，暂不对外） |
-| 天文馆 | [cosmic-journey](https://github.com/historyreview-code/cosmic-journey) · [cosmic-evolution](https://github.com/historyreview-code/cosmic-evolution) · [solar-ecliptic](https://github.com/historyreview-code/solar-ecliptic)（各自部署 GitHub Pages，天文馆页 iframe 放映） |
+| 天文馆 | [cosmic-journey](https://github.com/historyreview-code/cosmic-journey)（宇宙之旅五集 · 云健男声旁白 · 放映厅自动连播）· [cosmic-evolution](https://github.com/historyreview-code/cosmic-evolution)（宇宙演化全景）；solar-ecliptic 已下架（内容并入第一集） |
 | 地图馆（未发布） | europe-orchestra-tour · caucasus-v2 · uk-drive · caucasus-map（旅游计划工具，内部开发，暂不发布） |
