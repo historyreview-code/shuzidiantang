@@ -32,8 +32,11 @@ npm run preview     # 本地预览 dist/
 不对外展示的主题（如投资研究）放在 `hidden/` 下：首页/导航/站点地图均无入口，
 `robots.txt` 已屏蔽搜索引擎。发布新暗室：
 
-1. 建 `hidden/<名字>/index.html`（可复制 `hidden/index.html` 改内容；页面自带 noindex）
+1. 建 `hidden/<名字>/index.html`（可复制 `hidden/invest/index.html` 改内容；页面自带 noindex）
 2. 直接访问 `https://shuzidiantang.com/hidden/<名字>/`，把地址只发给想给的人
+
+> 现成暗室：**投资研究** `hidden/invest/`（每周笔记+文章，发文流程见 `vault/README.md`，
+> 文章模板 `vault/invest-article-template.html`，含免责声明）。
 
 > ⚠️ 说明：这是"路径隐藏"而非真正的鉴权——知道地址即可访问（GitHub Pages 纯静态无法做
 > 密码验证）。若未来需要真保护：备案通过后在轻量服务器用 Nginx basic-auth，或使用带

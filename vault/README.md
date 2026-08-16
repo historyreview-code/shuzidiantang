@@ -13,6 +13,7 @@
 | `novels/`（仓库根目录） | 文学馆：《崤山》《玦·秦晋之好》 | 暂不对外，作品待打磨 |
 | `maps/`（仓库根目录） | 地图馆：旅游计划工具 | 内部开发，定位未定 |
 | `vault/notes-template.html` | 手记/随笔文章模板 | 发布新一期手记时复制此模板 |
+| `vault/invest-article-template.html` | 投资研究文章模板（暗室） | 发布投资笔记时复制此模板 |
 | `vault/earth-themes-voyage/` | 大航海时代 SEO 落地页 | 主题暂下线（个人储备），代码仍在 monorepo `packages/themes/voyage` |
 
 ## 恢复发布的方法
@@ -26,3 +27,12 @@
 2. 填写标题 / meta 摘要 / 日期期数 / 正文
 3. 在 `about/index.html` 的"手记 · 随笔"feed 列表里加一条：`<a class="item" href="notes/文件名">…</a>`
 4. push 后 CI 自动上线（约 1 分钟）
+
+## 发布一期投资研究笔记的方法（暗室）
+
+1. 复制 `vault/invest-article-template.html` → `hidden/invest/notes/YYYY-MM-DD-短标题.html`（如 `2026-08-20-fed-rate.html`）
+2. 填写标题 / meta 摘要 / 日期期数 / 正文（模板已含免责声明，保留勿删）
+3. 在 `hidden/invest/index.html` 的笔记列表**最上面**加一条：
+   `<a class="item" href="notes/文件名"><span class="date">日期</span><span class="txt">标题<small>分类</small></span></a>`
+4. push 后 CI 自动上线（约 1 分钟），访问 `https://shuzidiantang.com/hidden/invest/`
+   - 地址只发给受邀的人；`robots.txt` 已屏蔽 /hidden/，各页带 noindex，首页/导航无入口
