@@ -11,5 +11,12 @@
   <url><loc>https://shuzidiantang.com/games/pixel-breaker.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://shuzidiantang.com/games/naoliceshi.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://shuzidiantang.com/cosmos/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/ecliptic.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/galaxy.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/cosmos.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/history.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/missions.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://shuzidiantang.com/cosmos/articles/evolution.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://shuzidiantang.com/about/</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
 </urlset>
