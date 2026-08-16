@@ -8,12 +8,8 @@
   <url><loc>https://shuzidiantang.com/earth/themes/f500</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://shuzidiantang.com/earth/themes/voyage</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://shuzidiantang.com/games/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://shuzidiantang.com/games/pacman.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://shuzidiantang.com/games/numsweeper.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://shuzidiantang.com/games/pixel-breaker.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://shuzidiantang.com/games/rotate-labyrinth.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://shuzidiantang.com/games/ocean-drift.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://shuzidiantang.com/games/retro-pool/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://shuzidiantang.com/novels/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://shuzidiantang.com/cosmos/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://shuzidiantang.com/about/</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
 </urlset>

@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumSweeper BL v2.5</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    padding: 20px;
+    overflow: hidden;
+  }
+  .game-wrapper { contain: layout style;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .game-wrapper.shake {
+    animation: shake 0.5s ease-out;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translate(0); }
+    10% { transform: translate(-8px, 4px); }
+    20% { transform: translate(8px, -4px); }
+    30% { transform: translate(-6px, 3px); }
+    40% { transform: translate(6px, -3px); }
+    50% { transform: translate(-4px, 2px); }
+    60% { transform: translate(4px, -2px); }
+    70% { transform: translate(-2px, 1px); }
+    80% { transform: translate(2px, -1px); }
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #e2e8f0;
+    letter-spacing: 2px;
+  }
+  .score-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 12px 28px;
+  }
+  .score-label {
+    font-size: 12px;
+    color: #64748b;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .score-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #38bdf8;
+    font-variant-numeric: tabular-nums;
+  }
+  .score-value .total { color: #475569; font-size: 20px; }
+  .btn-new {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    font-size: 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-new:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4); }
+  .btn-new:active { transform: translateY(0); }
+  .hint-bar {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 10px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #94a3b8;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .hint-bar .highlight { color: #fbbf24; font-weight: 600; }
+  .hint-bar .danger { color: #ef4444; font-weight: 600; }
+  .grid-canvas { display: inline-block; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); max-width: 100%; height: auto; touch-action: manipulation; }
+.grid-container { contain: layout;
+    display: inline-grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    background: rgba(255,255,255,0.03);
+    padding: 4px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .cell {
+    width: 56px;
+    height: 56px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.6);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s, transform 0.08s;
+    position: relative;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
+  .cell:hover:not(.revealed):not(.game-over) {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(51, 65, 85, 0.6);
+    z-index: 2;
+  }
+  .cell:active:not(.revealed) { transform: scale(0.93); }
+  .cell.revealed {
+    background: var(--cell-bg);
+    border-color: var(--cell-border);
+    cursor: default;
+    transform: none;
+  }
+  .cell .cell-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+  .cell .cell-hint {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 1px;
+    display: none;
+  }
+  .cell:not(.revealed) .cell-hint.show { display: block; }
+  .cell.revealed .cell-value { color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.3); }
+  .cell.neighbor-highlight {
+    border-color: rgba(251, 191, 36, 0.6) !important;
+    background: rgba(251, 191, 36, 0.1) !important;
+  }
+  .cell.exploded {
+    animation: explode 0.6s ease-out;
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.3) !important;
+  }
+  @keyframes explode {
+    0% { transform: scale(1); background: #fef2f2; box-shadow: 0 0 40px rgba(255,100,50,0.8); }
+    30% { transform: scale(1.25); background: #fca5a5; }
+    100% { transform: scale(1); background: rgba(239, 68, 68, 0.3); }
+  }
+  .cell.risk-low { border-color: rgba(74, 222, 128, 0.3); }
+  .cell.risk-mid { border-color: rgba(251, 191, 36, 0.3); }
+  .cell.risk-high { border-color: rgba(249, 115, 22, 0.3); }
+  .cell.risk-extreme { border-color: rgba(239, 68, 68, 0.35); }
+  .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #64748b;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .overlay-card {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 40px 48px;
+    text-align: center;
+    max-width: 400px;
+    animation: slideUp 0.4s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .overlay-card h2 { font-size: 28px; color: #f1f5f9; margin-bottom: 8px; }
+  .overlay-card .explosion-detail {
+    color: #94a3b8;
+    font-size: 14px;
+    margin: 12px 0 20px;
+    line-height: 1.8;
+  }
+  .overlay-card .explosion-detail span { color: #ef4444; font-weight: 700; }
+  .overlay-card .final-score {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6366f1, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .overlay-card button { margin-top: 24px; }
+  #fireworks-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 200;
+  }
+  .screen-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 180, 80, 0.2);
+    pointer-events: none;
+    z-index: 150;
+    animation: flash 0.4s ease-out forwards;
+  }
+  @keyframes flash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .dist-panel {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .dist-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 10px);
+    grid-template-rows: repeat(10, 10px);
+    gap: 1px;
+  }
+  .dist-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: #334155;
+    transition: background 0.3s;
+  }
+  .dist-dot.revealed { background: #4ade80; }
+  .dist-stats {
+    font-size: 11px;
+    color: #64748b;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .dist-stats span { white-space: nowrap; }
+  .dist-stats .r-low { color: #4ade80; }
+  .dist-stats .r-mid { color: #facc15; }
+  .dist-stats .r-high { color: #fb923c; }
+  .dist-stats .r-ext { color: #ef4444; }
+  .cell-score {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .cell.best-move {
+    border-color: rgba(251, 191, 36, 0.8) !important;
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.4), inset 0 0 10px rgba(251, 191, 36, 0.12);
+    animation: bestPulse 1.2s ease-in-out infinite;
+    z-index: 3;
+  }
+  @keyframes bestPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.3), inset 0 0 6px rgba(251, 191, 36, 0.08); }
+    50% { box-shadow: 0 0 24px rgba(251, 191, 36, 0.55), inset 0 0 16px rgba(251, 191, 36, 0.22); }
+  }
+  .cell.doomed::after {
+    content: '✕';
+    position: absolute;
+    font-size: 22px;
+    color: rgba(239, 68, 68, 0.5);
+    pointer-events: none;
+  }
+  .cell.outer-dimmed {
+    opacity: 0.4;
+    border-style: dashed;
+  }
+  .cell.urgent-target {
+    border-color: rgba(255, 100, 50, 0.6) !important;
+    box-shadow: 0 0 8px rgba(255, 100, 50, 0.25);
+  }
+  .phase-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .phase-badge.inner-phase {
+    background: rgba(139, 92, 246, 0.25);
+    color: #c4b5fd;
+  }
+  .phase-badge.border-phase {
+    background: rgba(74, 222, 128, 0.2);
+    color: #86efac;
+  }
+  .endgame-badge {
+    display: inline-block;
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    animation: endPulse 0.8s ease-in-out infinite;
+  }
+  @keyframes endPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .strategy-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-strategy {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    padding: 5px 14px;
+    font-size: 11px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-strategy:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+
+  .btn-undo {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+    padding: 5px 14px;
+    font-size: 11px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-undo:active { transform: scale(0.93); }
+  .btn-undo:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+  .strategy-result {
+    font-size: 12px;
+    color: #64748b;
+    min-height: 18px;
+  }
+  .strategy-result .highlight { color: #fbbf24; font-weight: 600; }
+  .strategy-result .win { color: #4ade80; font-weight: 600; }
+  .strategy-result .lose { color: #ef4444; }
+  @media (max-width: 640px) {
+    .cell { width: 32px; height: 32px; border-radius: 4px; }
+    .cell .cell-value { font-size: 13px; }
+    .cell .cell-hint { font-size: 8px; }
+    .grid-container { gap: 2px; padding: 2px; }
+    h1 { font-size: 18px; }
+    .score-value { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="fireworks-canvas"></canvas>
+<div class="game-wrapper" id="gameWrapper">
+  <div class="header">
+    <h1>NumSweeper BL v2.5</h1>
+    <div class="score-box">
+      <div class="score-label">已翻开</div>
+      <div class="score-value"><span id="score">0</span><span class="total">/100</span></div>
+    </div>
+    <button class="btn-new" id="undoBtn" onclick="undoLastMove()" disabled style="opacity:0.4">↩ 撤回</button>
+    <button class="btn-new" onclick="resetGame()">新游戏</button>
+  </div>
+  <div class="hint-bar" id="hintBar">悬停查看策略提示 | <span class="phase-badge">中央启动</span></div>
+  <canvas class="grid-canvas" id="gridCanvas" width="596" height="596"></canvas>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,0.4)"></div>强烈推荐</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#facc15;box-shadow:0 0 6px rgba(250,204,21,0.3)"></div>可以点击</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>风险偏高</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>极不推荐</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,0.6)"></div>最优选择</div>
+    <div class="legend-item" style="color:#ef4444"><b>✕</b> 必爆</div>
+  </div>
+  <div class="dist-panel" id="distPanel"></div>
+  <div class="strategy-panel" id="strategyPanel">
+    <button class="btn-strategy" onclick="compareStrategies()">对比当前棋盘</button>
+    <button class="btn-strategy" onclick="batchSimulate(100)">批量模拟 x100</button>
+    <span class="strategy-result" id="strategyResult"></span>
+  </div>
+</div>
+<div class="overlay" id="overlay" style="display:none">
+  <div class="overlay-card">
+    <h2>爆炸了!</h2>
+    <div class="explosion-detail" id="explosionDetail"></div>
+    <div class="final-score" id="finalScore">0</div>
+    <div style="color:#64748b;font-size:14px;margin-top:4px">个格子被安全翻开</div>
+    <button class="btn-new" onclick="closeExplosionReview()" style="background:rgba(239,68,68,0.4);font-size:13px;padding:10px 24px;margin-top:8px">🗺 查看爆炸复盘</button><br><button class="btn-new" onclick="resetGame()" style="margin-top:24px">再来一局</button><br><button class="btn-strategy" onclick="resetGame()" style="margin-top:8px">新游戏</button>
+  </div>
+</div>
+
+<script>
+const SIZE = 10;
+const THRESHOLD = 250;
+let grid = [];
+let revealed = [];
+let gameOver = false;
+let score = 0;
+let explodedCell = null;
+let explosionReviewData = null;
+let gameWon = false;
+let stateDangerMap = null;
+let stateDangerCount = 0;
+let blPhase = 'center';
+
+// Undo history
+const MAX_UNDO = 10;
+let undoStack = [];
+let undoBtn = null;
+
+
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playClickSound() {
+  try {
+    ensureAudio();
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, t);
+    osc.frequency.exponentialRampToValueAtTime(400, t + 0.04);
+    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+    osc.start(t);
+    osc.stop(t + 0.06);
+  } catch(e) {}
+}
+
+function playExplosionSound() {
+  try {
+    ensureAudio();
+    const t = audioCtx.currentTime;
+    const dur = 1.5;
+    const sampleRate = audioCtx.sampleRate;
+    const bufSize = Math.floor(sampleRate * dur);
+    const buffer = audioCtx.createBuffer(1, bufSize, sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (sampleRate * 0.18));
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, t);
+    filter.frequency.exponentialRampToValueAtTime(40, t + 0.6);
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + dur);
+  } catch(e) {}
+}
+
+let softVoice = null;
+
+function selectSoftVoice() {
+  return new Promise((resolve) => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      softVoice = voices.find(v => v.lang === 'zh-CN' && v.name.includes('Tingting'))
+        || voices.find(v => v.lang === 'zh-CN' && v.name.includes('Sin-Ji'))
+        || voices.find(v => v.lang.startsWith('zh') && v.name.toLowerCase().includes('female'))
+        || voices.find(v => v.lang === 'zh-CN')
+        || voices.find(v => v.lang.startsWith('zh'));
+    }
+    resolve();
+  });
+}
+
+window.speechSynthesis.onvoiceschanged = () => selectSoftVoice();
+selectSoftVoice();
+
+function speak(text) {
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN';
+    u.rate = 0.82;
+    u.pitch = 1.05;
+    u.volume = 1;
+    if (softVoice) u.voice = softVoice;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch(e) {}
+}
+
+const INTRO_TEXT = '开始游戏，点开单元格与隔壁已打开单元格数字之和大于250则触发地雷';
+const EXPLOSION_TEXT = '您已触雷，请多保重！';
+
+let fwCanvas, fwCtx, particles = [], fwAnim = null;
+
+function initFireworks() {
+  fwCanvas = document.getElementById('fireworks-canvas');
+  fwCtx = fwCanvas.getContext('2d');
+  resizeFireworks();
+  window.addEventListener('resize', resizeFireworks);
+}
+
+function resizeFireworks() {
+  if (fwCanvas) {
+    fwCanvas.width = window.innerWidth;
+    fwCanvas.height = window.innerHeight;
+  }
+}
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 6;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed - Math.random() * 3;
+    this.color = color;
+    this.size = 1.5 + Math.random() * 3.5;
+    this.life = 1;
+    this.decay = 0.006 + Math.random() * 0.018;
+    this.gravity = 0.04;
+    this.trail = [];
+    this.maxTrail = 4;
+  }
+  update() {
+    this.trail.push({ x: this.x, y: this.y });
+    if (this.trail.length > this.maxTrail) this.trail.shift();
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += this.gravity;
+    this.vx *= 0.995;
+    this.life -= this.decay;
+  }
+  draw(ctx) {
+    if (this.trail.length > 1) {
+      for (let i = 1; i < this.trail.length; i++) {
+        const alpha = (i / this.trail.length) * this.life * 0.4;
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = this.size * 0.6;
+        ctx.beginPath();
+        ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
+        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = this.life;
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+  }
+}
+
+function launchFireworks() {
+  if (!fwCanvas) initFireworks();
+  const colors = ['#ff4444','#ff7722','#ffaa00','#ffdd00','#ff5500','#ff3366','#ffcc44','#ffffff','#ff6600','#ff9922'];
+  const burstCount = 10;
+  for (let b = 0; b < burstCount; b++) {
+    const cx = Math.random() * fwCanvas.width * 0.7 + fwCanvas.width * 0.15;
+    const cy = Math.random() * fwCanvas.height * 0.5 + fwCanvas.height * 0.08;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const count = 30 + Math.floor(Math.random() * 50);
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle(cx, cy, color));
+    }
+  }
+  if (!fwAnim) animateFireworks();
+}
+
+function animateFireworks() {
+  fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+  particles = particles.filter(p => p.life > 0);
+  for (const p of particles) { p.update(); p.draw(fwCtx); }
+  if (particles.length > 0) {
+    fwAnim = requestAnimationFrame(animateFireworks);
+  } else {
+    fwAnim = null;
+  }
+}
+
+function stopFireworks() {
+  particles = [];
+  if (fwAnim) { cancelAnimationFrame(fwAnim); fwAnim = null; }
+  if (fwCtx) fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+}
+
+function screenFlash() {
+  const flash = document.createElement('div');
+  flash.className = 'screen-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 500);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getSimScore(g, r, row, col) {
+  const nbrs = NEIGHBORS[row][col];
+  const revSum = nbrs.reduce((s, [nr, nc]) => s + (r[nr][nc] ? g[nr][nc] : 0), 0);
+  const maxSafe = THRESHOLD - revSum;
+  const hidden = [];
+  for (let rr = 0; rr < SIZE; rr++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      if (!r[rr][cc]) hidden.push(g[rr][cc]);
+    }
+  }
+  if (hidden.length === 0) return { score: 0, p: 0, unrevealedNbrs: 0 };
+  let safeCount = 0;
+  for (const n of hidden) { if (n <= maxSafe) safeCount++; }
+  const p = safeCount / hidden.length;
+  const unrevealedNbrs = nbrs.filter(([nr, nc]) => !r[nr][nc]).length;
+  return { score: p / (1 + unrevealedNbrs), p, unrevealedNbrs };
+}
+
+function simulateMoveState(g, r, row, col) {
+  const val = g[row][col];
+  const nbrs = NEIGHBORS[row][col];
+  let sum = val;
+  for (const [nr, nc] of nbrs) { if (r[nr][nc]) sum += g[nr][nc]; }
+  return { safe: sum <= THRESHOLD, sum };
+}
+
+function runStrategy(g, r, type) {
+  let score = 0;
+  let phase = type === 'border-last' ? 'inner' : 'all';
+
+  while (true) {
+    let bestScore = -1;
+    let bestRC = null;
+
+    for (let row = 0; row < SIZE; row++) {
+      for (let col = 0; col < SIZE; col++) {
+        if (r[row][col]) continue;
+
+        if (type === 'border-last') {
+          const isInner = row >= 1 && row <= SIZE - 2 && col >= 1 && col <= SIZE - 2;
+          if (phase === 'inner' && !isInner) continue;
+          if (phase === 'border' && isInner) continue;
+        }
+
+        const s = getSimScore(g, r, row, col);
+        if (s.score > bestScore) { bestScore = s.score; bestRC = [row, col]; }
+      }
+    }
+
+    if (type === 'border-last' && phase === 'inner' && (bestRC === null || bestScore <= 0)) {
+      phase = 'border';
+      continue;
+    }
+
+    if (!bestRC || bestScore <= 0) break;
+
+    const [row, col] = bestRC;
+    r[row][col] = true;
+    const result = simulateMoveState(g, r, row, col);
+    if (!result.safe) break;
+    score++;
+  }
+
+  return score;
+}
+
+function compareStrategies() {
+  if (gameOver) return;
+
+  const g1 = grid.map(row => [...row]);
+  const r1 = revealed.map(row => [...row]);
+  const g2 = grid.map(row => [...row]);
+  const r2 = revealed.map(row => [...row]);
+
+  const sV25 = runStrategy(g1, r1, 'v25');
+  const sBL = runStrategy(g2, r2, 'border-last');
+
+  const el = document.getElementById('strategyResult');
+  if (sV25 > sBL) {
+    el.innerHTML = `v2.5 <span class="win">${sV25}</span> vs BL <span class="lose">${sBL}</span> <span class="win">(+${sV25 - sBL})</span>`;
+  } else if (sBL > sV25) {
+    el.innerHTML = `v2.5 <span class="lose">${sV25}</span> vs BL <span class="win">${sBL}</span> <span class="win">(+${sBL - sV25})</span>`;
+  } else {
+    el.innerHTML = `v2.5 <span class="highlight">${sV25}</span> vs BL <span class="highlight">${sBL}</span> (平局)`;
+  }
+}
+
+function batchSimulate(count) {
+  const el = document.getElementById('strategyResult');
+  el.textContent = '模拟中 0/' + count;
+  let total25 = 0, totalBL = 0;
+  let wins25 = 0, winsBL = 0, ties = 0;
+  let done = 0;
+  const BATCH = 4;
+  function runOne() {
+    const nums = shuffle(Array.from({ length: 100 }, (_, j) => j + 1));
+    const g = [], r = [];
+    for (let row = 0; row < SIZE; row++) {
+      g[row] = nums.slice(row * SIZE, (row + 1) * SIZE);
+      r[row] = Array(SIZE).fill(false);
+    }
+    const s25 = runStrategy(g, r, 'v25');
+    const g2 = g.map(row => [...row]);
+    const r2 = r.map(row => [...row]);
+    const sBL = runStrategy(g2, r2, 'border-last');
+    total25 += s25; totalBL += sBL;
+    if (s25 > sBL) wins25++;
+    else if (sBL > s25) winsBL++;
+    else ties++;
+    done++;
+  }
+  function processBatch() {
+    const end = Math.min(done + BATCH, count);
+    while (done < end) runOne();
+    if (done < count) {
+      el.textContent = '模拟中 ' + done + '/' + count;
+      requestAnimationFrame(processBatch);
+    } else {
+      const avg25 = (total25 / count).toFixed(1);
+      const avgBL = (totalBL / count).toFixed(1);
+      el.innerHTML = 'x' + count + ' | v2.5 <span class="highlight">' + avg25 + '</span> vs BL <span class="highlight">' + avgBL + '</span> | 胜率 <span class="win">' + wins25 + '</span>:<span class="lose">' + winsBL + '</span>:' + ties;
+    }
+  }
+  requestAnimationFrame(processBatch);
+}
+
+
+
+// Danger cell detection for win celebration
+function computeDangerCells() {
+  const dangerMap = [];
+  let minVal = Infinity, maxVal = -Infinity;
+  for (let r = 0; r < SIZE; r++) {
+    dangerMap[r] = [];
+    for (let c = 0; c < SIZE; c++) {
+      // Risk: value + sum(ALL 4 neighbors) — how close to 250 if every neighbor is revealed
+      const val = grid[r][c];
+      const nbrs = getNeighbors(r, c);
+      let sum = val;
+      for (const [nr, nc] of nbrs) {
+        sum += grid[nr][nc];
+      }
+      dangerMap[r][c] = sum;
+      if (sum < minVal) minVal = sum;
+      if (sum > maxVal) maxVal = sum;
+    }
+  }
+  return { map: dangerMap, minVal, maxVal };
+}
+
+function getDangerColor(risk) {
+  // risk ranges from ~4 to ~(100+99+98+97+96)=490
+  // Highlight cells where risk > 180
+  if (risk > 240) return 'rgba(239,68,68,0.45)';   // Extreme
+  if (risk > 220) return 'rgba(249,115,22,0.35)';  // High
+  if (risk > 200) return 'rgba(250,204,21,0.25)';  // Moderate-high
+  if (risk > 180) return 'rgba(234,179,8,0.15)';   // Moderate
+  return null; // Not dangerous
+}
+
+function getDangerLabel(risk) {
+  if (risk > 240) return '💀 极高风险';
+  if (risk > 220) return '🔥 高风险';
+  if (risk > 200) return '⚡ 较高风险';
+  if (risk > 180) return '⚠️ 中等风险';
+  return '✅ 低风险';
+}
+
+function showWinOverlay() {
+  const dangerData = computeDangerCells();
+  const dangerMap = dangerData.map;
+  stateDangerMap = dangerMap;
+
+  // Render base grid
+  renderGrid();
+
+  // Draw danger heatmap overlay on canvas
+  drawDangerHeatmap(dangerMap);
+
+  // Count & max
+  let dangerCount = 0;
+  let maxRisk = -1, maxRC = null;
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      if (getDangerColor(dangerMap[r][cc])) dangerCount++;
+      if (dangerMap[r][cc] > maxRisk) { maxRisk = dangerMap[r][cc]; maxRC = [r, cc]; }
+    }
+  }
+
+  stateDangerCount = dangerCount;
+
+  // Update hint bar
+  document.getElementById('hintBar').innerHTML = 
+    '🎉 完美通关！共<strong>' + dangerCount + '</strong>个危险单元格被成功规避 <span class="phase-badge" style="background:rgba(239,68,68,0.2);color:#fca5a5">点击格子查看详情</span>';
+
+  // Show win overlay
+  const overlay = document.getElementById('overlay');
+  const detail = document.getElementById('explosionDetail');
+  const finalScore = document.getElementById('finalScore');
+  const h2 = overlay.querySelector('h2');
+
+  h2.textContent = '🎉 完美通关！';
+  let dangerSummary = '你成功避开了 <strong>' + dangerCount + '</strong> 个危险单元格！';
+  if (maxRC) {
+    dangerSummary += '<br>🏆 最危险: (' + (maxRC[0]+1) + ',' + (maxRC[1]+1) + ') 风险值 ' + maxRisk;
+  }
+  detail.innerHTML = dangerSummary
+    + '<br><br><button class="btn-new" onclick="closeWinOverlay()" style="background:rgba(99,102,241,0.6);font-size:13px;padding:10px 24px">🗺 查看危险地图</button>';
+  finalScore.textContent = '100 / 100';
+  overlay.style.display = 'flex';
+
+  speak('完美通关！');
+  launchFireworks();
+}
+
+function closeWinOverlay() {
+  document.getElementById('overlay').style.display = 'none';
+  // Keep heatmap visible
+}
+
+function drawDangerHeatmap(dangerMap) {
+  if (!dangerMap) return;
+  const ctx = getCtx();
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      const risk = dangerMap[r][cc];
+      const color = getDangerColor(risk);
+      if (!color) continue;
+
+      const x = GRID_OFFSET + cc * (CELL_SIZE + GAP);
+      const y = GRID_OFFSET + r * (CELL_SIZE + GAP);
+
+      // Glow fill
+      ctx.fillStyle = color;
+      roundRect(ctx, x, y, CELL_SIZE, CELL_SIZE, 8);
+      ctx.fill();
+
+      // Border glow - intensity based on risk
+      const intensity = Math.min(1, (risk - 180) / 120);
+      const br = Math.round(239 * intensity + 234 * (1 - intensity));
+      ctx.strokeStyle = 'rgba(' + br + ',68,68,0.6)';
+      ctx.lineWidth = 2 + Math.round(intensity * 2);
+      roundRect(ctx, x, y, CELL_SIZE, CELL_SIZE, 8);
+      ctx.stroke();
+
+      // Show risk number on the cell
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = 'bold 13px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('☢ ' + risk, x + CELL_SIZE / 2, y + CELL_SIZE - 16);
+    }
+  }
+}
+
+
+function drawExplosionHeatmap() {
+  if (!explosionReviewData) return;
+  const ctx = getCtx();
+  const [er, ec] = explosionReviewData.triggeredCell;
+
+  // 1. Mark contributed neighbors (the ones that added to the explosion sum)
+  for (let i = 0; i < explosionReviewData.contributedNeighbors.length; i++) {
+    const [nr, nc, nv] = explosionReviewData.contributedNeighbors[i];
+    const x = GRID_OFFSET + nc * (CELL_SIZE + GAP);
+    const y = GRID_OFFSET + nr * (CELL_SIZE + GAP);
+    ctx.fillStyle = 'rgba(249,115,22,0.3)';
+    roundRect(ctx, x, y, CELL_SIZE, CELL_SIZE, 8);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(249,115,22,0.7)';
+    ctx.lineWidth = 2;
+    roundRect(ctx, x, y, CELL_SIZE, CELL_SIZE, 8);
+    ctx.stroke();
+    // Show contributed value
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = 'bold 11px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('+' + nv, x + CELL_SIZE / 2, y + CELL_SIZE - 4);
+  }
+
+  // 2. Compute and mark all theoretical mine cells
+  // A mine cell = one where value + sum(all 4 neighbors) > THRESHOLD at full reveal
+  let mineCount = 0;
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      // Skip the exploded cell itself and its contributed neighbors (already marked)
+      if (r === er && cc === ec) continue;
+      let isContributor = false;
+      for (let i = 0; i < explosionReviewData.contributedNeighbors.length; i++) {
+        if (r === explosionReviewData.contributedNeighbors[i][0] && cc === explosionReviewData.contributedNeighbors[i][1]) {
+          isContributor = true; break;
+        }
+      }
+      if (isContributor) continue;
+
+      const val = grid[r][cc];
+      const nbrs = getNeighbors(r, cc);
+      let sum = val;
+      for (let k = 0; k < nbrs.length; k++) {
+        sum += grid[nbrs[k][0]][nbrs[k][1]];
+      }
+
+      if (sum > THRESHOLD) {
+        mineCount++;
+        const x = GRID_OFFSET + cc * (CELL_SIZE + GAP);
+        const y = GRID_OFFSET + r * (CELL_SIZE + GAP);
+        const intensity = Math.min(1, (sum - 250) / 200);
+        const alpha = 0.15 + intensity * 0.25;
+        ctx.fillStyle = 'rgba(239,68,68,' + alpha + ')';
+        roundRect(ctx, x, y, CELL_SIZE, CELL_SIZE, 8);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(239,68,68,' + (0.3 + intensity * 0.4) + ')';
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, x, y, CELL_SIZE, CELL_SIZE, 8);
+        ctx.stroke();
+        // Mark with ⚠
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('⚠', x + CELL_SIZE / 2, y + CELL_SIZE / 2 - 6);
+        ctx.font = '9px -apple-system, sans-serif';
+        ctx.fillText('' + sum, x + CELL_SIZE / 2, y + CELL_SIZE / 2 + 12);
+      }
+    }
+  }
+
+  // Update hint bar
+  document.getElementById('hintBar').innerHTML =
+    '💥 触雷复盘 | ' + explosionReviewData.triggeredValue + ' + [' + explosionReviewData.contributedNeighbors.map(function(n) { return n[2]; }).join(',') + '] = ' + explosionReviewData.totalSum
+    + ' > 250 | 理论雷区: <span class="danger">' + mineCount + '格</span>'
+    + ' | <span style="color:#94a3b8">悬停查看详情</span>';
+}
+
+function closeExplosionReview() {
+  document.getElementById('overlay').style.display = 'none';
+  // Redraw without overlay
+  renderGrid();
+  drawExplosionHeatmap();
+}
+
+// Override canvas hover to show explosion detail
+
+function initGrid() {
+  const nums = shuffle(Array.from({length: 100}, (_, i) => i + 1));
+  grid = [];
+  for (let r = 0; r < SIZE; r++) {
+    grid[r] = nums.slice(r * SIZE, (r + 1) * SIZE);
+  }
+  revealed = Array.from({length: SIZE}, () => Array(SIZE).fill(false));
+  gameOver = false;
+  gameWon = false;
+  stateDangerMap = null;
+  stateDangerCount = 0;
+  score = 0;
+  explodedCell = null;
+  explosionReviewData = null;
+  blPhase = 'center';
+}
+
+const NEIGHBORS = function() {
+  const tbl = [];
+  for (let rr = 0; rr < 10; rr++) {
+    tbl[rr] = [];
+    for (let cc = 0; cc < 10; cc++) {
+      const n = [];
+      if (rr > 0) n.push([rr - 1, cc]);
+      if (rr < 9) n.push([rr + 1, cc]);
+      if (cc > 0) n.push([rr, cc - 1]);
+      if (cc < 9) n.push([rr, cc + 1]);
+      tbl[rr][cc] = n;
+    }
+  }
+  return tbl;
+}();
+function getNeighbors(r, c) { return NEIGHBORS[r][c]; }
+
+function revealedSum(r, c) {
+  return getNeighbors(r, c).reduce((s, [nr, nc]) => s + (revealed[nr][nc] ? grid[nr][nc] : 0), 0);
+}
+
+function getUnrevealedNeighborCount(r, c) {
+  return getNeighbors(r, c).filter(([nr, nc]) => !revealed[nr][nc]).length;
+}
+
+function cellStrategicScore(r, c) {
+  if (revealed[r][c]) return { score: 0, p: 1, unrevealedNbrs: 0, isDoomed: false };
+  const prob = cellSafetyProbability(r, c);
+  const unrevealedNbrs = getUnrevealedNeighborCount(r, c);
+  let score = prob.p / (1 + unrevealedNbrs);
+
+  const neighbors = getNeighbors(r, c);
+  for (const [nr, nc] of neighbors) {
+    if (revealed[nr][nc] && grid[nr][nc] >= 85) {
+      score = Math.min(1, score + 0.3);
+      break;
+    }
+  }
+
+  return {
+    score,
+    p: prob.p,
+    maxSafe: prob.maxSafe,
+    unrevealedNbrs,
+    isGuaranteed: prob.isGuaranteed,
+    isDoomed: prob.isDoomed
+  };
+}
+
+function getScoreRiskClass(score) {
+  if (score === 0) return null;
+  if (score >= 0.8) return 'risk-low';
+  if (score >= 0.5) return 'risk-mid';
+  if (score >= 0.25) return 'risk-high';
+  return 'risk-extreme';
+}
+
+function isInnerCell(r, c) {
+  return r >= 1 && r <= SIZE - 2 && c >= 1 && c <= SIZE - 2;
+}
+
+const CENTER_CELLS = new Set([(4 * SIZE + 4), (4 * SIZE + 5), (5 * SIZE + 4), (5 * SIZE + 5)]);
+function isCenterCell(r, c) {
+  return CENTER_CELLS.has(r * SIZE + c);
+}
+
+function phaseBadgeHTML() {
+  const labels = { center: '中央启动', inner: '内圈推进', border: '外圈收尾' };
+  const cls = blPhase === 'border' ? ' border-phase' : blPhase === 'inner' ? ' inner-phase' : '';
+  return `<span class="phase-badge${cls}">${labels[blPhase]}</span>`;
+}
+
+function findBestMoves() {
+  if (blPhase === 'center') {
+    let hasCenter = false;
+    for (let r = 0; r < SIZE && !hasCenter; r++) {
+      for (let c = 0; c < SIZE && !hasCenter; c++) {
+        if (revealed[r][c] || !isCenterCell(r, c)) continue;
+        if (cellStrategicScore(r, c).score > 0) hasCenter = true;
+      }
+    }
+    if (!hasCenter) blPhase = 'inner';
+  }
+
+  if (blPhase === 'inner') {
+    let hasInner = false;
+    for (let r = 0; r < SIZE && !hasInner; r++) {
+      for (let c = 0; c < SIZE && !hasInner; c++) {
+        if (revealed[r][c] || !isInnerCell(r, c)) continue;
+        if (cellStrategicScore(r, c).score > 0) hasInner = true;
+      }
+    }
+    if (!hasInner) blPhase = 'border';
+  }
+
+  let bestScore = -1;
+  const moves = [];
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      if (revealed[r][c]) continue;
+      if (blPhase === 'center' && !isCenterCell(r, c)) continue;
+      if (blPhase === 'inner' && !isInnerCell(r, c)) continue;
+      if (blPhase === 'border' && isInnerCell(r, c)) continue;
+      const s = cellStrategicScore(r, c);
+      if (s.score > bestScore) { bestScore = s.score; moves.length = 0; }
+      if (s.score === bestScore) moves.push([r, c]);
+    }
+  }
+  return { bestScore, moves: new Set(moves.map(([r, c]) => r * SIZE + c)) };
+}
+
+
+function getHiddenNumbers() {
+  const hidden = [];
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      if (!revealed[r][c]) hidden.push(grid[r][c]);
+    }
+  }
+  return hidden.sort((a, b) => a - b);
+}
+
+function cellSafetyProbability(r, c) {
+  if (revealed[r][c]) return { p: 1, maxSafe: 0, isGuaranteed: false, isDoomed: false };
+  const maxSafe = THRESHOLD - revealedSum(r, c);
+  const hidden = getHiddenNumbers();
+  if (hidden.length === 0) return { p: 1, maxSafe, isGuaranteed: true, isDoomed: false };
+  let safeCount = 0;
+  for (const n of hidden) {
+    if (n <= maxSafe) safeCount++;
+  }
+  const p = safeCount / hidden.length;
+  return { p, maxSafe, isGuaranteed: p === 1, isDoomed: p === 0 };
+}
+
+function renderDistPanel() {
+  const panel = document.getElementById('distPanel');
+  if (!panel) return;
+  const hidden = getHiddenNumbers();
+  const hiddenSet = new Set(hidden);
+
+  let gridHtml = '<div class="dist-grid">';
+  for (let i = 1; i <= 100; i++) {
+    const cls = hiddenSet.has(i) ? '' : 'revealed';
+    gridHtml += `<div class="dist-dot ${cls}" title="${i}"></div>`;
+  }
+  gridHtml += '</div>';
+
+  let statsHtml = '<div class="dist-stats">';
+  statsHtml += `<span>未揭示: <b>${hidden.length}</b></span>`;
+  const ranges = [[1,25,'r-low'],[26,50,'r-mid'],[51,75,'r-high'],[76,100,'r-ext']];
+  for (const [lo, hi, cls] of ranges) {
+    const count = hidden.filter(n => n >= lo && n <= hi).length;
+    statsHtml += `<span class="${cls}">${lo}-${hi}: <b>${count}</b></span>`;
+  }
+  if (hidden.length > 0 && hidden.length < 10) {
+    statsHtml += `<span style="color:#fbbf24">剩余: <b>${hidden.join(', ')}</b></span>`;
+  }
+  statsHtml += '</div>';
+
+  panel.innerHTML = gridHtml + statsHtml;
+}
+
+// ===================================================================
+// CANVAS RENDERER
+// ===================================================================
+let canvas, ctx;
+let canvasHoverR = -1, canvasHoverC = -1;
+const CELL_SIZE = 56;
+const GAP = 3;
+const PADDING = 4;
+const GRID_OFFSET = PADDING;
+const COLORS_REVEALED = ['#1e3a5f','#1a3a4a','#163d3d','#1a3a30','#1e3a2e','#2a3a1e','#3a3a1e','#3a2e1e','#3a1e1e','#3a1e2e'];
+
+function getCtx() {
+  if (!canvas) { canvas = document.getElementById('gridCanvas'); ctx = canvas.getContext('2d'); }
+  return ctx;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function renderGrid() {
+  const c = getCtx();
+  const w = canvas.width, h = canvas.height;
+  c.clearRect(0, 0, w, h);
+  c.fillStyle = 'rgba(255,255,255,0.03)';
+  roundRect(c, 0, 0, w, h, 16);
+  c.fill();
+  c.strokeStyle = 'rgba(255,255,255,0.06)';
+  roundRect(c, 0, 0, w, h, 16);
+  c.stroke();
+  let bestMovesSet = null, doomedSet = null, urgentTargets = null;
+  if (!gameOver) {
+    const bm = findBestMovesCached();
+    bestMovesSet = bm.moves;
+    doomedSet = bm.doomed;
+    urgentTargets = bm.urgent;
+  }
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      const x = GRID_OFFSET + cc * (CELL_SIZE + GAP);
+      const y = GRID_OFFSET + r * (CELL_SIZE + GAP);
+      const rev = revealed[r][cc];
+      const val = grid[r][cc];
+      const idx = r * SIZE + cc;
+      if (rev) {
+        c.fillStyle = COLORS_REVEALED[Math.min(Math.floor(val / 10), 9)];
+      } else if (canvasHoverR === r && canvasHoverC === cc && !gameOver) {
+        c.fillStyle = 'rgba(51,65,85,0.6)';
+      } else {
+        c.fillStyle = 'rgba(30,41,59,0.6)';
+      }
+      let borderColor = 'rgba(255,255,255,0.08)';
+      let borderWidth = 1;
+      let shadow = null;
+      if (!gameOver && !rev) {
+        if (doomedSet && doomedSet.has(idx)) { borderColor = 'rgba(239,68,68,0.7)'; borderWidth = 2; }
+        else if (bestMovesSet && bestMovesSet.has(idx)) { borderColor = 'rgba(251,191,36,0.8)'; borderWidth = 2; shadow = 'rgba(251,191,36,0.35)'; }
+        if (urgentTargets && urgentTargets.has(idx)) { borderColor = 'rgba(255,100,50,0.6)'; borderWidth = 2; }
+        if ((blPhase === 'center' || blPhase === 'inner') && !isInnerCell(r, cc)) c.globalAlpha = 0.4;
+      }
+      roundRect(c, x, y, CELL_SIZE, CELL_SIZE, 8);
+      c.fill();
+      if (shadow) {
+        c.save();
+        c.shadowColor = shadow;
+        c.shadowBlur = 16;
+        roundRect(c, x, y, CELL_SIZE, CELL_SIZE, 8);
+        c.fill();
+        c.restore();
+      }
+      c.strokeStyle = borderColor;
+      c.lineWidth = borderWidth;
+      roundRect(c, x, y, CELL_SIZE, CELL_SIZE, 8);
+      c.stroke();
+      c.globalAlpha = 1;
+      if (rev || gameOver) {
+        c.fillStyle = '#e2e8f0';
+        c.font = 'bold 20px -apple-system, sans-serif';
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText(val, x + CELL_SIZE / 2, y + CELL_SIZE / 2 - 4);
+        c.fillStyle = 'rgba(255,255,255,0.4)';
+        c.font = '10px -apple-system, sans-serif';
+        c.fillText('#' + val, x + CELL_SIZE / 2, y + CELL_SIZE - 10);
+      } else {
+        c.fillStyle = 'rgba(255,255,255,0.2)';
+        c.font = '20px -apple-system, sans-serif';
+        c.fillText('?', x + CELL_SIZE / 2, y + CELL_SIZE / 2);
+      }
+      if (explodedCell && r === explodedCell[0] && cc === explodedCell[1]) {
+        c.fillStyle = 'rgba(255,68,68,0.3)';
+        c.font = '28px sans-serif';
+        c.fillText('💥', x + CELL_SIZE / 2, y + CELL_SIZE / 2 + 4);
+      }
+      if (!gameOver && !rev && doomedSet && doomedSet.has(idx)) {
+        c.fillStyle = 'rgba(239,68,68,0.5)';
+        c.font = '22px sans-serif';
+        c.fillText('✕', x + CELL_SIZE / 2, y + CELL_SIZE / 2);
+      }
+      if (!gameOver && !rev && bestMovesSet && bestMovesSet.has(idx)) {
+        const strat = cellStrategicScore(r, cc);
+        if (strat && strat.score > 0) {
+          c.fillStyle = 'rgba(255,255,255,0.45)';
+          c.font = '9px -apple-system, sans-serif';
+          c.textAlign = 'right';
+          c.textBaseline = 'top';
+          c.fillText((strat.score * 100).toFixed(0), x + CELL_SIZE - 4, y + 2);
+        }
+      }
+    }
+  }
+  if (canvasHoverR >= 0 && !gameOver) {
+    const nbrs = getNeighbors(canvasHoverR, canvasHoverC);
+    for (const [nr, nc] of nbrs) {
+      if (revealed[nr][nc]) {
+        const nx = GRID_OFFSET + nc * (CELL_SIZE + GAP);
+        const ny = GRID_OFFSET + nr * (CELL_SIZE + GAP);
+        c.fillStyle = 'rgba(251,191,36,0.15)';
+        roundRect(c, nx, ny, CELL_SIZE, CELL_SIZE, 8);
+        c.fill();
+      }
+    }
+  }
+  document.getElementById('score').textContent = score;
+}
+
+function getCanvasCell(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (clientX - rect.left) * scaleX;
+  const my = (clientY - rect.top) * scaleY;
+  const col = Math.floor((mx - GRID_OFFSET) / (CELL_SIZE + GAP));
+  const row = Math.floor((my - GRID_OFFSET) / (CELL_SIZE + GAP));
+  if (row >= 0 && row < SIZE && col >= 0 && col < SIZE) {
+    const cx = GRID_OFFSET + col * (CELL_SIZE + GAP);
+    const cy = GRID_OFFSET + row * (CELL_SIZE + GAP);
+    if (mx >= cx && mx <= cx + CELL_SIZE && my >= cy && my <= cy + CELL_SIZE) return [row, col];
+  }
+  return null;
+}
+
+function findBestMovesCached() {
+  const moves = new Set(), doomed = new Set(), urgent = new Set();
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      if (revealed[r][cc]) continue;
+      const prob = cellSafetyProbability(r, cc);
+      if (prob.isGuaranteed) moves.add(r * SIZE + cc);
+      if (prob.isDoomed) doomed.add(r * SIZE + cc);
+    }
+  }
+  if (moves.size > 0) return { moves, doomed, urgent };
+  let bestScore = -1;
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      if (revealed[r][cc]) continue;
+      if ((blPhase === 'center' || blPhase === 'inner') && !isInnerCell(r, cc)) continue;
+      const s = cellStrategicScore(r, cc);
+      if (s.score > bestScore) { bestScore = s.score; moves.clear(); moves.add(r * SIZE + cc); }
+      else if (s.score === bestScore && s.score > 0) moves.add(r * SIZE + cc);
+    }
+  }
+  if (moves.size === 0 && blPhase === 'inner') { blPhase = 'border'; return findBestMovesCached(); }
+  for (let r = 0; r < SIZE; r++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      if (revealed[r][cc]) continue;
+      const nbrs = getNeighbors(r, cc);
+      for (const [nr, nc] of nbrs) {
+        if (revealed[nr][nc] && grid[nr][nc] >= 85) { urgent.add(r * SIZE + cc); break; }
+      }
+    }
+  }
+  return { moves, doomed, urgent };
+}
+
+function setupCanvasEvents() {
+  if (!canvas) getCtx();
+  canvas.addEventListener('click', function(e) {
+    const cell = getCanvasCell(e.clientX, e.clientY);
+    if (cell) clickCell(cell[0], cell[1]);
+  });
+  canvas.addEventListener('mousemove', function(e) {
+    const cell = getCanvasCell(e.clientX, e.clientY);
+    if (cell) {
+      const [r, cc] = cell;
+      if (r !== canvasHoverR || cc !== canvasHoverC) {
+        canvasHoverR = r; canvasHoverC = cc;
+        renderGrid();
+        if (gameOver && explosionReviewData) {
+          drawExplosionHeatmap();
+          hoverCell(r, cc, null);
+        } else if (gameWon && stateDangerMap) {
+          drawDangerHeatmap(stateDangerMap);
+          const risk = stateDangerMap[r][cc];
+          const label = getDangerLabel(risk);
+          const rval = grid[r][cc];
+          const nbrs = getNeighbors(r, cc);
+          const total = nbrs.reduce(function(s, [nr,nc]) { return s + grid[nr][nc]; }, 0);
+          const pc = Math.round(risk / 250 * 100);
+          document.getElementById('hintBar').innerHTML =
+            '🎉 完美通关 | (' + (r+1) + ',' + (cc+1) + ') 数值=' + rval + ' 邻居和=' + total + ' 风险=' + risk + ' (' + pc + '%) ' + label;
+        } else {
+          hoverCell(r, cc, null);
+        }
+      }
+    } else if (canvasHoverR >= 0) {
+      canvasHoverR = -1; canvasHoverC = -1;
+      renderGrid();
+      unhoverCell(-1, -1, null);
+    }
+  });
+  canvas.addEventListener('mouseleave', function() {
+    if (gameOver && explosionReviewData) {
+      canvasHoverR = -1; canvasHoverC = -1;
+      renderGrid();
+      drawExplosionHeatmap();
+      document.getElementById('hintBar').innerHTML = '💥 触雷复盘 | 悬停查看详情';
+      return;
+    }
+    if (canvasHoverR >= 0) {
+      canvasHoverR = -1; canvasHoverC = -1;
+      renderGrid();
+      if (gameWon && stateDangerMap) {
+        drawDangerHeatmap(stateDangerMap);
+        document.getElementById('hintBar').innerHTML = '🎉 完美通关！共<strong>' + stateDangerCount + '</strong>个危险单元格被成功规避 <span class="phase-badge" style="background:rgba(239,68,68,0.2);color:#fca5a5">悬停查看详情</span>';
+      } else {
+        unhoverCell(-1, -1, null);
+      }
+    }
+  });
+  canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const cell = getCanvasCell(touch.clientX, touch.clientY);
+    if (cell) clickCell(cell[0], cell[1]);
+  }, { passive: false });
+}
+function clickCell(r, c) {
+  if (gameOver || revealed[r][c]) return;
+
+  // Save undo state before moving
+  undoStack.push({
+    r, c,
+    oldRevealed: revealed[r][c],
+    oldScore: score - 0,
+    oldGameOver: gameOver,
+    oldExploded: explodedCell,
+    revealedSnapshot: revealed.map(row => [...row]),
+    blPhase: blPhase
+  });
+  if (undoStack.length > MAX_UNDO) undoStack.shift();
+  updateUndoBtn();
+
+  playClickSound();
+
+  revealed[r][c] = true;
+  score++;
+
+  const value = grid[r][c];
+  const neighbors = getNeighbors(r, c);
+  const revealedNeighbors = neighbors.filter(([nr, nc]) => revealed[nr][nc]);
+  let sum = value;
+  for (const [nr, nc] of revealedNeighbors) {
+    sum += grid[nr][nc];
+  }
+
+  if (sum > THRESHOLD) {
+    gameOver = true;
+    explodedCell = [r, c];
+    // Save explosion review data
+    explosionReviewData = {
+      triggeredCell: [r, c],
+      triggeredValue: value,
+      contributedNeighbors: revealedNeighbors.map(function(n) { return [n[0], n[1], grid[n[0]][n[1]]]; }),
+      neighborSum: revealedNeighbors.reduce(function(s, [nr,nc]) { return s + grid[nr][nc]; }, 0),
+      totalSum: sum,
+      revealedSnapshot: revealed.map(function(row) { return row.slice(); }),
+    };
+    renderGrid();
+    renderDistPanel();
+
+    playExplosionSound();
+    speak(EXPLOSION_TEXT);
+    screenFlash();
+    document.getElementById('gameWrapper').classList.add('shake');
+    setTimeout(() => document.getElementById('gameWrapper').classList.remove('shake'), 600);
+    launchFireworks();
+
+    const neighborValues = revealedNeighbors.map(([nr, nc]) => grid[nr][nc]);
+    const formula = [value, ...neighborValues].join(' + ');
+    document.getElementById('explosionDetail').innerHTML =
+      `<span>${formula} = ${sum}</span> > ${THRESHOLD}`;
+    document.getElementById('finalScore').textContent = score - 1;
+
+    setTimeout(function() {
+      for (let rr = 0; rr < SIZE; rr++) {
+        for (let cc = 0; cc < SIZE; cc++) {
+          revealed[rr][cc] = true;
+        }
+      }
+      renderGrid();
+      renderDistPanel();
+      drawExplosionHeatmap();
+      document.getElementById('overlay').style.display = 'flex';
+    }, 1500);
+
+    return;
+  }
+
+  renderGrid();
+  renderDistPanel();
+
+  // Win check: all safe cells revealed
+  if (score === 100) {
+    gameWon = true;
+    showWinOverlay();
+  }
+}
+
+function hoverCell(r, c, cellEl) {
+  if (gameWon) return;
+  if (gameOver && !explosionReviewData) return;
+  if (gameOver && explosionReviewData && revealed[r][c]) {
+    // In explosion review mode: show mine detail on hover
+    const val = grid[r][c];
+    const nbrs = getNeighbors(r, c);
+    let sum = val;
+    for (let i = 0; i < nbrs.length; i++) sum += grid[nbrs[i][0]][nbrs[i][1]];
+    const isMine = sum > THRESHOLD;
+    const isTrigger = r === explosionReviewData.triggeredCell[0] && c === explosionReviewData.triggeredCell[1];
+    let isContributor = false;
+    for (let i = 0; i < explosionReviewData.contributedNeighbors.length; i++) {
+      if (r === explosionReviewData.contributedNeighbors[i][0] && c === explosionReviewData.contributedNeighbors[i][1]) { isContributor = true; break; }
+    }
+    var label = '(' + (r+1) + ',' + (c+1) + ') 值=' + val + ' 合=' + sum;
+    if (isTrigger) label += ' 💥 触雷点';
+    else if (isContributor) label += ' 🔥 引燃邻居';
+    else if (isMine) label += ' ⚠️ 理论雷区';
+    else label += ' ✅ 安全格';
+    document.getElementById('hintBar').innerHTML = label;
+    return;
+  }
+  const neighbors = getNeighbors(r, c);
+  let neighborList = [];
+  for (const [nr, nc] of neighbors) {
+    if (revealed[nr][nc]) {
+      neighborList.push(grid[nr][nc]);
+    }
+  }
+
+  const known = neighborList.reduce((s, v) => s + v, 0);
+  const prob = cellSafetyProbability(r, c);
+  const strat = cellStrategicScore(r, c);
+  const bar = document.getElementById('hintBar');
+  const pct = (prob.p * 100).toFixed(1);
+  const scoreIdx = Math.round(strat.score * 100);
+  let idxClass = '';
+  if (strat.score >= 0.8) idxClass = 'highlight';
+  else if (strat.score >= 0.5) idxClass = 'highlight';
+  else if (strat.isDoomed) idxClass = 'danger';
+
+  const pollution = strat.unrevealedNbrs > 0
+    ? `<span style="color:#94a3b8">污染度:</span> <span class="highlight">${strat.unrevealedNbrs}格</span>`
+    : '<span style="color:#4ade80">无污染</span>';
+
+  bar.innerHTML = `(${r + 1},${c + 1}) | 安全概率 <span class="${prob.p >= 0.7 ? 'highlight' : (prob.isDoomed ? 'danger' : '')}">${pct}%</span> | ${pollution} | 推荐指数 <span class="${idxClass}">${scoreIdx}</span> | ${phaseBadgeHTML()}`;
+}
+
+function unhoverCell(r, c, cellEl) {
+  if (gameOver && explosionReviewData) {
+    document.getElementById('hintBar').innerHTML = '💥 触雷复盘 | 悬停查看详情';
+    return;
+  }
+  const hidden = getHiddenNumbers();
+  const endgame = hidden.length > 0 && hidden.length < 10 ? `<span class="endgame-badge">残局${hidden.length}格</span>` : '';
+  document.getElementById('hintBar').innerHTML = `悬停查看策略提示 | ${phaseBadgeHTML()} ${endgame}`;
+}
+
+function resetGame() {
+  gameWon = false;
+  stateDangerMap = null;
+  explosionReviewData = null;
+  undoStack = [];
+  updateUndoBtn();
+  document.getElementById('overlay').style.display = 'none';
+  // Reset overlay text
+  document.getElementById('overlay').querySelector('h2').textContent = '爆炸了!';
+  document.getElementById('explosionDetail').innerHTML = '';
+  document.getElementById('finalScore').textContent = '0';
+  document.getElementById('hintBar').innerHTML = '悬停查看策略提示 | <span class="phase-badge">中央启动</span>';
+  stopFireworks();
+  initGrid();
+  renderGrid();
+  renderDistPanel();
+  speak(INTRO_TEXT);
+}
+
+
+function updateUndoBtn() {
+  if (!undoBtn) undoBtn = document.getElementById('undoBtn');
+  if (!undoBtn) return;
+  const canUndo = undoStack.length > 0 && !gameOver && !gameWon;
+  undoBtn.disabled = !canUndo;
+  undoBtn.style.opacity = canUndo ? '1' : '0.4';
+  undoBtn.textContent = '↩ 撤回' + (undoStack.length > 0 ? ' (' + undoStack.length + ')' : '');
+}
+
+function undoLastMove() {
+  if (undoStack.length === 0 || gameOver || gameWon) return;
+
+  const state = undoStack.pop();
+
+  // Restore the revealed state
+  for (let rr = 0; rr < SIZE; rr++) {
+    for (let cc = 0; cc < SIZE; cc++) {
+      revealed[rr][cc] = state.revealedSnapshot[rr][cc];
+    }
+  }
+
+  // Restore other state
+  score = state.oldScore;
+  gameOver = state.oldGameOver;
+  explodedCell = state.oldExploded;
+  blPhase = state.blPhase;
+
+  // Clear fireworks
+  stopFireworks();
+
+  // If overlay is showing, hide it
+  document.getElementById('overlay').style.display = 'none';
+
+  // Remove shake class
+  document.getElementById('gameWrapper').classList.remove('shake');
+
+  updateUndoBtn();
+  renderGrid();
+  renderDistPanel();
+  playClickSound();
+}
+
+initGrid();
+setupCanvasEvents();
+renderGrid();
+renderDistPanel();
+initFireworks();
+setTimeout(() => speak(INTRO_TEXT), 600);
+
+</script>
+</body>
+</html>

@@ -1,17 +1,19 @@
 # 数字殿堂 · 总站门户
 
-> 一座收藏数字作品的殿堂 —— 地球厅 · 游戏厅 · 文学馆 · 天文馆
+> 一座收藏数字作品的殿堂 —— 地球厅 · 游戏厅 · 天文馆
 > 主域名：`shuzidiantang.com`（已注册，实名通过，ICP 备案审核中）· 海外过渡：GitHub Pages
 
 ## 目录结构
 
 ```
 数字殿堂/
-├── index.html            # 正殿（四馆门户首页）
+├── index.html            # 首页（三馆门户首页）
 ├── assets/style.css      # 夜幕金殿主题
-├── games/                # 游戏厅（单文件游戏即开即玩）
-├── novels/ cosmos/ about/          # 文学馆 / 天文馆 / 馆主手记
+├── games/                # 游戏厅（精选机台：数字扫雷 / 像素打砖块）
+├── cosmos/ about/               # 天文馆 / 馆主手记
+├── novels/               # 文学馆（暂不对外，作品待打磨）
 ├── maps/                 # 地图馆（旅游计划工具，内部开发，暂不发布）
+├── vault/                # 暂存区（未达发布标准的游戏机台等，不参与组装）
 ├── scripts/assemble.mjs  # 组装脚本：静态页 + 地球厅构建产物 → dist/
 ├── .github/workflows/deploy.yml    # CI：每日组装 + GitHub Pages 部署
 └── dist/                 # 组装产物（不入库，由 CI/托管平台生成）
@@ -115,7 +117,7 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 | 馆 | 来源仓库 |
 |---|---|
 | 地球厅 | [digital-earth-series](https://github.com/historyreview-code/digital-earth-series)（monorepo，构建注入） |
-| 游戏厅 | neon-pacman / retro-pool 等（成品静态文件收录于本仓库 games/） |
-| 文学馆 | [xiaoshan](https://github.com/historyreview-code/xiaoshan) · [wenyin](https://github.com/historyreview-code/wenyin) |
+| 游戏厅 | [Numsweeper](https://github.com/historyreview-code/Numsweeper)（数字扫雷）· 像素打砖块（收录于 games/）；其余机台暂存 vault/games/ 打磨 |
+| 文学馆（未发布） | [xiaoshan](https://github.com/historyreview-code/xiaoshan) · [wenyin](https://github.com/historyreview-code/wenyin)（作品待打磨，暂不对外） |
 | 天文馆 | [cosmic-journey](https://github.com/historyreview-code/cosmic-journey) · [cosmic-evolution](https://github.com/historyreview-code/cosmic-evolution) · [solar-ecliptic](https://github.com/historyreview-code/solar-ecliptic)（各自部署 GitHub Pages，天文馆页 iframe 放映） |
 | 地图馆（未发布） | europe-orchestra-tour · caucasus-v2 · uk-drive · caucasus-map（旅游计划工具，内部开发，暂不发布） |
