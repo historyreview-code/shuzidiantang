@@ -581,7 +581,8 @@ function updateTTSIndicator() {
 }
 function speak(text) {
   if (!prefs.ttsEnabled) return;
-  const key = (text || '').replace(/[^\u4e00-\u9fa5A-Za-z0-9%.,。！？]/g, '').replace(/\s+/g, '');
+  // 归一化: 仅剔除表情符号/空白, 保留中文、字母、数字与全部标点 (标点参与键匹配)
+  const key = (text || '').replace(/[\u{1F000}-\u{1FFFF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, '');
   const file = TTS_MAP[key];
   if (file) {
     try {
