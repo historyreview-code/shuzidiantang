@@ -28,11 +28,12 @@
 3. 在 `about/index.html` 的"手记 · 随笔"feed 列表里加一条：`<a class="item" href="notes/文件名">…</a>`
 4. push 后 CI 自动上线（约 1 分钟）
 
-## 发布一期投资研究笔记的方法（暗室）
+## 发布一期投资研究笔记的方法（暗室 · 自动博客流）
 
-1. 复制 `vault/invest-article-template.html` → `hidden/invest/notes/YYYY-MM-DD-短标题.html`（如 `2026-08-20-fed-rate.html`）
-2. 填写标题 / meta 摘要 / 日期期数 / 正文（模板已含免责声明，保留勿删）
-3. 在 `hidden/invest/index.html` 的笔记列表**最上面**加一条：
-   `<a class="item" href="notes/文件名"><span class="date">日期</span><span class="txt">标题<small>分类</small></span></a>`
-4. push 后 CI 自动上线（约 1 分钟），访问 `https://shuzidiantang.com/hidden/invest/`
-   - 地址只发给受邀的人；`robots.txt` 已屏蔽 /hidden/，各页带 noindex，首页/导航无入口
+1. 复制 `vault/invest-article-template.html` → `hidden/invest/notes/YYYY-MM-DD-短标题.html`
+   （文件名日期决定排序，**务必**用 `YYYY-MM-DD-` 开头，如 `2026-08-20-fed-rate.html`）
+2. 填写标题（`<title>` 和 `<h1>`）、meta 摘要、日期期数、分类、正文（免责声明保留勿删）
+3. push → CI 自动上线（约 1 分钟）
+   - **列表自动更新**：`scripts/assemble.mjs` 扫描 notes/ 目录按日期倒序生成首页列表——
+     最新一期自动置顶，以往笔记自动下沉，无需手动改列表
+   - 访问 `https://shuzidiantang.com/hidden/invest/`，地址只发给受邀的人

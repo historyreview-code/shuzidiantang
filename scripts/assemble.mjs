@@ -10,7 +10,7 @@
  * 用法：node scripts/assemble.mjs
  */
 import { execSync } from 'node:child_process';
-import { cpSync, rmSync, mkdirSync, existsSync } from 'node:fs';
+import { cpSync, rmSync, mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -67,6 +67,56 @@ if (existsSync(themesSrc)) {
   cpSync(themesSrc, path.join(DIST, 'earth', 'themes'), { recursive: true });
   console.log('  主题 SEO 落地页已叠加 → dist/earth/themes/');
 }
+
+// 3. 暗室·投资研究: 博客式列表自动生成
+//    扫描 hidden/invest/notes/*.html, 按文件名日期倒序注入首页列表 (最新在上, 旧的自动下沉)
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function buildInvestNoteList() {
+  const indexFile = path.join(DIST, 'hidden', 'invest', 'index.html');
+  const notesDir = path.join(ROOT, 'hidden', 'invest', 'notes');
+  if (!existsSync(indexFile)) return;
+
+  let items = [];
+  if (existsSync(notesDir)) {
+    for (const f of readdirSync(notesDir).sort()) {
+      if (!f.endsWith('.html')) continue;
+      const m = f.match(/^(\d{4}-\d{2}-\d{2})-(.+)\.html$/);
+      if (!m) continue;
+      const raw = readFileSync(path.join(notesDir, f), 'utf8');
+      const titleMatch = raw.match(/<title>([^<]+)<\/title>/);
+      const catMatch = raw.match(/分类[:：]\s*([^<]+)/);
+      let title = titleMatch ? titleMatch[1].replace(/\s*·\s*(投资研究|数字殿堂).*/g, '').trim() : m[2];
+      const cat = catMatch ? catMatch[1].trim() : '';
+      items.push({ date: m[1], file: f, title, cat });
+    }
+  }
+  items.sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  let html = '';
+  if (items.length > 0) {
+    html = items
+      .map(
+        (it) =>
+          `<a class="item" href="notes/${it.file}"><span class="date">${it.date}</span><span class="txt">${escapeHtml(it.title)}${it.cat ? `<small>${escapeHtml(it.cat)}</small>` : ''}</span></a>`,
+      )
+      .join('\n      ');
+  } else {
+    html = '<div class="item"><span class="date">筹备中</span><span class="txt">第一期笔记撰写中<small>每周更新 · 敬请期待</small></span></div>';
+  }
+
+  const t = readFileSync(indexFile, 'utf8');
+  const updated = t.replace(
+    /(<div class="feed" id="invest-notes">)[\s\S]*?(<\/div>\s*<\/section>)/,
+    `$1\n      ${html}\n    $2`,
+  );
+  if (updated !== t) {
+    writeFileSync(indexFile, updated);
+    console.log(`  投资研究笔记列表已生成: ${items.length} 篇 (最新在前)`);
+  }
+}
+buildInvestNoteList();
 
 console.log('\n✅ 组装完成 → dist/');
 console.log('   本地预览：npx serve dist');
