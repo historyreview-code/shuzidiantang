@@ -114,7 +114,7 @@ twikoo.init({
 
 - CDN 备选（jsdelivr 国内不稳时）：`https://registry.npmmirror.com/twikoo/1.7.19/files/dist/twikoo.min.js`
 - `vault/notes-template.html` 与已发布文章在「← 返回手记」链接**之前**加 `<!-- AUTO:TWIKOO -->` 标记（只放标记，脚本由 assemble 统一注入，避免 envId 散落）。
-- 样式：`assets/style.css` 加 `.note-comments`（暗底金字，与夜幕金殿主题一致）。
+- 样式：`assets/style.css` 加 `.note-comments`（深底亮字，与比特辉光主题一致）。
 - 验证后 push → CI 自动上线。评论数展示在首页/列表页属二期可选，不做。
 
 ### 6. 验收与运维

@@ -34,15 +34,15 @@ SHARE_DIR = os.path.join(ROOT, "share")
 SITE = "https://shuzidiantang.com"
 
 # --------------------------------------------------------------------------
-# 配色 (夜幕金殿)
+# 配色 (比特辉光)
 # --------------------------------------------------------------------------
 W, H = 1200, 630
-BG_TOP = (10, 13, 24)          # #0a0d18
-BG_BOTTOM = (26, 32, 56)       # #1a2038
-GOLD = (216, 180, 90)          # #d8b45a
-GOLD_BRIGHT = (240, 214, 138)  # #f0d68a
-GOLD_DIM = (138, 116, 64)      # #8a7440
-TEXT_DIM = (154, 151, 168)     # #9a97a8
+BG_TOP = (8, 11, 20)            # #080b14
+BG_BOTTOM = (19, 26, 46)        # #131a2e
+CYAN = (63, 224, 255)           # #3fe0ff
+CYAN_BRIGHT = (159, 232, 255)   # #9fe8ff
+CYAN_DIM = (91, 127, 150)       # #5b7f96
+TEXT_DIM = (139, 148, 168)      # #8b94a8
 
 # 像素 D 字模 (16 块, 与全站 favicon/logo 同款)
 PIXEL_D = [
@@ -157,13 +157,13 @@ def wrap_title(title):
 
 
 def draw_pixel_d(img, x0, y0, scale):
-    """绘制金色像素 D 字标。"""
+    """绘制青色像素 D 字标。"""
     d = ImageDraw.Draw(img)
     for (px, py) in PIXEL_D:
         d.rectangle(
             [x0 + px * scale, y0 + py * scale,
              x0 + (px + 11) * scale - 1, y0 + (py + 11) * scale - 1],
-            fill=GOLD,
+            fill=CYAN,
         )
     return 69 * scale, 95 * scale
 
@@ -175,13 +175,13 @@ def render_og(title, meta_line, desc):
     img = gradient_bg(W, H, BG_TOP, BG_BOTTOM).convert("RGBA")
     draw = ImageDraw.Draw(img)
 
-    # 金色弧光装饰 (右上 + 左下, 大半径高斯模糊)
+    # 青色弧光装饰 (右上 + 左下, 大半径高斯模糊)
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
     gd.arc([W - 620, -330, W + 620, 420], start=200, end=330,
-           fill=GOLD + (110,), width=6)
+           fill=CYAN + (110,), width=6)
     gd.arc([-560, H - 400, 500, H + 300], start=30, end=150,
-           fill=GOLD + (80,), width=4)
+           fill=CYAN + (80,), width=4)
     glow = glow.filter(ImageFilter.GaussianBlur(30))
     img.alpha_composite(glow)
 
@@ -191,10 +191,10 @@ def render_og(title, meta_line, desc):
     brand_font = load_font("cn", 27)
     bbox = draw.textbbox((0, 0), "数字殿堂 · 手记", font=brand_font)
     draw.text((46 + lw + 18 - bbox[0], 40 + lh / 2 - 14 - bbox[1]),
-              "数字殿堂 · 手记", font=brand_font, fill=GOLD)
+              "数字殿堂 · 手记", font=brand_font, fill=CYAN)
     en_font = load_font("en", 15)
     draw.text((46 + lw + 18, 40 + lh / 2 + 8), "SHUZIDIANTANG.COM",
-              font=en_font, fill=GOLD_DIM)
+              font=en_font, fill=CYAN_DIM)
 
     # 主标题 (金色, 柔光垫底, 自动缩字/换行)
     lines = wrap_title(title)
@@ -216,17 +216,17 @@ def render_og(title, meta_line, desc):
         w, h = text_size(tg, line, font)
         bb = tg.textbbox((0, 0), line, font=font)
         tg.text((W / 2 - w / 2 - bb[0], cy_start + i * line_h - h / 2 - bb[1]),
-                line, font=font, fill=GOLD + (120,))
+                line, font=font, fill=CYAN + (120,))
     title_glow = title_glow.filter(ImageFilter.GaussianBlur(18))
     img.alpha_composite(title_glow)
 
     for i, line in enumerate(lines):
-        draw_centered(draw, line, font, GOLD_BRIGHT, W / 2, cy_start + i * line_h)
+        draw_centered(draw, line, font, CYAN_BRIGHT, W / 2, cy_start + i * line_h)
 
     # 日期 · 分类
     y_meta = cy_start + block_h + 16
     meta_font = load_font("cn", 25)
-    draw_centered(draw, meta_line, meta_font, GOLD_DIM, W / 2, y_meta)
+    draw_centered(draw, meta_line, meta_font, CYAN_DIM, W / 2, y_meta)
 
     # 摘要 (一行, 超出省略)
     if desc:
@@ -243,7 +243,7 @@ def render_og(title, meta_line, desc):
 
     # 底部品牌
     foot_font = load_font("en", 16)
-    draw_centered(draw, "shuzidiantang.com/notes", foot_font, GOLD_DIM, W / 2, H - 44)
+    draw_centered(draw, "shuzidiantang.com/notes", foot_font, CYAN_DIM, W / 2, H - 44)
 
     return img
 

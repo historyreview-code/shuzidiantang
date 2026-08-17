@@ -9,7 +9,7 @@
 数字殿堂/
 ├── index.html            # 首页（手记文章流 + 作品展厅）
 ├── notes/                # 手记频道（公开文章，文件名 YYYY-MM-DD- 开头，自动列表+RSS+sitemap）
-├── assets/style.css      # 夜幕金殿主题
+├── assets/style.css      # 比特辉光主题（深空黑蓝 · 比特青 × 算力紫）
 ├── games/                # 游戏厅（精选机台：数字扫雷 / 像素打砖块）
 ├── cosmos/ about/               # 天文馆 / 馆主手记
 ├── novels/               # 文学馆（暂不对外，作品待打磨）
@@ -67,6 +67,11 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 > gh auth refresh -h github.com -s workflow   # 浏览器授权一次
 > cd 数字殿堂 && git add .github && git commit -m "启用 CI" && git push
 > ```
+
+### 访问计数器（Vercount，已接入）
+
+- `scripts/assemble.mjs` 组装时自动注入全站：页脚显示「全站浏览 / 独立访客」，手记文章页另加「本文阅读」；暗室 `hidden/` 不注入（地址保密）。
+- 数据存于第三方公共实例 [vercount.one](https://vercount.one)（可登录验证域名后自定义初始值）；备案通过后可自建 Vercount / EdgeOne 边缘函数 + KV 替换脚本地址，前端不用动。
 
 ---
 

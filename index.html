@@ -11,28 +11,30 @@
 <meta property="og:image" content="assets/og/brand.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="数字殿堂 · 手记 RSS" href="/feed.xml">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0d18' stroke='%23d8b45a'/><path fill='%23d8b45a' d='M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2305070f' stroke='%233fe0ff'/><path fill='%233fe0ff' d='M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z'/></svg>">
 <link rel="stylesheet" href="assets/style.css">
 <style>
   /* ===== 开机动画: 点阵 logo 逐点亮起 → 品牌名浮现 → 淡出进入博客流 ===== */
   #boot {
     position: fixed; inset: 0; z-index: 999;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background: radial-gradient(1000px 520px at 50% 38%, #1c2340 0%, #0a0d18 62%) fixed, #0a0d18;
+    background:
+      radial-gradient(900px 420px at 50% 32%, rgba(63, 224, 255, .12), transparent 60%),
+      radial-gradient(1000px 520px at 50% 38%, #16233f 0%, #05070f 62%) fixed, #05070f;
     cursor: pointer;
     transition: opacity .5s ease;
   }
   #boot.done { opacity: 0; pointer-events: none; }
-  #boot .pixel-logo { margin-bottom: 30px; filter: drop-shadow(0 0 18px rgba(216,180,90,.45)); }
+  #boot .pixel-logo { margin-bottom: 30px; filter: drop-shadow(0 0 18px rgba(63,224,255,.5)); }
   #boot .pixel-logo rect {
     opacity: 0;
     transform-box: fill-box; transform-origin: center;
     animation: pxIn .4s cubic-bezier(.2,.9,.3,1.2) forwards;
   }
   #boot .boot-title {
-    font-family: var(--serif); font-size: clamp(1.7rem, 5vw, 2.7rem);
-    letter-spacing: 16px; padding-left: 16px; font-weight: 700;
-    background: linear-gradient(180deg, #f6e3a6 10%, var(--gold) 55%, #9a7b34 100%);
+    font-family: var(--sans); font-size: clamp(1.7rem, 5vw, 2.7rem);
+    letter-spacing: 16px; padding-left: 16px; font-weight: 800;
+    background: linear-gradient(180deg, #c8f6ff 8%, var(--bit) 52%, #7c6cff 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
     opacity: 0; animation: bootUp .6s ease .9s forwards;
   }
@@ -66,31 +68,31 @@
 <!-- 开机动画 (点击任意处跳过) -->
 <div id="boot" aria-hidden="true">
   <svg class="pixel-logo" viewBox="0 0 100 100" width="74" height="74">
-    <rect x="16" y="2"  width="11" height="11" fill="#d8b45a" style="animation-delay:.05s"/>
-    <rect x="30" y="2"  width="11" height="11" fill="#d8b45a" style="animation-delay:.10s"/>
-    <rect x="44" y="2"  width="11" height="11" fill="#d8b45a" style="animation-delay:.15s"/>
-    <rect x="16" y="16" width="11" height="11" fill="#d8b45a" style="animation-delay:.20s"/>
-    <rect x="58" y="16" width="11" height="11" fill="#d8b45a" style="animation-delay:.25s"/>
-    <rect x="16" y="30" width="11" height="11" fill="#d8b45a" style="animation-delay:.30s"/>
-    <rect x="58" y="30" width="11" height="11" fill="#d8b45a" style="animation-delay:.35s"/>
-    <rect x="16" y="44" width="11" height="11" fill="#d8b45a" style="animation-delay:.40s"/>
-    <rect x="58" y="44" width="11" height="11" fill="#d8b45a" style="animation-delay:.45s"/>
-    <rect x="16" y="58" width="11" height="11" fill="#d8b45a" style="animation-delay:.50s"/>
-    <rect x="58" y="58" width="11" height="11" fill="#d8b45a" style="animation-delay:.55s"/>
-    <rect x="16" y="72" width="11" height="11" fill="#d8b45a" style="animation-delay:.60s"/>
-    <rect x="58" y="72" width="11" height="11" fill="#d8b45a" style="animation-delay:.65s"/>
-    <rect x="16" y="86" width="11" height="11" fill="#d8b45a" style="animation-delay:.70s"/>
-    <rect x="30" y="86" width="11" height="11" fill="#d8b45a" style="animation-delay:.75s"/>
-    <rect x="44" y="86" width="11" height="11" fill="#d8b45a" style="animation-delay:.80s"/>
+    <rect x="16" y="2"  width="11" height="11" fill="#3fe0ff" style="animation-delay:.05s"/>
+    <rect x="30" y="2"  width="11" height="11" fill="#3fe0ff" style="animation-delay:.10s"/>
+    <rect x="44" y="2"  width="11" height="11" fill="#3fe0ff" style="animation-delay:.15s"/>
+    <rect x="16" y="16" width="11" height="11" fill="#3fe0ff" style="animation-delay:.20s"/>
+    <rect x="58" y="16" width="11" height="11" fill="#3fe0ff" style="animation-delay:.25s"/>
+    <rect x="16" y="30" width="11" height="11" fill="#3fe0ff" style="animation-delay:.30s"/>
+    <rect x="58" y="30" width="11" height="11" fill="#3fe0ff" style="animation-delay:.35s"/>
+    <rect x="16" y="44" width="11" height="11" fill="#3fe0ff" style="animation-delay:.40s"/>
+    <rect x="58" y="44" width="11" height="11" fill="#3fe0ff" style="animation-delay:.45s"/>
+    <rect x="16" y="58" width="11" height="11" fill="#3fe0ff" style="animation-delay:.50s"/>
+    <rect x="58" y="58" width="11" height="11" fill="#3fe0ff" style="animation-delay:.55s"/>
+    <rect x="16" y="72" width="11" height="11" fill="#3fe0ff" style="animation-delay:.60s"/>
+    <rect x="58" y="72" width="11" height="11" fill="#3fe0ff" style="animation-delay:.65s"/>
+    <rect x="16" y="86" width="11" height="11" fill="#3fe0ff" style="animation-delay:.70s"/>
+    <rect x="30" y="86" width="11" height="11" fill="#3fe0ff" style="animation-delay:.75s"/>
+    <rect x="44" y="86" width="11" height="11" fill="#3fe0ff" style="animation-delay:.80s"/>
   </svg>
   <div class="boot-title">数字殿堂</div>
   <div class="boot-line"></div>
-  <div class="boot-hint">一座收藏数字作品的殿堂</div>
+  <div class="boot-hint">01011010 · 一座收藏数字作品的殿堂</div>
 </div>
 
 <header class="site-header">
   <a class="brand" href="/">
-    <span class="mark" title="数字殿堂"><svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><path fill="#d8b45a" d="M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z"/></svg></span>
+    <span class="mark" title="数字殿堂"><svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><path fill="#3fe0ff" d="M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z"/></svg></span>
     <span class="name">数字殿堂<small>SHUZIDIANTANG · DIGITAL HALL</small></span>
   </a>
   <nav class="site-nav">
