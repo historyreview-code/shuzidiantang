@@ -5,60 +5,7 @@
 <title>宏昌电子(603002) 个股研究 · 真实数据版</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"
   onerror="this.remove();var s=document.createElement('script');s.src='https://cdn.bootcdn.net/ajax/libs/echarts/5.5.0/echarts.min.js';document.head.appendChild(s)"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0d1117;--card:#161b22;--card2:#1c2128;--border:#30363d;--t1:#e6edf3;--t2:#8b949e;--t3:#6e7683;--red:#f85149;--blue:#58a6ff;--orange:#d29922;--green:#3fb950;--purple:#bc8cff;--redbg:rgba(248,81,73,.12);--bluebg:rgba(88,166,255,.12);--greenbg:rgba(63,185,80,.12);--orangebg:rgba(210,153,34,.14);--purplebg:rgba(188,140,255,.12)}
-body{background:var(--bg);color:var(--t1);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.mono{font-family:"SF Mono",Menlo,Consolas,monospace}
-.hero{padding:48px 0 32px;border-bottom:1px solid var(--border)}
-.hero h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
-.hero h1 .code{color:var(--t2);font-weight:500;font-size:.65em}
-.hero .sub{color:var(--t2);font-size:14px;margin-top:8px}
-.badge{display:inline-block;background:var(--bluebg);color:var(--blue);border:1px solid rgba(88,166,255,.3);padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:12px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden}
-.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
-.kpi.g::before{background:var(--green)}.kpi.o::before{background:var(--orange)}.kpi.p::before{background:var(--purple)}.kpi.r::before{background:var(--red)}
-.kpi .v{font-size:24px;font-weight:800;letter-spacing:-.5px}.kpi .l{color:var(--t2);font-size:12.5px;margin-top:4px}.kpi .s{color:var(--t3);font-size:11px;margin-top:2px}
-section{padding:42px 0;border-bottom:1px solid var(--border)}
-.stitle{font-size:20px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:10px}
-.stitle .num{background:var(--card2);border:1px solid var(--border);width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:var(--blue)}
-.sdesc{color:var(--t2);font-size:13px;margin-bottom:24px}
-.findings{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.fc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:.2s}
-.fc:hover{border-color:var(--blue);transform:translateY(-2px)}
-.fc .tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:5px;display:inline-block;margin-bottom:9px}
-.fc .tag.r{background:var(--redbg);color:var(--red)}.fc .tag.o{background:var(--orangebg);color:var(--orange)}.fc .tag.b{background:var(--bluebg);color:var(--blue)}.fc .tag.g{background:var(--greenbg);color:var(--green)}.fc .tag.p{background:var(--purplebg);color:var(--purple)}
-.fc h3{font-size:15.5px;font-weight:700;margin-bottom:9px}.fc p{color:var(--t2);font-size:13px}
-.hi{color:var(--t1);font-weight:600}.rd{color:var(--red);font-weight:600}.gn{color:var(--green);font-weight:600}.bl{color:var(--blue);font-weight:600}.og{color:var(--orange);font-weight:600}.pu{color:var(--purple);font-weight:600}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
-.chart-card .ct{font-size:14px;font-weight:600;margin-bottom:3px}.chart-card .cd{color:var(--t2);font-size:12px;margin-bottom:12px}
-.echart{width:100%;height:400px}.echart.sm{height:300px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:right}
-th:first-child,td:first-child{text-align:left}
-th{color:var(--t2);font-size:12px;font-weight:600;background:var(--card2)}
-td .sm{color:var(--t3);font-size:11.5px}
-tr.hl td{background:rgba(88,166,255,.07)}
-.quote{background:var(--card);border-left:3px solid var(--orange);border-radius:0 12px 12px 0;padding:18px 22px;margin:18px 0;color:var(--t2);font-size:14px}
-.quote b{color:var(--t1)}
-.src{color:var(--t3);font-size:11.5px;margin-top:8px}
-.src a{color:#58a6ff;text-decoration:none}
-.tl{position:relative;margin:24px 0;padding-left:26px}
-.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--border)}
-.tl .ev{position:relative;margin-bottom:16px}
-.tl .ev::before{content:"";position:absolute;left:-24px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid var(--blue)}
-.tl .ev.done::before{border-color:var(--green);background:var(--green)}
-.tl .ev.now::before{border-color:var(--orange);box-shadow:0 0 8px rgba(210,153,34,.6)}
-.tl .ev .t{font-size:12px;color:var(--t3)}
-.tl .ev .n{font-size:14px;font-weight:700;margin:2px 0}
-.tl .ev .d{font-size:12.5px;color:var(--t2)}
-.warn{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--t2);margin:14px 0}
-footer{padding:32px 0 50px;color:var(--t3);font-size:12px}
-footer p{margin-bottom:5px}
-@media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.findings{grid-template-columns:1fr}}
-</style></head><body>
+<link rel="stylesheet" href="../invest.css"></head><body>
 <div class="wrap">
 <div class="hero"><span class="badge">个股研究 · 真实财务/行情数据 · 2026-08-16</span>
 <h1>宏昌电子 <span class="code mono">603002</span>：阵痛之后，拐点已现</h1>
@@ -198,39 +145,39 @@ footer p{margin-bottom:5px}
 </div>
 
 <script>
-const A={textStyle:{color:'#8b949e'},tooltip:{backgroundColor:'#161b22',borderColor:'#30363d',textStyle:{color:'#e6edf3'}}};
+const A={textStyle:{color:'#9aa4ba'},tooltip:{backgroundColor:'#0d1424',borderColor:'#26324a',textStyle:{color:'#e6edf3'}}};
 function mk(id,opt){const c=echarts.init(document.getElementById(id));c.setOption({...A,...opt});return c}
 const M=["24-01","24-02","24-03","24-04","24-05","24-06","24-07","24-08","24-09","24-10","24-11","24-12","25-01","25-02","25-03","25-04","25-05","25-06","25-07","25-08","25-09","25-10","25-11","25-12","26-01","26-02","26-03","26-04","26-05","26-06","26-07","26-08"];
 const HC=[8.89,9.14,10.2,8.83,8.81,8.64,9.0,8.02,9.62,10.16,10.78,9.9,9.95,11.41,10.93,10.27,10.34,12.15,13.0,15.11,14.24,13.58,13.06,13.67,17.15,21.35,18.2,25.56,30.67,44.73,22.78,29.59];
 const HH=[6.72,6.49,7.9,7.28,7.47,7.34,7.1,7.47,8.21,8.75,10.49,8.68,8.95,9.61,8.93,9.38,11.61,15.41,24.47,43.96,36.25,36.8,33.4,38.26,56.3,82.94,72.82,123.81,210.14,275.92,133.24,160.33];
 const charts=[];
 // c1 营收vs净利
-charts.push(mk('c1',{tooltip:{...A.tooltip,trigger:'axis'},legend:{data:['营收(亿)','归母净利(亿)'],textStyle:{color:'#8b949e'},top:0},
+charts.push(mk('c1',{tooltip:{...A.tooltip,trigger:'axis'},legend:{data:['营收(亿)','归母净利(亿)'],textStyle:{color:'#9aa4ba'},top:0},
 grid:{left:50,right:55,top:36,bottom:28},
-xAxis:{type:'category',data:['2021','2022','2023','2024','2025','2026Q1','2026H1E'],axisLine:{lineStyle:{color:'#30363d'}}},
-yAxis:[{type:'value',splitLine:{lineStyle:{color:'#21262d'}}},{type:'value',splitLine:{show:false}}],
+xAxis:{type:'category',data:['2021','2022','2023','2024','2025','2026Q1','2026H1E'],axisLine:{lineStyle:{color:'#26324a'}}},
+yAxis:[{type:'value',splitLine:{lineStyle:{color:'#1a2438'}}},{type:'value',splitLine:{show:false}}],
 series:[
 {name:'营收(亿)',type:'bar',data:[44.53,30.22,22.40,21.44,30.76,9.89,null],itemStyle:{color:'#58a6ff',borderRadius:[4,4,0,0]}},
 {name:'归母净利(亿)',type:'line',yAxisIndex:1,smooth:true,data:[3.75,5.57,0.87,0.51,0.35,0.005,0.395],lineStyle:{width:3,color:'#f85149'},itemStyle:{color:'#f85149'},
-markPoint:{data:[{coord:['2026Q1',0.005],symbolSize:52,itemStyle:{color:'#d29922'},label:{formatter:'Q1谷底',color:'#0d1117',fontWeight:700,fontSize:10}},{coord:['2026H1E',0.395],symbolSize:52,itemStyle:{color:'#3fb950'},label:{formatter:'拐点',color:'#0d1117',fontWeight:700,fontSize:10}}]}}]}));
+markPoint:{data:[{coord:['2026Q1',0.005],symbolSize:52,itemStyle:{color:'#d29922'},label:{formatter:'Q1谷底',color:'#05070f',fontWeight:700,fontSize:10}},{coord:['2026H1E',0.395],symbolSize:52,itemStyle:{color:'#3fb950'},label:{formatter:'拐点',color:'#05070f',fontWeight:700,fontSize:10}}]}}]}));
 // c2 归一化对比
 const n=a=>a.map(v=>+(v/a[0]*100).toFixed(1));
-charts.push(mk('c2',{tooltip:{...A.tooltip,trigger:'axis'},legend:{data:['宏昌电子','宏和科技'],textStyle:{color:'#8b949e'},top:0},
+charts.push(mk('c2',{tooltip:{...A.tooltip,trigger:'axis'},legend:{data:['宏昌电子','宏和科技'],textStyle:{color:'#9aa4ba'},top:0},
 grid:{left:50,right:20,top:36,bottom:28},
-xAxis:{type:'category',data:M,axisLine:{lineStyle:{color:'#30363d'}}},
-yAxis:{type:'value',name:'2024-01=100',splitLine:{lineStyle:{color:'#21262d'}}},
+xAxis:{type:'category',data:M,axisLine:{lineStyle:{color:'#26324a'}}},
+yAxis:{type:'value',name:'2024-01=100',splitLine:{lineStyle:{color:'#1a2438'}}},
 series:[
 {name:'宏昌电子',type:'line',smooth:true,data:n(HC),lineStyle:{width:2.5,color:'#58a6ff'},itemStyle:{color:'#58a6ff'},showSymbol:false,
-markPoint:{data:[{coord:['26-06',503],itemStyle:{color:'#58a6ff'},label:{formatter:'+403%',color:'#0d1117',fontWeight:700,fontSize:10}}]}},
+markPoint:{data:[{coord:['26-06',503],itemStyle:{color:'#58a6ff'},label:{formatter:'+403%',color:'#05070f',fontWeight:700,fontSize:10}}]}},
 {name:'宏和科技',type:'line',smooth:true,data:n(HH),lineStyle:{width:2.5,color:'#3fb950'},itemStyle:{color:'#3fb950'},showSymbol:false,
-markPoint:{data:[{coord:['26-05',3129],itemStyle:{color:'#3fb950'},label:{formatter:'+3029%',color:'#0d1117',fontWeight:700,fontSize:10}}]}}]}));
+markPoint:{data:[{coord:['26-05',3129],itemStyle:{color:'#3fb950'},label:{formatter:'+3029%',color:'#05070f',fontWeight:700,fontSize:10}}]}}]}));
 // c3 宏昌月线
 charts.push(mk('c3',{tooltip:{...A.tooltip,trigger:'axis'},grid:{left:50,right:20,top:24,bottom:28},
-xAxis:{type:'category',data:M,axisLine:{lineStyle:{color:'#30363d'}}},
-yAxis:{type:'value',name:'后复权价',splitLine:{lineStyle:{color:'#21262d'}}},
+xAxis:{type:'category',data:M,axisLine:{lineStyle:{color:'#26324a'}}},
+yAxis:{type:'value',name:'后复权价',splitLine:{lineStyle:{color:'#1a2438'}}},
 series:[{type:'line',smooth:true,data:HC,lineStyle:{width:2.5,color:'#bc8cff'},itemStyle:{color:'#bc8cff'},showSymbol:false,areaStyle:{color:'rgba(188,140,255,.12)'},
-markPoint:{data:[{coord:['26-06',44.73],itemStyle:{color:'#f85149'},label:{formatter:'顶 44.7',color:'#0d1117',fontWeight:700,fontSize:10}},{coord:['26-07',22.78],itemStyle:{color:'#d29922'},label:{formatter:'-49%',color:'#0d1117',fontWeight:700,fontSize:10}},{coord:['26-08',29.59],itemStyle:{color:'#3fb950'},label:{formatter:'15.99',color:'#0d1117',fontWeight:700,fontSize:10}}]}}]}));
+markPoint:{data:[{coord:['26-06',44.73],itemStyle:{color:'#f85149'},label:{formatter:'顶 44.7',color:'#05070f',fontWeight:700,fontSize:10}},{coord:['26-07',22.78],itemStyle:{color:'#d29922'},label:{formatter:'-49%',color:'#05070f',fontWeight:700,fontSize:10}},{coord:['26-08',29.59],itemStyle:{color:'#3fb950'},label:{formatter:'15.99',color:'#05070f',fontWeight:700,fontSize:10}}]}}]}));
 window.addEventListener('resize',()=>charts.forEach(c=>c.resize()));
 </script>
-<div style="max-width:1180px;margin:0 auto;padding:8px 24px 48px;"><div style="padding:12px 16px;border:1px solid #30363d;border-radius:8px;background:rgba(210,153,34,.06);color:#8b949e;font-size:13px;line-height:1.7;">⚠️ <strong style="color:#d29922">免责声明</strong>：本文为个人学习与研究记录，不构成任何投资建议。市场有风险，据此操作盈亏自负。</div></div>
+<div class="wrap" style="padding-bottom:48px"><div class="no-advice">⚠️ <strong>免责声明</strong>：本文为个人学习与研究记录，不构成任何投资建议。市场有风险，据此操作盈亏自负。</div></div>
 </body></html>

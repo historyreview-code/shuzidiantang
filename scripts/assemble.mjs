@@ -93,20 +93,20 @@ function collectNotes(notesDir, titleStripRe) {
       date: m[1],
       file: f,
       title,
-      cat: catMatch ? catMatch[1].trim() : '',
+      cat: catMatch ? catMatch[1].replace(/\s*-->\s*$/, '').trim() : '',
       desc: descMatch ? descMatch[1].trim() : title,
     });
   }
   items.sort((a, b) => (a.date < b.date ? 1 : -1));
   return items;
 }
-function renderFeedItems(items, hrefPrefix, limit, placeholderHtml) {
+function renderFeedItems(items, hrefPrefix, limit, placeholderHtml, opts = {}) {
   if (items.length === 0) return placeholderHtml;
   const shown = limit ? items.slice(0, limit) : items;
   return shown
     .map(
       (it) =>
-        `<a class="item" href="${hrefPrefix}${it.file}"><span class="date">${it.date}</span><span class="txt">${escapeHtml(it.title)}${it.cat ? `<small>${escapeHtml(it.cat)}</small>` : ''}</span></a>`,
+        `<a class="item" href="${hrefPrefix}${it.file}"><span class="date">${it.date}</span><span class="txt">${escapeHtml(it.title)}${it.cat ? `<small>${escapeHtml(it.cat)}</small>` : ''}</span>${opts.withDesc && it.desc ? `<span class="desc">${escapeHtml(it.desc)}</span>` : ''}</a>`,
     )
     .join('\n      ');
 }
@@ -223,7 +223,7 @@ const investItems = collectNotes(
 if (injectFeed(
   path.join(DIST, 'hidden', 'invest', 'index.html'),
   'INVEST_NOTES',
-  renderFeedItems(investItems, 'notes/', 0, '<div class="item"><span class="date">筹备中</span><span class="txt">第一期笔记撰写中<small>每周更新 · 敬请期待</small></span></div>'),
+  renderFeedItems(investItems, 'notes/', 0, '<div class="item"><span class="date">筹备中</span><span class="txt">第一期笔记撰写中<small>每周更新 · 敬请期待</small></span></div>', { withDesc: true }),
 )) {
   console.log(`  投资研究笔记列表已生成: ${investItems.length} 篇 (最新在前)`);
 }
