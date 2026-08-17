@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不踩雷，只算数——数字扫雷的创意与进化之路 · 数字殿堂</title>
+<meta name="description" content="数字扫雷（NumSweeper）：把地雷换成 1-100 的数字，一条 250 的生死线，加上三层策略引擎、模拟对战与语音播报的进化全过程。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0d18' stroke='%23d8b45a'/><path fill='%23d8b45a' d='M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z'/></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .note { max-width: 760px; margin: 0 auto; }
+  .note h1 { font-family: var(--serif); font-size: 1.9rem; letter-spacing: 2px; color: var(--gold-bright); margin: 12px 0 8px; }
+  .note .meta { color: var(--text-dim); font-size: .85rem; margin-bottom: 26px; }
+  .note h2 { font-family: var(--serif); letter-spacing: 2px; color: var(--gold-bright); font-size: 1.2rem; margin: 30px 0 10px; padding-left: 10px; border-left: 3px solid var(--gold); }
+  .note p { color: var(--text); font-size: .95rem; margin: 12px 0; }
+  .note li { color: var(--text); font-size: .95rem; margin: 6px 0; }
+  .note ul, .note ol { padding-left: 24px; margin: 10px 0; }
+  .note blockquote { border-left: 3px solid var(--gold-dim); padding-left: 14px; color: var(--text-dim); margin: 14px 0; }
+  .note code { background: rgba(216,180,90,.08); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: .85em; }
+  .note a { color: var(--gold-bright); }
+  .note img { display: block; max-width: 100%; margin: 18px auto; border: 1px solid var(--line); border-radius: 10px; }
+  .note .fig { text-align: center; color: var(--text-dim); font-size: .8rem; margin: -10px 0 18px; }
+  .note .cta { margin: 24px 0; padding: 14px 18px; border: 1px solid rgba(216,180,90,.25); border-radius: 10px; background: rgba(216,180,90,.05); }
+  .note .cta p { margin: 6px 0; }
+  .note-back { display: inline-block; margin-top: 36px; font-size: .88rem; color: var(--gold); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span class="mark" title="数字殿堂"><svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><path fill="#d8b45a" d="M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z"/></svg></span>
+    <span class="name">数字殿堂<small>DIGITAL HALL</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/earth/">地球厅</a>
+    <a href="/games/">游戏厅</a>
+    <a href="/cosmos/">天文馆</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article class="note">
+    <h1>不踩雷，只算数——数字扫雷的创意与进化之路</h1>
+    <p class="meta">2026-08-17 · 分类：开发经验</p>
+
+    <img src="../assets/img/games/games-hall.png" alt="数字殿堂游戏厅">
+    <p class="fig">数字殿堂 · 游戏厅</p>
+
+    <p>扫雷，可能是世界上最经典的小游戏之一。但它有个老毛病：<strong>开局靠运气，死局靠猜。</strong></p>
+
+    <p>我一直在想：能不能把"猜"去掉，让每一步都有据可依？</p>
+
+    <p>于是有了「数字扫雷」——把地雷换成 1-100 的数字，把"踩雷"换成"算数"。</p>
+
+    <h2>一、创意：一条 250 的生死线</h2>
+
+    <p>规则只有三条：</p>
+
+    <ol>
+      <li>10×10 的网格里，藏着 1-100 不重复的 100 个数字</li>
+      <li>点击格子翻开它；如果"这个数字 + 相邻已翻开数字之和"<strong>超过 250</strong>，就爆炸</li>
+      <li>安全翻开全部 100 个格子，就是通关</li>
+    </ol>
+
+    <p>于是扫雷变成了一道会爆炸的数学题：每一步都要估算"翻开它会不会过线"。运气让位给推理——这正是我想玩的游戏。</p>
+
+    <h2>二、改进：四次关键进化</h2>
+
+    <img src="../assets/img/games/numsweeper.png" alt="数字扫雷游戏画面">
+    <p class="fig">数字扫雷（NumSweeper BL v2.5）游戏画面</p>
+
+    <p><strong>① 渲染从"卡"到"顺"。</strong> 初版用 DOM 网格，渲染要 15-25 毫秒；换成 Canvas 后只要 1-2 毫秒，再配合邻居预计算表、分帧模拟，手机上也流畅。</p>
+
+    <p><strong>② 长出"策略引擎"。</strong> 内置三层策略：中央启动（中央格子邻居多、信息增益最大）、内圈推进、外圈收尾（边缘谨慎计算）。</p>
+
+    <p><strong>③ 让策略"自证"。</strong> 做了一键对比：v2.5 策略 vs Border-Last 策略，批量模拟 100 局看谁活得更久。策略好不好，让模拟器说话。</p>
+
+    <p><strong>④ 打磨手感。</strong> 悬停显示安全概率、污染度、推荐指数；必爆格标 ✕，最优格亮 ⭐；误触可撤回 10 步；通关后展示你避开的全部危险格；爆炸有烟花，翻开有音效——后来还升级成了晓晓女声的语音播报（TTS 预录音频，不联网也能响）。</p>
+
+    <h2>三、AI 在这件事里的角色</h2>
+
+    <p>从规则打磨、Canvas 性能方案、策略模拟的实现，到把配音变成 TTS 预录音频——AI 全程参与，很多"当时觉得难"的环节都是它帮着拆掉的。</p>
+
+    <h2>四、来玩一局</h2>
+
+    <div class="cta">
+      <p>👉 游戏厅：<a href="/games/">数字殿堂 · 游戏厅</a></p>
+      <p>👉 直接开玩：<a href="/games/numsweeper.html">数字扫雷</a>（手机横屏、电脑皆可）</p>
+      <p>👉 源码开源：<a href="https://github.com/historyreview-code/Numsweeper" target="_blank" rel="noopener">github.com/historyreview-code/Numsweeper</a></p>
+    </div>
+
+    <p>我是站主，接下来，我会继续介绍本站编程作品的思路和经验，也会分享一些日常学习点滴。</p>
+
+    <a class="note-back" href="/notes/">← 返回手记</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>数字殿堂 · 手记</p>
+  <p class="icp">（ICP 备案号待备案通过后展示）</p>
+</footer>
+</body>
+</html>
