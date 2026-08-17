@@ -228,5 +228,35 @@ if (injectFeed(
   console.log(`  投资研究笔记列表已生成: ${investItems.length} 篇 (最新在前)`);
 }
 
+// 4. 访问计数器注入 (Vercount 公共实例, 备案后可按 README ⑦ 换成自建)
+//    给所有带 site-footer 的页面注入计数位 + 脚本; 暗室 hidden/ 不注入 (地址保密)。
+function walkHtml(dir, out = []) {
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) walkHtml(p, out);
+    else if (e.name.endsWith('.html')) out.push(p);
+  }
+  return out;
+}
+{
+  let count = 0;
+  for (const p of walkHtml(DIST)) {
+    const rel = path.relative(DIST, p).split(path.sep).join('/');
+    if (rel.startsWith('hidden/')) continue;
+    let t = readFileSync(p, 'utf8');
+    if (!t.includes('class="site-footer"') || t.includes('vercount_value_site_pv')) continue;
+    const isArticle = /^notes\/\d{4}-\d{2}-\d{2}-.+\.html$/.test(rel);
+    const pagePart = isArticle ? ' · 本文阅读 <b id="vercount_value_page_pv">—</b>' : '';
+    const block =
+      `<p class="counter"><span class="bits">0101</span> 全站浏览 <b id="vercount_value_site_pv">—</b>` +
+      ` · 独立访客 <b id="vercount_value_site_uv">—</b>${pagePart} <span class="bits">1010</span></p>\n` +
+      `<script defer src="https://events.vercount.one/js"></script>`;
+    t = t.replace('</footer>', `${block}\n</footer>`);
+    writeFileSync(p, t);
+    count++;
+  }
+  console.log(`  访问计数器已注入: ${count} 页 (Vercount, hidden/ 跳过)`);
+}
+
 console.log('\n✅ 组装完成 → dist/');
 console.log('   本地预览：npx serve dist');
