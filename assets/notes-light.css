@@ -1,0 +1,75 @@
+/* 数字殿堂 · 手记阅读区浅色主题（白底黑字 · 阮一峰式阅读流）
+   作用域：仅 /notes/ 页面（body.note-light）。
+   三馆（地球厅/游戏厅/天文馆）保持暗色比特辉光不变 —— 展厅暗、阅读室亮。
+   加载顺序：本文件必须晚于 assets/style.css 与页面内联 <style>，
+   同级选择器靠 `body.note-light` 前缀提权覆盖，颜色统一以本文件为准。 */
+
+/* ===== 页面底色：纸白 + 墨字 ===== */
+body.note-light {
+  background: #fbfaf7;
+  color: #2b3442;
+}
+body.note-light a { color: #0e7490; }
+body.note-light strong { color: #141b28; }
+
+/* ===== 顶部导航：品牌徽章保留深色底（品牌锚点），文字转深色 ===== */
+body.note-light .site-header { border-bottom-color: #e5e8ee; }
+body.note-light .brand .mark {
+  background: linear-gradient(160deg, #0b1120, #05070f);
+  box-shadow: 0 0 12px rgba(63, 224, 255, .28);
+}
+body.note-light .brand .name { color: #141b28; }
+body.note-light .brand .name small { color: #6b7280; }
+body.note-light .site-nav a { color: #5b6472; }
+body.note-light .site-nav a:hover,
+body.note-light .site-nav a.active { color: #0891b2; text-shadow: none; }
+
+/* ===== /notes/ 频道列表页 ===== */
+body.note-light .page-head h1 { color: #141b28; }
+body.note-light .page-head p { color: #6b7280; }
+body.note-light .feed .item { background: #ffffff; border-color: #e5e8ee; }
+body.note-light .feed .item:hover { border-color: #9ad0de; background: #f2fafd; }
+body.note-light .feed .date { color: #0891b2; }
+body.note-light .feed .txt { color: #2b3442; }
+body.note-light .feed .txt small { color: #8a919e; }
+
+/* ===== 手记文章正文 ===== */
+body.note-light .note h1 { color: #141b28; }
+body.note-light .note .meta { color: #6b7280; }
+body.note-light .note h2 { color: #141b28; border-left-color: #0891b2; }
+body.note-light .note p,
+body.note-light .note li { color: #2b3442; }
+body.note-light .note blockquote {
+  border-left-color: #c2d6dd;
+  background: #f3f6f8;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  color: #55606f;
+}
+body.note-light .note code {
+  background: #eef2f6;
+  border-color: #dfe5ec;
+  color: #0f4c5c;
+}
+body.note-light .note pre {
+  background: #f2f4f7; border: 1px solid #e2e6ec; border-radius: 8px;
+  padding: 14px 16px; overflow-x: auto;
+  font-size: .86rem; line-height: 1.6; color: #242b3a;
+}
+body.note-light .note pre code { background: none; border: 0; padding: 0; color: inherit; }
+body.note-light .note a { color: #0e7490; }
+body.note-light .note img {
+  border-color: #e2e6ec;
+  box-shadow: 0 1px 8px rgba(16, 24, 40, .08);
+}
+body.note-light .note .fig { color: #8a919e; }
+body.note-light .note .cta { background: #eefafd; border-color: #bfe4ec; }
+body.note-light .note .cta p { color: #2b3442; }
+body.note-light .note-back { color: #0e7490; }
+
+/* ===== 页脚 + 计数器 ===== */
+body.note-light .site-footer { border-top-color: #e5e8ee; color: #9aa1ad; }
+body.note-light .site-footer a { color: #0e7490; }
+body.note-light .counter { color: #9aa1ad; }
+body.note-light .counter b { color: #0e7490; text-shadow: none; }
+body.note-light .bits { color: #0891b2; }

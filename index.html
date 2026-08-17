@@ -61,6 +61,23 @@
   .link-all { display: inline-block; margin-top: 16px; font-size: .88rem; color: var(--gold); letter-spacing: 1px; }
   .works-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; padding: 4px 0 8px; }
   .works-grid .hall { padding: 22px 20px; }
+
+  /* 手记纸卡：深色展厅里的一张白纸 —— 白底黑字阅读流（与 /notes/ 浅色主题呼应） */
+  .notes-sheet {
+    background: #fbfaf7;
+    border: 1px solid rgba(94, 160, 255, .28);
+    border-radius: 16px;
+    padding: 24px 26px 20px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .38), 0 0 22px rgba(63, 224, 255, .08);
+  }
+  .notes-sheet h2 { color: #141b28; border-left-color: #0891b2; }
+  .notes-sheet .sec-sub { color: #6b7280; }
+  .notes-sheet .feed .item { background: #ffffff; border-color: #e5e8ee; }
+  .notes-sheet .feed .item:hover { border-color: #9ad0de; background: #f2fafd; }
+  .notes-sheet .feed .date { color: #0891b2; }
+  .notes-sheet .feed .txt { color: #2b3442; }
+  .notes-sheet .feed .txt small { color: #8a919e; }
+  .notes-sheet .link-all { color: #0e7490; }
 </style>
 </head>
 <body>
@@ -106,7 +123,7 @@
 </header>
 
 <main>
-  <section class="section">
+  <section class="section notes-sheet">
     <h2>最新手记</h2>
     <p class="sec-sub">每天一篇手记 · 记录作品开发与经验见闻</p>
     <div class="feed" id="notes-feed">

@@ -24,8 +24,9 @@
   .note .cta p { margin: 6px 0; }
   .note-back { display: inline-block; margin-top: 36px; font-size: .88rem; color: var(--gold); letter-spacing: 1px; }
 </style>
+<link rel="stylesheet" href="../assets/notes-light.css">
 </head>
-<body>
+<body class="note-light">
 <header class="site-header">
   <a class="brand" href="/">
     <span class="mark" title="数字殿堂"><svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><path fill="#d8b45a" d="M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z"/></svg></span>
@@ -84,11 +85,27 @@
 
     <p>从规则打磨、Canvas 性能方案、策略模拟的实现，到把配音变成 TTS 预录音频——AI 全程参与，很多"当时觉得难"的环节都是它帮着拆掉的。</p>
 
-    <h2>四、来玩一局</h2>
+    <h2>四、思考一下：你的最优策略是什么？</h2>
+
+<p>爆炸的判据是：你点击的格子，加上它四周相邻的<strong>已翻开</strong>格子，总和超过 250 就触发地雷。最坏情况是相邻四格全都先翻开——那时"这个数 + 四个邻居"的总和，就是它的生死线。</p>
+
+<p>这条规则藏着一个反直觉的推论：<strong>点击的先后次序，就是你最大的安全空间。</strong>一个高危数字（比如 90 多的大数挤在一起），等邻居全翻开再点它，必炸无疑；可如果它一上来就点——那时周围一个已翻开的格子都没有，总和只有它自己，反而安全。</p>
+
+<p>反过来，也<strong>确实存在全局无解的可能</strong>：如果一片数字的布局，无论怎么排序都绕不开"邻居先翻开、高危数后点"的死结，这局从发牌起就没有安全路径。好在大部分局面有解，而解就藏在次序里：</p>
+
+<ul>
+  <li><strong>高危数字先点。</strong>大数字翻得越晚，身边躺下的邻居越多，越危险——开局先扫一遍大数，尽早处理。</li>
+  <li><strong>动手前先算一笔账。</strong>自己的数字 + 已翻开邻居的和，逼近 250 就不要点。</li>
+  <li><strong>谨慎收尾。</strong>越到后期，格子周围已翻开的邻居越多、容错越小；前期清高危区，后期走低危区。</li>
+</ul>
+
+<p>也就是说，数字扫雷的通关不靠运气，靠的是<strong>对点击次序的规划</strong>。下一局试试：开局先找大数，再决定先点谁。</p>
+
+<h2>五、来玩一局</h2>
 
     <div class="cta">
       <p>👉 游戏厅：<a href="/games/">数字殿堂 · 游戏厅</a></p>
-      <p>👉 直接开玩：<a href="/games/numsweeper.html">数字扫雷</a>（手机横屏、电脑皆可）</p>
+      <p>👉 直接开玩：<a href="/games/numsweeper.html">数字扫雷</a>（手机竖屏、电脑皆可）</p>
       <p>👉 源码开源：<a href="https://github.com/historyreview-code/Numsweeper" target="_blank" rel="noopener">github.com/historyreview-code/Numsweeper</a></p>
     </div>
 
