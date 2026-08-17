@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一个会转的地球，装下了大学、地震、世界遗产和 500 强 · 数字殿堂</title>
+<meta name="description" content="数字地球系列介绍：3D 地球上陈列全球大学 200 强、地震火山、世界遗产与 500 强总部，AI 加持下 3 天发布 3 个主题。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0d18' stroke='%23d8b45a'/><path fill='%23d8b45a' d='M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z'/></svg>">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .note { max-width: 760px; margin: 0 auto; }
+  .note h1 { font-family: var(--serif); font-size: 1.9rem; letter-spacing: 2px; color: var(--gold-bright); margin: 12px 0 8px; }
+  .note .meta { color: var(--text-dim); font-size: .85rem; margin-bottom: 26px; }
+  .note h2 { font-family: var(--serif); letter-spacing: 2px; color: var(--gold-bright); font-size: 1.2rem; margin: 30px 0 10px; padding-left: 10px; border-left: 3px solid var(--gold); }
+  .note p { color: var(--text); font-size: .95rem; margin: 12px 0; }
+  .note li { color: var(--text); font-size: .95rem; margin: 6px 0; }
+  .note ul, .note ol { padding-left: 24px; margin: 10px 0; }
+  .note blockquote { border-left: 3px solid var(--gold-dim); padding-left: 14px; color: var(--text-dim); margin: 14px 0; }
+  .note code { background: rgba(216,180,90,.08); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: .85em; }
+  .note a { color: var(--gold-bright); }
+  .note img { display: block; max-width: 100%; margin: 18px auto; border: 1px solid var(--line); border-radius: 10px; }
+  .note .fig { text-align: center; color: var(--text-dim); font-size: .8rem; margin: -10px 0 18px; }
+  .note .cta { margin: 24px 0; padding: 14px 18px; border: 1px solid rgba(216,180,90,.25); border-radius: 10px; background: rgba(216,180,90,.05); }
+  .note .cta p { margin: 6px 0; }
+  .note-back { display: inline-block; margin-top: 36px; font-size: .88rem; color: var(--gold); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span class="mark" title="数字殿堂"><svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true"><path fill="#d8b45a" d="M16 2h11v11h-11zM30 2h11v11h-11zM44 2h11v11h-11zM16 16h11v11h-11zM58 16h11v11h-11zM16 30h11v11h-11zM58 30h11v11h-11zM16 44h11v11h-11zM58 44h11v11h-11zM16 58h11v11h-11zM58 58h11v11h-11zM16 72h11v11h-11zM58 72h11v11h-11zM16 86h11v11h-11zM30 86h11v11h-11zM44 86h11v11h-11z"/></svg></span>
+    <span class="name">数字殿堂<small>DIGITAL HALL</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/earth/">地球厅</a>
+    <a href="/games/">游戏厅</a>
+    <a href="/cosmos/">天文馆</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article class="note">
+    <h1>一个会转的地球，装下了大学、地震、世界遗产和 500 强</h1>
+    <p class="meta">2026-08-16 · 分类：开发经验</p>
+
+    <p>你有没有想过：人类的知识，如果摆在一个真实的地球上，会是什么样子？</p>
+
+    <p>世界 200 强大学分布在哪里？地球上的地震是怎么蔓延的？UNESCO 世界遗产都藏在哪？财富 500 强的总部，又如何点亮各大洲？</p>
+
+    <p>我把这些数据，全都搬进了一个可以旋转、缩放、点击的 3D 地球。</p>
+
+    <p>这个系列，我叫它「数字地球」。</p>
+
+    <img src="../assets/og/brand.png" alt="数字地球系列门户">
+    <p class="fig">数字地球 · 统一门户</p>
+
+    <h2>一、这是一个什么样的地球</h2>
+
+    <p>一句话：把重量级数据，放到一个真实的地球仪上看。</p>
+
+    <p>它基于 NASA 蓝大理石 5400 高清贴图，带地形凹凸和大气层效果，中英双语，手机电脑都能用。</p>
+
+    <p>点任何一个标记，地球会"飞"过去，右侧弹出详情卡片；想看更多，还能一键调取维基百科资料。</p>
+
+    <p>五个词概括：<strong>看得见、转得动、点得开、查得到、学得进。</strong></p>
+
+    <h2>二、四个主题，四种看世界的方式</h2>
+
+    <p><strong>① 全球大学 200 强</strong> —— THE 2026 排名前 200 的大学，加 32 个大学城，学术版图一眼看尽。</p>
+
+    <img src="../assets/og/universities.png" alt="全球大学 200 强主题">
+    <p class="fig">主题一 · 全球大学 200 强</p>
+
+    <p><strong>② 地震与火山</strong> —— 1600 次地震、500 座活火山、10 条地震带。最特别的是时间滑块：拖动它，看地震如何随年份在环太平洋带蔓延，像在看一部地球的脉动史。</p>
+
+    <img src="../assets/og/quakes.png" alt="地震与火山主题">
+    <p class="fig">主题二 · 地震与火山</p>
+
+    <p><strong>③ 世界遗产 Top 151</strong> —— UNESCO 名录精选，每处遗产带入选标准和濒危警示。哪些瑰宝正在消失，地球会告诉你。</p>
+
+    <img src="../assets/og/heritage.png" alt="世界遗产主题">
+    <p class="fig">主题三 · 世界遗产 Top 151</p>
+
+    <p><strong>④ 财富 500 强总部</strong> —— 500 个坐标，100% 覆盖；圆的大小代表营收，颜色代表国家。全球财富版图，转一圈就懂。</p>
+
+    <img src="../assets/og/f500.png" alt="财富 500 强总部主题">
+    <p class="fig">主题四 · 财富 500 强总部</p>
+
+    <h2>三、3 天做出 3 个 v1.0，速度从哪来</h2>
+
+    <p>这四个主题不是攒了一年才做完的——前三个是 <strong>3 天里连发 3 个版本</strong>。</p>
+
+    <p>快，靠的是三件事：</p>
+
+    <p><strong>第一，数据管线全部脚本化。</strong> 用 Python 抓取美国地质调查局（USGS）、全球火山计划（GVP）、THE 排名和 Wikimedia 数据——光是火山原始数据就有 173MB，靠人肉整理根本不可能。</p>
+
+    <p><strong>第二，底座统一。</strong> 三个应用曾经各复制一份底层代码，慢慢"漂移"成三个样子。我把它们合并成一个共享底座后，新主题只需要写"数据 + 视觉"，一个目录就能上线。</p>
+
+    <p><strong>第三，AI 全程参与。</strong> 从数据清洗到组件 bug，很多卡壳的地方是 AI 帮着查文档、找原因翻过去的。</p>
+
+    <p>换句话说：以前做这样一个应用，需要一支团队；现在，<strong>一个人 + AI，就能跑出"一天一个主题"的节奏。</strong></p>
+
+    <h2>四、为什么要把数据搬上地球</h2>
+
+    <p>因为<strong>扁平表格记不住，3D 地球忘不掉</strong>。</p>
+
+    <p>位置感，会让数据变成直觉——这是任何图表都替代不了的。</p>
+
+    <p>接下来的计划：让数据自动更新，让每个主题自动长出推广内容——<strong>让这颗地球自己生长。</strong></p>
+
+    <h2>写在最后</h2>
+
+    <div class="cta">
+      <p>👉 亲手转一转这颗地球：<a href="/earth/">数字殿堂 · 地球厅</a></p>
+      <p>👉 制作过程与源码（开源）：<a href="https://github.com/historyreview-code/digital-earth-series" target="_blank" rel="noopener">github.com/historyreview-code/digital-earth-series</a></p>
+    </div>
+
+    <p>我是站主，接下来，我会继续介绍本站编程作品的思路和经验，也会分享一些日常学习点滴。</p>
+
+    <a class="note-back" href="/notes/">← 返回手记</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>数字殿堂 · 手记</p>
+  <p class="icp">（ICP 备案号待备案通过后展示）</p>
+</footer>
+</body>
+</html>
