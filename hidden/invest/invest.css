@@ -415,3 +415,102 @@ footer p { margin-bottom: 6px; color: var(--text-3); }
   th, td { padding: 8px 10px; }
   .note h1 { font-size: 1.55rem; }
 }
+
+/* ---------- 首页落地页 (子站式宣传页) ---------- */
+.iv-hero {
+  max-width: 780px; margin: 0 auto; padding: 72px 24px 40px;
+  text-align: center; position: relative;
+}
+.iv-hero::before {
+  content: ""; position: absolute; inset: -40px 0 auto; height: 420px;
+  background:
+    radial-gradient(520px 220px at 50% 0%, rgba(63, 224, 255, .16), transparent 70%),
+    radial-gradient(420px 200px at 78% 12%, rgba(124, 108, 255, .12), transparent 70%);
+  pointer-events: none;
+}
+.iv-hero .badge {
+  background: var(--accent-bg); color: var(--accent-soft);
+  border: 1px solid var(--border-strong); padding: 4px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; letter-spacing: 1.5px; font-family: var(--mono);
+}
+.iv-hero h1 {
+  margin: 22px 0 6px; font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 800;
+  letter-spacing: 12px; color: var(--text); line-height: 1.25;
+  text-shadow: 0 0 34px rgba(63, 224, 255, .22);
+}
+.iv-hero h1 .glow { color: var(--accent-soft); }
+.iv-hero .iv-tagline {
+  color: var(--text-2); font-size: 1rem; line-height: 2; margin: 10px auto 0; max-width: 620px;
+}
+.iv-hero .iv-tagline strong { color: var(--text); }
+.iv-hero .iv-tagline em { color: var(--warn); font-style: normal; }
+.iv-stats {
+  display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin: 30px 0 0;
+}
+.iv-stat {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 22px; min-width: 118px; text-align: center;
+  transition: border-color .2s, transform .2s;
+}
+.iv-stat:hover { border-color: var(--accent); transform: translateY(-2px); }
+.iv-stat b {
+  display: block; font-size: 1.35rem; font-weight: 800; color: var(--accent-soft);
+  font-family: var(--mono); letter-spacing: .5px;
+}
+.iv-stat span { display: block; margin-top: 4px; font-size: .74rem; color: var(--text-3); letter-spacing: 1px; }
+.iv-cta { display: flex; justify-content: center; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 11px 26px; border-radius: 10px; font-size: .92rem;
+  letter-spacing: 1px; border: 1px solid transparent; transition: all .2s;
+}
+a.btn { text-decoration: none; }
+.btn { background: linear-gradient(135deg, #3fe0ff, #7c6cff); color: #04121a; font-weight: 700; }
+.btn:hover { box-shadow: 0 8px 26px rgba(63, 224, 255, .35); transform: translateY(-1px); text-decoration: none; }
+.btn.ghost { background: transparent; color: var(--accent-soft); border-color: var(--border-strong); font-weight: 500; }
+.btn.ghost:hover { background: var(--accent-bg); box-shadow: none; }
+
+.iv-sec-title {
+  display: flex; align-items: center; gap: 12px; font-size: 1.3rem; font-weight: 800;
+  letter-spacing: 2px; color: var(--text); margin-bottom: 6px;
+}
+.iv-sec-title .bar {
+  width: 5px; height: 22px; border-radius: 3px; flex: none;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 12px rgba(63, 224, 255, .6);
+}
+.iv-sec-sub { color: var(--text-3); font-size: .82rem; margin: 0 0 20px 17px; }
+.iv-map { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.iv-map-card {
+  display: block; background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 24px; text-decoration: none;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.iv-map-card:hover {
+  border-color: var(--accent); transform: translateY(-2px); text-decoration: none;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .4), 0 0 20px rgba(63, 224, 255, .10);
+}
+.iv-map-card .ic { font-size: 1.5rem; display: block; margin-bottom: 10px; }
+.iv-map-card h3 { color: var(--accent-soft); font-size: 1.02rem; margin: 0 0 8px; letter-spacing: 1px; }
+.iv-map-card p { color: var(--text-2); font-size: .85rem; line-height: 1.8; margin: 0 0 10px; }
+.iv-map-card small {
+  color: var(--text-3); font-size: .72rem; font-family: var(--mono);
+  border: 1px solid var(--border); border-radius: 999px; padding: 1px 9px;
+}
+.iv-about {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px 28px; color: var(--text-2); font-size: .92rem; line-height: 2;
+}
+.iv-about ul { margin: 0; padding-left: 20px; }
+.iv-about li { margin: 7px 0; color: var(--text-2); }
+.iv-about li::marker { color: var(--accent); }
+.iv-about strong { color: var(--text); }
+.iv-share-note {
+  margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-strong);
+  color: var(--warn); font-size: .84rem;
+}
+@media (max-width: 760px) {
+  .iv-hero { padding: 52px 20px 30px; }
+  .iv-hero h1 { letter-spacing: 8px; }
+  .iv-map { grid-template-columns: 1fr; }
+  .iv-stat { min-width: 100px; padding: 12px 14px; }
+}

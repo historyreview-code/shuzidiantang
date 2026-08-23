@@ -228,6 +228,49 @@ if (injectFeed(
   console.log(`  投资研究笔记列表已生成: ${investItems.length} 篇 (最新在前)`);
 }
 
+// --- 暗室·投资研究：首页统计 + RSS（子站独立宣传） ---
+if (injectFeed(
+  path.join(DIST, 'hidden', 'invest', 'index.html'),
+  'INVEST_STATS',
+  [
+    `<div class="iv-stat"><b>${investItems.length}</b><span>研究笔记</span></div>`,
+    `<div class="iv-stat"><b>${investItems.length ? investItems[0].date : '—'}</b><span>最近更新</span></div>`,
+    `<div class="iv-stat"><b>${new Set(investItems.map((i) => i.cat).filter(Boolean)).size}</b><span>研究分类</span></div>`,
+    `<div class="iv-stat"><b>每周</b><span>更新频率</span></div>`,
+  ].join('\n      '),
+)) {
+  console.log(`  投资研究首页统计已注入: ${investItems.length} 篇`);
+}
+
+function buildInvestRss(items) {
+  const itemXml = items
+    .slice(0, 20)
+    .map(
+      (it) => `    <item>
+      <title>${escapeXml(it.title)}</title>
+      <link>https://shuzidiantang.com/hidden/invest/notes/${it.file}</link>
+      <guid>https://shuzidiantang.com/hidden/invest/notes/${it.file}</guid>
+      <pubDate>${rfc822(it.date)}</pubDate>
+      <description>${escapeXml(it.desc)}</description>
+    </item>`,
+    )
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>数字殿堂 · 投资研究（暗室）</title>
+    <link>https://shuzidiantang.com/hidden/invest/</link>
+    <description>馆主的个人投资学习与研究笔记：个股深度、板块全景、行业快评与每日晨报。仅限受邀访客，不构成投资建议。</description>
+    <language>zh-CN</language>
+    <lastBuildDate>${rfc822(new Date().toISOString().slice(0, 10))}</lastBuildDate>
+${itemXml}
+  </channel>
+</rss>
+`;
+}
+writeFileSync(path.join(DIST, 'hidden', 'invest', 'feed.xml'), buildInvestRss(investItems));
+console.log(`  投资研究 RSS 已生成 → dist/hidden/invest/feed.xml (${Math.min(investItems.length, 20)} 条)`);
+
 // 4. 访问计数器注入 (Vercount 公共实例, 备案后可按 README ⑦ 换成自建)
 //    给所有带 site-footer 的页面注入计数位 + 脚本; 暗室 hidden/ 不注入 (地址保密)。
 function walkHtml(dir, out = []) {
