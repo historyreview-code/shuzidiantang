@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  current?: string;
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  current = '',
+} = Astro.props;
+
+const nav = [
+  { label: '首页', href: '/', key: 'home' },
+  { label: '作品馆', href: '/works/', key: 'works' },
+  { label: 'AI 手记', href: '/notes/', key: 'notes' },
+  { label: '视频', href: '/videos/', key: 'videos' },
+  { label: '关于', href: '/about/', key: 'about' },
+];
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/assets/og/brand.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="alternate" type="application/rss+xml" title="数字殿堂 · AI 手记 RSS" href="/feed.xml" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23100f0c'/%3E%3Cpath fill='%23f6d27a' d='M18 76h64v6H18zM25 34h10v36H25zM45 20h10v50H45zM65 42h10v28H65zM14 28l36-17 36 17v7H14z'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true"></div>
+    <a class="skip-link" href="#content">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="数字殿堂首页">
+        <span class="brand-mark">D</span>
+        <span class="brand-copy">
+          <strong>{site.name}</strong>
+          <small>Digital Hall</small>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        {nav.map((item) => (
+          <a class:list={[current === item.key && 'active']} href={item.href} aria-current={current === item.key ? 'page' : undefined}>{item.label}</a>
+        ))}
+      </nav>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <div>
+        <strong>数字殿堂</strong>
+        <p>个人数字作品馆 · AI 编程实践 · 影像与互动实验</p>
+        <p class="footer-beian">
+          <a href={site.beian.icpLink} target="_blank" rel="noopener">{site.beian.icp}</a>
+        </p>
+      </div>
+      <div class="footer-links">
+        {site.social.map((item) => item.href ? (
+          <a href={item.href} target="_blank" rel="noopener">{item.name}</a>
+        ) : (
+          <span>{item.name}</span>
+        ))}
+      </div>
+    </footer>
+  </body>
+</html>
