@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { works } from '../data/site';
+
+const collectionStats = [
+  ['馆藏数量', `${works.length} 件`],
+  ['主展方向', '互动 / 游戏 / 影像'],
+  ['更新方式', '持续扩建'],
+];
+---
+<BaseLayout current="works" title="作品馆 · 数字殿堂" description="数字殿堂作品馆：数字地球、网页游戏、天文影像、AI 编程实验与创作复盘。">
+  <main id="content" class="page">
+    <section class="page-title">
+      <h1>作品馆</h1>
+      <p>这些不是孤立链接，而是一组持续生长的数字作品：可旋转的地球、可玩的小游戏、可观看的宇宙短片，以及正在成形的 AI 工具。</p>
+    </section>
+    <section class="collection-overview">
+      {collectionStats.map(([label, value]) => (
+        <div>
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
+    </section>
+    <section class="section">
+      <div class="section-head">
+        <h2>馆藏索引</h2>
+        <p>每张展签都保留入口、状态和制作线索；后续可继续补独立详情页、截图、源码与复盘文章。</p>
+      </div>
+      <div class="work-grid collection-grid">
+        {works.map((work) => (
+          <a class="work-card" href={work.href}>
+            <img src={work.image} alt={`${work.title}封面`} />
+            <div class="work-card-body">
+              <span class="meta">{work.eyebrow} · {work.status}</span>
+              <h3>{work.title}</h3>
+              <p>{work.summary}</p>
+              <div class="tag-list">{work.tags.map((tag) => <span>{tag}</span>)}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

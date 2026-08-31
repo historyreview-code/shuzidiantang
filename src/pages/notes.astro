@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { notes } from '../data/site';
+
+const themes = ['实践手记', 'AI 手记', '工具篇', '随笔'];
+---
+<BaseLayout current="notes" title="手记 · 数字殿堂" description="数字殿堂手记：实践手记、AI 手记、工具篇与随笔——问题、选择和修复过程，都归档在这里。">
+  <main id="content" class="page">
+    <section class="page-title">
+      <span class="kicker">手记 · Notes</span>
+      <h1>手记</h1>
+      <p>不做纸面教程，只记录真实完成过的事：我遇到了什么、怎么拆需求、AI 做了什么、人又补了什么。</p>
+    </section>
+    <section class="section theme-band">
+      {themes.map((theme) => <span>{theme}</span>)}
+    </section>
+    <section class="section">
+      <div class="section-head">
+        <h2>最近档案</h2>
+        <p>按时间倒序保留作品复盘、建站运营和 AI 协作方法，方便从结果追溯到过程。</p>
+      </div>
+      <div class="timeline-list archive-list">
+        {notes.map((note) => (
+          <a class="timeline-item" href={note.href}>
+            <span class="note-date">{note.date} · {note.category}</span>
+            <h3>{note.title}</h3>
+            <p>{note.summary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

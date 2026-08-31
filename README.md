@@ -24,9 +24,31 @@
 ## 本地开发
 
 ```bash
-npm run assemble    # 组装全站到 dist/（会拉取 digital-earth-series 并构建门户）
+npm run dev         # 只开发 Astro 主站
+npm run assemble    # 组装全站到 dist/（主站 + 旧作品 + 地球厅）
 npm run preview     # 本地预览 dist/
 ```
+
+### 地球厅接入方式
+
+数字地球系列保持独立 monorepo，主站只在组装阶段把门户构建产物放进 `dist/earth/`。
+`scripts/assemble.mjs` 的源码选择顺序：
+
+1. `DIGITAL_EARTH_REPO=/path/to/digital-earth-series npm run assemble`
+   - 显式指定本地源码，适合调试不同分支。
+2. `../数字地球系列`
+   - 本机默认使用同级目录 `/Users/newclaw/游戏创作/数字地球系列`。
+3. `.cache/digital-earth-series`
+   - CI 或没有同级目录时使用缓存；缓存不存在才首次 clone。
+
+默认不会每次 `git pull` 地球仓库。需要刷新远程源码时显式执行：
+
+```bash
+DIGITAL_EARTH_REFRESH=1 npm run assemble
+```
+
+CI 会缓存 `.cache/digital-earth-series`、`.cache/pnpm-store` 和 `.cache/npm-cache`；
+每日定时任务会设置 `DIGITAL_EARTH_REFRESH=1`，普通 push 构建优先复用缓存。
 
 ## 暗室（隐藏入口）
 
@@ -143,7 +165,7 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 
 | 馆 | 来源仓库 |
 |---|---|
-| 地球厅 | [digital-earth-series](https://github.com/historyreview-code/digital-earth-series)（monorepo，构建注入） |
+| 地球厅 | [digital-earth-series](https://github.com/historyreview-code/digital-earth-series)（独立 monorepo，本地源码优先，组装时构建注入 `/earth/`） |
 | 游戏厅 | [Numsweeper](https://github.com/historyreview-code/Numsweeper)（数字扫雷）· 像素打砖块（收录于 games/）；其余机台暂存 vault/games/ 打磨 |
 | 文学馆（未发布） | [xiaoshan](https://github.com/historyreview-code/xiaoshan) · [wenyin](https://github.com/historyreview-code/wenyin)（作品待打磨，暂不对外） |
 | 天文馆 | [cosmic-journey](https://github.com/historyreview-code/cosmic-journey)（宇宙之旅五集 · 云健男声旁白 · 放映厅自动连播）· [cosmic-evolution](https://github.com/historyreview-code/cosmic-evolution)（宇宙演化全景）；solar-ecliptic 已下架（内容并入第一集） |

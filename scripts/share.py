@@ -34,15 +34,15 @@ SHARE_DIR = os.path.join(ROOT, "share")
 SITE = "https://shuzidiantang.com"
 
 # --------------------------------------------------------------------------
-# 配色 (比特辉光)
+# 配色 (纸感: 米纸 / 墨 / 琥珀)
 # --------------------------------------------------------------------------
 W, H = 1200, 630
-BG_TOP = (8, 11, 20)            # #080b14
-BG_BOTTOM = (19, 26, 46)        # #131a2e
-CYAN = (63, 224, 255)           # #3fe0ff
-CYAN_BRIGHT = (159, 232, 255)   # #9fe8ff
-CYAN_DIM = (91, 127, 150)       # #5b7f96
-TEXT_DIM = (139, 148, 168)      # #8b94a8
+BG_TOP = (251, 246, 233)        # #fbf6e9 米纸亮
+BG_BOTTOM = (238, 229, 210)     # #eee5d2 米纸深
+CYAN = (180, 85, 30)            # #b4551e 琥珀（弧光/品牌/印章）
+CYAN_BRIGHT = (38, 34, 26)      # #26221a 墨（主标题）
+CYAN_DIM = (133, 123, 104)      # #857b68 灰墨（meta/页脚）
+TEXT_DIM = (81, 74, 57)         # #514a39 淡墨（摘要）
 
 # 像素 D 字模 (16 块, 与全站 favicon/logo 同款)
 PIXEL_D = [
@@ -156,16 +156,16 @@ def wrap_title(title):
     return [title[:mid], title[mid:]]
 
 
-def draw_pixel_d(img, x0, y0, scale):
-    """绘制青色像素 D 字标。"""
+def draw_seal(img, x0, y0, size=62):
+    """绘制琥珀「数字」朱印（双框 + 二字）。"""
     d = ImageDraw.Draw(img)
-    for (px, py) in PIXEL_D:
-        d.rectangle(
-            [x0 + px * scale, y0 + py * scale,
-             x0 + (px + 11) * scale - 1, y0 + (py + 11) * scale - 1],
-            fill=CYAN,
-        )
-    return 69 * scale, 95 * scale
+    d.rounded_rectangle([x0, y0, x0 + size, y0 + size], radius=12,
+                        outline=CYAN, width=3)
+    d.rounded_rectangle([x0 + 7, y0 + 7, x0 + size - 7, y0 + size - 7],
+                        radius=7, outline=CYAN, width=1)
+    font = load_font("cn", int(size * 0.52))
+    draw_centered(d, "数字", font, CYAN, x0 + size / 2, y0 + size / 2 + 1)
+    return size, size
 
 
 # --------------------------------------------------------------------------
@@ -185,9 +185,8 @@ def render_og(title, meta_line, desc):
     glow = glow.filter(ImageFilter.GaussianBlur(30))
     img.alpha_composite(glow)
 
-    # 左上: 像素 logo + 品牌行
-    scale = 0.62
-    lw, lh = draw_pixel_d(img, 46, 40, scale)
+    # 左上: 朱印 logo + 品牌行
+    lw, lh = draw_seal(img, 46, 40, 62)
     brand_font = load_font("cn", 27)
     bbox = draw.textbbox((0, 0), "数字殿堂 · 手记", font=brand_font)
     draw.text((46 + lw + 18 - bbox[0], 40 + lh / 2 - 14 - bbox[1]),

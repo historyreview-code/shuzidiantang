@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/hidden/invest/research-banner.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老登股扫描仪 · 被误会的防御性增长股筛选工具</title>
+<style>
+  :root{
+    --bg:#f6f3ec; --card:#fffdf8; --line:#e3dbc9; --ink:#2b2820; --sub:#7a7260;
+    --green:#2d5240; --green-l:#3f7057; --ochre:#b4632c; --ochre-l:#c98a54;
+    --red:#a3402f; --gold:#8a6d1f;
+    --serif:"Songti SC","STSong","Noto Serif SC","SimSun",serif;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75;
+    background-image:radial-gradient(#e9e2d2 0.8px, transparent 0.8px);background-size:22px 22px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px}
+  header{padding:46px 0 22px;border-bottom:2px solid var(--ink)}
+  header h1{font-family:var(--serif);font-size:34px;letter-spacing:2px;color:var(--green)}
+  header .sub{color:var(--sub);margin-top:8px;font-size:14px}
+  .badges{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;border:1px solid var(--line);background:var(--card);padding:3px 10px;border-radius:99px;color:var(--sub)}
+  .badge.warn{border-color:var(--ochre);color:var(--ochre)}
+
+  nav{display:flex;gap:4px;margin:22px 0 26px;flex-wrap:wrap}
+  nav button{font-family:var(--sans);font-size:15px;padding:9px 18px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);cursor:pointer;border-radius:8px 8px 0 0;transition:.15s}
+  nav button:hover{background:#f1ece0}
+  nav button.on{background:var(--green);color:#fff;border-color:var(--green)}
+  section.tab{display:none}
+  section.tab.on{display:block;animation:fade .25s}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+
+  /* ---------- 方法论 ---------- */
+  .layer{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px 28px;margin-bottom:18px}
+  .layer h2{font-family:var(--serif);font-size:21px;color:var(--green);margin-bottom:4px}
+  .layer .tag{display:inline-block;font-size:12px;color:var(--ochre);border:1px solid var(--ochre-l);
+    border-radius:4px;padding:0 8px;margin-bottom:10px;letter-spacing:1px}
+  .layer p{color:#4a4536;margin:8px 0}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-top:14px}
+  .mini{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fbf8f1}
+  .mini h3{font-family:var(--serif);font-size:16px;color:var(--ink);margin-bottom:6px}
+  .mini .who{font-size:12.5px;color:var(--green);margin-top:8px;line-height:1.6}
+  .mini p{font-size:13.5px;margin:0}
+  .flow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;margin-top:14px}
+  .flow .step{flex:1;min-width:150px;border:1px dashed var(--ochre-l);border-radius:10px;padding:12px 14px;text-align:center}
+  .flow .step b{display:block;color:var(--ochre);font-family:var(--serif);font-size:15px}
+  .flow .step span{font-size:12.5px;color:var(--sub)}
+
+  /* ---------- 筛选器 ---------- */
+  .toolbar{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:18px;position:sticky;top:10px;z-index:40;box-shadow:0 4px 14px rgba(60,50,30,.06)}
+  .toolbar .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:none;background:#fff;padding:7px 14px;font-size:13.5px;cursor:pointer;color:var(--sub)}
+  .seg button.on{background:var(--green);color:#fff}
+  select,input[type=text]{font-family:var(--sans);font-size:13.5px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  input[type=text]{flex:1;min-width:160px}
+  .count{font-size:13px;color:var(--sub)}
+  label.f{font-size:12.5px;color:var(--sub)}
+
+  /* ---------- 卡片 ---------- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:16px}
+  @media (max-width:640px){.cards{grid-template-columns:1fr}}
+  details.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  details.card[open]{border-color:var(--green-l);box-shadow:0 6px 18px rgba(45,82,64,.10)}
+  details.card summary{list-style:none;cursor:pointer;padding:16px 20px 14px;position:relative}
+  details.card summary::-webkit-details-marker{display:none}
+  details.card summary::after{content:"▾";position:absolute;right:18px;top:14px;color:var(--sub);transition:.2s}
+  details.card[open] summary::after{transform:rotate(180deg)}
+  .chead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .chead .tk{font-family:Georgia,serif;font-size:20px;font-weight:700;color:var(--green)}
+  .chead .nm{font-family:var(--serif);font-size:17px}
+  .chead .sec{font-size:12px;color:var(--sub)}
+  .thesis{font-size:13.5px;color:#4a4536;margin-top:6px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:11.5px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--sub);background:#faf7f0}
+  .chip.st-core{border-color:var(--green);color:var(--green);background:#eef3ee}
+  .chip.st-income{border-color:var(--gold);color:var(--gold);background:#f7f3e4}
+  .chip.st-rediscovered{border-color:var(--ochre);color:var(--ochre);background:#f8efe6}
+  .scores{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap}
+  .sc{min-width:120px}
+  .sc .lb{font-size:11.5px;color:var(--sub);display:flex;justify-content:space-between}
+  .sc .lb b{color:var(--ink)}
+  .bar{height:6px;background:#ece6d8;border-radius:4px;margin-top:3px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:4px;background:var(--green-l)}
+  .bar.total i{background:var(--ochre)}
+  .cbody{padding:4px 20px 18px;border-top:1px dashed var(--line)}
+  .kv{margin-top:12px}
+  .kv h4{font-family:var(--serif);font-size:14.5px;color:var(--green);margin-bottom:2px}
+  .kv h4 .no{color:var(--ochre);margin-right:6px;font-family:Georgia,serif}
+  .kv p{font-size:13.5px;color:#4a4536}
+  .kv .watch li,.kv .risks li{font-size:13px;margin-left:18px;color:#4a4536}
+  .srcs{margin-top:12px;font-size:12px;color:var(--sub)}
+  .srcs a{color:var(--green);text-decoration:none;margin-right:10px}
+  .srcs a:hover{text-decoration:underline}
+
+  /* ---------- 表格 ---------- */
+  table{width:100%;border-collapse:collapse;background:var(--card);font-size:13px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--green);color:#fff;font-weight:600;font-size:12.5px;cursor:pointer;white-space:nowrap;position:sticky;top:0}
+  th:hover{background:var(--green-l)}
+  td.tk{font-family:Georgia,serif;font-weight:700;color:var(--green);white-space:nowrap}
+  td .sm{display:block;font-size:11.5px;color:var(--sub)}
+  .num{text-align:center;font-family:Georgia,serif;font-weight:700}
+  .num.hi{color:var(--ochre)}
+  .tbwrap{border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:70vh}
+
+  .ex{background:var(--card)}
+  .ex td{color:#4a4536}
+  .ex .cond{color:var(--ochre);font-size:12.5px}
+
+  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+  .note{background:#f3efe3;border:1px solid var(--line);border-left:4px solid var(--ochre);border-radius:8px;padding:12px 16px;margin:14px 0;font-size:13px;color:#4a4536}
+  h2.page{font-family:var(--serif);font-size:24px;color:var(--green);margin:6px 0 16px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--sub);margin:10px 0 0}
+</style>
+</head>
+<body>
+<div class="rs-banner">
+  <a class="rs-back" href="/hidden/invest/research/">← 暗室 · 专题研究</a>
+  <span>⚠️ 馆主个人研究记录 · 仅供自用与朋友交流 · 不构成任何投资建议 · 请勿公开转发</span>
+</div>
+<div class="wrap">
+
+<header>
+  <h1>老登股扫描仪</h1>
+  <div class="sub">在消费减速与科技股集中度风险之下,系统性筛选「逻辑清晰 · 不受景气影响 · 保持自身增长 · 被市场误会」的传统公司</div>
+  <div class="badges">
+    <span class="badge">数据截至 2026-08-28</span>
+    <span class="badge">入库 18 家 · 剔除 9 家</span>
+    <span class="badge">口径:各公司最新季报 / 年报</span>
+    <span class="badge warn">研究工具 · 不构成投资建议</span>
+  </div>
+</header>
+
+<nav id="nav">
+  <button data-t="m" class="on">① 方法论</button>
+  <button data-t="s">② 股票库</button>
+  <button data-t="c">③ 对比总表</button>
+  <button data-t="x">④ 剔除名单</button>
+  <button data-t="h">⑤ 使用说明</button>
+</nav>
+
+<!-- ============ 方法论 ============ -->
+<section class="tab on" id="tab-m">
+  <h2 class="page">五层筛选框架</h2>
+  <p style="color:var(--sub);margin-bottom:16px">从「为什么是现在」到「怎么打分、怎么跟踪」,每一层都为下一层收缩范围。工具的全部股票都按这套框架入库。</p>
+
+  <div class="layer">
+    <span class="tag">第 0 层 · 前提校准</span>
+    <h2>为什么是现在</h2>
+    <p>2026年8月的三个事实决定了这件事值得做:① 消费在减速——高盛预警下半年实际消费增速或从 2.5% 降至 1%,家具家电等大件最先被砍;② 科技股集中度风险高——盈利预估半年上修近 50% 几乎全靠 AI 公司;③ 但「泛防御」已经开始拥挤——Morningstar 已提示消费防御板块整体不便宜。</p>
+    <p><b style="color:var(--ochre)">推论:不买「泛防御」,只买「有独立增长引擎的误会」。</b>防御性本身没有超额收益,超额收益来自市场把好公司放进了错误的抽屉。</p>
+  </div>
+
+  <div class="layer">
+    <span class="tag">第 1 层 · 硬性入选</span>
+    <h2>三道闸门</h2>
+    <div class="flow">
+      <div class="step"><b>闸门一 收入免疫</b><span>收入驱动因子与 GDP / 消费信心脱钩</span></div>
+      <div class="step"><b>闸门二 结构引擎</b><span>增长靠存量老化、渗透率、监管等结构力,不靠周期回归</span></div>
+      <div class="step"><b>闸门三 标签折价</b><span>便宜/被冷落的原因是误会,不是基本面恶化</span></div>
+    </div>
+    <p style="margin-top:12px">三道闸门必须<b>同时</b>通过。只过前两道的是「优质防御股」(如沃尔玛、可乐),只过后一道的是「价值陷阱」。三道都过的才是本工具要找的:「被误会的防御性增长股」。</p>
+  </div>
+
+  <div class="layer">
+    <span class="tag">第 2 层 · 免疫源分类</span>
+    <h2>收入为什么不怕衰退 —— 六种免疫源</h2>
+    <p>先问「这家公司的钱从哪个不怕衰退的池子里来」,再谈公司。一个池子一个逻辑:</p>
+    <div class="grid2">
+      <div class="mini"><h3>S1 存量维护年金</h3><p>收入由已装机存量决定,新销售只影响远期。楼越老、车越老、设备越老,收入越稳。</p><div class="who">代表:OTIS(电梯维保)· WCN(垃圾)· ROL(虫害)</div></div>
+      <div class="mini"><h3>S2 监管 / 合规刚需</h3><p>法规越复杂收入越稳:合规支出不可选、不可拖,且法规本身在变多变严。</p><div class="who">代表:VRSK(保险精算)· BR(代理投票)· ADP(发薪)· JKHY(银行核心)· ECL(水与卫生)</div></div>
+      <div class="mini"><h3>S3 生理 / 安全刚需</h3><p>药不能停针、牙不能不刷、食品不能不消毒。需求由生理与安全底线决定。</p><div class="who">代表:WST(注射组件)· CHD(必需消费品)· BDX(医疗耗材)</div></div>
+      <div class="mini"><h3>S4 逆周期受益</h3><p>经济越差需求越好:推迟换新车→修旧车,推迟买新车→二手车流转加快。</p><div class="who">代表:GPC(汽车售后)</div></div>
+      <div class="mini"><h3>S5 成瘾 / 习惯性需求</h3><p>需求价格弹性趋近于零,几十年定价权不变。</p><div class="who">代表:PM(尼古丁)· EPD(能源消费+费率合同)</div></div>
+      <div class="mini"><h3>S6 财政 / 预算驱动</h3><p>客户是政府,收入看预算与地缘,不看消费者钱包。注意:这是政治周期,不是免疫。</p><div class="who">代表:LMT(国防)</div></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <span class="tag">第 3 层 · 误会类型学</span>
+    <h2>市场为什么会定错价 —— 五种误会</h2>
+    <p>「被误会」不是一句口号,要能指认出具体的认知错误,否则便宜另有原因:</p>
+    <div class="grid2">
+      <div class="mini"><h3>M1 行业形象过时</h3><p>「洗衣服的」「倒垃圾的」「除虫的」——行业听起来低端的生意,没人愿意在路演里讲。</p><div class="who">CTAS · WCN · ROL · ECL · ADP · BR</div></div>
+      <div class="mini"><h3>M2 叙事疲劳 · 单季失速贴标签</h3><p>一个季度失速,市场直接给整家公司贴「增长熄火」,拖累项往往只占个位数收入。</p><div class="who">CHD(维生素)· ROL(减速)· VRSK · XYL(谨慎指引)</div></div>
+      <div class="mini"><h3>M3 ESG / 风格排斥</h3><p>烟草、化石能源、军工被组合规则系统性排除,卖压与基本面无关。</p><div class="who">PM · EPD · LMT</div></div>
+      <div class="mini"><h3>M4 报表噪音遮眼</h3><p>分拆、去库存、一次性项目把报表弄脏,市场懒得还原真实经营面。</p><div class="who">BDX(分拆重述)· WST(去库存)· WM(山火赔付)</div></div>
+      <div class="mini"><h3>M5 周期错认</h3><p>把反周期生意当周期股卖:大家以为它跟着地产/银行/制造业走,其实跟存量走。</p><div class="who">OTIS · GPC · JKHY</div></div>
+      <div class="mini" style="border-color:var(--ochre-l)"><h3 style="color:var(--ochre)">边界提醒</h3><p>好生意 ≠ 被误会。若市场已充分定价(Copart、NextEra),或生意本身就在衰退(Altria),都不在本工具射程内。</p></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <span class="tag">第 4 层 · 反方检验</span>
+    <h2>每只股票必须回答的四个问题</h2>
+    <p>误会框架最大的风险是自我说服。入库前强制换到看空者座位上:</p>
+    <div class="flow">
+      <div class="step"><b>D1 最强反方</b><span>看空者最有力的论点是什么?写不出来就不许入库</span></div>
+      <div class="step"><b>D2 证伪信号</b><span>什么信号说明「误会其实是对的」?写成观察清单</span></div>
+      <div class="step"><b>D3 免疫纯度</b><span>收入里多大比例真的免疫?混多少周期业务?</span></div>
+      <div class="step"><b>D4 现金配置</b><span>管理层在正确地花钱吗(分红/回购/并购纪律)?</span></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <span class="tag">第 5 层 · 打分与跟踪</span>
+    <h2>四个维度,1–5 分</h2>
+    <div class="grid2">
+      <div class="mini"><h3>免疫强度 imm</h3><p>收入与景气脱钩的纯度与深度(S1–S6 越纯、占比越高分越高)。</p></div>
+      <div class="mini"><h3>误会深度 mis</h3><p>当前价格里还剩多少误会折价(越被冤枉分越高;已正名的降分)。</p></div>
+      <div class="mini"><h3>增长质量 gro</h3><p>结构引擎的力度与确定性(渗透率、定价权、订单可见度)。</p></div>
+      <div class="mini"><h3>价值性价比 val</h3><p>当前估值相对合理区间的位置(便宜≠高分,要有理由的便宜)。</p></div>
+    </div>
+    <p style="margin-top:12px"><b>综合分 = 四项均值。</b>状态三档:<span class="chip st-core">核心</span> 误会仍在、逻辑待验证;<span class="chip st-income">收益型</span> 以现金流回报为主;<span class="chip st-rediscovered">半正名</span> 误会已收窄大半,等回调。</p>
+    <p><b>跟踪节奏:</b>每季财报后更新「验证数据」与观察清单;当一只股票连续两季验证逻辑且估值修复明显,应主动降级为「半正名」——<b>工具的任务是找误会,不是爱上股票。</b></p>
+  </div>
+</section>
+
+<!-- ============ 股票库 ============ -->
+<section class="tab" id="tab-s">
+  <h2 class="page">股票库</h2>
+  <div class="toolbar">
+    <div class="row">
+      <div class="seg" id="segStatus">
+        <button data-v="all" class="on">全部</button>
+        <button data-v="core">核心</button>
+        <button data-v="income">收益型</button>
+        <button data-v="rediscovered">半正名</button>
+      </div>
+      <label class="f">行业</label><select id="fSector"></select>
+      <label class="f">免疫源</label><select id="fImmune"></select>
+      <label class="f">误会型</label><select id="fMis"></select>
+      <label class="f">排序</label>
+      <select id="fSort">
+        <option value="total">综合分 ↓</option>
+        <option value="mis">误会深度 ↓</option>
+        <option value="imm">免疫强度 ↓</option>
+        <option value="gro">增长质量 ↓</option>
+        <option value="val">价值性价比 ↓</option>
+        <option value="tk">代码 A-Z</option>
+      </select>
+      <input type="text" id="fQ" placeholder="搜索代码 / 名称 / 关键词…">
+      <span class="count" id="count"></span>
+    </div>
+  </div>
+  <div class="cards" id="cards"></div>
+</section>
+
+<!-- ============ 对比总表 ============ -->
+<section class="tab" id="tab-c">
+  <h2 class="page">全量对比总表</h2>
+  <p style="color:var(--sub);margin-bottom:12px">点击表头排序。imm=免疫强度 mis=误会深度 gro=增长质量 val=价值性价比 总=综合分</p>
+  <div class="tbwrap"><table id="cmp"><thead><tr>
+    <th data-k="tk">代码</th><th data-k="status">状态</th><th data-k="sector">行业</th><th data-k="immuneS">免疫源</th><th data-k="misS">误会型</th>
+    <th data-k="sc.imm">imm</th><th data-k="sc.mis">mis</th><th data-k="sc.gro">gro</th><th data-k="sc.val">val</th><th data-k="total">总</th>
+    <th data-k="thesis">一句话论点</th>
+  </tr></thead><tbody></tbody></table></div>
+  <div class="legend">
+    <span>免疫源:S1存量维护 S2监管合规 S3生理刚需 S4逆周期 S5成瘾习惯 S6财政预算</span>
+    <span>误会型:M1形象过时 M2叙事疲劳 M3风格排斥 M4报表噪音 M5周期错认</span>
+  </div>
+</section>
+
+<!-- ============ 剔除名单 ============ -->
+<section class="tab" id="tab-x">
+  <h2 class="page">剔除名单 · 真·老登与边界之外</h2>
+  <p style="color:var(--sub);margin-bottom:12px">同样便宜同样传统,但<b>没过闸门</b>——便宜有便宜的道理。每家附「复活条件」:满足才重新入池。</p>
+  <div class="tbwrap"><table class="ex"><thead><tr><th>公司</th><th>类别</th><th>为什么剔除(未过的闸门)</th><th>复活条件</th></tr></thead><tbody id="exBody"></tbody></table></div>
+</section>
+
+<!-- ============ 使用说明 ============ -->
+<section class="tab" id="tab-h">
+  <h2 class="page">使用说明</h2>
+  <div class="layer">
+    <h2>怎么用这个工具</h2>
+    <p><b>① 找标的:</b>股票库页按「状态/行业/免疫源/误会型」筛选,或直接搜代码。每张卡片展开后是完整逻辑链:<b>误会在哪 → 真实逻辑 → 最新验证 → 反方最强论点 → 观察清单 → 风险</b>。</p>
+    <p><b>② 评估位置:</b>对比总表看四维分数。高 mis + 高 val = 误会仍深的左侧;高 imm + 低 val = 好生意但已不便宜。</p>
+    <p><b>③ 季度跟踪:</b>每季财报后,对照每只股票的「观察清单」核对。证伪信号触发就移出核心池——这不是买入清单,是<b>研究清单</b>。</p>
+    <p><b>④ 复用框架:</b>任何新股先过三道闸门,再指认免疫源(S1–S6)和误会型(M1–M5),写完反方四问才能打分入库。打不进这个结构的,大概率不属于「被误会的老登」。</p>
+  </div>
+  <div class="layer">
+    <h2>怎么加新股票 / 更新数据</h2>
+    <p>本页是零依赖单文件。用文本编辑器打开 <code>index.html</code>,找到 <code>const STOCKS = [ ... ]</code> 数组,按现有条目的字段复制一条、改内容即可,页面其余部分自动适应。剔除名单在 <code>const EXCLUDED</code>。</p>
+    <p>每次财报后建议更新:evidence(验证数据)、scores(四维分)、status(是否降级半正名)、updated(日期)。</p>
+  </div>
+  <div class="layer">
+    <h2>已知局限</h2>
+    <p>① 分数是基于公开财报与研究文章的分析性判断,非量化输出;② 未覆盖非美股市场(框架通用,候选池需重建);③ 估值状态依赖 2026-08 时点数据,时效性会衰减;④ 「不受景气影响」指收入端——估值端在系统性抛售中照样会跌(ROLL 过去 12 个月即为例证)。</p>
+  </div>
+</section>
+
+<footer>
+  数据来源:各公司投资者关系新闻稿、SEC 文件、Reuters / Yahoo Finance / Seeking Alpha / Morningstar 等公开报道,检索时间 2026-08-28。<br>
+  本工具为个人研究用途,所有内容不构成投资建议。投资有风险,决策需独立。
+</footer>
+</div>
+
+<script>
+/* ============ 分类字典 ============ */
+const IMMUNE = {
+  S1:"S1 存量维护年金", S2:"S2 监管合规刚需", S3:"S3 生理安全刚需",
+  S4:"S4 逆周期受益", S5:"S5 成瘾习惯需求", S6:"S6 财政预算驱动"
+};
+const MIS = {
+  M1:"M1 行业形象过时", M2:"M2 叙事疲劳贴标签", M3:"M3 ESG风格排斥",
+  M4:"M4 报表噪音遮眼", M5:"M5 周期错认"
+};
+const STATUS = { core:"核心", income:"收益型", rediscovered:"半正名" };
+
+/* ============ 股票库 ============
+   加新股票:复制一条,改字段。score 1–5;total 自动计算。 */
+const STOCKS = [
+{
+  tk:"WST", name:"西氏医药服务", en:"West Pharmaceutical", sector:"医疗耗材",
+  status:"core", immune:["S3"], mis:["M2","M4"],
+  sc:{imm:5,mis:5,gro:5,val:4},
+  thesis:"被「GLP-1见顶论」误杀的注射剂组件准垄断者",
+  misjudgment:"2025年遭三重恐慌:客户去库存、Lilly与Novo直销合作传闻、「GLP-1见顶」论。市场把库存周期误当成了需求周期,股价深跌。",
+  truth:"收入由药物审批管线与注射剂渗透率决定,与消费信心零相关。每一针GLP-1——原研或仿制——都离不开它的活塞、密封件与给药组件。CEO点名亚洲仿制GLP-1是新增长极,都柏林工厂扩产中。",
+  evidence:"Q2 2026 组件销售 $4.24亿、+19.4%(有机+18.4%);全年指引上调至有机+7~9%、EPS $8.40–8.75;GLP-1组件约占收入10%。(2026-07-23)",
+  devil:"看空者最强论点:口服GLP-1(orforglipron类)若放量成功,注射组件需求逻辑直接受损;大客户集中度高;估值仍高于耗材行业均值。",
+  watch:["口服GLP-1三期临床进展(证伪信号)","高价值产品HVP收入占比与增速","亚洲仿制药客户放量节奏"],
+  risks:["口服制剂替代注射","大客户集中","估值收缩"],
+  srcs:[["Reuters: West上调指引","https://www.reuters.com/legal/litigation/west-pharmaceutical-raises-annual-profit-forecast-strong-demand-injectable-drug-2026-07-23/"],["West IR Q2 2026","https://investor.westpharma.com/news-releases/news-release-details/west-reports-second-quarter-2026-results"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"OTIS", name:"奥的斯", en:"Otis Worldwide", sector:"工业设备",
+  status:"core", immune:["S1"], mis:["M5"],
+  sc:{imm:4,mis:4,gro:4,val:4},
+  thesis:"听起来最重资产,实际是两千万台存量电梯的维保年金",
+  misjudgment:"市场盯着「中国新梯订单下滑」给它贴地产周期标签,把「卖电梯」当成了主业。",
+  truth:"利润大头来自维保:电梯装机后约40年逐年付费,楼越老、修理与现代化改造需求越大。中国新设备弱,但中国维保业务恰是亮点——存量电梯老化带来的改造潮刚开始。",
+  evidence:"Q2 2026 服务业务有机+9%(分拆以来最高),其中现代化改造+24%、维保修理+6%;新设备-1%;2026主线=服务加速对冲新设备疲软。(2026-08)",
+  devil:"看空者最强论点:新设备持续下滑会缩小远期维保池的增量;现代化改造毛利率低于纯维保,结构变化会稀释利润率;中国维保市场存在价格竞争。",
+  watch:["服务有机增速守住7%+","现代化改造在手订单backlog","中国新设备降幅收窄时点"],
+  risks:["全球地产新开工下滑","改造业务毛利稀释","中国市场竞争"],
+  srcs:[["Otis IR Q2 2026","https://otisinvestors.com/news/news-details/2026/OTIS-REPORTS-SECOND-QUARTER-2026-RESULTS/default.aspx"],["Finviz: 2026展望","https://finviz.com/news/291225/otis-q4-deep-dive-service-segment-momentum-and-modernization-backlog-shape-2026-outlook"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"BDX", name:"碧迪医疗", en:"Becton Dickinson", sector:"医疗器械",
+  status:"core", immune:["S3"], mis:["M4","M3"],
+  sc:{imm:4,mis:5,gro:4,val:5},
+  thesis:"12–13倍PE买7–8%增长的医疗器械现金流,分拆噪音吓跑了买家",
+  misjudgment:"Starboard推动分拆Biosciences(约$300亿估值)导致收入/EPS口径反复——EPS预期从$15重述到$12.5,市场被报表噪音吓跑,股价距高点约-30%。",
+  truth:"医院耗材(注射、输注、外科)是刚需;分拆是价值释放而非基本面恶化,New BD聚焦高增长高毛利业务。分析师共识为买入、平均目标价约$189(现价约$147)。",
+  evidence:"FY26被指「稳定低估」:12–13x PE 对应 7–8% 年增长预期;Q3 FY26 收入超预期且EPS beat;15位分析师平均目标价约$189。(2026-08)",
+  devil:"看空者最强论点:分拆执行与税务风险真实存在;医疗器械定价压力(集采/GPO)长期化;历史诉讼遗留。",
+  watch:["分拆时间表与独立估值落定","剔除分拆后的可比增速","回购力度"],
+  risks:["分拆执行风险","产品定价压力","诉讼遗留"],
+  srcs:[["TIKR: BDX分析","https://www.tikr.com/blog/becton-dickinson-is-down-30-from-its-52-week-high-is-it-still-a-buy-in-2026"],["CNBC: 分拆计划","https://www.cnbc.com/2025/02/08/becton-dickinson-aims-to-split-off-biosciences-unit-as-starboard-calls-for-the-same.html"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"ROL", name:"Rollins", en:"Rollins (Orkin母公司)", sector:"商业服务",
+  status:"core", immune:["S1","S3"], mis:["M2","M1"],
+  sc:{imm:5,mis:4,gro:4,val:3},
+  thesis:"虫子不看K线——被当「减速成长股」错杀的最强防御生意",
+  misjudgment:"过去12个月股价跌约36%至$36–37,市场嫌它「增长减速+估值仍贵」,把它当工业成长股抛售。",
+  truth:"白蚁不因衰退停工,客户价格敏感度趋近于零,95%+为合同性经常收入,气候变暖延长虫季、扩大虫种分布。衰退环境下这种收入性质应享溢价而非折价。",
+  evidence:"2026指引有机+7~8%、并购再+2~3%;Q1收入$9.06亿+10.2%(有机+6.6%);forward PE约30x(从40x+回落)。(2026-08)",
+  devil:"看空者最强论点:有机增速若从8%台阶滑向6%以下,30倍估值撑不住;30x对工业股仍不便宜,杀估值可以继续。",
+  watch:["有机增速回到7%+(证伪信号:跌破6%)","毛利率走向","住宅/白蚁订单量"],
+  risks:["增速下台阶","估值中枢继续下移"],
+  srcs:[["SA: 2026指引","https://seekingalpha.com/news/4578785-rollins-expects-7-percent-to-8-percent-organic-growth-in-2026-while-keeping-m-and-a-at-2"],["StockAnalysis: ROL","https://stockanalysis.com/stocks/rol/"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"VRSK", name:"Verisk", en:"Verisk Analytics", sector:"数据与分析",
+  status:"core", immune:["S2"], mis:["M2","M1"],
+  sc:{imm:5,mis:4,gro:4,val:4},
+  thesis:"财险精算数据的事实垄断,被当「无聊数据商」",
+  misjudgment:"从老登母公司(ISO)分拆出来的「行业数据服务商」无人问津,个位数增长被视为平庸。",
+  truth:"财险承保定价依赖其独家赔案数据库,订阅占83%;极端天气越多、监管越复杂,数据越值钱——AI时代独家数据资产反而更稀缺。",
+  evidence:"Q2 2026 收入$8.06亿(+5.8% OCC),订阅底层有机+8%,EPS $1.98超预期;卖方标题即「高个位数订阅增长+便宜估值」。(2026-07-29)",
+  devil:"看空者最强论点:保险公司自建数据+AI可能侵蚀壁垒;若费率进入下行周期,保险业IT与数据支出会收缩。",
+  watch:["订阅增速守住8%","财产险费率周期(下行=证伪信号)","极端天气/参数化保险等新产品收入"],
+  risks:["AI替代叙事","保险业支出周期","数据竞争"],
+  srcs:[["Verisk Q2 2026","https://www.globenewswire.com/news-release/2026/07/29/3335119/0/en/verisk-reports-second-quarter-2026-financial-results.html"],["Motley Fool电话会","https://www.fool.com/earnings/call-transcripts/2026/08/07/verisk-analytics-vrsk-q2-2026-earnings-call-transcript/"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"ECL", name:"艺康", en:"Ecolab", sector:"工业服务",
+  status:"core", immune:["S2"], mis:["M1"],
+  sc:{imm:4,mis:3,gro:5,val:3},
+  thesis:"被当「卖清洁剂的」,实际是水技术与合规服务商,还撞上数据中心液冷",
+  misjudgment:"听名字像化工消费品公司,被划入旧经济;餐饮下游敞口让它被当消费衍生品卖。",
+  truth:"食品安全与水处理的合规刚需——餐厅可以少赚、不能不消毒;水是全球最确定的短缺主题。47.5亿美元收购CoolIT切入数据中心直接芯片液冷,单数据中心收入捕获3–5倍。",
+  evidence:"Q2 2026 EPS +11%至$2.09,销售$44.2亿+9.7%(有机约+5%);FY26 EPS指引$8.03–8.23(含CoolIT稀释)。(2026-07)",
+  devil:"看空者最强论点:CoolIT整合与稀释风险真实(指引由$8.43–8.63下调至$8.03–8.23);餐饮闭店周期敞口;估值并不便宜。",
+  watch:["CoolIT并表增速与协同兑现","水处理有机增速","EPS指引回升轨迹(证伪信号:继续下修)"],
+  risks:["大额并购整合","餐饮数量下行","估值"],
+  srcs:[["Yahoo: ECL Q2电话会","https://finance.yahoo.com/markets/stocks/articles/ecolab-inc-q2-2026-earnings-205605161.html"],["Morningstar: 指引更新","https://www.morningstar.com/news/dow-jones/202607027454/ecolab-updates-fy26-guidance-after-coolit-deal-closes"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"GPC", name:"Genuine Parts", en:"Genuine Parts (NAPA)", sector:"汽车售后",
+  status:"core", immune:["S4","S1"], mis:["M5","M4"],
+  sc:{imm:4,mis:4,gro:3,val:4},
+  thesis:"车越老越要修——逆消费的存量车年金,分拆噪音造就买点",
+  misjudgment:"被当「零件分销=制造业周期股」;2026年2月宣布分拆带来的报表与战略噪音进一步吓跑投资者。",
+  truth:"美国车队平均车龄创历史新高;经济越差,人们越推迟换新车、修旧车——修车支出是消费收缩里最后被砍的预算之一。NAPA配件网络+Motion工业分销双轮。",
+  evidence:"Q2 2026 重申全年调整EPS $7.50–8.00;4月30日以来股价约+25%(逻辑正在兑现中);2月宣布汽车/工业分拆为两家上市公司。(2026-07-21)",
+  devil:"看空者最强论点:分拆执行有风险;工业板块Motion受制造业周期拖累;Amazon对DIY配件的长期挤压;最便宜一段(+25%之前)已经过去。",
+  watch:["汽车板块同店销售与定价","分拆时间表落地","Motion订单(制造业周期证伪信号)"],
+  risks:["分拆执行","电商长期挤压","工业周期"],
+  srcs:[["GPC: 分拆公告","https://www.genpt.com/2026-02-17-Genuine-Parts-Company-Announces-Plan-to-Separate-Automotive-and-Industrial-Businesses-Into-Two-Industry-Leading-Public-Companies"],["Trefis: GPC","https://www.trefis.com/data/companies/GPC"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"BR", name:"Broadridge", en:"Broadridge Financial", sector:"金融服务基建",
+  status:"core", immune:["S2"], mis:["M1"],
+  sc:{imm:5,mis:4,gro:4,val:3},
+  thesis:"「帮人寄股东通知书的」实际是美股代理投票的事实基础设施",
+  misjudgment:"名字里带着纸质通信时代的旧印象,被当成缓慢的金融IT外包。",
+  truth:"代理投票与股东通信的监管闭环垄断者,共同基金治理数据独占;监管事件(合规规则变化)直接创造收入;经常性收入占65%+。",
+  evidence:"FY2026(至2026-06)收入$74.8亿+9%,其中经常性收入$48.8亿+8%;调整EPS +12%至$9.60;ICS监管收入Q4 +10%;随年报提高派息。(2026-08-11)",
+  devil:"看空者最强论点:利率下行压缩其客户资金(float)收益;代理业务存在竞争(ISS/机构股东服务);监管事件的收入节奏不可控。",
+  watch:["经常性收入增速8%+","代理季event收入","财富与资管数据交叉销售"],
+  risks:["利率下行","代理竞争","监管事件节奏"],
+  srcs:[["BR: FY2026业绩","https://www.broadridge-ir.com/news/news-details/2026/Broadridge-Reports-Fourth-Quarter-and-Fiscal-Year-2026-Results/default.aspx"],["PR Newswire","https://www.prnewswire.com/news-releases/broadridge-reports-fourth-quarter-and-fiscal-year-2026-results-302841877.html"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"JKHY", name:"Jack Henry", en:"Jack Henry & Associates", sector:"金融科技",
+  status:"core", immune:["S2"], mis:["M5"],
+  sc:{imm:5,mis:4,gro:4,val:3},
+  thesis:"「会被云端Fintech颠覆」的社区银行核心系统,实际在扩大份额",
+  misjudgment:"市场叙事:社区银行的小IT供应商,将被云竞争者颠覆;银行客户利润被利率周期挤压将砍IT预算。",
+  truth:"核心系统转换成本极高(银行约十年才换一次)。FY26拿下创纪录58个竞争性核心系统转换单——被「颠覆」的公司在抢份额;processing占收入44%、经常性高。",
+  evidence:"FY2026(至2026-06)GAAP收入逐季+4.7~8.7%;Q3 EPS $1.71超预期约18%;processing收入+7%。(2026-08)",
+  devil:"看空者最强论点:银行客户盈利承压终会传导到IT预算;云转型资本开支压制自由现金流;大型银行倾向自建。",
+  watch:["核心系统竞标胜率(证伪信号:竞单流失加速)","云业务毛利改善","客户流失率deconversion"],
+  risks:["银行业IT预算收缩","云投入回报周期"],
+  srcs:[["Jack Henry IR","https://ir.jackhenry.com/press-releases"],["Investing.com: Q3 FY26","https://www.investing.com/news/transcripts/earnings-call-transcript-jack-henry-q3-2026-beats-expectations-stock-dips-93CH-4664288"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"ADP", name:"ADP", en:"Automatic Data Processing", sector:"人力科技",
+  status:"core", immune:["S2"], mis:["M1"],
+  sc:{imm:4,mis:3,gro:4,val:3},
+  thesis:"「算工资的」其实是合规复杂度的收租人",
+  misjudgment:"发薪外包听起来是上个时代的生意,近年又叠加「AI会取代」的叙事恐慌。",
+  truth:"按每笔发薪收费(pays per control),税法与劳动法越复杂收入越稳;就业恶化时有天然对冲——流失率下降节约成本、费率提升对冲人数下滑。连续数十年增派息。",
+  evidence:"FY2026(至2026-06)收入+7%、调整EPS +11%、雇主服务新业务预订+6%至$22亿;年内上调指引。(2026-07)",
+  devil:"看空者最强论点:若就业真正恶化,pays per control会转负(2009年曾-4%),所谓免疫只是缓冲击;估值对「工资单生意」有溢价上限。",
+  watch:["pays per control增速守住3%+(证伪信号:转负)","新业务bookings","就业数据走弱时的股价反应"],
+  risks:["就业拐点","AI替代叙事","溢价修正"],
+  srcs:[["ADP IR: FY2026","https://investors.adp.com/news/news-details/2026/ADP-Reports-Fourth-Quarter-and-Fiscal-2026-Results/default.aspx"],["SA: 上调指引","https://seekingalpha.com/news/4582028-adp-forecasts-fy-2026-adjusted-eps-growth-of-10-percentminus-11-percent-as-it-raises-revenue"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"CHD", name:"Church & Dwight", en:"Church & Dwight", sector:"消费必需",
+  status:"core", immune:["S3","S4"], mis:["M2"],
+  sc:{imm:4,mis:3,gro:4,val:4},
+  thesis:"被只占小头的维生素业务拖累,贴上「增长熄火」标签",
+  misjudgment:"Q4 2025有机仅+0.7%(维生素拖累,剔除后+1.8%),市场直接贴「熄火」标签。",
+  truth:"组合恰好压在消费收缩里最后被砍的预算上:牙膏、洗衣液、猫砂;宠物品类是「动物家人化」趋势里最抗削减的支出;小品牌收购机器持续运转。",
+  evidence:"2026逐季加速:Q1有机+5.0%(量驱动+5.3%)、Q2 +5.8%,全年指引上调至约4%。(2026-07-31)",
+  devil:"看空者最强论点:终究是消费品,防御板块拥挤压制估值;维生素业务处置悬而未决;纸浆树脂等成本波动。",
+  watch:["有机增速守住4%+","维生素业务处置方案","宠物品类份额与定价"],
+  risks:["消费情绪","成本波动","处置不确定"],
+  srcs:[["CHD IR: Q1 2026","https://investor.churchdwight.com/Investors/news/news-details/2026/Church--Dwight-Reports-Q1-2026-Results/default.aspx"],["Yahoo: Q2 2026","https://finance.yahoo.com/markets/stocks/articles/church-dwight-co-inc-chd-210410050.html"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"WCN", name:"Waste Connections", en:"Waste Connections", sector:"环卫",
+  status:"core", immune:["S1"], mis:["M1"],
+  sc:{imm:5,mis:3,gro:4,val:3},
+  thesis:"垃圾量看人口不看GDP;专营次级市场,定价权更强",
+  misjudgment:"垃圾=脏乱差的行业形象;所深耕的郊区/农村「次级市场」一度被视为低质量资产。",
+  truth:"填埋许可构成监管护城河;次级市场竞争弱、客户粘性强,提价能力高于全国城市市场;加拿大EPR(生产者责任延伸)把回收成本转嫁给品牌方;「量平价升」模式。",
+  evidence:"Q2 2026收入$25.6亿+6.4%,核心定价+5.6%,调整EPS $1.50超预期10%,全年指引上调;回收商品篮子较年初+10~15%;体积-1.9%由价格对冲。(2026-07-22)",
+  devil:"看空者最强论点:体积持续负增长说明宏观在传导;回收商品与RNG价格波动大;估值已部分修复,误会剩余有限。",
+  watch:["核心定价守住5%+","体积转正(证伪信号:持续-2%以下)","EPR协议收入贡献"],
+  risks:["回收商品价格","体积走弱","估值已修复"],
+  srcs:[["BusinessWire: Q2 2026","https://www.businesswire.com/news/home/20260722547867/en/Waste-Connections-Reports-Second-Quarter-2026-Results-and-Raises-Full-Year-Outlook"],["Waste Dive报道","https://www.wastedive.com/news/waste-connections-q2-2026-earnings-commodities-fuel-landfill-gas/826018/"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"XYL", name:"赛莱默", en:"Xylem", sector:"水务设备",
+  status:"core", immune:["S1","S2"], mis:["M2"],
+  sc:{imm:4,mis:3,gro:3,val:3},
+  thesis:"换表周期+水短缺的公用事业资本开支生意;谨慎指引吓出的机会",
+  misjudgment:"2026年初「谨慎指引」(有机仅2–4%)吓跌股价,被贴「增长熄火」标签。",
+  truth:"水表更换周期、AMI智慧计量与管网漏损治理——收入看公用事业资本开支(监管决定的稳态支出),不看家庭消费;水短缺是几十年维度的确定性主题。",
+  evidence:"Q2 2026收入$23亿超预期;全年调整EPS指引上调至$5.55–5.70;全年收入约$92亿(+2%),EBITDA利润率23.1–23.5%——今年是利润率故事。(2026-08)",
+  devil:"看空者最强论点:2%的收入增长撑不起「增长股」定价;若公用事业资本开支放缓,引擎只剩慢变量换表周期;Evoqua整合遗留问题。",
+  watch:["智慧水订单增速","工业测量控制板块触底(周期部分)","EPS指引兑现"],
+  risks:["公用事业资本开支周期","增长乏力","并购整合遗留"],
+  srcs:[["Xylem: Q2 2026","https://www.xylem.com/en-us/resources/press-releases/xylem-reports-second-quarter-2026-results/"],["SA: 谨慎指引反应","https://seekingalpha.com/news/4549509-xylem-shares-slide-after-cautious-2026-outlook"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"LMT", name:"洛克希德·马丁", en:"Lockheed Martin", sector:"军工",
+  status:"core", immune:["S6"], mis:["M3","M2"],
+  sc:{imm:4,mis:4,gro:3,val:5},
+  thesis:"6–7% FCF收益率的军工现金流;F-35「峰值担忧」压出的价格(高风险档)",
+  misjudgment:"被ESG组合规则系统性排除;市场把「F-35接近产量峰值」读成「利润见顶」,Q2收入miss强化抛售,距年内高点回落约两成。",
+  truth:"收入看国防预算(财政周期)而非经济周期;欧洲再武装与国际订单(30–40%出口)结构性抬升需求;爱国者导弹产能拟4年内扩至2000枚/年,对冲F-35依赖。",
+  evidence:"2026 FCF指引上调至$70–72亿,FCF收益率约6–7%;Q2 FCF $29亿(去年同期-1.5亿);Fitch确认A/稳定;但Q2收入约$180亿低于预期。(2026-07)",
+  devil:"看空者最强论点:F-35占收入四分之一,峰值担忧并非空穴来风;项目执行问题是真实运营问题而非误会;地缘缓和=需求与估值双杀。注意:S6免疫源是政治周期,纪律要求承认这不是「经济免疫」而是「换了一种周期」。",
+  watch:["爱国者/弹药产能爬坡兑现","F-35新合同与国际订单(证伪信号:出口订单萎缩)","TR-3解锁进度"],
+  risks:["项目执行","预算政治风险","单一平台依赖"],
+  srcs:[["LMT: Q2 2026","https://investors.lockheedmartin.com/static-files/d17e20e5-ac74-4c0b-8143-74d578e0ecef"],["SA: FCF与爱国者","https://seekingalpha.com/news/4578854-lockheed-martin-outlines-6_5b-6_8b-2026-free-cash-flow-while-targeting-patriot-ramp-to-2000"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"CTAS", name:"Cintas", en:"Cintas", sector:"商业服务",
+  status:"core", immune:["S2","S1"], mis:["M1"],
+  sc:{imm:4,mis:3,gro:5,val:2},
+  thesis:"「洗衣服的」外表,路线密度经济+每周上门的合同粘性",
+  misjudgment:"行业形象最低端的生意,没人愿意在路演里讲制服租赁。",
+  truth:"路线密度五十年滚雪球几乎无法复制;每周上门创造高频触点与交叉销售;经济下行有天然对冲——裁员行业流失率下降省成本、扩张行业(医疗/物流)照租。",
+  evidence:"FY2026(至2026-05)收入$112.6亿+8.9%(有机+8.3%),EPS +11.6%;全年逐季上调指引后仍超最终指引。(2026-07-15)",
+  devil:"看空者最强论点:远程办公与职场便装化是十年维度的真实逆风;估值常年溢价,增长换挡即双杀;就业恶化时新员工制服需求下降快于流失率节约。",
+  watch:["制服租赁有机增速7%+","便装化对渗透率的影响(财报问答)","毛利率与路线效率"],
+  risks:["便装化长趋势","估值溢价","就业拐点"],
+  srcs:[["Cintas: FY2026","https://www.cintas.com/about/newsroom/details/news/2026/07/15/cintas-corporation-announces-fiscal-2026-fourth-quarter-and-full-year-results"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"EPD", name:"Enterprise Products", en:"Enterprise Products Partners", sector:"中游能源",
+  status:"income", immune:["S5"], mis:["M3"],
+  sc:{imm:4,mis:3,gro:4,val:4},
+  thesis:"被ESG判死刑的「收费桥」:5.9%股息率+LNG/AI燃气双引擎",
+  misjudgment:"管道=化石能源「搁浅资产」的叙事让ESG资金系统性排除,折价与基本面无关。",
+  truth:"按体积收费的收费桥,赚搬运费而非油价;LNG出口与AI数据中心燃气需求是结构性增量;连续十余年提高派息、覆盖充分。",
+  evidence:"季度派息提至$0.56/单位(年化约5.9%);年内约+20%(重估已启动);管理层给出AI相关天然气需求双位数增长展望。(2026-08)",
+  devil:"看空者最强论点:MLP结构对非美投资者有EICI预扣等税务复杂性;商品量存在间接敞口;最便宜阶段已过。",
+  watch:["派息覆盖倍数","NGL出口量","数据中心燃气合约落地"],
+  risks:["MLP税务复杂性","商品量周期","重估已过半程"],
+  srcs:[["Yahoo: AI燃气需求","https://finance.yahoo.com/news/enterprise-products-partners-targets-ai-050946150.html"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"PM", name:"菲利普·莫里斯", en:"Philip Morris International", sector:"烟草",
+  status:"rediscovered", immune:["S5"], mis:["M3"],
+  sc:{imm:5,mis:2,gro:5,val:2},
+  thesis:"老登转型的天花板:无烟收入占43%——但误会红利已兑现大半",
+  misjudgment:"曾经的「ESG禁卖的卖烟人」。这个误会已经基本被修正。",
+  truth:"成瘾需求+减害渗透的教科书转型:IQOS+ZYN合计占净收入43%(2026Q1);Q2总收入+10.4%至$112亿;ZYN ULTRA新变体放量。",
+  evidence:"无烟收入占比2025年41.5%→2026Q1 43%;Q2收入+10.4%;但PE约28x,GuruFocus测算高估27.6%(Simply Wall St则认为低估17%)。(2026-08)",
+  devil:"看空者最强论点:估值已定价转型成功——现在买的是「已验证的转型」不是「误会折价」;ZYN增速放缓至+2%;口味禁令等监管阴云。",
+  watch:["无烟占比突破50%的节奏","ZYN销量增速回升","监管动向"],
+  risks:["监管(口味禁令)","汇率","估值已充分"],
+  srcs:[["PM IR","https://www.pmi.com/investor-relations/overview"],["FullRatio: PM PE","https://fullratio.com/stocks/nyse-pm/pe-ratio"]],
+  updated:"2026-08-28"
+},
+{
+  tk:"WM", name:"Waste Management", en:"Waste Management", sector:"环卫",
+  status:"rediscovered", immune:["S1"], mis:["M1"],
+  sc:{imm:5,mis:2,gro:4,val:3},
+  thesis:"逻辑最正的防御股,但已是共识——RNG是剩余期权",
+  misjudgment:"「垃圾老登」的误会早已完成重估,现属共识性防御资产。",
+  truth:"提价长期跑赢通胀+填埋定价权;RNG(可再生天然气)实现$5.59/MMBtu(上年$3.93);Stericycle并入医疗废物网络。行业逻辑与WCN同源,规模与RNG领先。",
+  evidence:"Q2 2026经营EBITDA+5.5%(剔除山火影响+9.1%),利润率+40bps;全年收入指引$262.8–264.8亿因RNG价格因素微调降。(2026-08)",
+  devil:"看空者最强论点:防御共识拥挤(Morningstar已提示消费防御不便宜);RNG价格依赖RIN/LCFS信用体系,政策敏感。",
+  watch:["RNG电厂投产节奏","提价vs体积","医疗废物整合协同"],
+  risks:["防御拥挤后的回撤","RNG政策依赖"],
+  srcs:[["WM: Q1 2026","https://investors.wm.com/news-releases/news-release-details/wm-announces-first-quarter-2026-earnings"]],
+  updated:"2026-08-28"
+}
+];
+
+/* ============ 剔除名单 ============ */
+const EXCLUDED = [
+ {tk:"MO", name:"Altria", cat:"烟草", why:"需求确实免疫,但增长引擎(ZYN)在PM手里;美国卷烟量加速衰减,只剩提价+回购的债券属性,没有「自身增长」。", cond:"拿到有意义的无烟资产,或估值<8x FCF"},
+ {tk:"BF/TAP", name:"Brown-Forman / Molson Coors", cat:"烈酒啤酒", why:"消费降级直接受害者+世代饮酒率结构性下降——需求侧真受损,不是误会。", cond:"人均饮酒量数据企稳回升"},
+ {tk:"ODFL/UNP", name:"货运与铁路", cat:"运输", why:"货运量是GDP的镜像,教科书周期股。闸门一不过。", cond:"不适用(定义性周期,只可做周期交易)"},
+ {tk:"LW", name:"Lamb Weston", cat:"食品", why:"下游=餐饮客流,消费景气直接传导;叠加GLP-1对油炸食品的长期压制。", cond:"餐饮客流回暖且份额稳定"},
+ {tk:"M/KSS", name:"百货", cat:"零售", why:"渠道结构性失血,电商替代是十年趋势而非周期。", cond:"无"},
+ {tk:"DE/AGCO", name:"农机", cat:"资本品", why:"农场收入=农产品价格周期,典型后周期。", cond:"农场收入回升周期(那是周期交易,非误会修复)"},
+ {tk:"KO/PEP", name:"可乐/百事", cat:"饮料", why:"增长引擎熄火;百事品类多元化十年未跑出第二曲线。优质防御,但无「误会」亦无「引擎」。", cond:"新品类跑出第二个增长曲线"},
+ {tk:"CPRT", name:"Copart", cat:"报废车拍卖", why:"边界案例:逆周期好生意,但市场标签是成长股——不符合「老登被误会」定义,不存在折价可修复。", cond:"被错杀至防御股估值时"},
+ {tk:"NEE/VST", name:"电力", cat:"公用事业", why:"逻辑正确,但已被AI电力叙事充分捧红——误会已清零,剩余的是为故事付溢价。", cond:"AI电力预期显著降温后的估值回归"}
+];
+
+/* ============ 渲染逻辑 ============ */
+const total = s => (s.sc.imm+s.sc.mis+s.sc.gro+s.sc.val)/4;
+STOCKS.forEach(s=>{ s.total=+(total(s).toFixed(1)); s.immuneS=s.immune.map(k=>IMMUNE[k]).join(" · "); s.misS=s.mis.map(k=>MIS[k]).join(" · "); });
+
+const $=id=>document.getElementById(id);
+const state={status:"all",sector:"all",immune:"all",mis:"all",sort:"total",q:""};
+
+function initSelects(){
+  const mk=(el,map,all)=>{ el.innerHTML=`<option value="all">${all}</option>`+Object.entries(map).map(([k,v])=>`<option value="${k}">${v}</option>`).join(""); };
+  mk($("fSector"),Object.fromEntries([...new Set(STOCKS.map(s=>s.sector))].map(v=>[v,v])),"全部行业");
+  mk($("fImmune"),IMMUNE,"全部免疫源"); mk($("fMis"),MIS,"全部误会型");
+}
+function bar(label,val,cls){ return `<div class="sc ${cls||""}"><div class="lb"><span>${label}</span><b>${val}</b></div><div class="bar ${cls||""}"><i style="width:${val*20}%"></i></div></div>`; }
+function chips(s){
+  return `<span class="chip st-${s.status}">${STATUS[s.status]}</span>`+s.immune.map(k=>`<span class="chip">${IMMUNE[k]}</span>`).join("")+s.mis.map(k=>`<span class="chip">${MIS[k]}</span>`).join("");
+}
+function card(s){
+  return `<details class="card"><summary>
+    <div class="chead"><span class="tk">${s.tk}</span><span class="nm">${s.name}</span><span class="sec">${s.en} · ${s.sector}</span></div>
+    <div class="thesis">${s.thesis}</div><div class="chips">${chips(s)}</div>
+    <div class="scores">${bar("免疫",s.sc.imm)}${bar("误会",s.sc.mis)}${bar("增长",s.sc.gro)}${bar("价值",s.sc.val)}${bar("综合",s.total,"total")}</div>
+  </summary>
+  <div class="cbody">
+    <div class="kv"><h4><span class="no">误会在哪</span></h4><p>${s.misjudgment}</p></div>
+    <div class="kv"><h4><span class="no">真实逻辑</span></h4><p>${s.truth}</p></div>
+    <div class="kv"><h4><span class="no">最新验证</span></h4><p>${s.evidence}</p></div>
+    <div class="kv"><h4><span class="no">反方最强论点</span></h4><p>${s.devil}</p></div>
+    <div class="kv"><h4><span class="no">观察清单</span></h4><ul class="watch">${s.watch.map(w=>`<li>${w}</li>`).join("")}</ul></div>
+    <div class="kv"><h4><span class="no">主要风险</span></h4><ul class="risks">${s.risks.map(r=>`<li>${r}</li>`).join("")}</ul></div>
+    <div class="srcs">资料:${s.srcs.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join("")} · 更新:${s.updated}</div>
+  </div></details>`;
+}
+function applyFilter(){
+  let list=STOCKS.filter(s=>
+    (state.status==="all"||s.status===state.status)&&
+    (state.sector==="all"||s.sector===state.sector)&&
+    (state.immune==="all"||s.immune.includes(state.immune))&&
+    (state.mis==="all"||s.mis.includes(state.mis))&&
+    (state.q===""||(s.tk+s.name+s.en+s.thesis+s.sector).toLowerCase().includes(state.q)));
+  const k=state.sort;
+  list.sort((a,b)=> k==="tk" ? a.tk.localeCompare(b.tk) : (b[k]??b.sc[k.split(".")[1]])-(a[k]??a.sc[k.split(".")[1]]));
+  $("cards").innerHTML=list.map(card).join("");
+  $("count").textContent=`${list.length} / ${STOCKS.length} 家`;
+}
+
+/* Tab切换 */
+$("nav").addEventListener("click",e=>{
+  if(e.target.tagName!=="BUTTON")return;
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b===e.target));
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("on",s.id==="tab-"+e.target.dataset.t));
+});
+/* 筛选器 */
+$("segStatus").addEventListener("click",e=>{
+  if(e.target.tagName!=="BUTTON")return;
+  document.querySelectorAll("#segStatus button").forEach(b=>b.classList.toggle("on",b===e.target));
+  state.status=e.target.dataset.v; applyFilter();
+});
+$("fSector").onchange=e=>{state.sector=e.target.value;applyFilter()};
+$("fImmune").onchange=e=>{state.immune=e.target.value;applyFilter()};
+$("fMis").onchange=e=>{state.mis=e.target.value;applyFilter()};
+$("fSort").onchange=e=>{state.sort=e.target.value;applyFilter()};
+$("fQ").oninput=e=>{state.q=e.target.value.trim().toLowerCase();applyFilter()};
+
+/* 对比表 */
+function buildCmp(){
+  const tb=document.querySelector("#cmp tbody");
+  const row=s=>`<tr><td class="tk">${s.tk}<span class="sm">${s.name}</span></td>
+    <td><span class="chip st-${s.status}">${STATUS[s.status]}</span></td><td>${s.sector}</td>
+    <td>${s.immune.map(k=>k).join("+")}</td><td>${s.mis.join("+")}</td>
+    <td class="num">${s.sc.imm}</td><td class="num">${s.sc.mis}</td><td class="num">${s.sc.gro}</td><td class="num">${s.sc.val}</td>
+    <td class="num hi">${s.total}</td><td>${s.thesis}</td></tr>`;
+  tb.innerHTML=[...STOCKS].sort((a,b)=>b.total-a.total).map(row).join("");
+  let asc=false,cur=null;
+  document.querySelectorAll("#cmp th").forEach(th=>th.onclick=()=>{
+    const k=th.dataset.k; if(cur===th)asc=!asc;else{asc=false;cur=th;}
+    const get=s=>k.includes(".")?s.sc[k.split(".")[1]]:s[k];
+    tb.innerHTML=[...STOCKS].sort((a,b)=>{const x=get(a),y=get(b);return (typeof x==="number")?(asc?x-y:y-x):(asc?String(x).localeCompare(String(y)):String(y).localeCompare(String(x)));}).map(row).join("");
+  });
+}
+/* 剔除表 */
+$("exBody").innerHTML=EXCLUDED.map(x=>`<tr><td class="tk">${x.tk}<span class="sm">${x.name}</span></td><td>${x.cat}</td><td>${x.why}</td><td class="cond">${x.cond}</td></tr>`).join("");
+
+initSelects(); applyFilter(); buildCmp();
+</script>
+</body>
+</html>

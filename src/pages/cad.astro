@@ -1,0 +1,152 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const stages = [
+  { id: 0, label: '① 白模', note: 'CAD 图纸解析成三维白模，可旋转检查体量', img: '/assets/img/cad/00-white.webp' },
+  { id: 1, label: '② 初渲', note: '黄昏大鸟瞰 · Blender 渲染出图', img: '/assets/img/cad/01-render.webp' },
+  { id: 2, label: '③ AI 写实', note: 'AI 写实化样张：材质、光影与氛围', img: '/assets/img/cad/02-ai.webp' },
+  { id: 3, label: '④ 成片', note: '夜景成片 · 41MB 演示片不进场，站外观看', img: '/assets/img/cad/03-night.webp' },
+];
+---
+<BaseLayout current="works" title="CAD→效果图流水线 · 数字殿堂" description="从 CAD 白模到材质再到成片：一条可拖动的效果图流水线。">
+  <main id="content" class="page">
+    <header class="page-title">
+      <span class="kicker">作品 · 流程可视化</span>
+      <h1>CAD→效果图流水线</h1>
+      <p>
+        一条把小区 CAD 图纸变成效果图的流程：解析图纸 → 三维白模 → 渲染初稿 → AI 写实化 → 成片。
+        拖动滑杆，看同一块地如何在四个阶段里生长。
+      </p>
+    </header>
+
+    <section class="cad-stage">
+      <div class="cad-stage-head">
+        <span class="kicker" id="stage-label">{stages[0].label}</span>
+        <p id="stage-note">{stages[0].note}</p>
+      </div>
+      <div class="cad-frame">
+        <img id="stage-img" src={stages[0].img} alt="CAD 流水线阶段图" />
+      </div>
+      <div class="cad-controls">
+        <button class="button" id="btn-prev" type="button" aria-label="上一阶段">←</button>
+        <input
+          type="range"
+          id="stage-range"
+          min="0"
+          max={stages.length - 1}
+          step="1"
+          value="0"
+          aria-label="阶段滑杆"
+        />
+        <button class="button" id="btn-next" type="button" aria-label="下一阶段">→</button>
+      </div>
+      <div class="cad-dots" id="cad-dots" aria-hidden="true">
+        {stages.map((s) => <button type="button" data-stage={s.id}>{s.label}</button>)}
+      </div>
+      <p class="exhibit-note">
+        白模是活的：<a href="/cad/white-model/" target="_blank" rel="noopener">进入三维白模页面</a> 可旋转查看。
+        成片演示视频（41MB）不进场，站外观看入口见 B站。
+      </p>
+    </section>
+
+    <div class="notes-more">
+      <a class="button" href="/works/">返回作品馆</a>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const stages = [
+    { label: '① 白模', note: 'CAD 图纸解析成三维白模，可旋转检查体量', img: '/assets/img/cad/00-white.webp' },
+    { label: '② 初渲', note: '黄昏大鸟瞰 · Blender 渲染出图', img: '/assets/img/cad/01-render.webp' },
+    { label: '③ AI 写实', note: 'AI 写实化样张：材质、光影与氛围', img: '/assets/img/cad/02-ai.webp' },
+    { label: '④ 成片', note: '夜景成片 · 41MB 演示片不进场，站外观看', img: '/assets/img/cad/03-night.webp' },
+  ];
+  const img = document.getElementById('stage-img');
+  const range = document.getElementById('stage-range');
+  const label = document.getElementById('stage-label');
+  const note = document.getElementById('stage-note');
+  const dots = [...document.querySelectorAll('#cad-dots button')];
+
+  function render(i) {
+    const s = stages[i];
+    img.src = s.img;
+    label.textContent = s.label;
+    note.textContent = s.note;
+    range.value = String(i);
+    dots.forEach((d, j) => d.classList.toggle('on', j === i));
+  }
+  range.addEventListener('input', () => render(Number(range.value)));
+  document.getElementById('btn-prev').addEventListener('click', () => render(Math.max(0, Number(range.value) - 1)));
+  document.getElementById('btn-next').addEventListener('click', () => render(Math.min(stages.length - 1, Number(range.value) + 1)));
+  dots.forEach((d) => d.addEventListener('click', () => render(Number(d.dataset.stage))));
+</script>
+
+<style>
+  .cad-stage {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .cad-stage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+  .cad-stage-head p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  .cad-frame {
+    border: 1px solid var(--line);
+    background: var(--paper-3);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .cad-frame img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .cad-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  .cad-controls input[type="range"] {
+    flex: 1;
+    accent-color: var(--amber);
+  }
+  .cad-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .cad-dots button {
+    padding: 6px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+  .cad-dots button.on {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  .exhibit-note a {
+    color: var(--amber);
+    border-bottom: 1px dashed var(--amber);
+    text-decoration: none;
+  }
+  @media (max-width: 720px) {
+    .cad-stage-head { display: block; }
+    .cad-stage-head p { margin-top: 8px; }
+  }
+</style>
