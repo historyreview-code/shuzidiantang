@@ -4,7 +4,13 @@
   "private": true,
   "description": "数字殿堂 · 一座收藏数字作品的殿堂（总站门户）",
   "scripts": {
+    "dev": "astro dev",
+    "build:site": "astro build",
     "assemble": "node scripts/assemble.mjs",
-    "preview": "npx serve dist"
+    "preview": "astro preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "astro": "^5.0.0"
   }
 }

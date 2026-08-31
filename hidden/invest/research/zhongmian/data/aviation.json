@@ -1,0 +1,21 @@
+{
+  "comment": "机场客流与竞争数据。annual 为基线，monthly 为手工更新区（民航局月度生产数据/新闻稿）。",
+  "updated": "2026-08-28",
+  "annual_pax_wan": {
+    "comment": "2025年年度值",
+    "pudong_2025": 8499, "pudong_2025_yoy_pct": 10.7,
+    "pudong_intl_2025q1_3_yoy_pct": 20.46,
+    "baiyun_2025": 8359, "baiyun_2025_yoy_pct": 9.45,
+    "shenzhen_2025": 6648,
+    "shanghai_two_2025": 13500
+  },
+  "monthly": {"records": {}},
+  "korea": {
+    "comment": "韩国竞争数据：财政经济部季度/观光公社月度",
+    "dutyfree_2025_krw_trillion": 12.5,
+    "dutyfree_2019_krw_trillion": 24.8,
+    "chinese_spend_2025_krw_trillion": 3.2,
+    "threat_line_krw_trillion": 4.0,
+    "note": "2025Q3起韩国对中国团体游客免签；仁川2025重签租金-40%"
+  }
+}

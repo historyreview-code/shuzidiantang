@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { notes, site, works } from '../data/site';
+
+const stats = [
+  { n: works.length, label: '馆藏作品' },
+  { n: 4, label: '在线游戏' },
+  { n: notes.length, label: '公开手记' },
+  { n: '2026.08', label: '开馆时间' },
+];
+
+const carousel = works.map((w) => ({
+  name: w.id === 'earth' ? '数字地球系列' : w.title,
+  eyebrow: w.id === 'earth' ? '当前主展 · 地球厅' : `${w.eyebrow} · ${w.status}`,
+  note: w.summary,
+  img: w.image,
+  href: w.href,
+}));
+
+const recommend = {
+  kicker: '系列推荐 · B站',
+  title: '英伦漫记',
+  desc: '把在英国的速写与漫步剪成影像笔记：路上的风景、建筑与手账，一集一集慢慢放。',
+  href: 'https://space.bilibili.com/13483307',
+  cta: '去 B站 看系列',
+  yt: '海外同步：YouTube @SketchbookBritain',
+  ytHref: 'https://www.youtube.com/@SketchbookBritain',
+};
+
+const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
+---
+<BaseLayout current="home">
+  <main id="content" class="page">
+    <!-- ============ Hero ============ -->
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-kicker-row">
+          <span class="stamp" aria-hidden="true">数字</span>
+          <span class="kicker">数字殿堂 · 个人总门户</span>
+        </div>
+        <h1 class="hero-title">劳伦斯<span class="accent">在上海</span></h1>
+        <p class="hero-lead">
+          一座私人数字作品馆：地球、星空、游戏与手记。每件展品都保留真实入口，
+          可以走进去、玩起来、再回来看它怎么做出来的。
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="/works/">逛作品馆</a>
+          <a class="button" href="/notes/">读手记</a>
+        </div>
+        <div class="ledger" aria-label="馆藏账本">
+          {stats.map((s) => (
+            <div>
+              <b>{s.n}</b>
+              <span>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <figure class="exhibit" id="exhibit">
+          <a class="exhibit-frame" id="ex-link" href={carousel[0].href}>
+            <img id="ex-img" src={carousel[0].img} alt={`${carousel[0].name}预览`} />
+          </a>
+          <figcaption class="exhibit-label">
+            <span class="stamp" aria-hidden="true">数字</span>
+            <div>
+              <span id="ex-eyebrow">{carousel[0].eyebrow}</span>
+              <strong id="ex-name">{carousel[0].name}</strong>
+            </div>
+          </figcaption>
+          <div class="exhibit-dots" id="ex-dots" role="tablist" aria-label="主力作品轮换"></div>
+          <p class="exhibit-note" id="ex-note">{carousel[0].note}</p>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ 馆藏作品卡区 ============ -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="kicker">馆藏作品 · Works</span>
+          <h2>按重要程度排座次，旗舰在地球厅</h2>
+        </div>
+        <div class="side">
+          <p>每张卡片一个独立项目，点击卡片直接进入展厅。</p>
+        </div>
+      </div>
+      <div class="work-grid">
+        {works.map((work) => (
+          work.href ? (
+            <a class="work-card" href={work.href}>
+              <img src={work.image} alt={`${work.title}封面`} />
+              <div class="work-card-body">
+                <span class="meta">{work.eyebrow} · {work.status}</span>
+                <h3>{work.title}</h3>
+                <p>{work.summary}</p>
+                <div class="tag-list">
+                  {work.tags.map((tag) => <span>{tag}</span>)}
+                </div>
+              </div>
+            </a>
+          ) : (
+            <article class="work-card" aria-label={`${work.title}，入馆筹备中`}>
+              <div class="card-ph" aria-hidden="true"><span class="stamp">筹备中</span></div>
+              <div class="work-card-body">
+                <span class="meta">{work.eyebrow}</span>
+                <h3>{work.title}</h3>
+                <p>{work.summary}</p>
+                <div class="tag-list">
+                  {work.tags.map((tag) => <span>{tag}</span>)}
+                </div>
+                <p class="card-pending-note">入馆筹备中 · 上线后点亮卡面</p>
+              </div>
+            </article>
+          )
+        ))}
+      </div>
+    </section>
+
+    <!-- ============ 系列推荐位 ============ -->
+    <section class="section">
+      <div class="recommend">
+        <div class="recommend-copy">
+          <span class="kicker">{recommend.kicker}</span>
+          <h3>{recommend.title}</h3>
+          <p>{recommend.desc}</p>
+          <a class="yt" href={recommend.ytHref} target="_blank" rel="noopener">{recommend.yt}</a>
+        </div>
+        <a class="button primary" href={recommend.href} target="_blank" rel="noopener">{recommend.cta}</a>
+      </div>
+    </section>
+
+    <!-- ============ 手记流 ============ -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="kicker">手记 · Notes</span>
+          <h2>把制作过程留在纸上</h2>
+          <div class="cat-chips" aria-label="手记分类">
+            {categories.map((c, i) => <span class:list={[i === 0 && 'active']}>{c}</span>)}
+          </div>
+        </div>
+        <div class="side">
+          <p>实践手记、AI 手记、工具篇、随笔——问题、选择和修复过程，都归档在这里。</p>
+        </div>
+      </div>
+      <div class="notes-feed">
+        <!-- AUTO:NOTES_FEED -->
+        <a class="item" href="/notes/2026-08-16-digital-earth-series.html"><span class="date">2026-08-16</span><span class="txt">一个会转的地球，装下了大学、地震、世界遗产和 500 强<small>实践手记</small></span></a>
+        <a class="item" href="/notes/2026-08-17-numsweeper.html"><span class="date">2026-08-17</span><span class="txt">不踩雷，只算数——数字扫雷的创意与进化之路<small>实践手记</small></span></a>
+        <a class="item" href="/notes/2026-08-16-ai-tools-personal-website.html"><span class="date">2026-08-16</span><span class="txt">用好 AI 工具，你也可以拥有个人网站<small>工具篇</small></span></a>
+        <!-- /AUTO:NOTES_FEED -->
+      </div>
+      <div class="notes-more">
+        <a class="button" href="/notes/">全部手记</a>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline define:vars={{ carousel }}>
+    (function () {
+      var items = carousel;
+      var img = document.getElementById('ex-img');
+      var link = document.getElementById('ex-link');
+      var nameEl = document.getElementById('ex-name');
+      var eyebrowEl = document.getElementById('ex-eyebrow');
+      var noteEl = document.getElementById('ex-note');
+      var dotsBox = document.getElementById('ex-dots');
+      var figure = document.getElementById('exhibit');
+      var idx = 0, timer = null, paused = false;
+
+      items.forEach(function (it, i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', it.name);
+        b.addEventListener('click', function () { show(i); restart(); });
+        dotsBox.appendChild(b);
+      });
+
+      function show(i) {
+        idx = (i + items.length) % items.length;
+        var it = items[idx];
+        img.style.opacity = '0';
+        setTimeout(function () {
+          img.alt = it.name + '预览';
+          img.onload = function () { img.style.opacity = '1'; };
+          img.src = it.img;
+          link.href = it.href;
+          nameEl.textContent = it.name;
+          eyebrowEl.textContent = it.eyebrow;
+          noteEl.textContent = it.note;
+        }, 450);
+        dotsBox.querySelectorAll('button').forEach(function (b, j) {
+          b.classList.toggle('on', j === idx);
+        });
+      }
+
+      function restart() {
+        if (timer) clearInterval(timer);
+        if (!paused) timer = setInterval(function () { show(idx + 1); }, 4500);
+      }
+
+      var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduced) {
+        figure.addEventListener('mouseenter', function () { paused = true; if (timer) clearInterval(timer); });
+        figure.addEventListener('mouseleave', function () { paused = false; restart(); });
+      }
+      show(0);
+      if (!reduced) restart();
+    })();
+  </script>
+</BaseLayout>

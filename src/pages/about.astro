@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+
+const socials = [
+  {
+    platform: 'B站',
+    handle: '劳伦斯在sh · UID 13483307',
+    href: 'https://space.bilibili.com/13483307',
+    tone: '长视频与系列作品：数字地球、天文馆、游戏开发讲解。',
+    cta: '进入 B站主页',
+  },
+  {
+    platform: '小红书',
+    handle: '劳伦斯 · 598047983',
+    href: 'https://www.xiaohongshu.com/user/profile/598047983',
+    tone: '短视频、图文卡片与创作日常的随手记。',
+    cta: '进入小红书主页',
+  },
+  {
+    platform: 'YouTube',
+    handle: '@SketchbookBritain',
+    href: 'https://www.youtube.com/@SketchbookBritain',
+    tone: '英伦漫记系列：在英国的速写、建筑与手账影像。',
+    cta: '进入 YouTube 频道',
+  },
+];
+---
+<BaseLayout current="about" title={`关于 · ${site.name}`}>
+  <main id="content" class="page">
+    <header class="page-title">
+      <span class="kicker">关于 · About</span>
+      <h1>劳伦斯在上海</h1>
+      <p>
+        数字殿堂的馆长。常驻上海，做数字作品，也给作品写手记。
+        这里每件展品都来自一次「想做出来看看」的冲动：会转的地球、自动放映的星空、
+        可以玩的小游戏、Blender 捏的陶土动物，还有随十二时辰流转的数据艺术。
+        作品做完了不算完——过程会写进手记，留给想看的人。
+      </p>
+    </header>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="kicker">在哪里找到我 · Social</span>
+          <h2>三处窗口，三种表达</h2>
+        </div>
+        <div class="side">
+          <p>没有邮箱，想聊的话社媒私信见。不同平台放不同形态的作品。</p>
+        </div>
+      </div>
+      <div class="channel-grid">
+        {socials.map((s) => (
+          <article class="channel-card">
+            <span class="meta">{s.platform}</span>
+            <h3>{s.handle}</h3>
+            <p>{s.tone}</p>
+            <a class="button" href={s.href} target="_blank" rel="noopener">{s.cta}</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="manifesto">
+        <p>
+          「手头还有一部影视企划《临川听荷》在慢慢孵化，等它成形，再来入馆。」
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

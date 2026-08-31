@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/hidden/invest/research-banner.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赌上一切的资本 · 马斯克投资理念与实践研究报告</title>
+<meta name="description" content="埃隆·马斯克（Elon Musk）投资理念与投资实践交互式研究报告 · 数据截至2026年8月">
+<style>
+/* ============ 基础 ============ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#0a0f1e;
+  --bg2:#0d1426;
+  --ink:#e9e4d8;
+  --ink-dim:#a9a796;
+  --ink-faint:#6b6e78;
+  --amber:#f0a83c;
+  --amber-hi:#ffd27a;
+  --amber-lo:#c97f1e;
+  --ice:#5ad0e6;
+  --ice-dim:#2e7f93;
+  --coral:#ff6b57;
+  --green:#79c98e;
+  --line:rgba(255,255,255,.09);
+  --panel:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  --serif:"Songti SC","STSong","Noto Serif SC","SimSun",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --num:"DIN Alternate","Futura","Avenir Next Condensed",var(--sans);
+}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;line-height:1.85;letter-spacing:.02em;
+  overflow-x:hidden;
+}
+::selection{background:rgba(240,168,60,.35)}
+a{color:var(--ice);text-decoration:none;border-bottom:1px solid rgba(90,208,230,.25)}
+a:hover{border-bottom-color:var(--ice)}
+strong{color:var(--amber-hi);font-weight:600}
+em{font-style:normal;color:var(--amber)}
+
+/* ============ 背景氛围 ============ */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.14;z-index:0;pointer-events:none}
+.blob.b1{width:56vw;height:56vw;left:-18vw;top:-20vw;background:radial-gradient(circle,#3b5bdb,transparent 65%)}
+.blob.b2{width:44vw;height:44vw;right:-15vw;top:30vh;background:radial-gradient(circle,#f0a83c,transparent 62%);opacity:.10}
+.blob.b3{width:40vw;height:40vw;left:22vw;bottom:-22vh;background:radial-gradient(circle,#5ad0e6,transparent 65%);opacity:.07}
+.page{position:relative;z-index:1}
+
+/* ============ 进度条 ============ */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:99;
+  background:linear-gradient(90deg,var(--amber-lo),var(--amber-hi),var(--ice));border-radius:0 2px 2px 0}
+
+/* ============ 右侧章节导航 ============ */
+#dotnav{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:14px}
+#dotnav a{display:flex;align-items:center;gap:10px;flex-direction:row-reverse;text-decoration:none;border:none}
+#dotnav .d{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22);transition:.3s;flex:none}
+#dotnav .t{font-size:11.5px;color:transparent;white-space:nowrap;letter-spacing:.08em;transition:.3s;transform:translateX(6px);opacity:0}
+#dotnav a.on .d{background:var(--amber);box-shadow:0 0 12px rgba(240,168,60,.8)}
+#dotnav a:hover .t,#dotnav a.on .t{color:var(--ink-dim);opacity:1;transform:none}
+@media(max-width:900px){#dotnav{display:none}}
+
+/* ============ 版心与章节 ============ */
+.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+section.ch{padding:110px 0 40px;position:relative}
+.ch-head{display:flex;align-items:baseline;gap:22px;margin-bottom:14px}
+.ch-no{font-family:var(--num);font-size:64px;font-weight:700;color:transparent;-webkit-text-stroke:1.4px rgba(240,168,60,.55);line-height:1;letter-spacing:.02em}
+.ch-head h2{font-family:var(--serif);font-weight:700;font-size:clamp(27px,3.4vw,38px);color:var(--ink);letter-spacing:.06em}
+.ch-rule{height:1px;background:linear-gradient(90deg,var(--amber) 0,rgba(240,168,60,.18) 34%,transparent 75%);margin:16px 0 20px}
+.lede{max-width:820px;color:var(--ink-dim);font-size:15.5px;margin-bottom:36px}
+.lede strong{color:var(--amber-hi)}
+.tag-idea,.tag-p{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;margin:0 4px 4px 0;letter-spacing:.06em;
+  border:1px solid rgba(240,168,60,.4);color:var(--amber);background:rgba(240,168,60,.07)}
+.tag-b{border-color:rgba(90,208,230,.4);color:var(--ice);background:rgba(90,208,230,.07)}
+.tag-r{border-color:rgba(255,107,87,.45);color:var(--coral);background:rgba(255,107,87,.07)}
+
+/* ============ 面板与卡片 ============ */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,3vw,32px);position:relative;overflow:hidden}
+.grid{display:grid;gap:18px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px 24px 20px;transition:transform .35s,border-color .35s,box-shadow .35s}
+.card:hover{transform:translateY(-4px);border-color:rgba(240,168,60,.45);box-shadow:0 18px 44px -18px rgba(240,168,60,.28)}
+.card h4{font-family:var(--serif);font-size:19px;color:var(--amber-hi);margin-bottom:10px;letter-spacing:.05em}
+.card p{font-size:13.8px;color:var(--ink-dim);line-height:1.9}
+.card.risk{border-left:3px solid var(--coral)}
+.card.risk:hover{border-color:rgba(255,107,87,.5);box-shadow:0 18px 44px -18px rgba(255,107,87,.25)}
+.card.risk h4{color:#ff9c8c}
+.note{font-size:12.5px;color:var(--ink-faint);line-height:1.8}
+
+/* ============ Hero ============ */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:9vh;position:relative}
+.kicker{font-size:13px;letter-spacing:.42em;color:var(--amber);margin-bottom:26px;display:flex;align-items:center;gap:16px}
+.kicker::before{content:"";width:46px;height:1px;background:var(--amber)}
+.h-title{font-family:var(--serif);font-weight:900;font-size:clamp(44px,8.2vw,92px);line-height:1.16;letter-spacing:.04em;color:var(--ink)}
+.h-title .gold{background:linear-gradient(100deg,#ffe6ae 8%,var(--amber) 45%,#b26a10 82%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h-sub{font-family:var(--serif);font-size:clamp(16px,2vw,21px);color:var(--ink-dim);margin:26px 0 10px;letter-spacing:.12em}
+.h-thesis{max-width:720px;font-size:15.5px;color:var(--ink-dim);border-left:2px solid rgba(240,168,60,.5);padding-left:18px;margin:20px 0 46px}
+.h-thesis em{font-family:var(--serif);color:var(--amber-hi);font-style:normal}
+.stat-row{display:flex;flex-wrap:wrap;gap:14px}
+.stat{min-width:190px;flex:1;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 22px 15px}
+.stat .v{font-family:var(--num);font-weight:700;font-size:clamp(30px,3.4vw,42px);color:var(--amber-hi);line-height:1.15;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:.52em;color:var(--amber);margin-left:3px;font-weight:400}
+.stat .k{font-size:12.5px;color:var(--ink-dim);margin-top:6px;letter-spacing:.06em}
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.pill{font-size:12.5px;color:var(--ink-dim);border:1px solid var(--line);border-radius:30px;padding:6px 16px;letter-spacing:.05em;background:rgba(255,255,255,.03)}
+.pill b{color:var(--ice);font-weight:600}
+.scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:var(--ink-faint);font-size:11.5px;letter-spacing:.34em;text-align:center;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,9px)}}
+
+/* ============ 章一 财富版图 ============ */
+.cmp-bar{display:flex;height:66px;border-radius:14px;overflow:hidden;margin:26px 0 14px;border:1px solid var(--line)}
+.seg{display:flex;flex-direction:column;justify-content:center;padding:0 18px;min-width:0;cursor:pointer;transition:flex-grow .8s cubic-bezier(.2,.8,.2,1),filter .3s;position:relative}
+.seg:hover{filter:brightness(1.18)}
+.seg .sn{font-size:13px;color:#0c1222;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg .sv{font-family:var(--num);font-weight:700;font-size:19px;color:rgba(10,14,28,.86);white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:12px 26px;margin:6px 0 30px}
+.lg{display:flex;align-items:flex-start;gap:10px;min-width:220px;flex:1}
+.lg i{width:13px;height:13px;border-radius:4px;flex:none;margin-top:5px}
+.lg b{font-size:13.5px;color:var(--ink);display:block}
+.lg span{font-size:12px;color:var(--ink-dim);display:block;line-height:1.7}
+.rival-row{display:flex;align-items:center;gap:14px;margin:13px 0}
+.rival-name{width:148px;font-size:13.5px;color:var(--ink-dim);text-align:right;flex:none}
+.rival-track{flex:1;height:22px;background:rgba(255,255,255,.04);border-radius:8px;overflow:hidden}
+.rival-fill{height:100%;border-radius:8px;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center}
+.rival-fill span{font-family:var(--num);font-weight:600;font-size:12px;color:#101323;padding-left:10px;white-space:nowrap}
+.me-first .rival-name{color:var(--amber-hi);font-weight:700}
+
+/* ============ 图表通用 ============ */
+.chartbox{width:100%;overflow:hidden}
+.chartbox svg{width:100%;height:auto;display:block}
+.fig-cap{display:flex;justify-content:space-between;gap:14px;font-size:12px;color:var(--ink-faint);margin-top:12px;line-height:1.7}
+.axis-t{fill:var(--ink-faint);font-size:11.5px;font-family:var(--num)}
+.grid-l{stroke:rgba(255,255,255,.06);stroke-width:1}
+#tip{position:absolute;z-index:200;pointer-events:none;background:rgba(14,18,32,.96);border:1px solid rgba(240,168,60,.5);border-radius:10px;padding:9px 14px;font-size:12.5px;color:var(--ink);max-width:260px;line-height:1.7;opacity:0;transition:opacity .18s;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+#tip b{color:var(--amber-hi);font-family:var(--num);font-size:13.5px}
+
+/* ============ 引言块 ============ */
+.quote-wall{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin:8px 0 46px}
+.quote{position:relative;background:linear-gradient(160deg,rgba(240,168,60,.08),rgba(240,168,60,.02));border:1px solid rgba(240,168,60,.22);border-radius:16px;padding:26px 26px 20px;font-family:var(--serif);font-size:16.5px;line-height:2;color:var(--ink);letter-spacing:.04em}
+.quote::before{content:"「";position:absolute;top:8px;left:14px;font-size:30px;color:rgba(240,168,60,.4)}
+.quote small{display:block;margin-top:12px;font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);letter-spacing:.1em}
+
+/* ============ 原则卡（六条）============ */
+.pr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));gap:18px}
+@media(max-width:1080px){.pr-grid{grid-template-columns:1fr}}
+.pr-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:border-color .3s}
+.pr-card:hover{border-color:rgba(240,168,60,.4)}
+.pr-head{display:flex;align-items:center;gap:16px;padding:20px 22px 16px;cursor:pointer;user-select:none}
+.pr-glyph{width:46px;height:46px;flex:none;border-radius:12px;border:1px solid rgba(240,168,60,.4);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;font-weight:900;color:var(--amber-hi);background:radial-gradient(circle at 32% 28%,rgba(240,168,60,.22),rgba(240,168,60,.04))}
+.pr-head h4{font-family:var(--serif);font-size:18.5px;color:var(--ink);letter-spacing:.04em}
+.pr-head .essence{font-size:12.5px;color:var(--amber);margin-top:3px;letter-spacing:.05em}
+.pr-caret{margin-left:auto;color:var(--amber);font-size:18px;transition:transform .35s;flex:none}
+.pr-card.open .pr-caret{transform:rotate(180deg)}
+.pr-body{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.3,.8,.3,1)}
+.pr-card.open .pr-body{max-height:520px}
+.pr-inner{padding:2px 22px 20px;border-top:1px dashed rgba(255,255,255,.09)}
+.pr-inner p{font-size:13.6px;color:var(--ink-dim);line-height:2;padding-top:14px}
+.pr-evi{margin-top:12px;font-size:12.5px;color:var(--ice);background:rgba(90,208,230,.06);border-left:2px solid var(--ice-dim);padding:8px 12px;line-height:1.8}
+
+/* ============ 时间线 ============ */
+.tl{position:relative;margin:10px 0 30px}
+.tl::before{content:"";position:absolute;left:118px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,rgba(240,168,60,.55),rgba(90,208,230,.25),rgba(240,168,60,.55))}
+.tl-node{position:relative;padding:0 0 14px 158px;cursor:pointer}
+.tl-year{position:absolute;left:0;top:8px;width:104px;text-align:right;font-family:var(--num);font-weight:700;font-size:17px;color:var(--ink-faint);transition:.3s;direction:ltr}
+.tl-dot{position:absolute;left:111px;top:14px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--ink-faint);transition:.3s}
+.tl-node::after{content:"";position:absolute;left:130px;top:26px;width:10px;height:2px;background:rgba(255,255,255,.12)}
+.tl-btn{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px 20px;transition:.3s;color:var(--ink)}
+.tl-node:hover .tl-btn{border-color:rgba(240,168,60,.45)}
+.tl-btn h5{font-size:15.5px;font-weight:600;color:var(--ink);letter-spacing:.03em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tl-sum{font-size:12.5px;color:var(--ink-faint);margin-top:3px}
+.tl-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.3,.8,.3,1)}
+.tl-node.open .tl-body{max-height:420px}
+.tl-detail{padding-top:12px;margin-top:10px;border-top:1px dashed rgba(255,255,255,.1);font-size:13.2px;color:var(--ink-dim);line-height:2}
+.tl-detail b{color:var(--amber-hi)}
+.tl-node.open .tl-year{color:var(--amber-hi)}
+.tl-node.open .tl-dot{border-color:var(--amber);box-shadow:0 0 14px rgba(240,168,60,.7);background:var(--amber)}
+@media(max-width:720px){
+  .tl::before{left:18px}
+  .tl-node{padding:0 0 14px 48px}
+  .tl-year{left:auto;right:0;top:-14px;width:auto;font-size:13px}
+  .tl-dot{left:11px}
+  .tl-node::after{display:none}
+}
+
+/* ============ 关键战役 ============ */
+.battle{margin-bottom:34px}
+.battle h3{font-family:var(--serif);font-size:21px;color:var(--amber-hi);letter-spacing:.06em;margin-bottom:6px;display:flex;gap:14px;align-items:baseline}
+.battle h3 .bno{font-family:var(--num);font-size:13px;color:var(--amber);border:1px solid rgba(240,168,60,.4);border-radius:20px;padding:1px 12px;letter-spacing:.2em;flex:none}
+.flow{display:flex;gap:0;align-items:stretch;margin:24px 0 10px}
+.fl-src{flex:0 0 178px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(160deg,rgba(90,208,230,.13),rgba(90,208,230,.04));border:1px solid rgba(90,208,230,.35);border-radius:14px;padding:18px;text-align:center}
+.fl-src .fs-v{font-family:var(--num);font-weight:700;font-size:25px;color:var(--ice)}
+.fl-src .fs-k{font-size:12px;color:var(--ink-dim);margin-top:4px}
+.fl-arrows{flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:0 6px}
+.fl-arrow{display:flex;align-items:center}
+.fl-line{flex:1;height:2px;position:relative;background:linear-gradient(90deg,rgba(240,168,60,.6),rgba(240,168,60,.2))}
+.fl-line::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:rgba(240,168,60,.5)}
+.fl-amt{font-family:var(--num);font-weight:700;color:var(--amber-hi);font-size:16px;padding:0 12px;white-space:nowrap}
+.fl-dst{flex:0 0 300px;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.fl-co{border:1px solid var(--line);border-radius:12px;padding:10px 16px;background:rgba(255,255,255,.03);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.fl-co b{font-size:13.5px;color:var(--ink);font-weight:600}
+.fl-co span{font-family:var(--num);color:var(--amber);font-size:15px;font-weight:700;white-space:nowrap}
+.verdict-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:18px 0}
+.vcard{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.025);text-align:center}
+.vcard .vv{font-family:var(--num);font-weight:700;font-size:21px;color:var(--green)}
+.vcard.red .vv{color:var(--coral)}
+.vcard.gold .vv{color:var(--amber-hi)}
+.vcard .vk{font-size:11.5px;color:var(--ink-faint);margin-top:3px;line-height:1.6}
+@media(max-width:900px){.flow{flex-direction:column;gap:12px}.fl-src,.fl-dst{flex:auto}.fl-arrow{display:none}.fl-dst{border-top:1px dashed var(--line);padding-top:12px}}
+
+/* ============ 风险章 ============ */
+.callout{margin:30px 0;border:1px solid rgba(255,107,87,.4);background:linear-gradient(150deg,rgba(255,107,87,.1),rgba(255,107,87,.02));border-radius:18px;padding:26px 28px;position:relative}
+.callout::before{content:"⚠ 幸存者偏差警示";position:absolute;top:-13px;left:22px;background:var(--bg);padding:2px 14px;font-size:12.5px;color:var(--coral);letter-spacing:.18em;font-weight:700}
+.callout p{font-size:14px;color:var(--ink-dim);line-height:2}
+.callout b{color:#ffb3a6}
+
+/* ============ 启示列表 ============ */
+.lesson{display:flex;gap:20px;padding:20px 4px;border-bottom:1px dashed rgba(255,255,255,.09);align-items:flex-start}
+.lesson:last-child{border-bottom:none}
+.lesson .ln{font-family:var(--num);font-size:30px;font-weight:700;color:transparent;-webkit-text-stroke:1.2px rgba(90,208,230,.6);line-height:1.1;flex:none;width:52px}
+.lesson h5{font-size:16px;color:var(--ink);margin-bottom:5px;letter-spacing:.04em}
+.lesson p{font-size:13.6px;color:var(--ink-dim);line-height:1.95}
+
+/* ============ 尾声来源 ============ */
+.src-list{columns:2;column-gap:38px;font-size:12.8px;line-height:2.15;color:var(--ink-dim)}
+@media(max-width:760px){.src-list{columns:1}}
+.src-list li{break-inside:avoid;margin-left:18px}
+.src-list a{word-break:break-all}
+footer.end{padding:70px 0 60px;text-align:center;color:var(--ink-faint);font-size:12.5px;letter-spacing:.1em;line-height:2.2}
+footer.end .fin{font-family:var(--serif);font-size:20px;color:var(--ink-dim);letter-spacing:.4em;margin-bottom:14px}
+
+/* ============ 动效 ============ */
+.rv{opacity:0;transform:translateY(28px)}
+.rv.on{opacity:1;transform:none;transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.d1.on{transition-delay:.1s}.rv.d2.on{transition-delay:.2s}.rv.d3.on{transition-delay:.3s}
+@media(prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none}
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media print{
+  #stars,.blob,#dotnav,#progress,.scroll-cue{display:none}
+  body{background:#fff;color:#222}
+}
+</style>
+</head>
+<body>
+<div class="rs-banner">
+  <a class="rs-back" href="/hidden/invest/research/">← 暗室 · 专题研究</a>
+  <span>⚠️ 馆主个人研究记录 · 仅供自用与朋友交流 · 不构成任何投资建议 · 请勿公开转发</span>
+</div>
+<canvas id="stars"></canvas>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="progress"></div>
+<nav id="dotnav"></nav>
+<div id="tip"></div>
+<div class="page">
+<!-- ==================== 序章 ==================== -->
+<header id="hero" class="wrap" data-nav="序">
+  <div class="kicker rv">ELON MUSK · INVESTMENT RESEARCH · 1995—2026</div>
+  <h1 class="h-title rv d1">赌上一切的<span class="gold">资本</span></h1>
+  <div class="h-sub rv d2">埃隆·马斯克：投资理念与实践研究报告</div>
+  <p class="h-thesis rv d3">他不是在"挑选好公司"，而是在<em>给自己认为必然到来的未来下注</em>——然后把全部筹码放上桌，并坐进庄家席。这份报告拆解这套极端打法的理念内核、三十年实践与代价。</p>
+  <div class="stat-row">
+    <div class="stat rv d1"><div class="v"><span data-count="864">$0</span><small>B</small></div><div class="k">当前身家（约值，彭博/福布斯口径）</div></div>
+    <div class="stat rv d2"><div class="v">#1</div><div class="k">全球富豪榜 · 约为第二名的 2.9 倍</div></div>
+    <div class="stat rv d3"><div class="v"><span data-count="42">0</span><small>%</small></div><div class="k">SpaceX 持股（合并 xAI 后上市）</div></div>
+    <div class="stat rv d1"><div class="v"><span data-count="309">0</span><small>×</small></div><div class="k">Tesla IPO 至今持有回报（2010—2026）</div></div>
+  </div>
+  <div class="pills rv d3">
+    <span class="pill"><b>2026-06-12</b> · 史上首位万亿美元富豪</span>
+    <span class="pill"><b>$85.7B</b> · SpaceX IPO 募资 · 史上最大</span>
+    <span class="pill"><b>$1.25T</b> · xAI 并入 SpaceX · 史上最大并购</span>
+    <span class="pill"><b>-65%</b> · TSLA 单年最大回撤（2022），他持有的那年</span>
+  </div>
+  <div class="scroll-cue">向下滚动 ↓</div>
+</header>
+
+<!-- ==================== 01 财富版图 ==================== -->
+<section class="ch wrap" id="s01" data-nav="壹·版图">
+  <div class="ch-head rv"><span class="ch-no">01</span><h2>财富版图：一个篮子里的世界首富</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">截至 2026 年 8 月中旬，马斯克身家约 <strong>8640 亿美元</strong>（彭博/福布斯口径）。其中约 <strong>95% 集中在自己的公司股权</strong>——这正是理解他全部投资行为的第一把钥匙。注意：图中数值均为据公开文件的推算约值，随股价每日波动。</p>
+  <div class="panel rv">
+    <div class="cmp-bar" id="cmp-wealth">
+      <div class="seg" style="flex-grow:67;background:linear-gradient(160deg,#ffd27a,#e8992a)" data-tip="<b>≈ $5,780 亿</b><br>SpaceX（已并入 xAI，Nasdaq: SPCX）持股约42%，IPO 前一路稀释至 40.5%–42%。另含与火星目标挂钩的或有股份。这是他财富的绝对主体。">
+        <span class="sv">~$578B</span><span class="sn">SpaceX（含xAI）~67%</span>
+      </div>
+      <div class="seg" style="flex-grow:29;background:linear-gradient(160deg,#7fdcee,#3aa6bf)" data-tip="<b>≈ $2,510 亿</b><br>Tesla 持股约20%（7.171 亿股 × 约$350）。含2026年6月行权的2018年薪酬期权3.04亿股（行权价$23.34）。">
+        <span class="sv">~$251B</span><span class="sn">Tesla ~29%</span>
+      </div>
+      <div class="seg" style="flex-grow:4;background:#566074" data-tip="<b>≈ $350 亿（估算）</b><br>Neuralink（2025年融资估值$90亿）、The Boring Company、现金及少量其他资产。估值不透明，占比很小。">
+        <span class="sn">其他</span>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="lg"><i style="background:linear-gradient(160deg,#ffd27a,#e8992a)"></i><div><b>SpaceX ≈ $578B（约67%）</b><span>2002 年自掏 1 亿美元创立；2026-02 吞并 xAI 后于 6 月以 $1.77 万亿估值上市，股价其后回落、一度破发</span></div></div>
+      <div class="lg"><i style="background:linear-gradient(160deg,#7fdcee,#3aa6bf)"></i><div><b>Tesla ≈ $251B（约29%）</b><span>2004 年领投 A 轮入局，累计投入约 $7000 万；现持股约 20%（Wikipedia 口径 7.171 亿股）</span></div></div>
+      <div class="lg"><i style="background:#566074"></i><div><b>其他 ≈ $35B（约4%）</b><span>Neuralink、Boring Co 等，多为非上市资产，流动性折扣未计</span></div></div>
+    </div>
+    <div class="fig-cap"><span>图 1 · 财富构成（估算）：SpaceX 段 = 当前身家减去 Tesla 与其他项的反推值，存在误差</span><span>数据截至 2026-08-14/25</span></div>
+  </div>
+
+  <div class="panel rv" style="margin-top:18px">
+    <div id="cmp-rivals">
+      <div class="rival-row me-first"><div class="rival-name">马斯克 Musk</div><div class="rival-track"><div class="rival-fill" data-w="100%" style="background:linear-gradient(90deg,#c97f1e,#ffd27a)"><span>$864B</span></div></div></div>
+      <div class="rival-row"><div class="rival-name">拉里·佩奇 Page</div><div class="rival-track"><div class="rival-fill" data-w="34%" style="background:rgba(255,255,255,.28)"><span>~$295B</span></div></div></div>
+      <div class="rival-row"><div class="rival-name">贝索斯 Bezos</div><div class="rival-track"><div class="rival-fill" data-w="32%" style="background:rgba(255,255,255,.22)"><span>~$280B</span></div></div></div>
+      <div class="rival-row"><div class="rival-name">布林 Brin</div><div class="rival-track"><div class="rival-fill" data-w="32%" style="background:rgba(255,255,255,.16)"><span>~$275B</span></div></div></div>
+    </div>
+    <div class="fig-cap"><span>图 2 · 他与世界第 2–4 名的差距（2026 年 8 月报道口径）：断崖式领先</span><span>单位：十亿美元</span></div>
+  </div>
+</section>
+
+<!-- ==================== 02 身家轨迹 ==================== -->
+<section class="ch wrap" id="s02" data-nav="贰·轨迹">
+  <div class="ch-head rv"><span class="ch-no">02</span><h2>身家二十年：一部火箭曲线，坠落了两次</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">从 2012 年首次登上福布斯榜（约 <strong>$20 亿</strong>），到 2026 年 6 月成为人类历史上首位突破 <strong>$1 万亿</strong>的个人——中间隔着史上两次最大的个人财富崩塌（2022 年 Tesla 回撤、2026 年 SpaceX 解禁抛压）。<strong>悬殊的峰值与深谷同框</strong>，是这份报告后面所有内容的缩略图。</p>
+  <div class="panel rv">
+    <div class="chartbox" id="chart-networth"></div>
+    <div class="fig-cap"><span>图 3 · 净资产轨迹（约值，混合彭博/福布斯/Wikipedia 公开口径；悬停查看关键事件）</span><span>十亿美元 · 年末及关键时点采样</span></div>
+  </div>
+</section>
+<!-- ==================== 03 投资理念 ==================== -->
+<section class="ch wrap" id="s03" data-nav="叁·理念">
+  <div class="ch-head rv"><span class="ch-no">03</span><h2>投资理念：六条原则</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">提炼自三十年访谈、股东信、法院判决书与交易记录。它们互为因果：<strong>先有世界观（P1），才有仓位（P2/P3）、融资术（P4）、进出时机（P5）与规则设计（P6）</strong>。点击卡片展开例证。</p>
+
+  <div class="quote-wall">
+    <div class="quote rv">如果一件事足够重要，即使胜算对你不利，你也应该去做。<small>· 广为流传的公开表述</small></div>
+    <div class="quote rv d1">坦率地说，我们成功的概率只有大约 10%。但如果结果重要，就值得冒险。<small>· 关于 2002 年创立 SpaceX 的多次受访转述</small></div>
+    <div class="quote rv d2">我把从 PayPal 赚到的钱几乎全部投了进去。有那么几个月，我不得不借钱付房租。<small>· 回忆 2008 年前后的广泛引述</small></div>
+  </div>
+
+  <div class="pr-grid">
+    <div class="pr-card open rv">
+      <div class="pr-head"><div class="pr-glyph">壹</div><div><h4>第一性原理定价</h4><div class="essence">价差=共识定价 − 物理下限</div></div><span class="pr-caret">▾</span></div>
+      <div class="pr-body"><div class="pr-inner"><p>判断是否值得投入，先把标的的成本拆回物理常数与原材料，看共识价格离物理下限还有多远——而不是看市场情绪和可比公司。</p>
+        <div class="pr-evi">实践：2002 年火箭发射市价 ≈$6,500 万/次，而推进剂级原材料仅占整机成本约 2%（他反复引用的拆解），由此判定可回收火箭是一门"合法的降维生意"；2004 年电池组市场价 $600/kWh，拆解到大宗商品原料仅约 $80/kWh。两次下注都精准踩在巨大的"物理价差"上。</div></div></div>
+    </div>
+    <div class="pr-card rv d1">
+      <div class="pr-head"><div class="pr-glyph">贰</div><div><h4>把自己押上桌</h4><div class="essence">Skin in the Game 的极端形态</div></div><span class="pr-caret">▾</span></div>
+      <div class="pr-body"><div class="pr-inner"><p>分散化的常规智慧在他这里被彻底拒绝：每家公司最大的单一股东都是他自己，身家约 95% 是自家股票，且大量以无对冲的形式裸露于波动中。</p>
+        <div class="pr-evi">实践：2002 年套现的 $1.76 亿税前所得，随后的分配是 $1 亿 SpaceX + $7,000 万 Tesla + $1,000 万 SolarCity，自身仅留少量现金，2008–09 年靠借款支付生活开销。这是理解"他和你不幸在同一批股票上承受同样波动"的关键事实。</div></div></div>
+    </div>
+    <div class="pr-card rv">
+      <div class="pr-head"><div class="pr-glyph">叁</div><div><h4>集中＋控制</h4><div class="essence">不是重仓股民，而是产权人</div></div><span class="pr-caret">▾</span></div>
+      <div class="pr-body"><div class="pr-inner"><p>同样是集中持仓，他与散户的分野在于坐在司机座上：入主即改组。承担集中风险的同时，拥有改变标的基本面的权力——这是外部股东永远无法复制的前提。</p>
+        <div class="pr-evi">实践：完成 Twitter 收购当晚管理层集体离场；Tesla 任 CEO 兼产品架构师；SpaceX 任 CEO/CTO。对普通投资者的镜像结论：可以学他的集中度判断，不能学他的风险承受结构。</div></div></div>
+    </div>
+    <div class="pr-card rv d1">
+      <div class="pr-head"><div class="pr-glyph">肆</div><div><h4>用使命压低贴现率</h4><div class="essence">融资能力本身是资产</div></div><span class="pr-caret">▾</span></div>
+      <div class="pr-body"><div class="pr-inner"><p>用十年尺度的叙事去融今天的钱，投资人买的从来不是现金流，而是"未来实现概率"的期权。因此他的核心技能不是花钱，而是持续募资：让资本市场为一个尚未兑现的故事不断续费。</p>
+        <div class="pr-evi">实践：Tesla 各轮股权+数百亿美元债券；SpaceX 一路 30 余轮融资直至 IPO；xAI 累计约 $420 亿（2026-01 单轮超募 $200 亿）。SpaceX 估值阶梯从 $120 亿（2015）走到 $1.77 万亿（IPO 定价），每一轮都绑定一个新叙事：猎鹰→载人→星链→星舰→AI。</div></div></div>
+    </div>
+    <div class="pr-card rv">
+      <div class="pr-head"><div class="pr-glyph">伍</div><div><h4>反共识进，反人性退</h4><div class="essence">被嘲笑时买入，需要现金时不留恋</div></div><span class="pr-caret">▾</span></div>
+      <div class="pr-body"><div class="pr-inner"><p>入场选在领域被嘲笑的年代（2002 航天、2004 电动车），加仓选在恐惧顶点（2008 金融危机深处）。但硬币另一面常被忽略：在必须退出的时刻他绝不手软。</p>
+        <div class="pr-evi">实践：2021–22 年累计减持 Tesla 近 $400 亿美元等值（缴纳税费＋筹集 Twitter 收购弹药），时点事后看接近历史高位区。同期史诗级的反面案例：2022 年高溢价+$130 亿债务强行拿下 Twitter，一年内账面估值蒸发三分之二——直到被重新叙事才挽回。</div></div></div>
+    </div>
+    <div class="pr-card rv d1">
+      <div class="pr-head"><div class="pr-glyph">陆</div><div><h4>先写规则再谈钱</h4><div class="essence">控制权结构与激励的工程化设计</div></div><span class="pr-caret">▾</span></div>
+      <div class="pr-body"><div class="pr-inner"><p>双层股权、超级投票权、里程碑对赌——先用结构保证"下注最多的人永远说了算"，再把给自己的报酬写成硬约束的函数。</p>
+        <div class="pr-evi">实践：IPO 后仍握 SpaceX 约 40% 股权（报道称仍掌握多数投票权，一说 82.4% 口径）；Tesla 2018 期权包 = 十年零薪资、12 档业绩门槛，2026-06 全部行权 3.04 亿股（行权价 $23.34，纸面增益约 $1,160 亿）；2025 新版激励高达 4.237 亿股，须达成市值增量等里程碑方可分期解锁。</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 04 编年史 ==================== -->
+<section class="ch wrap" id="s04" data-nav="肆·编年史">
+  <div class="ch-head rv"><span class="ch-no">04</span><h2>投资实践编年史：三十一年，二十站</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">从斯坦福退学到纳斯达克钟声。点击任意节点查看细节——<strong>建议按时间顺序通读一遍</strong>，重点留意三个转折：2002（套现再全投）、2008（最后一美元）、2026（万亿与破发同月发生）。</p>
+  <div class="tl rv" id="timeline">
+
+    <div class="tl-node"><span class="tl-year">1995</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>Zip2 创立：起点不是投资，是退学<span class="tag-p">冒险起手</span></h5><div class="tl-sum">放弃斯坦福博士入学，与弟弟创办城市指南软件公司</div></div>
+      <div class="tl-body"><div class="tl-detail">启动资金来自父亲与信用卡周转；睡办公室、在 YMCA 澡堂洗澡。1999 年 Compaq 以 <b>$3.07 亿</b>收购 Zip2，27 岁的马斯克分得约 <b>$2,200 万</b>——第一桶金的意义不在金额，而在于它验证了一个模式：<b>把确定性的人生路径提前变现成风险敞口</b>。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">1999</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>X.com：第一次"全部身家再投入"<span class="tag-p">集中</span></h5><div class="tl-sum">$2,200 万几乎全额投入网上银行创业</div></div>
+      <div class="tl-body"><div class="tl-detail">把刚到手的钱近乎全部押进一家全新机构——这个动作将在 2002 年重演一次并成为终身模式。次年 X.com 与竞争对手 Confinity 合并，产品定名 <b>PayPal</b>。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2002</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>PayPal 卖出：教科书级落袋<span class="tag-b">退出纪律</span></h5><div class="tl-sum">eBay 以 $15 亿收购；持股 11.7%，税前分得约 $1.758 亿</div></div>
+      <div class="tl-body"><div class="tl-detail">这笔钱是此后一切故事的种子资本。真正值得研究的不是赚了多少，而是<b>处置方式</b>：31 岁、财务自由之后他没有降杠杆退出牌桌，而是立即开始构造人生最大的一笔资产配置。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2002.05</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>$1 亿创立 SpaceX：史上最激进的一笔直投<span class="tag-p">反共识</span></h5><div class="tl-sum">以个人资金成立太空探索公司，自任 CEO/CTO</div></div>
+      <div class="tl-body"><div class="tl-detail">当时民营火箭的失败名单比成功名单长得多，公开市场没有任何可比估值锚。这相当于在私募市场押注一个"共识成功率 ≈10%"的项目——<b>今天它是人类历史上单笔回报最高的原始出资之一</b>（详见第五章战役三）。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2004</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>领投 Tesla A 轮 $635 万，出任董事长<span class="tag-p">控制权</span></h5><div class="tl-sum">A 轮总额 $750 万，他出了绝大部分；此后多轮加注累计约 $7,000 万</div></div>
+      <div class="tl-body"><div class="tl-detail">买入的不只是股权，更是<b>议程设置权</b>：1904 年以来美国首次造车新势力试图活下来。同年他又把 $1,000 万种子给了表兄弟们的光伏安装公司概念——后来叫 SolarCity。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2006</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>SolarCity 种子 $1,000 万：亲缘网络的边界试验<span class="tag-r">关联交易</span></h5><div class="tl-sum">概念发起人＋董事长；2016 年被 Tesla 以 $26 亿反向收购</div></div>
+      <div class="tl-body"><div class="tl-detail">这次并购构成了他生涯最具争议的治理议题之一：股东起诉称利益输送，<b>2022 年特拉华州法院判马斯克胜诉</b>，但这堂课的教训留在所有研究者眼前——当创始人网络覆盖上下游，估值可以为战略服务，未必为股东定价。</div></div>
+    </div>
+
+    <div class="tl-node open"><span class="tl-year">2008</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>至暗时刻：最后一美元打进 Tesla<span class="tag-p">Skin in the game</span></h5><div class="tl-sum">金融危机＋三家濒危公司＋离婚官司；靠借款付房租，圣诞夜融资前夜险些破产</div></div>
+      <div class="tl-body"><div class="tl-detail">Rocket 前三次发射全部爆炸，Tesla 现金流断裂在即。他把<b>所剩的全部资金</b>投入 Tesla 融资轮，并以个人信用借款支付日常开销——数十年后这是他最著名的轶事，但在当年这是一个中年人把资产负债表推到归零点的决策。<b>2008-12-24 平安夜</b>，Tesla 融资在破产前几小时交割关门。"差点死了"不是修辞，是他的原话。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2010</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>Tesla IPO：1956 年福特之后美国车企首例<span class="tag-b">里程碑</span></h5><div class="tl-sum">发行价 $17，募资约 $2.26 亿；持有至今回报约 309×</div></div>
+      <div class="tl-body"><div class="tl-detail">IPO 当天的媒体标题大多怀疑这家公司的存续能力。此后十六年他几乎从未在公开市场卖出过 IPO 与增发获得的基底持仓（2020 后的减持另有用途，见 2021–22 节点）。<b>"拿到一级市场的筹码后不交易"</b>是他与多数创业者投资人最大的行为差异之一。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2014</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>DeepMind 天使退出：安静的胜利<span class="tag-b">小注赢面</span></h5><div class="tl-sum">早期投资的公司被 Google 收购，具体回报未公开</div></div>
+      <div class="tl-body"><div class="tl-detail">金额不大，影响不小：深度接触前沿 AI 强化了他的安全焦虑与人脉网络，<b>直接铺垫了 OpenAI 的创建与十年后的 xAI</b>。他用一次投资换来了一次"世界观升级"，这在会计意义上无法入账。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2015</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>联合创立 OpenAI，承诺捐 $1 亿<span class="tag-r">反面章节</span></h5><div class="tl-sum">非营利AI实验室联合主席；2018 年退出董事会；2024 年起反目诉讼</div></div>
+      <div class="tl-body"><div class="tl-detail">这家他亲手参与孵化、又主动离开的公司，如今是全球估值最高的 AI 公司之一。研究马斯克的资产配置，<b>"他放弃了什么"与他拿到了什么同样重要</b>：他识别了趋势（早于几乎所有人），却在组织控制权的博弈中选择掀桌退出——然后另起炉灶对赌旧伙伴。理念正确性不保证执行路径属于你。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2016</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>Neuralink ＆ Boring Co：自资双子星<span class="tag-p">长期布局</span></h5><div class="tl-sum">脑机接口自掏约 $1 亿起步；挖隧道公司始于一条玩笑推特</div></div>
+      <div class="tl-body"><div class="tl-detail">两家公司延续同一配方：使命宏大、初无商业闭环、以个人资金冷启动等待叙事成熟。Neuralink 于 2025 年融资估值约 <b>$90 亿</b>。注意占位作用：它们今天是财富版图里的小头，却是下一个估值阶梯的候选主角。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2021–22</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>史诗级减持近 $400 亿美元等值 Tesla<span class="tag-b">退出纪律</span></h5><div class="tl-sum">行权缴税＋为收购 Twitter 筹集弹药；事后看接近高位区间</div></div>
+      <div class="tl-body"><div class="tl-detail">市场将其解读为信心信号崩塌，随后 2022 年 Tesla 确实下跌 65% 并造成他<b>史上首例年度 -$2,000 亿身家损失</b>。客观拆解：减持有刚性用途（税款与收购款），但时点上他同样展现了顶级择时能力。<b>重复一遍第五章会出现的结论：他不只会拿住，也知道何时收钱。</b></div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2022.10</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>$440 亿私有化 Twitter：生涯最大单笔"投资"<span class="tag-r">代价昂贵</span></h5><div class="tl-sum">高溢价＋$130 亿银行债务压顶；广告主撤离，估值一度缩水逾三分之二</div></div>
+      <div class="tl-body"><div class="tl-detail">这是六原则的反面教材全集：超高杠杆、买入资产后亲自下场改组、董事会式治理让位于单人意志、以及纯粹的品牌连带风险。<b>唯一救场的是原则肆（叙事融资术）</b>：当平台本身无法创收，把它重新定义为 AI 公司的数据与分发底座。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2023</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>创立 xAI：败局的自救程序启动<span class="tag-b">叙事重构</span></h5><div class="tl-sum">Grok 接入 X；平台从收入包袱变成数据护城河</div></div>
+      <div class="tl-body"><div class="tl-detail">一项资产的价值取决于它被讲进了哪个故事。Twitter 单独估值 vs 并入 xAI 后的隐含价值，两者的差值就是"叙事重构"的直接标价——后来正式换股合并时，X 以 <b>$330 亿股权价值+$120 亿债务</b>入账，较低谷大幅修复。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2025.11</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>得州翻盘："万亿薪酬包"获股东批准<span class="tag-p">规则设计</span></h5><div class="tl-sum">特拉华否决后迁册得州；新版激励 4.237 亿股／12 批里程碑／市值增量目标最高至约 $8.5 万亿</div></div>
+      <div class="tl-body"><div class="tl-detail">回顾这场旷日持久的法律战：特拉华法院 2024 年两次裁定 2018 期权授予程序不当应予撤销（"史上最大薪酬包"判决书原话级别的影响），Tesla 因此<b>整体迁册得州并由股东大会重启表决</b>。对公司治理研究者而言，这是一整章教材；对投资者而言，记住一点：<b>他为自己设计的每一分激励都与市值里程碑挂钩</b>——利益一致性是真的，控制权扩张也是真的。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2026.01</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>xAI E 轮：$200 亿 ＠ $2,300 亿估值<span class="tag-b">融资术</span></h5><div class="tl-sum">超募完成（原目标 $150 亿）；xAI 累计融资约 $420 亿</div></div>
+      <div class="tl-body"><div class="tl-detail">一周之内遭遇 Grok 相关争议风波仍然超募——原则肆（用使命压低贴现率）的另一面显现：<b>叙事的韧性最终体现为资产负债表的韧性</b>。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2026.02</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>SpaceX 吞并 xAI：合并估值 $1.25 万亿<span class="tag-b">史上最大并购</span></h5><div class="tl-sum">1 股 xAI = 0.1433 股 SpaceX；为 IPO 清障</div></div>
+      <div class="tl-body"><div class="tl-detail">以 CNBC 获得的交易文件为准：SpaceX 按 <b>$1 万亿</b>计价、xAI 按 <b>$2,500 亿</b>计价完成股份交换，全球史上最大规模的私人合并就此完成——并在一个月内将他的理论身家推向 $8,000 亿一线（Wikipedia 时间线：2026 年 2 月越过 $800B）。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2026.06</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>SPCX 登陆纳斯达克：人类首位万亿富豪<span class="tag-p">终点=起点</span></h5><div class="tl-sum">发行价 $135 · 募资 $857 亿（史上最大，约为 Aramco 的 3.3 倍）· 首日 +19%</div></div>
+      <div class="tl-body"><div class="tl-detail">6 月 11 日定价当夜其身家报 <b>$9,700 亿</b>；次日 SpaceX 开盘大涨，6 月 12 日账面突破 <b>$1 万亿</b>——人类历史上第一次有人到达这个数字。当时其 SpaceX 持股约 40.5–42%（30 余轮融资稀释后的结果，据公司 6 月文件约 47.6 亿股）。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2026.06</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>行权 2018 全部期权包：纸面增益 ≈$1,160 亿<span class="tag-p">兑现</span></h5><div class="tl-sum">3.0396 亿股 ＠ 行权价 $23.34；6 月 16 日关联交易约 $142 亿美元</div></div>
+      <div class="tl-body"><div class="tl-detail">市值里程碑在泡沫化行情中全部达成后，八年前的对赌一次性结算：行权带来的股份使其 Tesla 持股升至约 <b>20%（约 7.17 亿股）</b>，其中部分即时售出用于缴税。<b>零薪水的代价换来一次性近乎十位数的行权收益</b>——激励结构的复利兑现期往往极长，这一点对旁观者是重要提醒。</div></div>
+    </div>
+
+    <div class="tl-node"><span class="tl-year">2026.07+</span><span class="tl-dot"></span>
+      <div class="tl-btn"><h5>解禁抛压与二次坠落：曲线仍在书写<span class="tag-r">正在发生</span></h5><div class="tl-sum">SPCX 约 3.19 亿股解禁后跌破发行价；身家峰值回落逾 $2,000 亿</div></div>
+      <div class="tl-body"><div class="tl-detail">锁定期份额解禁令 SPCX 数年来首次跌破 $135 发行价（Yahoo Finance 报道成交至 $131–134 区间），市场开始讨论更深回调的可能。他的身家 7 月下旬低见约 <b>$7,250 亿</b>，8 月中旬回升至 <b>≈$8,640 亿</b>。<b>本报告生成当日（2026-08-26），这条曲线仍在实时跳动——第五次火箭发射就会爆炸的规律，对财富曲线同样生效。</b></div></div>
+    </div>
+
+  </div>
+</section>
+<!-- ==================== 05 关键战役 ==================== -->
+<section class="ch wrap" id="s05" data-nav="伍·战役">
+  <div class="ch-head rv"><span class="ch-no">05</span><h2>三场关键战役：数字里的理念</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">理念章节容易写成鸡汤，所以这一章全部用可核验的交易数字说话。三场战役分别对应他的<strong>起点（资金分配）、持有（时间复利）、与终点叙事（估值阶梯）</strong>。</p>
+
+  <div class="battle panel rv">
+    <h3><span class="bno">战役一</span>2002 年那道分配题：$1.76 亿怎么花？</h3>
+    <p class="note" style="margin-bottom:8px">卖掉 PayPal 税前所得约 $1.758 亿之后的真实去向。没有对冲、没有组合、没有顾问费。</p>
+    <div class="flow">
+      <div class="fl-src"><div class="fs-v">$175.8M</div><div class="fs-k">PayPal 套现<br>eBay · 2002-10（税前）</div></div>
+      <div class="fl-arrows">
+        <div class="fl-arrow"><span class="fl-line"></span><span class="fl-amt">$1.0 亿</span><span class="fl-line" style="transform:scaleX(-1)"></span></div>
+        <div class="fl-arrow"><span class="fl-line"></span><span class="fl-amt">$7,000 万</span><span class="fl-line" style="transform:scaleX(-1)"></span></div>
+        <div class="fl-arrow"><span class="fl-line"></span><span class="fl-amt">$1,000 万</span><span class="fl-line" style="transform:scaleX(-1)"></span></div>
+      </div>
+      <div class="fl-dst">
+        <div class="fl-co"><b>SpaceX 创立资金</b><span>57%</span></div>
+        <div class="fl-co"><b>Tesla 各轮累计投入</b><span>40%</span></div>
+        <div class="fl-co"><b>SolarCity 种子轮</b><span>6%</span></div>
+      </div>
+    </div>
+    <div class="verdict-strip">
+      <div class="vcard"><div class="vv">≈$11.8 亿</div><div class="vk">对照组：若当年存入标普500指数至2026-08<br>（价格指数约 6.7×）</div></div>
+      <div class="vcard gold"><div class="vv">≈$8,640 亿</div><div class="vk">实际路径：当前身家规模<br>（含后续期权等，非严格归因）</div></div>
+      <div class="vcard red"><div class="vv">~700× 差距</div><div class="vk">这是一道思想实验：<br>差距大部分来自集中＋控制＋时间</div></div>
+    </div>
+    <div class="fig-cap"><span>图 4 · 分配示意（金额为广泛报道的公开数字；对照计算为价格指数近似、未含股息）</span></div>
+  </div>
+
+  <div class="battle panel rv">
+    <h3><span class="bno">战役二</span>拿着不动十六年：Tesla IPO 持有 vs 大盘</h3>
+    <p class="note" style="margin-bottom:14px">2010-06-29 以发行价 $17 买入的每 1 美元（按两次拆股调整后），对比同期标普500 价格表现。纵轴为对数刻度——直线上扬意味着年化复利恒定。中间三次深度回撤被压缩得越平，说明持有人越痛苦：最近一次（2025 年底至今）正在进行中。</p>
+    <div class="chartbox" id="chart-tsla"></div>
+    <div class="verdict-strip">
+      <div class="vcard gold"><div class="vv">309×</div><div class="vk">TSLA IPO→2026-08-25<br>年化约 +41.7%（不含税）</div></div>
+      <div class="vcard"><div class="vv">≈6.7×</div><div class="vk">同期标普500 价格倍数<br>年化约 +12.5%（不含股息）</div></div>
+      <div class="vcard red"><div class="vv">-75%</div><div class="vk">TSLA 历史最大回撤<br>2021-11 峰值 → 2023-01 谷底</div></div>
+    </div>
+    <div class="fig-cap"><span>图 5 · TSLA 与标普500 归一化走势（对数轴；标普为约值口径，未含股息）</span><span>$350.25 · 2026-08-25 收盘</span></div>
+  </div>
+
+  <div class="battle panel rv">
+    <h3><span class="bno">战役三</span>$1 亿种子的二十年：SpaceX 估值阶梯 ＆ AI 豪赌链</h3>
+    <p class="note" style="margin-bottom:14px">一级市场每一轮融资都在为叙事重新定价。注意阶梯的形态：<strong>前面十八年共走了六层，最后十八个月冲顶</strong>——星舰成熟、Starlink 现金流爆发、xAI 并入、IPO 预期共振。</p>
+    <div class="chartbox" id="chart-spacex"></div>
+    <div class="fig-cap"><span>图 6 · SpaceX 公开报道估值/融资后估值轨迹（十亿美元，对数轴，悬停看节点；IPO 后为定价对应市值）</span></div>
+    <div class="verdict-strip">
+      <div class="vcard gold"><div class="vv">$0.1B → ~$578B</div><div class="vk">2002 年那笔种子对应的今日权益体量<br>（历经 30 余轮稀释后的持股价值）</div></div>
+      <div class="vcard red"><div class="vv">破发进行时</div><div class="vk">上市两个月跌破 $135 发行价<br>解禁抛压仍在消化</div></div>
+      <div class="vcard"><div class="vv">xAI: $24B→$250B</div><div class="vk">成立两年半内的估值跃迁<br>（并入 SpaceX 计价口径）</div></div>
+    </div>
+    <div class="chartbox" id="chart-xai" style="margin-top:16px"></div>
+    <div class="fig-cap"><span>图 7 · xAI 估值小史：2024 中 E 轮前 → 2024 末 → 2025 中（谈判口径）→ 2026-01 E 轮 → 2026-02 并入计价（十亿美元）</span></div>
+  </div>
+</section>
+
+<!-- ==================== 06 风险与争议 ==================== -->
+<section class="ch wrap" id="s06" data-nav="陆·风险">
+  <div class="ch-head rv"><span class="ch-no">06</span><h2>风险、争议与幸存者偏差</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">任何只讲"封神"的马斯克研究都是营销材料。这一章收录<strong>他自己也支付过学费的部分</strong>——对学习者而言它们比成功案例更值钱。</p>
+  <div class="grid g3">
+    <div class="card risk rv"><h4>极端集中 = 双向放大器</h4><p>史上最大的两次个人财富损失都发生在他身上：2022 年随 Tesla 回撤蒸发约 <b>$2,000 亿</b>；2026 年 6–7 月随 SpaceX 解禁回撤又抹去逾 <b>$2,000 亿</b>。上行有多壮观，下行就有多真实。</p></div>
+    <div class="card risk rv d1"><h4>他扛得住的回撤，你未必扛得住</h4><p>Tesla 自上市以来经历过数次 <b>-50% ～ -75%</b> 的回撤。他能拿住的前提是：公司控制权在手、无杠杆强平线、还有董事会创造的期权补给。普通投资者在同一根 K 线里会被迫交出筹码。</p></div>
+    <div class="card risk rv"><h4>单人风险 ＆ 推文市场冲击</h4><p>"一句话移动股价"曾被 SEC 开出实价：2018 年"私有化资金已到位"推文导致 <b>$2,000 万罚款并卸任董事长</b>。同时执掌五家巨头的钥匙人风险，以及政治角色带来的品牌反噬（已见诸 Tesla 销量报道），都是计入价格的变量。</p></div>
+    <div class="card risk rv"><h4>豪赌并非次次都赢</h4><p>$440 亿的 Twitter 曾被称为最贵的社交媒体并购错误；他亲手参与孵化又离开的 OpenAI 成了全球最贵 AI 公司之一（2026-07 口径估值超 <b>$8,500 亿</b>）。识别对了趋势 ≠ 拿住了属于趋势的钱。</p></div>
+    <div class="card risk rv d1"><h4>治理边界的长期诉讼</h4><p>特拉华法院两度否决 2018 期权授予；SolarCity 关联交易诉讼缠身多年（2022 判其胜诉）；SpaceX/xAI/Tesla/X 四者之间的关联交易让外部投资者难以穿透定价。<b>裁判所换了地方，但问题本身没有消失。</b></p></div>
+    <div class="card risk rv"><h4>杠杆的一票否决权</h4><p>Twitter 收购背上 $130 亿银行债，直接决定了此后两年被迫高调经营注意力经济。他的资产负债表能承受 -75% 回撤靠的是零杠杆——而他对外部投资的最大警告恰恰是：任何让它可能归零的东西都不值得。</p></div>
+  </div>
+
+  <div class="callout rv">
+    <p>与他同年代出发的民营火箭同行：<b>Kistler Aerospace</b> 破产重组、<b>Rotary Rocket</b> 倒闭、<b>Beal Aerospace</b> 2000 年主动解散。教科书记录的是活下来的那一个。在把这套打法搬运到自己账户之前，先问三次：<b>如果失败的版本存在，我还愿意读这份研究吗？</b>——本报告展示的是一个极端案例的收益面，其风险面的消化者只有他自己。</p>
+  </div>
+</section>
+
+<!-- ==================== 07 启示 ==================== -->
+<section class="ch wrap" id="s07" data-nav="柒·启示">
+  <div class="ch-head rv"><span class="ch-no">07</span><h2>给普通投资者的七条迁移清单</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv">明确立场：<strong>不要模仿他的仓位，不要幻想复制他的回报</strong>。以下是真正可以带走的思考工具，按可操作性排序。</p>
+  <div class="panel rv">
+    <div class="lesson"><div class="ln">01</div><div><h5>学他的问题筛选，不学他的仓位</h5><p>"这个标的的成本还能向物理/经济下限压多少？"是第一性原理里唯一人人可用的问题。它筛掉的是单纯的故事溢价。</p></div></div>
+    <div class="lesson"><div class="ln">02</div><div><h5>提高单标的研究密度，而不是机械分散</h5><p>他反对的从来不是谨慎，而是"不知道自己在做什么"式的摊薄。对你持有的每家公司，你能回答"谁在给它发工资"吗？答不出就减少持仓数量。</p></div></div>
+    <div class="lesson"><div class="ln">03</div><div><h5>现金垫要比他厚得多</h5><p>他在 2008 靠借款付房租都熬过来了，因为崩盘的是公司而不是房贷月供的结构性挤压。你没有期权补给和董事会兜底——你的安全边际必须来自账上。</p></div></div>
+    <div class="lesson"><div class="ln">04</div><div><h5>给"叙事型资产"单独设一个小仓上限</h5><p>宏大叙事类资产本质上是他定义的期权。既然是期权，就该用期权的纪律：亏光也不心疼的金额才是合理本金。</p></div></div>
+    <div class="lesson"><div class="ln">05</div><div><h5>警惕魅力溢价</h5><p>连史上最强创始人本人都会为一个平台付出 $440 亿溢价。当你买入的理由是"创始人是谁"，请自动给估值打一个人格折扣。</p></div></div>
+    <div class="lesson"><div class="ln">06</div><div><h5>关联网络里的资产要打折读</h5><p>当四个主体之间互相输送资源（xAI 并入 SpaceX、SolarCity 并回 Tesla），外部股东看到的"利好"可能是内部资本的腾挪路径。穿透不了就不参与。</p></div></div>
+    <div class="lesson"><div class="ln">07</div><div><h5>长期主义需要年度证伪机制</h5><p>他敢于把资源从一个孩子转移到另一个（OpenAI→xAI、SolarCity→Tesla）。"时间是朋友"的前提是当初的逻辑未被证伪——每年给自己一次彻底复盘的机会。</p></div></div>
+  </div>
+</section>
+
+<!-- ==================== 来源与方法 ==================== -->
+<section class="ch wrap" id="src" data-nav="附·来源">
+  <div class="ch-head rv"><span class="ch-no">§</span><h2>数据来源与方法说明</h2></div>
+  <div class="ch-rule"></div>
+  <p class="lede rv"><strong>方法：</strong>所有图表由页面内嵌脚本即时绘制，无截图、无外链依赖；关键数字均标注来源与时点。不同数据商在基本/稀释股本、投票权/经济权益上的口径差异已在正文注明。市值与身家随行情实时变化，请以各官方页面当日数据为准。</p>
+  <ul class="src-list">
+    <li>Bloomberg Billionaires Index — Elon Musk（即时口径 ≈$851B）：bloomberg.com/billionaires/profiles/elon-r-musk/</li>
+    <li>Wikipedia — Wealth of Elon Musk（$864B @2026-08-14 及历史时间点）：en.wikipedia.org/wiki/Wealth_of_Elon_Musk</li>
+    <li>Reuters 2026-06-11 — SpaceX prices record $75 billion IPO at $135 a share</li>
+    <li>CNBC 2026-06-11/12 — SPCX 首日 +19%、市值破 $2 万亿口径报道</li>
+    <li>Forbes 2026-06-15 — SpaceX Says Historic IPO Raised More Than $85 Billion</li>
+    <li>CNBC 2026-02-03 — xAI/SpaceX 合并：$1.25 万亿、换股比 0.1433、交易文件细节</li>
+    <li>FT / BBC 2026-02 — SpaceX buys xAI in $1.25tn deal（合并股价 $527 报道）</li>
+    <li>x.ai News — xAI Raises $20B Series E @$230B 估值（2026-01）</li>
+    <li>Fortune 2025-12-13 — SpaceX $800B insider sale ＆ IPO 计划确认</li>
+    <li>Electrek 2026-06-17 — 行权 2018 全部期权包（3.0396 亿股＠$23.34，增益≈$1,160 亿）</li>
+    <li>Harvard Law CG Forum 2025-09-29 — 新旧薪酬包结构比较（offset $334.09 等）</li>
+    <li>Yahoo Finance / Seeking Alpha — TSLA 2025-12-31 收盘 $449.72、2026-08-25 收盘 $350.25；SPCX 解禁破发报道（3.19 亿股解锁跌至 $131–134）</li>
+    <li>Tesla/SolarCity 关联交易诉讼、特拉华薪酬案判决、SEC 2018 罚款决定 —— 综合自 Reuters/CNBC/法院文书公开报道</li>
+  </ul>
+  <p class="note rv" style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px">
+  免责声明：本页面为个人研究与信息可视化练习，全部内容不构成任何投资建议。文中多数金额为四舍五入约值或媒体口径转述，且市场数据时效衰减极快（生成时点：2026-08-26）。涉及未上市公司估值均为报道口径而非成交确认。投资决策请咨询持牌专业人士。</p>
+</section>
+
+<footer class="end">
+  <div class="fin">· 全 文 完 ·</div>
+  《赌上一切的资本》 · 马斯克投资理念与实践研究报告<br>
+  单文件交互式可视化 · 无外部依赖 · 可双击打开亦可打印 · 生成于 2026-08-26
+</footer>
+</div><!-- /page -->
+<script>
+/* ============================================================
+   《赌上一切的资本》交互与图表渲染 · 全部原生实现
+============================================================ */
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+function E(tag, attrs, parent){
+  const n = document.createElementNS(NS, tag);
+  for(const k in attrs) n.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(n);
+  return n;
+}
+
+/* ---------- 星空粒子 ---------- */
+(function(){
+  const cv = document.getElementById('stars');
+  const cx = cv.getContext('2d');
+  let W, H, stars = [];
+  function reset(){
+    W = cv.width = innerWidth * devicePixelRatio;
+    H = cv.height = innerHeight * devicePixelRatio;
+    cv.style.width = innerWidth+'px'; cv.style.height = innerHeight+'px';
+    stars = Array.from({length: Math.min(210, innerWidth/6)}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      r: (Math.random()*1.3+.4)*devicePixelRatio,
+      vy: (Math.random()*.06+.02)*devicePixelRatio,
+      a: Math.random()*.5+.15,
+      tw: Math.random()*Math.PI*2,
+      warm: Math.random()<.22
+    }));
+  }
+  reset(); addEventListener('resize', reset);
+  function frame(){
+    cx.clearRect(0,0,W,H);
+    for(const s of stars){
+      s.y += s.vy; if(s.y > H){ s.y = -4; s.x = Math.random()*W; }
+      s.tw += .012;
+      const al = s.a * (.62 + .38*Math.sin(s.tw));
+      cx.beginPath();
+      cx.arc(s.x, s.y, s.r, 0, 7);
+      cx.fillStyle = s.warm ? 'rgba(255,203,120,'+al+')' : 'rgba(215,225,255,'+al+')';
+      cx.fill();
+    }
+    if(!RM && !document.hidden) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- 进度条 ---------- */
+addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  document.getElementById('progress').style.width =
+    (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+}, {passive:true});
+
+/* ---------- 右侧章节导航 ---------- */
+(function(){
+  const secs = [...document.querySelectorAll('[data-nav]')];
+  const nav = document.getElementById('dotnav');
+  const links = secs.map(s=>{
+    const a = document.createElement('a');
+    a.href = '#'+s.id;
+    a.innerHTML = '<span class="t">'+s.dataset.nav+'</span><span class="d"></span>';
+    nav.appendChild(a); return a;
+  });
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.classList.remove('on'));
+        links[secs.indexOf(e.target)].classList.add('on');
+      }
+    });
+  }, {rootMargin:'-42% 0px -52% 0px'});
+  secs.forEach(s=>io.observe(s));
+})();
+
+/* ---------- 滚动显现（含截图兜底）---------- */
+(function(){
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target);} });
+  }, {threshold:.12, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+  setTimeout(()=>document.querySelectorAll('.rv:not(.on)').forEach(e=>e.classList.add('on')), 2400);
+})();
+
+/* ---------- 数字滚动 ---------- */
+(function(){
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const target = +el.dataset.count;
+    const prefix = el.textContent.trim().startsWith('$') ? '$' : '';
+    if(RM){ el.textContent = prefix + target; return; }
+    const t0 = performance.now(), dur = 1500;
+    function tick(now){
+      const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
+      el.textContent = prefix + Math.round(target*e);
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    setTimeout(()=>{ el.textContent = prefix + target; }, 2700);
+  });
+})();
+
+/* ---------- 竞对条形动画 ---------- */
+(function(){
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting) return;
+      io.unobserve(e.target);
+      setTimeout(()=>{ e.target.style.width = e.target.dataset.w; }, 260);
+    });
+  }, {threshold:.4});
+  document.querySelectorAll('.rival-fill').forEach(f=>io.observe(f));
+})();
+
+/* ---------- 提示浮层 ---------- */
+const tipEl = document.getElementById('tip');
+tipEl.style.position = 'fixed';
+function bindTip(el, html){
+  el.addEventListener('mouseenter', ()=>{ tipEl.innerHTML = html; tipEl.style.opacity = 1; });
+  el.addEventListener('mousemove', ev=>{
+    const pad = 16, tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+    let x = ev.clientX + pad, y = ev.clientY + pad;
+    if(x + tw > innerWidth - 10) x = ev.clientX - tw - pad;
+    if(y + th > innerHeight - 10) y = ev.clientY - th - pad;
+    tipEl.style.left = x+'px'; tipEl.style.top = y+'px';
+  });
+  el.addEventListener('mouseleave', ()=>{ tipEl.style.opacity = 0; });
+}
+document.querySelectorAll('.seg[data-tip]').forEach(s=>bindTip(s, s.dataset.tip));
+
+/* ---------- 时间线 ＆ 原则卡交互 ---------- */
+document.getElementById('timeline').addEventListener('click', ev=>{
+  const node = ev.target.closest('.tl-node'); if(!node) return;
+  const wasOpen = node.classList.contains('open');
+  document.querySelectorAll('.tl-node.open').forEach(n=>n.classList.remove('open'));
+  if(!wasOpen) node.classList.add('open');
+});
+document.querySelectorAll('.pr-head').forEach(h=>{
+  h.addEventListener('click', ()=>h.parentElement.classList.toggle('open'));
+});
+
+/* ============================================================
+   图三 · 净资产轨迹（面积图）
+============================================================ */
+(function(){
+  const pts = [
+    [2012.2, 2,     '2012-03 首次登上福布斯榜 · 约$20亿'],
+    [2013.9, 6.7,  null],
+    [2014.9, 8.3,  null],
+    [2015.9, 12,   null],
+    [2016.9, 10.7, null],
+    [2017.9, 19.9, '2017 年前后跃居全球富豪前列'],
+    [2018.9, 19.6, null],
+    [2019.9, 23.6, null],
+    [2020.2, 27,   '2020 年初 · 疫情前'],
+    [2020.95,167,  '2020 年末 · Tesla 入选标普500指数'],
+    [2021.05,285,  '2021-01-07 · 身家首超贝索斯登顶世界首富'],
+    [2021.85,320,  '2021-11 · Tesla 市值峰值区间，全球首位破$3000亿'],
+    [2022.98,140,  '2022 年末 · Tesla 单年下跌65%，个人蒸发约$2000亿（当时历史纪录）'],
+    [2023.98,230,  '2023 年末 · 强劲反弹'],
+    [2024.93,430,  '2024-12-11 · 人类史上首位突破$4000亿'],
+    [2025.75,500,  '2025-10 · 人类史上首位突破$5000亿'],
+    [2025.99,700,  '2025-12 · 月内从$6000亿跳升至$7000亿'],
+    [2026.08,800,  '2026-02 · xAI 并入 SpaceX，合并估值$1.25万亿'],
+    [2026.44,970,  '2026-06-11 · SpaceX IPO 定价当夜（$135/股）'],
+    [2026.47,1050, '2026-06-12 · 突破$1万亿 —— 人类历史上首位万亿美元富豪'],
+    [2026.56,725,  '2026-07 下旬 · SPCX 解禁抛压，跌回约$7250亿'],
+    [2026.63,864,  '2026-08-14 · 彭博/福布斯口径（本报告数据时点）']
+  ];
+  const W=1040, Hh=540, ML=88, MR=34, MT=36, MB=52;
+  const X0=2011.9, X1=2027.0, YMAX=1150;
+  const sx=v=>ML+(v-X0)/(X1-X0)*(W-ML-MR);
+  const sy=v=>MT+(1-v/YMAX)*(Hh-MT-MB);
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+Hh});
+  for(let g=0; g<=YMAX; g+=250){
+    E('line',{x1:ML,x2:W-MR,y1:sy(g),y2:sy(g),'class':'grid-l'},svg);
+    const t=E('text',{x:ML-12,y:sy(g)+4,'text-anchor':'end','class':'axis-t'},svg);
+    t.textContent = g===0 ? '$0' : '$'+g+'B';
+  }
+  for(let yr=2012; yr<=2026; yr+=2){
+    const t=E('text',{x:sx(yr+.5),y:Hh-MB+26,'text-anchor':'middle','class':'axis-t'},svg);
+    t.textContent=yr;
+  }
+  const defs=E('defs',{},svg);
+  const gr=E('linearGradient',{id:'gNW',x1:0,y1:0,x2:0,y2:1},defs);
+  E('stop',{offset:'0%','stop-color':'rgba(240,168,60,.42)'},gr);
+  E('stop',{offset:'90%','stop-color':'rgba(240,168,60,.02)'},gr);
+  let dLine='';
+  pts.forEach(p=>{ dLine += (dLine?'L':'M')+sx(p[0])+','+sy(p[1]); });
+  const dArea = dLine + 'L'+sx(pts[pts.length-1][0])+','+sy(0)+'Z';
+  E('path',{d:dArea,fill:'url(#gNW)'},svg);
+  E('path',{d:dLine,fill:'none',stroke:'#f0a83c','stroke-width':2.6,'stroke-linejoin':'round'},svg);
+  const pk=sx(2026.47), py=sy(1050);
+  E('circle',{cx:pk,cy:py,r:21,fill:'none',stroke:'rgba(255,210,122,.16)','stroke-width':2},svg);
+  E('circle',{cx:pk,cy:py,r:13,fill:'none',stroke:'rgba(255,210,122,.42)','stroke-width':2},svg);
+  E('circle',{cx:pk,cy:py,r:6,fill:'#ffd27a'},svg);
+  const pkT=E('text',{x:pk-16,y:py-34,'text-anchor':'end','font-size':17,fill:'#ffd27a','font-weight':700},svg);
+  pkT.textContent='$1万亿 · 史上首位（6-12）';
+  pts.forEach(p=>{
+    if(!p[2]) return;
+    const c=E('circle',{cx:sx(p[0]),cy:sy(p[1]),r:4.4,fill:'#0a0f1e',stroke:'#f0a83c','stroke-width':2,cursor:'pointer'},svg);
+    bindTip(c,'<b>$'+p[1]+'B</b><br>'+p[2]);
+  });
+  function tag(x,y,txt,anchor,color){
+    const t=E('text',{x:sx(x),y:sy(y)-14,'text-anchor':anchor||'start',
+      'font-size':12.5,fill:color||'rgba(233,228,216,.75)','letter-spacing':'.05em'},svg);
+    t.textContent=txt;
+  }
+  tag(2021.05,285,'↑ 首超贝索斯','end');
+  tag(2022.98,140,'↓ -$2000亿 · 当年史纪','start','rgba(255,138,117,.85)');
+  tag(2024.93,430,'↑ 首$400B','end');
+  tag(2026.56,725,'↓ 解禁回撤','end','rgba(255,138,117,.85)');
+  document.getElementById('chart-networth').appendChild(svg);
+})();
+
+/* ============================================================
+   图五 · TSLA vs 标普500（对数线）
+============================================================ */
+(function(){
+  const X=[
+    ['2010-06 发行',1,    '以发行价买入$1（发行价$17，经两次拆股调整）'],
+    ['2010末',     1.58,  null],
+    ['2011末',     1.70,  null],
+    ['2012末',     1.99,  null],
+    ['2013末',     8.85,  '2013 · Model S 问世后的暴涨之年'],
+    ['2014末',     13.09, null],
+    ['2015末',     14.12, null],
+    ['2016末',     12.57, '2016 · Autopilot事故调查＋SolarCity并购争议'],
+    ['2017末',     18.87, null],
+    ['2018末',     19.58, 'Model 3「产能地狱」之年'],
+    ['2019末',     24.61, null],
+    ['2020末',     207.5, '入选标普500·年内+700%'],
+    ['2021-11峰',  366,   '2021-11-04 高点（调整后$414.50）：IPO资金倍数≈366×'],
+    ['2021末',     103.6, null],
+    ['2023-01谷',  89.8,  '2023-01 低点$101.81：自峰值回撤-75%'],
+    ['2023末',     219.2, null],
+    ['2024末',     356.3, null],
+    ['2025末',     396.8, '2025-12-31收盘$449.72（12-16收盘新高$489.88）'],
+    ['2026-08',    309,   '2026-08-25 收盘$350.25 · 累计约309×']
+  ];
+  const SX=[2010.47,2010.99,2011.99,2012.99,2013.99,2014.99,2015.99,2016.99,
+            2017.99,2018.99,2019.99,2020.99,2021.85,2021.99,2023.05,2023.99,
+            2024.99,2025.99,2026.64];
+  const SPM=[1,1.22,1.22,1.38,1.79,2.00,1.98,2.17,2.59,2.43,3.14,3.64,4.62,3.73,4.63,5.71,6.67,6.72];
+  const SPX=[2010.47,2010.99,2011.99,2012.99,2013.99,2014.99,2015.99,2016.99,
+             2017.99,2018.99,2019.99,2020.99,2021.99,2022.99,2023.99,2024.99,2025.99,2026.64];
+  const W=1040, Hh=520, ML=76, MR=110, MT=36, MB=50;
+  const X0=2010.3, X1=2026.9;
+  const lo=Math.log10(.85), hi=Math.log10(500);
+  const sx=v=>ML+(v-X0)/(X1-X0)*(W-ML-MR);
+  const sy=v=>MT+(1-(Math.log10(v)-lo)/(hi-lo))*(Hh-MT-MB);
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+Hh});
+  [1,2,5,10,20,50,100,200,400].forEach(gv=>{
+    E('line',{x1:ML,x2:W-MR,y1:sy(gv),y2:sy(gv),'class':'grid-l'},svg);
+    const t=E('text',{x:ML-10,y:sy(gv)+4,'text-anchor':'end','class':'axis-t'},svg);
+    t.textContent='×'+gv;
+  });
+  for(let yr=2010; yr<=2026; yr+=2){
+    const t=E('text',{x:sx(yr+.5),y:Hh-MB+24,'text-anchor':'middle','class':'axis-t'},svg);
+    t.textContent="'"+String(yr).slice(2);
+  }
+  /* 标普线 */
+  let dS='';
+  SPX.forEach((x,i)=>{ dS += (i?'L':'M')+sx(x)+','+sy(SPM[i]); });
+  E('path',{d:dS,fill:'none',stroke:'rgba(90,208,230,.85)','stroke-width':2,'stroke-dasharray':'7 5'},svg);
+  /* 特斯拉线 */
+  let dT='';
+  X.forEach((p,i)=>{ dT += (i?'L':'M')+sx(SX[i])+','+sy(p[1]); });
+  E('path',{dT:dT,fill:'none'},svg);
+  E('path',{d:dT,fill:'none',stroke:'#f0a83c','stroke-width':3,'stroke-linejoin':'round'},svg);
+  /* 终点标记 */
+  E('circle',{cx:sx(2026.64),cy:sy(309),r:6,fill:'#ffd27a'},svg);
+  const le=E('text',{x:sx(2026.64)+12,y:sy(309)+5,'font-size':22,fill:'#ffd27a','font-weight':700,'font-family':'var(--num)'},svg);
+  le.textContent='×309';
+  const ls=E('text',{x:sx(2026.64)+12,y:sy(6.72)+11,'font-size':15,fill:'rgba(90,208,230,.9)','font-weight':600,'font-family':'var(--num)'},svg);
+  ls.textContent='≈×6.7';
+  /* 注释点 */
+  [[12,'rgba(121,201,142,.9)','峰值 ×366'],[14,'rgba(255,107,87,.9)','-75% 回撤']].forEach(m=>{
+    const i=m[0];
+    E('circle',{cx:sx(SX[i]),cy:sy(X[i][1]),r:5,fill:'#0a0f1e',stroke:m[1],'stroke-width':2,cursor:'pointer'},svg);
+    const t=E('text',{x:sx(SX[i])-10,y:sy(X[i][1])-14,'text-anchor':'end','font-size':12.5,fill:m[1]},svg);
+    t.textContent=m[2];
+    bindTip(E('circle',{cx:sx(SX[i]),cy:sy(X[i][1]),r:14,fill:'transparent',cursor:'pointer'},svg),
+            '<b>TSLA ×'+X[i][1]+'</b><br>'+X[i][2]);
+  });
+  X.forEach((p,i)=>{
+    bindTip(E('circle',{cx:sx(SX[i]),cy:sy(p[1]),r:12,fill:'transparent',cursor:'pointer'},svg),
+            '<b>'+p[0]+' · ×'+p[1]+'</b><br>'+(p[2]||'拆股调整后持有倍数'));
+  });
+  SPX.forEach((x,i)=>{
+    bindTip(E('circle',{cx:sx(x),cy:sy(SPM[i]),r:9,fill:'transparent',cursor:'pointer'},svg),
+            '<b>标普500 '+SX[SPX.indexOf(x)]+'</b><br>累计价格倍数 ≈×'+SPM[i]+'<br><span style="opacity:.65">近似未含股息</span>');
+  });
+  document.getElementById('chart-tsla').appendChild(svg);
+})();
+
+/* ============================================================
+   图六 · SpaceX 估值阶梯（对数柱）
+============================================================ */
+(function(){
+  const D=[
+    ['2015',   120,  'Google/Fidelity 领投轮 ≈$120亿'],
+    ['2017',   210,  '估值 ≈$210亿'],
+    ['2019',   330,  'Starlink 首批商业发射定价'],
+    ['2020',   460,  '年内两轮共逾$60亿美元融资'],
+    ['2021',  1000,  '2021-10 Tender：跻身全球最高估值私企之列'],
+    ['2022',  1270,  '估值 ≈$1270亿'],
+    ['2023',  1800,  '年末 Tender ≈$1800亿'],
+    ['24-06', 2100,  'Tender $2100亿（股价$112）'],
+    ['24-12', 3500,  'Tender $3500亿（股价$135）'],
+    ['25-07', 4000,  'Tender $4000亿（24:1拆股后≈$185/股）'],
+    ['25-12', 8000,  'Insider Sale · 为IPO定调 ≈$8000亿'],
+    ['26-02',10000,  '吞并xAI：按$1万亿计价（合并口径$1.25万亿）'],
+    ['IPO·6月',17700,'2026-06-11 发行价$135 · 募资$750亿 · 市值≈$1.77万亿']
+  ];
+  const W=1060, Hh=470, ML=56, MR=20, MT=54, MB=86;
+  const floor=50, top=22000;
+  const fy=v=>(Math.log10(v/floor))/(Math.log10(top/floor));
+  const iw=(W-ML-MR)/D.length, bw=iw*.56;
+  const baseY=Hh-MB;
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+Hh});
+  const defs=E('defs',{},svg);
+  const gr=E('linearGradient',{id:'gBar',x1:0,y1:0,x2:0,y2:1},defs);
+  E('stop',{offset:'0%','stop-color':'#ffd27a'},gr);
+  E('stop',{offset:'100%','stop-color':'#c97f1e'},gr);
+  E('line',{x1:ML,x2:W-MR,y1:baseY,y2:baseY,stroke:'rgba(255,255,255,.22)','stroke-width':1.5},svg);
+  D.forEach((d,i)=>{
+    const h=Math.max(4,fy(d[1])*(baseY-MT));
+    const x=ML+i*iw+(iw-bw)/2, y=baseY-h;
+    const last=i===D.length-1;
+    E('rect',{x:x,y:y,width:bw,height:h,rx:6,
+      fill:last?'url(#gBar)':`rgba(240,168,60,${.14+i*.055})`,
+      stroke:last?'#ffd27a':'rgba(240,168,60,'+(.25+i*.03)+')','stroke-width':last?2:1,
+      filter:last?'drop-shadow(0 0 14px rgba(255,210,122,.45))':'none',
+      cursor:'pointer'},svg);
+    const vt=E('text',{x:x+bw/2,y:y-10,'text-anchor':'middle',
+      'font-size':last?16:13,'font-family':'var(--num)',
+      'font-weight':last?700:600,fill:last?'#ffd27a':'#c9c4b4'},svg);
+    vt.textContent=d[1]>=10000?'$'+(d[1]/10000)+'T':'$'+d[1]+'B';
+    const xt=E('text',{x:x+bw/2,y:baseY+16,'text-anchor':'end','transform':'rotate(-34 '+(x+bw/2)+' '+(baseY+16)+')',
+      'font-size':11.5,fill:last?'#ffd27a':'rgba(169,167,150,.85)','letter-spacing':'.04em'},svg);
+    xt.textContent=d[0];
+    bindTip(E('rect',{x:x-4,y:y-8,width:bw+8,height:h+16,fill:'transparent',cursor:'pointer'},svg),
+            '<b>'+d[0]+'</b> · <b>$'+d[1]+'B</b><br>'+d[2]);
+  });
+  const note=E('text',{x:ML,y:MT-24,'font-size':12,fill:'rgba(107,110,120,.9)','letter-spacing':'.08em'},svg);
+  note.textContent='纵轴对数刻度 · 单位：十亿美元 · 2026-02 与 IPO 为不同计价口径';
+  document.getElementById('chart-spacex').appendChild(svg);
+})();
+
+/* ============================================================
+   图七 · xAI 估值小史（线性小柱）
+============================================================ */
+(function(){
+  const D=[
+    ['24-05', 240, '首轮：$6B融资后估值$240亿'],
+    ['24-11', 500, 'C轮区间：估值≈$500亿'],
+    ['25-07',1500, '谈判与SPV结构争议中的报道口径（约值）'],
+    ['26-01',2300, 'E轮超募$20B ＠ $2300亿估值'],
+    ['26-02',2500, '并入SpaceX时的计价：$2500亿']
+  ];
+  const W=680, Hh=300, ML=26, MR=20, MT=52, MB=52;
+  const iw=(W-ML-MR)/D.length, bw=iw*.5, baseY=Hh-MB;
+  const svg=E('svg',{viewBox:'0 0 '+W+' '+Hh});
+  E('line',{x1:ML,x2:W-MR,y1:baseY,y2:baseY,stroke:'rgba(255,255,255,.2)'},svg);
+  D.forEach((d,i)=>{
+    const last=i===D.length-1;
+    const h=Math.max(6,d[1]/2500*(baseY-MT));
+    const x=ML+i*iw+(iw-bw)/2, y=baseY-h;
+    E('rect',{x:x,y:y,width:bw,height:h,rx:5,
+      fill:last?'url(#gBar2)':'rgba(90,208,230,'+(.14+i*.07)+')',
+      stroke:last?'#ffd27a':'rgba(90,208,230,.35)','stroke-width':last?2:1,cursor:'pointer'},svg);
+    const vt=E('text',{x:x+bw/2,y:y-10,'text-anchor':'middle','font-size':13.5,'font-family':'var(--num)',
+      fill:last?'#ffd27a':'#bfdde6','font-weight':last?700:600},svg);
+    vt.textContent='$'+(d[1]>=10000?(d[1]/10000).toFixed(2).replace(/\.?0+$/,'')+'T':d[1]+'B');
+    const xt=E('text',{x:x+bw/2,y:baseY+22,'text-anchor':'middle','font-size':11.5,
+      fill:last?'#ffd27a':'rgba(169,167,150,.85)'},svg);
+    xt.textContent=d[0];
+    bindTip(E('rect',{x:x-4,y:y-8,width:bw+8,height:h+18,fill:'transparent',cursor:'pointer'},svg),
+            '<b>$'+d[1]+'B</b><br>'+d[2]);
+  });
+  const defs2=E('defs',{},svg);
+  const gr2=E('linearGradient',{id:'gBar2',x1:0,y1:0,x2:0,y2:1},defs2);
+  E('stop',{offset:'0%','stop-color':'#ffd27a'},gr2);
+  E('stop',{offset:'100%','stop-color':'#c97f1e'},gr2);
+  const cap=E('text',{x:ML,y:MT-26,'font-size':11.5,fill:'rgba(107,110,120,.9)','letter-spacing':'.08em'},svg);
+  cap.textContent='十亿美元 · 最后两根为确定交易口径，中段为媒体披露口径';
+  document.getElementById('chart-xai').appendChild(svg);
+})();
+</script>
+</body>
+</html>

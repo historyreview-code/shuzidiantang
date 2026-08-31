@@ -23,7 +23,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: 安装主站依赖
+        run: npm ci
+      - name: 缓存地球厅源码与依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/digital-earth-series
+            .cache/pnpm-store
+            .cache/npm-cache
+          key: digital-earth-${{ runner.os }}-${{ hashFiles('scripts/assemble.mjs') }}
+          restore-keys: |
+            digital-earth-${{ runner.os }}-
       - name: 组装 dist/
+        env:
+          DIGITAL_EARTH_REFRESH: ${{ github.event_name == 'schedule' && '1' || '0' }}
         run: npm run assemble
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

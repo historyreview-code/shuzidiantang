@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 /**
  * 数字殿堂 · 组装脚本
- * 把各作品的最新产物组装进 dist/，供 Cloudflare Pages / EdgeOne Pages 直接发布。
+ * 把新版 Astro 主站与各作品的最新产物组装进 dist/，供 GitHub Pages / EdgeOne Pages 发布。
  *
  * 结构：
- *   静态页面（本仓库）         → dist/**
- *   地球厅（digital-earth-series）→ clone + pnpm build → dist/earth
+ *   Astro 主站                  → dist/**
+ *   旧作品静态目录（本仓库）     → dist/**
+ *   地球厅（digital-earth-series）→ 本地源码优先 + 按需刷新缓存 → dist/earth
  *
  * 用法：node scripts/assemble.mjs
  */
 import { execSync } from 'node:child_process';
-import { cpSync, rmSync, mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { cpSync, mkdirSync, existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -18,10 +19,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MONOREPO = 'https://github.com/historyreview-code/digital-earth-series.git';
 const CACHE = path.join(ROOT, '.cache', 'digital-earth-series');
 const DIST = path.join(ROOT, 'dist');
+const DEFAULT_LOCAL_EARTH_REPO = path.resolve(ROOT, '..', '数字地球系列');
 
-const STATIC_PATHS = [
-  'index.html', '404.html', 'robots.txt', 'sitemap.xml',
-  'assets', 'games', 'cosmos', 'about', 'notes', 'hidden',
+const LEGACY_STATIC_PATHS = [
+  'assets', 'games', 'cosmos', 'hidden', 'maps', 'novels',
 ];
 
 function run(cmd, cwd = ROOT) {
@@ -29,32 +30,230 @@ function run(cmd, cwd = ROOT) {
   // 独立缓存目录：绕开本机 npm 缓存被 root 属主污染的问题（EPERM）
   const env = {
     ...process.env,
+    CI: process.env.CI || 'true',
     npm_config_cache: path.join(ROOT, '.cache', 'npm-cache'),
   };
   execSync(cmd, { cwd, stdio: 'inherit', env });
 }
 
-// 1. 清理 + 复制静态页面
-rmSync(DIST, { recursive: true, force: true });
-mkdirSync(DIST, { recursive: true });
-for (const p of STATIC_PATHS) {
+function hasEarthPortal(repoDir) {
+  return (
+    existsSync(path.join(repoDir, 'package.json')) &&
+    existsSync(path.join(repoDir, 'pnpm-workspace.yaml')) &&
+    existsSync(path.join(repoDir, 'apps', 'portal', 'package.json'))
+  );
+}
+
+function resolveEarthSource() {
+  const explicitRepo = process.env.DIGITAL_EARTH_REPO ? path.resolve(process.env.DIGITAL_EARTH_REPO) : '';
+  if (explicitRepo) {
+    if (!hasEarthPortal(explicitRepo)) {
+      console.error(`✗ DIGITAL_EARTH_REPO 不是有效的 digital-earth-series monorepo: ${explicitRepo}`);
+      process.exit(1);
+    }
+    console.log(`  地球厅源码: ${explicitRepo} (DIGITAL_EARTH_REPO)`);
+    return explicitRepo;
+  }
+
+  if (hasEarthPortal(DEFAULT_LOCAL_EARTH_REPO)) {
+    console.log(`  地球厅源码: ${DEFAULT_LOCAL_EARTH_REPO} (本地同级目录)`);
+    return DEFAULT_LOCAL_EARTH_REPO;
+  }
+
+  const shouldRefresh = process.env.DIGITAL_EARTH_REFRESH === '1';
+  if (existsSync(path.join(CACHE, '.git'))) {
+    if (shouldRefresh) {
+      run('git pull --ff-only origin main', CACHE);
+    } else {
+      console.log(`  地球厅源码: ${CACHE} (缓存；设置 DIGITAL_EARTH_REFRESH=1 可刷新)`);
+    }
+    return CACHE;
+  }
+
+  if (hasEarthPortal(CACHE)) {
+    console.log(`  地球厅源码: ${CACHE} (缓存源码)`);
+    return CACHE;
+  }
+
+  mkdirSync(path.dirname(CACHE), { recursive: true });
+  run(`git clone --depth 1 ${MONOREPO} ${CACHE}`);
+  return CACHE;
+}
+
+function writePortalBuildConfig(portalApp) {
+  const configDir = path.join(ROOT, '.cache', 'vite-config');
+  mkdirSync(configDir, { recursive: true });
+  const configPath = path.join(configDir, 'digital-earth-portal.mjs');
+  const config = `import { defineConfig } from 'vite';
+
+export default defineConfig({
+  root: ${JSON.stringify(portalApp)},
+  base: './',
+  server: {
+    host: '0.0.0.0',
+    port: 5176,
+    strictPort: true,
+    cors: true,
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 4176,
+    strictPort: true,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const normalized = id.split('\\\\').join('/');
+          if (normalized.includes('/node_modules/three/')) return 'vendor-three';
+          if (
+            normalized.includes('/node_modules/globe.gl/') ||
+            normalized.includes('/node_modules/three-globe/') ||
+            normalized.includes('/node_modules/d3-') ||
+            normalized.includes('/node_modules/topojson-')
+          ) return 'vendor-globe';
+          if (normalized.includes('/node_modules/')) return 'vendor';
+          if (normalized.includes('/packages/core/')) return 'earth-core';
+          if (normalized.includes('/packages/themes/universities/')) return 'theme-universities';
+          if (normalized.includes('/packages/themes/heritage/')) return 'theme-heritage';
+          if (normalized.includes('/packages/themes/f500/')) return 'theme-f500';
+        },
+      },
+    },
+  },
+});
+`;
+  writeFileSync(configPath, config);
+  return configPath;
+}
+
+function walkFiles(dir, out = []) {
+  if (!existsSync(dir)) return out;
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) walkFiles(p, out);
+    else out.push(p);
+  }
+  return out;
+}
+
+function writeBuildReport() {
+  const assets = walkFiles(DIST)
+    .filter((p) => /\.(js|css|html|xml|json|png|jpg|jpeg|webp|svg)$/i.test(p))
+    .map((p) => {
+      const bytes = statSync(p).size;
+      return {
+        path: path.relative(DIST, p).split(path.sep).join('/'),
+        bytes,
+        kb: Number((bytes / 1024).toFixed(1)),
+      };
+    })
+    .sort((a, b) => b.bytes - a.bytes);
+
+  const report = {
+    generatedAt: new Date().toISOString(),
+    largestAssets: assets.slice(0, 20),
+    jsOver500KB: assets.filter((a) => a.path.endsWith('.js') && a.bytes > 500 * 1024),
+  };
+  writeFileSync(path.join(DIST, 'build-report.json'), JSON.stringify(report, null, 2));
+
+  if (report.jsOver500KB.length) {
+    console.log('  大型 JS chunk 仍需关注:');
+    for (const a of report.jsOver500KB) {
+      console.log(`    - ${a.path} ${a.kb}KB`);
+    }
+  } else {
+    console.log('  JS chunk 体检通过: 无超过 500KB 的单文件');
+  }
+  console.log('  构建体检报告已生成 → dist/build-report.json');
+}
+
+// 1. 新版主站：Astro 构建会清理并生成 dist/
+run('npm run build:site');
+
+// 1.5 复制旧作品静态目录。公开主站页面由 Astro 接管；旧游戏/天文/隐藏区先保持原路径可访问。
+for (const p of LEGACY_STATIC_PATHS) {
   const src = path.join(ROOT, p);
   const dst = path.join(DIST, p);
   if (existsSync(src)) cpSync(src, dst, { recursive: true });
 }
 
-// 2. 地球厅：拉取 monorepo 最新代码并构建门户
-if (existsSync(path.join(CACHE, '.git'))) {
-  run('git pull --ff-only origin main', CACHE);
-} else {
-  mkdirSync(path.dirname(CACHE), { recursive: true });
-  run(`git clone --depth 1 ${MONOREPO} ${CACHE}`);
+// 1.6 复制旧手记正文页和 og 图片，但不覆盖 Astro 生成的 /notes/index.html。
+const legacyNotes = path.join(ROOT, 'notes');
+const distNotes = path.join(DIST, 'notes');
+if (existsSync(legacyNotes)) {
+  mkdirSync(distNotes, { recursive: true });
+  for (const f of readdirSync(legacyNotes)) {
+    const src = path.join(legacyNotes, f);
+    const dst = path.join(distNotes, f);
+    if (f === 'index.html') continue;
+    if (existsSync(src)) cpSync(src, dst, { recursive: true });
+  }
 }
-const pnpm = process.env.PNPM_CMD || 'npx --yes pnpm@9';
-run(`${pnpm} install --frozen-lockfile=false --store-dir ${path.join(ROOT, '.cache', 'pnpm-store')}`, CACHE);
-run(`${pnpm} --filter @digital-earth/portal build`, CACHE);
 
-const portalDist = path.join(CACHE, 'apps', 'portal', 'dist');
+// 1.8 天文馆内容站内化：cosmic-journey（宇宙之旅五部曲）+ cosmic-evolution（宇宙诞生演进短片）
+//     复制构建产物进 dist/cosmos/{journey,evolution}/，放映厅 iframe 改站内相对路径，摆脱 github.io 外链。
+const COSMIC_SOURCES = [
+  {
+    name: 'cosmic-journey', env: 'COSMIC_JOURNEY_REPO',
+    repo: 'https://github.com/historyreview-code/cosmic-journey.git',
+    local: path.resolve(ROOT, '..', 'cosmic-journey'), dst: 'journey',
+    files: ['index.html', 'galaxy.html', 'cosmos.html', 'history.html', 'missions.html', 'audio'],
+  },
+  {
+    name: 'cosmic-evolution', env: 'COSMIC_EVOLUTION_REPO',
+    repo: 'https://github.com/historyreview-code/cosmic-evolution.git',
+    local: path.resolve(ROOT, '..', 'cosmic-evolution'), dst: 'evolution',
+    files: ['index.html', 'audio'],
+  },
+];
+
+function resolveCosmicSource(cfg) {
+  const explicitRepo = process.env[cfg.env] ? path.resolve(process.env[cfg.env]) : '';
+  if (explicitRepo && existsSync(explicitRepo)) {
+    console.log(`  天文馆·${cfg.name} 源码: ${explicitRepo} (${cfg.env})`);
+    return explicitRepo;
+  }
+  if (existsSync(cfg.local)) {
+    console.log(`  天文馆·${cfg.name} 源码: ${cfg.local} (本地同级目录)`);
+    return cfg.local;
+  }
+  const cache = path.join(ROOT, '.cache', cfg.name);
+  if (existsSync(path.join(cache, '.git'))) {
+    run('git pull --ff-only origin main', cache);
+    return cache;
+  }
+  mkdirSync(path.dirname(cache), { recursive: true });
+  run(`git clone --depth 1 ${cfg.repo} ${cache}`);
+  return cache;
+}
+
+for (const c of COSMIC_SOURCES) {
+  try {
+    const src = resolveCosmicSource(c);
+    const dst = path.join(DIST, 'cosmos', c.dst);
+    mkdirSync(dst, { recursive: true });
+    for (const f of c.files) {
+      const from = path.join(src, f);
+      if (existsSync(from)) cpSync(from, path.join(dst, f), { recursive: true });
+    }
+    console.log(`  天文馆·${c.name} → dist/cosmos/${c.dst}`);
+  } catch (e) {
+    console.warn(`  ✗ 天文馆·${c.name} 站内化失败（放映厅将回退外链）: ${e.message}`);
+  }
+}
+
+// 2. 地球厅：本地源码优先；没有本地源码时使用缓存/远程 clone，然后构建门户。
+const earthSource = resolveEarthSource();
+const portalApp = path.join(earthSource, 'apps', 'portal');
+const pnpm = process.env.PNPM_CMD || 'npx --yes pnpm@9';
+run(`${pnpm} install --frozen-lockfile=false --store-dir ${path.join(ROOT, '.cache', 'pnpm-store')}`, earthSource);
+const portalBuildConfig = writePortalBuildConfig(portalApp);
+console.log(`  地球厅 Vite 拆包配置已生成: ${path.relative(ROOT, portalBuildConfig)}`);
+run(`${pnpm} exec tsc`, portalApp);
+run(`${pnpm} exec vite build --config ${portalBuildConfig}`, portalApp);
+
+const portalDist = path.join(portalApp, 'dist');
 if (!existsSync(portalDist)) {
   console.error('✗ 门户构建产物不存在：' + portalDist);
   process.exit(1);
@@ -301,5 +500,7 @@ function walkHtml(dir, out = []) {
   console.log(`  访问计数器已注入: ${count} 页 (Vercount, hidden/ 跳过)`);
 }
 
+writeBuildReport();
+
 console.log('\n✅ 组装完成 → dist/');
-console.log('   本地预览：npx serve dist');
+console.log('   本地预览：npm run preview -- --port 4321');
