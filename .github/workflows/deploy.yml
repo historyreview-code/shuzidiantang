@@ -1,11 +1,8 @@
 name: assemble-and-deploy
 
 on:
-  push:
-    branches: [main]
-  schedule:
-    # 每日 02:00 UTC 重建（地球厅数据由 GitHub Actions 每日更新，见 digital-earth-series）
-    - cron: '0 2 * * *'
+  # 2026-08-31 已停：主站切至 EdgeOne Pages（push 触发），GitHub 侧仅保留手动兜底。
+  # 如需恢复每日自动重建海外备份：取消注释 push/schedule 块。
   workflow_dispatch:
 
 permissions:
