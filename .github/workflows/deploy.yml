@@ -1,17 +1,17 @@
-name: assemble-and-deploy
+name: assemble-and-deploy-edgeone
 
 on:
-  # 2026-08-31 已停：主站切至 EdgeOne Pages（push 触发），GitHub 侧仅保留手动兜底。
-  # 如需恢复每日自动重建海外备份：取消注释 push/schedule 块。
+  # 每日 02:00 UTC 自动重建并部署 EdgeOne Pages：地球厅数据按日刷新
+  # （EdgeOne 控制台另有 push 触发构建；本 workflow 负责定时数据刷新与手动兜底）
+  schedule:
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: edgeone-daily
   cancel-in-progress: true
 
 jobs:
@@ -39,23 +39,26 @@ jobs:
         env:
           DIGITAL_EARTH_REFRESH: ${{ github.event_name == 'schedule' && '1' || '0' }}
         run: npm run assemble
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
         with:
+          name: site-dist
           path: dist
+          retention-days: 7
 
   deploy:
-    name: 部署 GitHub Pages（海外过渡）
+    name: 部署 EdgeOne Pages
     needs: assemble
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-
-  # 说明：
-  # - Cloudflare Pages 因账号级 pages.dev 子域封锁暂不可用（见 README ⑤），
-  #   已改走 GitHub Pages 过渡，备案通过后按 ⑥ 切 EdgeOne Pages 国内主站。
-  # - EdgeOne Pages 直接连接本仓库（控制台操作），构建命令 npm run assemble，输出目录 dist。
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+      - name: 部署到 EdgeOne Pages
+        uses: TencentEdgeOne/edgeone-pages-action@v1
+        with:
+          token: ${{ secrets.EDGEONE_PAGES_API_TOKEN }}
+          project-name: "makers-czlk3nk8h40q"
+          build-path: "./dist"
