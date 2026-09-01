@@ -12,8 +12,8 @@ export const site = {
     },
     {
       name: '小红书',
-      handle: '劳伦斯 · 598047983',
-      href: 'https://www.xiaohongshu.com/user/profile/598047983',
+      handle: '劳伦斯在sh',
+      href: 'https://www.xiaohongshu.com/user/profile/5d8d47d80000000001019d89',
       note: '短视频、图文与创作日常',
     },
     {
@@ -158,8 +158,8 @@ export const videoChannels = [
   },
   {
     platform: '小红书',
-    handle: '劳伦斯 · 598047983',
-    href: 'https://www.xiaohongshu.com/user/profile/598047983',
+    handle: '劳伦斯在sh',
+    href: 'https://www.xiaohongshu.com/user/profile/5d8d47d80000000001019d89',
     tone: '短视频、图文卡片、创作过程与生活化表达',
     cta: '进入小红书主页',
   },
