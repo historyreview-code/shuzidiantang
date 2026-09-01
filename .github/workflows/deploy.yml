@@ -56,16 +56,10 @@ jobs:
         with:
           name: site-dist
           path: dist
-      - name: 诊断 token（只打印长度与空白检查，不打印值）
+      - name: 部署到 EdgeOne Pages
         env:
           T: ${{ secrets.EDGEONE_PAGES_API_TOKEN }}
         run: |
-          echo "token_length=${#T}"
-          if [ -z "$T" ]; then echo "token_empty=yes"; fi
-          case "$T" in *[[:space:]]*) echo "token_has_whitespace=yes";; *) echo "token_has_whitespace=no";; esac
-      - name: 部署到 EdgeOne Pages
-        uses: TencentEdgeOne/edgeone-pages-action@v1
-        with:
-          token: ${{ secrets.EDGEONE_PAGES_API_TOKEN }}
-          project-name: "makers-czlk3nk8h40q"
-          build-path: "./dist"
+          TRIMMED=$(printf '%s' "$T" | tr -d '[:space:]')
+          if [ -z "$TRIMMED" ]; then echo "::error::EDGEONE_PAGES_API_TOKEN 为空，请检查 GitHub Secrets"; exit 1; fi
+          npx --yes edgeone pages deploy ./dist --name makers-czlk3nk8h40q --token "$TRIMMED"
