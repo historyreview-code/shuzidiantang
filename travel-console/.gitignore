@@ -1,0 +1,19 @@
+# 本机私有配置（端口/扫描目录因机器而异；复制 config.example.json 后修改）
+config.json
+
+# 控制台运行时任务状态
+.jobs/
+
+# 大体积演示视频（约 22MB，站内/网盘另存，不入库）
+演示视频/
+
+# folium-demo 下的生成 HTML 不入库；交互式路书保留为可直接双击打开的演示资产
+folium-demo/*.html
+!folium-demo/英国自驾环线-交互式路书.html
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

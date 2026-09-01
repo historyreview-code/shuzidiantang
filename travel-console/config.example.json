@@ -1,0 +1,5 @@
+{
+  "port": 8740,
+  "roots": ["~/行程工作区"],
+  "skills_dir": "~/.agents/skills"
+}

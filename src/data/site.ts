@@ -115,10 +115,10 @@ export const cosmosSeries = [
 ];
 
 // 旅行系列：2026-09-01 用户拍板——大航海示意不成熟不发布；
-// 旅行控制台 / 自动视频笔记 / 案例页整合进独立「发布包」（筹备中，作为项目介绍），站点只留英伦漫记 + 整合中占位。
+// 旅行控制台 / 自动视频笔记 / 案例页整合为「旅行控制台发布包」，已并入主仓库 travel-console/ 子目录。
 export const travelSeries = [
-  { title: '英伦漫记', sub: 'B站视频系列 · 速写与漫步', href: 'https://space.bilibili.com/13483307/video', img: '', external: true },
-  { title: '旅行规划工具 · 发布包整合中', sub: '路线规划 / 手绘地图 / 视频笔记 · 筹备中', href: '', img: '', pending: true },
+  { title: '英伦漫记', sub: 'B站视频系列 · 速写与漫步', href: 'https://space.bilibili.com/13483307/video', img: '', external: true, meta: 'B站' },
+  { title: '旅行规划工具 · 发布包', sub: '路线规划 / 手绘地图 / 视频笔记 · 源码在主仓库', href: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console', img: '', external: true, meta: 'GitHub' },
 ];
 
 export const notes = [

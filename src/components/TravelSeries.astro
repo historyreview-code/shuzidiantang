@@ -17,7 +17,7 @@ import { travelSeries } from '../data/site';
             <div class="series-frame series-frame-empty" aria-hidden="true"><span class="stamp">旅</span></div>
           )}
           <div class="series-body">
-            <span class="meta">{item.external ? '外部 · B站' : '站内'}</span>
+            <span class="meta">{item.meta || (item.external ? '外部' : '站内')}</span>
             <h4>{item.title}</h4>
             <small>{item.sub}</small>
           </div>
