@@ -6,13 +6,6 @@ import { works } from '../data/site';
 <BaseLayout current="works" title="作品 · 劳伦斯在上海" description="数字地球、网页游戏、天文影像、陶土手作与数据艺术——每件作品都有真实入口。">
   <main id="content" class="page">
     <section class="section">
-      <CosmosSeries />
-    </section>
-    <section class="section">
-      <div class="section-head">
-        <h2>馆藏索引</h2>
-        <p>每张展签都保留入口、状态和制作线索；后续可继续补独立详情页、截图、源码与复盘文章。</p>
-      </div>
       <div class="work-grid collection-grid">
         {works.map((work) => (
           <a class="work-card" href={work.href}>
@@ -26,6 +19,9 @@ import { works } from '../data/site';
           </a>
         ))}
       </div>
+    </section>
+    <section class="section">
+      <CosmosSeries />
     </section>
   </main>
 </BaseLayout>
