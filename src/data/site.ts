@@ -58,9 +58,9 @@ export const works = [
     eyebrow: '数据艺术 · 展品版',
     href: '/dataism/',
     image: '/assets/img/dataism.webp',
-    summary: '把一天十二个时辰做成可进入的展览：章节轮换、现场声交互。',
-    tags: ['数据艺术', '声音交互', '展览'],
-    status: '已上线',
+    summary: '随十二时辰流转的数据粒子艺术：桌面进现场交互展品，手机看十二时辰静态画册。',
+    tags: ['数据艺术', '声音交互', '十二时辰'],
+    status: '现场 + 画册',
   },
   {
     id: 'cad',
