@@ -5,23 +5,20 @@ import { site } from '../data/site';
 const socials = [
   {
     platform: 'B站',
-    handle: '劳伦斯在sh · UID 13483307',
+    handle: '劳伦斯在sh',
     href: 'https://space.bilibili.com/13483307',
-    tone: '长视频与系列作品：数字地球、天文馆、游戏开发讲解。',
     cta: '进入 B站主页',
   },
   {
     platform: '小红书',
     handle: '劳伦斯在sh',
     href: 'https://www.xiaohongshu.com/user/profile/5d8d47d80000000001019d89',
-    tone: '短视频、图文卡片与创作日常的随手记。',
     cta: '进入小红书主页',
   },
   {
     platform: 'YouTube',
     handle: '@SketchbookBritain',
     href: 'https://www.youtube.com/@SketchbookBritain',
-    tone: '英伦漫记系列：在英国的速写、建筑与手账影像。',
     cta: '进入 YouTube 频道',
   },
 ];
@@ -40,21 +37,11 @@ const socials = [
     </header>
 
     <section class="section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">在哪里找到我 · Social</span>
-          <h2>三处窗口，三种表达</h2>
-        </div>
-        <div class="side">
-          <p>商务合作与定制需求请发邮件；日常交流走社媒私信。</p>
-        </div>
-      </div>
       <div class="channel-grid">
         {socials.map((s) => (
           <article class="channel-card">
             <span class="meta">{s.platform}</span>
             <h3>{s.handle}</h3>
-            <p>{s.tone}</p>
             <a class="button" href={s.href} target="_blank" rel="noopener">{s.cta}</a>
           </article>
         ))}
@@ -62,31 +49,35 @@ const socials = [
     </section>
 
     <section class="section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">合作 · Contact</span>
-          <h2>有兴趣、有需要，来聊聊</h2>
-        </div>
-        <div class="side">
-          <p>旅行路线定制、手绘地图、效果图流水线、数据可视化——欢迎来信。</p>
-        </div>
-      </div>
-      <div class="recommend">
-        <div class="recommend-copy">
-          <span class="kicker">邮箱 · Email</span>
-          <h3>1207591421@qq.com</h3>
-          <p>主题建议写明来意（如「旅行路线定制」），一般 1–2 天内回复。急事可 B站 / 小红书私信。</p>
-        </div>
-        <a class="button primary" href="mailto:1207591421@qq.com?subject=来自劳伦斯在上海主站的合作联系">发邮件</a>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="manifesto">
-        <p>
-          「手头还有一部影视企划《临川听荷》在慢慢孵化，等它成形，再来入馆。」
-        </p>
+      <div class="contact-line">
+        <span class="kicker">合作 · Contact</span>
+        <a href="mailto:hello@shuzidiantang.com?subject=来自劳伦斯在上海主站的合作联系">hello@shuzidiantang.com</a>
+        <span class="contact-sub">旅行路线定制 · 手绘地图 · 效果图 · 数据可视化</span>
       </div>
     </section>
   </main>
 </BaseLayout>
+
+<style>
+  .contact-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 14px 18px;
+  }
+  .contact-line a {
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--amber);
+    padding: 2px 0;
+  }
+  .contact-line a:hover { color: var(--amber); }
+  .contact-sub {
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+</style>
