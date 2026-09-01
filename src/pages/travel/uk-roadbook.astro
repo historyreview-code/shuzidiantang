@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout current="works" title="活路书 · 旅行实验室" description="英国自驾环线 · 交互式路书：OSRM 真实道路 + folium 活地图 + 手账排版，点击任意一天，地图飞到当天路段。">
+  <main id="content" class="page">
+    <a class="back-link" href="/travel/">← 旅行实验室</a>
+
+    <div class="nameplate">
+      <span class="np-num">NO.01 · TRAVEL LAB</span>
+      <h1 class="np-title">活路书</h1>
+      <div class="np-chips">
+        <span>OSRM 真实道路</span>
+        <span>folium 活地图</span>
+        <span>手账排版</span>
+        <span>零后端</span>
+      </div>
+      <p class="np-desc">英国自驾环线的交互式路书：按天排列的行程手账 + 真实道路几何。点击任意一天，地图会飞到当天路段。</p>
+    </div>
+
+    <div class="play-zone">
+      <div class="play-hint" aria-hidden="true">👆 试试点击任意一天，地图会飞到当天路段</div>
+      <div class="play-toolbar">
+        <button type="button" class="button primary" id="tour-btn">▶ 自动导览</button>
+        <a class="button" href="/travel/uk-roadbook.html" target="_blank" rel="noopener">↗ 新窗口打开</a>
+      </div>
+      <iframe id="stage" src="/travel/uk-roadbook.html" loading="lazy" title="英国自驾环线 · 交互式路书"></iframe>
+      <p class="mobile-note">手机端：<a href="/travel/uk-roadbook.html" target="_blank" rel="noopener">在新窗口打开路书</a></p>
+    </div>
+
+    <details class="tech-details">
+      <summary>工程细节 · TECH NOTES</summary>
+      <ul>
+        <li>瓦片署名：© OpenStreetMap contributors · Tiles © Esri · 水彩底图 © Stamen Design</li>
+        <li>缩放策略：双指或 ⌘+滚轮 缩放地图；Ctrl+滚轮 缩放页面（默认不劫持滚轮，防误触）</li>
+        <li>道路几何缓存：路线由 OSRM 测算后缓存（_route_cache.json），重复打开不重复请求</li>
+        <li>零后端：单文件 HTML + 公共瓦片，任意静态托管即用</li>
+      </ul>
+    </details>
+  </main>
+</BaseLayout>
+
+<script>
+  const btn = document.getElementById('tour-btn');
+  const frame = document.getElementById('stage');
+  const BASE = '/travel/uk-roadbook.html';
+  let on = false;
+  btn.addEventListener('click', () => {
+    on = !on;
+    frame.src = on ? BASE + '?tour=1' : BASE;
+    btn.textContent = on ? '⏸ 停止导览' : '▶ 自动导览';
+    btn.classList.toggle('primary', !on);
+  });
+</script>

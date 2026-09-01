@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const exhibits = [
+  { num: 'NO.01', title: '活路书', desc: '交互式路书：点击任意一天，地图飞到当天路段。', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', tag: '交互' },
+  { num: 'NO.02', title: '驾车路线图', desc: '真实道路几何 + 里程标注，打印与分享友好。', href: '/travel/uk-route/', img: '/assets/img/travel/uk-route.webp', tag: '静态' },
+];
+---
+<BaseLayout current="works" title="旅行实验室 · 劳伦斯在上海" description="旅行实验室：英国自驾环线路线与路书、小红书卡、旅行视频生成。">
+  <main id="content" class="page">
+    <header class="page-title">
+      <span class="kicker">旅行实验室 · Travel Lab</span>
+      <h1>旅行实验室</h1>
+      <p>路线、路书与小红书卡——旅行相关的东西都放在这里。</p>
+    </header>
+
+    <section class="section">
+      <div class="work-grid collection-grid">
+        {exhibits.map((e) => (
+          <a class="work-card" href={e.href}>
+            <img src={e.img} alt={`${e.title}预览`} />
+            <div class="work-card-body">
+              <span class="meta">{e.num} · {e.tag}</span>
+              <h3>{e.title}</h3>
+              <p>{e.desc}</p>
+            </div>
+          </a>
+        ))}
+        <article class="work-card" aria-label="旅行视频生成，后补">
+          <div class="card-ph" aria-hidden="true"><span class="stamp">后补</span></div>
+          <div class="work-card-body">
+            <span class="meta">NO.03 · 占位</span>
+            <h3>旅行视频生成</h3>
+            <p>照片自动编排成片，工具打磨好后补上。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="kicker">小红书卡 · XHS Cards</span>
+          <h2>行程卡与封面</h2>
+        </div>
+        <div class="side">
+          <p>一条行程产出的社交卡片：封面、行程卡与移动端版。</p>
+        </div>
+      </div>
+      <div class="xhs-row">
+        <figure>
+          <img src="/travel/xhs/xhs-cover.webp" alt="小红书封面卡" loading="lazy" />
+          <figcaption>封面卡</figcaption>
+        </figure>
+        <figure>
+          <img src="/travel/xhs/xhs-card.webp" alt="行程卡" loading="lazy" />
+          <figcaption>行程卡</figcaption>
+        </figure>
+        <figure>
+          <img src="/travel/xhs/xhs-card-mobile.webp" alt="移动端行程卡" loading="lazy" />
+          <figcaption>移动端版</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <div class="notes-more">
+      <a class="button" href="/">返回首页</a>
+    </div>
+  </main>
+</BaseLayout>

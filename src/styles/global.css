@@ -622,6 +622,154 @@ p { margin-bottom: 0; }
   .series-grid { grid-template-columns: 1fr; }
 }
 
+/* ---------- 展品页层（旅行实验室等作品详情） ---------- */
+.back-link {
+  display: inline-block;
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding: 8px 0;
+  margin-bottom: 16px;
+}
+.back-link:hover { color: var(--amber); }
+.nameplate { margin-bottom: 28px; }
+.np-num {
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+}
+.np-title {
+  margin: 8px 0 12px;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+.np-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.np-chips span {
+  padding: 4px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  background: var(--card);
+}
+.np-desc {
+  margin-top: 14px;
+  color: var(--ink-2);
+  max-width: 640px;
+}
+.play-zone {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.play-hint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 7px 15px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow);
+  animation: hint-float 3s ease-in-out infinite;
+}
+@keyframes hint-float {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
+}
+.play-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+.play-toolbar .button { min-height: 40px; }
+.play-zone iframe {
+  display: block;
+  width: 100%;
+  height: 760px;
+  border: 0;
+  background: var(--paper);
+}
+.mobile-note {
+  display: none;
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 0.9rem;
+}
+.mobile-note a { color: var(--amber); }
+@media (max-width: 720px) {
+  .play-zone iframe { display: none; }
+  .mobile-note { display: block; }
+  .play-hint { display: none; }
+}
+.tech-details {
+  margin-top: 26px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 2px 18px 6px;
+}
+.tech-details summary {
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  padding: 13px 0;
+}
+.tech-details ul { margin: 0 0 12px; padding-left: 20px; }
+.tech-details li {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  margin: 8px 0;
+}
+.xhs-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.xhs-row figure { margin: 0; }
+.xhs-row img {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.xhs-row figcaption {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-align: center;
+  margin-top: 8px;
+}
+@media (max-width: 720px) {
+  .xhs-row { grid-template-columns: 1fr; }
+}
+
 /* ---------- 作品卡片流（首页长滚动） ---------- */
 .works-stream {
   display: grid;

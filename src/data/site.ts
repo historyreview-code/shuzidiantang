@@ -114,11 +114,13 @@ export const cosmosSeries = [
   { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
-// 旅行系列：2026-09-01 用户拍板——大航海示意不成熟不发布；
-// 旅行控制台 / 自动视频笔记 / 案例页整合为「旅行控制台发布包」，已并入主仓库 travel-console/ 子目录。
+// 旅行系列：站内展示真实产出（活路书/路线图/小红书卡）；英伦漫记在首页「系列推荐位」单独展示不重复；
+// 旅行视频生成工具留空占位，后补。
 export const travelSeries = [
-  { title: '英伦漫记', sub: 'B站视频系列 · 速写与漫步', href: 'https://space.bilibili.com/13483307/video', img: '', external: true, meta: 'B站' },
-  { title: '旅行规划工具 · 发布包', sub: '路线规划 / 手绘地图 / 视频笔记 · 源码在主仓库', href: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console', img: '', external: true, meta: 'GitHub' },
+  { title: '旅行实验室', sub: '路线 · 路书 · 小红书卡', href: '/travel/', img: '/assets/img/travel/lab.webp' },
+  { title: '活路书', sub: '英国自驾环线 · 交互路书', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp' },
+  { title: '驾车路线图', sub: '英国自驾环线 · 静态出图', href: '/travel/uk-route/', img: '/assets/img/travel/uk-route.webp' },
+  { title: '旅行视频生成', sub: '照片自动编排成片 · 后补', href: '', img: '', pending: true },
 ];
 
 export const notes = [
