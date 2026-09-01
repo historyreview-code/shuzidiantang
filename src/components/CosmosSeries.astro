@@ -1,0 +1,24 @@
+---
+import { cosmosSeries } from '../data/site';
+---
+<div class="series-block">
+  <div class="series-head">
+    <span class="kicker">天文馆系列 · Cosmos Series</span>
+    <h3>宇宙之旅 · 六个主题，一集一卡</h3>
+    <p>不再一口气连播：每集一个天文主题，点卡直接进放映厅看那一集。</p>
+  </div>
+  <div class="series-grid">
+    {cosmosSeries.map((ep) => (
+      <a class="series-card" href={ep.href}>
+        <div class="series-frame">
+          <img src={ep.img} alt={`${ep.title}预览`} loading="lazy" />
+        </div>
+        <div class="series-body">
+          <span class="meta">{ep.ep}</span>
+          <h4>{ep.title}</h4>
+          <small>{ep.sub}</small>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>

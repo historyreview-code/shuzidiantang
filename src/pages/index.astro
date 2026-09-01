@@ -1,22 +1,39 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { notes, site, works } from '../data/site';
+import CosmosSeries from '../components/CosmosSeries.astro';
+import { cosmosSeries, notes, site, works } from '../data/site';
 
 const stats = [
-  { n: works.length, label: '馆藏作品' },
+  { n: works.length, label: '作品卡' },
+  { n: `${cosmosSeries.length} 集`, label: '天文系列' },
   { n: works.filter((w) => w.href.startsWith('/games')).length, label: '在线游戏' },
   { n: notes.length, label: '公开手记' },
-  { n: '2026.08', label: '开馆时间' },
 ];
 
-// 右侧轮播：前 5 件主力作品
-const carousel = works.slice(0, 5).map((w) => ({
-  name: w.title,
-  eyebrow: `${w.eyebrow} · ${w.status}`,
-  note: w.summary,
-  img: w.image,
-  href: w.href,
-}));
+// 右侧轮播：地球、天文系列、陶土、数据艺术、CAD 五件主力
+const carousel = [
+  ...works.slice(0, 1).map((w) => ({
+    name: w.title,
+    eyebrow: `${w.eyebrow} · ${w.status}`,
+    note: w.summary,
+    img: w.image,
+    href: w.href,
+  })),
+  {
+    name: '天文馆 · 宇宙之旅',
+    eyebrow: '系列 · 六集六主题',
+    note: `${cosmosSeries.length} 集天文短片，一集一个主题：从黄道面到揽月探火，点卡直接放映。`,
+    img: cosmosSeries[0].img,
+    href: '/cosmos/',
+  },
+  ...works.slice(1, 4).map((w) => ({
+    name: w.title,
+    eyebrow: `${w.eyebrow} · ${w.status}`,
+    note: w.summary,
+    img: w.image,
+    href: w.href,
+  })),
+];
 
 const recommend = {
   kicker: '系列推荐 · B站',
@@ -89,23 +106,26 @@ const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
       </div>
       <div class="works-stream">
         {works.map((work, index) => (
-          <a class="work-stream-item" href={work.href}>
-            <div class="ws-thumb">
-              <img src={work.image} alt={`${work.title}预览`} loading="lazy" />
-            </div>
-            <div class="ws-body">
-              <span class="ws-num">NO.{String(index + 1).padStart(2, '0')} · {work.eyebrow}</span>
-              <h3>{work.title}</h3>
-              <p>{work.summary}</p>
-              <div class="tag-list">
-                {work.tags.map((tag) => <span>{tag}</span>)}
+          <>
+            <a class="work-stream-item" href={work.href}>
+              <div class="ws-thumb">
+                <img src={work.image} alt={`${work.title}预览`} loading="lazy" />
               </div>
-              <div class="ws-meta">
-                <span class="ws-status">{work.status}</span>
-                <span class="ws-enter">进入 →</span>
+              <div class="ws-body">
+                <span class="ws-num">NO.{String(index + 1).padStart(2, '0')} · {work.eyebrow}</span>
+                <h3>{work.title}</h3>
+                <p>{work.summary}</p>
+                <div class="tag-list">
+                  {work.tags.map((tag) => <span>{tag}</span>)}
+                </div>
+                <div class="ws-meta">
+                  <span class="ws-status">{work.status}</span>
+                  <span class="ws-enter">进入 →</span>
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
+            {index === 0 && <CosmosSeries />}
+          </>
         ))}
       </div>
     </section>

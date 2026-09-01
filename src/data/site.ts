@@ -43,16 +43,6 @@ export const works = [
     status: '旗舰作品',
   },
   {
-    id: 'cosmos',
-    title: '天文馆',
-    eyebrow: '交互科普影像',
-    href: '/cosmos/',
-    image: '/assets/img/cosmos.webp',
-    summary: '宇宙之旅五集连播与宇宙演化全景，自动放映厅承载科普叙事和旁白。',
-    tags: ['科普', '影像', '叙事'],
-    status: '已上线',
-  },
-  {
     id: 'clay',
     title: '陶土动物园',
     eyebrow: 'Blender 手作',
@@ -122,6 +112,16 @@ export const works = [
     tags: ['神话', '叙事', 'AI 协作'],
     status: '可试玩',
   },
+];
+
+// 天文馆系列：一集一卡，深链直达 /cosmos/?ep=N（与 cosmos/index.html 片单顺序一致）
+export const cosmosSeries = [
+  { ep: '第 1 集', title: '黄道面之谜', sub: '太阳系为何是一个平面', href: '/cosmos/?ep=0', img: '/assets/img/cosmos/01.webp' },
+  { ep: '第 2 集', title: '银河漫游', sub: '从太阳系到银河系之外', href: '/cosmos/?ep=1', img: '/assets/img/cosmos/02.webp' },
+  { ep: '第 3 集', title: '宇宙简史', sub: '从大爆炸到黑洞', href: '/cosmos/?ep=2', img: '/assets/img/cosmos/03.webp' },
+  { ep: '第 4 集', title: '仰望星空五千年', sub: '人类如何认识宇宙', href: '/cosmos/?ep=3', img: '/assets/img/cosmos/04.webp' },
+  { ep: '第 5 集', title: '揽月探火', sub: '人类如何走向另一颗星球', href: '/cosmos/?ep=4', img: '/assets/img/cosmos/05.webp' },
+  { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
 export const notes = [

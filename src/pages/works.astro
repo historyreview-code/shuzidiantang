@@ -1,18 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { works } from '../data/site';
+import CosmosSeries from '../components/CosmosSeries.astro';
+import { cosmosSeries, works } from '../data/site';
 
 const collectionStats = [
-  ['馆藏数量', `${works.length} 件`],
-  ['主展方向', '互动 / 游戏 / 影像'],
+  ['作品卡', `${works.length} 件`],
+  ['天文系列', `${cosmosSeries.length} 集`],
   ['更新方式', '持续扩建'],
 ];
 ---
 <BaseLayout current="works" title="作品馆 · 数字殿堂" description="数字殿堂作品馆：数字地球、网页游戏、天文影像、AI 编程实验与创作复盘。">
   <main id="content" class="page">
     <section class="page-title">
+      <span class="kicker">作品馆 · Works</span>
       <h1>作品馆</h1>
-      <p>这些不是孤立链接，而是一组持续生长的数字作品：可旋转的地球、可玩的小游戏、可观看的宇宙短片，以及正在成形的 AI 工具。</p>
+      <p>一组持续生长的数字作品：可旋转的地球、六集天文系列、可玩的小游戏、陶土手作与数据艺术。每件都保留真实入口。</p>
     </section>
     <section class="collection-overview">
       {collectionStats.map(([label, value]) => (
@@ -21,6 +23,9 @@ const collectionStats = [
           <strong>{value}</strong>
         </div>
       ))}
+    </section>
+    <section class="section">
+      <CosmosSeries />
     </section>
     <section class="section">
       <div class="section-head">
