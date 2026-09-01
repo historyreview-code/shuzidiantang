@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>旅行控制台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">🧭</span>
+    <h1>旅行控制台</h1>
+    <span class="sub" id="subtitle">规划 → 地图 → 动画 → 视频 → 图文</span>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="trips" class="active">行程库</button>
+    <button data-tab="media">媒体库</button>
+    <button data-tab="jobs">任务<span class="badge" id="jobBadge" hidden>0</span></button>
+    <button data-tab="settings">设置</button>
+    <button class="refresh" id="refreshBtn" title="立即重新扫描">↻ 刷新</button>
+  </nav>
+</header>
+
+<main>
+  <section id="tab-trips" class="tab active">
+    <div id="tripList" class="trip-grid"></div>
+    <p class="empty" id="tripEmpty" hidden>
+      没有扫描到行程。一个「行程」= 一个含 trip.yaml（带 stops/legs）的文件夹。<br>
+      去「设置」添加你的行程工作区目录，或用 trip-planner 的 Excel 导入生成第一个 trip.yaml。
+    </p>
+  </section>
+
+  <section id="tab-media" class="tab">
+    <div id="mediaList"></div>
+    <p class="empty" id="mediaEmpty" hidden>媒体库为空。</p>
+  </section>
+
+  <section id="tab-jobs" class="tab">
+    <div id="jobList"></div>
+    <p class="empty" id="jobEmpty" hidden>还没有任务。去行程库点一个按钮试试。</p>
+  </section>
+
+  <section id="tab-settings" class="tab">
+    <div class="card settings">
+      <h2>扫描目录</h2>
+      <p class="hint">控制台会递归扫描这些目录（4 层深度），找 trip.yaml 和媒体产物。</p>
+      <ul id="rootList" class="root-list"></ul>
+      <div class="row">
+        <input type="text" id="newRoot" placeholder="例如 ~/ZCodeProject/我的旅行/高加索">
+        <button id="addRootBtn" class="btn primary">添加</button>
+      </div>
+
+      <h2>环境</h2>
+      <ul class="env-list" id="envList"></ul>
+      <p class="hint">修改 config.json 后重启控制台生效。</p>
+    </div>
+  </section>
+</main>
+
+<!-- 任务运行横幅 -->
+<div id="runningBar" hidden>
+  <span class="dot"></span><span id="runningText">任务运行中…</span>
+  <button class="btn small" onclick="switchTab('jobs')">查看</button>
+</div>
+
+<!-- 预览弹窗 -->
+<div id="modal" class="modal" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <span id="modalTitle"></span>
+      <div>
+        <button class="btn small" id="modalReveal">在 Finder 中显示</button>
+        <button class="btn small" id="modalNewTab">新标签打开</button>
+        <button class="btn small danger" id="modalClose">✕ 关闭</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- 素材目录选择弹窗 -->
+<div id="inputModal" class="modal" hidden>
+  <div class="modal-box narrow">
+    <div class="modal-head"><span>出视频笔记 · 选择素材目录</span></div>
+    <div class="modal-body">
+      <p class="hint">素材目录 = 这次旅行的照片/视频所在文件夹（analyze 步骤逐张看图）。</p>
+      <div id="detectedDirs" class="detected"></div>
+      <div class="row" style="align-items:center">
+        <input type="text" id="journalInput" class="full" placeholder="/路径/到/素材目录" style="flex:1">
+        <button class="btn" id="browseBtn">📁 浏览…</button>
+      </div>
+      <div class="row right">
+        <button class="btn" id="journalCancel">取消</button>
+        <button class="btn primary" id="journalGo">开始生成</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 文件夹浏览弹窗 -->
+<div id="folderModal" class="modal" hidden>
+  <div class="modal-box narrow" style="width:min(560px,92vw)">
+    <div class="modal-head">
+      <span>选择素材文件夹</span>
+      <button class="btn small danger" id="folderClose">✕ 关闭</button>
+    </div>
+    <div class="modal-body">
+      <div id="folderCrumb" class="crumb"></div>
+      <div id="folderList" class="folder-list"></div>
+      <div class="row right">
+        <button class="btn" id="folderCancel">取消</button>
+        <button class="btn primary" id="folderPick">✓ 用这个文件夹</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

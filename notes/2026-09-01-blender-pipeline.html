@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一条 Blender 生产线：陶土手作、室内软装与小区效果图 · 数字殿堂</title>
+<meta name="description" content="从捏陶土小动物，到书房软装设计，再到小区效果图流水线——一套 Blender 生产线怎么把三类作品串起来，以及与 AI 的协作方式。">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='14' y='14' width='72' height='72' rx='12' fill='none' stroke='%23b4551e' stroke-width='6'/%3E%3Ctext x='50' y='61' font-family='serif' font-size='29' font-weight='700' fill='%23b4551e' text-anchor='middle'%3E%E6%95%B0%E5%AD%97%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand-mark { min-width:38px; height:38px; padding:0 6px; display:grid; place-items:center;
+    border:2px solid var(--amber); border-radius:8px; color:var(--amber);
+    font-family: var(--serif); font-size:.85rem; font-weight:700; white-space:nowrap; }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; margin: 36px 0 12px; padding-left: 12px;
+    border-left: 3px solid var(--amber); }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  figure { margin: 22px 0; }
+  figure img { width: 100%; border: 1px solid var(--line); background: var(--card);
+    box-shadow: 0 1px 2px rgba(38,34,26,.05), 0 14px 40px rgba(74,58,32,.1); }
+  figcaption { color: var(--ink-3); font-size: .8rem; text-align: center; margin-top: 8px; }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span class="brand-mark" aria-hidden="true">数字</span>
+    <span><strong>数字殿堂</strong><small>SHUZIDIANTANG.COM</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品馆</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>一条 Blender 生产线：陶土手作、室内软装与小区效果图</h1>
+    <p class="meta">2026-09-01 · 分类：工具篇</p>
+
+    <p>很多朋友以为我的作品是东一榔头西一棒槌：捏了几只陶土小动物，画了几张室内软装效果图，又做了一条小区效果图流水线。其实这三件事用的是同一条生产线——Blender。</p>
+
+    <p>Blender 是免费开源的三维软件，建模、雕刻、材质、灯光、渲染全都有。更重要的是它把「手作感」和「工业化」放在同一个工具里：小到一个陶土摆件的捏形，大到一整个小区的白模与渲染，都用它。</p>
+
+    <h2>一、陶土动物园：从捏形到全家福</h2>
+    <p>陶土动物园是这条生产线的起点。<a href="/clay/">图鉴里的十七只小动物</a>，每一只都经历了捏形、上釉、打光三个步骤：先像捏陶一样把形体捏出来，再给它一层陶土质感的釉色，最后摆好灯光，一只一只「入馆」。</p>
+    <figure>
+      <img src="/assets/img/clay/10.webp" alt="陶土动物园全家福" loading="lazy">
+      <figcaption>陶土动物园全家福——十七只小动物，一只一只手作</figcaption>
+    </figure>
+    <p>手作的好处是每只动物都有自己的姿态和脾气；流水线的好处是同一套灯光和渲染参数可以复用，捏到第十只时，一只动物从形体到成片已经很快了。</p>
+
+    <h2>二、室内软装：书房案例</h2>
+    <p>陶土的捏形和材质经验，直接搬进了室内软装设计。下面这张是书房的方案图——我没有把它作为独立作品上线，因为它更像一个「能力样品」：证明这条生产线可以处理真实空间。</p>
+    <figure>
+      <img src="/assets/img/notes/shufang-cover.webp" alt="书房软装设计方案" loading="lazy">
+      <figcaption>书房软装方案：Blender 建模渲染</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/img/notes/shufang-compare.webp" alt="书房方案日景对比" loading="lazy">
+      <figcaption>同一空间、不同光照与陈设的对比方案</figcaption>
+    </figure>
+
+    <h2>三、小区效果图流水线：CAD → 白模 → 渲染 → AI 写实化</h2>
+    <p>第三个项目是把这套能力流水线化：<a href="/cad/">CAD→效果图流水线</a>。图纸解析成三维白模，先渲染初稿，再用 AI 把画面写实化，最后出夜景成片。页面上有一条滑杆，四个阶段来回拖，能看到同一块地是怎么一步步长出来的。</p>
+    <figure>
+      <img src="/assets/img/cad/00-white.webp" alt="小区三维白模" loading="lazy">
+      <figcaption>阶段一：CAD 解析出的三维白模</figcaption>
+    </figure>
+    <p>AI 在管线里负责「质感补全」：材质、光影与氛围的写实化。Blender 出底子，AI 补细节，人做判断——这是我目前最顺手的协作方式。</p>
+
+    <h2>四、AI 协作的一点心得</h2>
+    <p>这条生产线能和 AI 深度配合，是因为三维数据是结构化的：模型、材质、灯光都有明确参数。人定审美方向，AI 在参数空间里快速试错。智谱 GLM-5.3-Flash 上线时的推广文章里有一个「Blender 渲染厨房」案例（<!-- TODO: 待补智谱推广文章链接 -->链接待补），也是同类思路：用多模态模型直接理解并生成三维渲染内容。</p>
+
+    <blockquote>一句话总结：先用手作感捏出形体，再用流水线批量生产，最后让 AI 补质感——三个项目，一条生产线。</blockquote>
+
+    <p>后续计划：把这套管线延伸到旅行方向（手绘地图、路线图渲染），有新进展会继续写进手记。</p>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+</body>
+</html>

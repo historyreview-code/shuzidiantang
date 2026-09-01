@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CosmosSeries from '../components/CosmosSeries.astro';
+import TravelSeries from '../components/TravelSeries.astro';
 import { cosmosSeries, notes, site, works } from '../data/site';
 
 const stats = [
@@ -95,15 +96,6 @@ const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
 
     <!-- ============ 作品卡片流 ============ -->
     <section class="section" id="works">
-      <div class="section-head">
-        <div>
-          <span class="kicker">作品 · Works</span>
-          <h2>一路滑下去，件件都能点进去</h2>
-        </div>
-        <div class="side">
-          <p>不分厅，直接卡片：每件作品一张卡，点卡即入，全部站内自托管。</p>
-        </div>
-      </div>
       <div class="works-stream">
         {works.map((work, index) => (
           <>
@@ -128,6 +120,11 @@ const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
           </>
         ))}
       </div>
+    </section>
+
+    <!-- ============ 旅行系列 ============ -->
+    <section class="section" id="travel">
+      <TravelSeries />
     </section>
 
     <!-- ============ 系列推荐位 ============ -->
@@ -159,8 +156,9 @@ const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
       </div>
       <div class="notes-feed">
         <!-- AUTO:NOTES_FEED -->
-        <a class="item" href="/notes/2026-08-16-digital-earth-series.html"><span class="date">2026-08-16</span><span class="txt">一个会转的地球，装下了大学、地震、世界遗产和 500 强<small>实践手记</small></span></a>
+        <a class="item" href="/notes/2026-09-01-blender-pipeline.html"><span class="date">2026-09-01</span><span class="txt">一条 Blender 生产线：陶土手作、室内软装与小区效果图<small>工具篇</small></span></a>
         <a class="item" href="/notes/2026-08-17-numsweeper.html"><span class="date">2026-08-17</span><span class="txt">不踩雷，只算数——数字扫雷的创意与进化之路<small>实践手记</small></span></a>
+        <a class="item" href="/notes/2026-08-16-digital-earth-series.html"><span class="date">2026-08-16</span><span class="txt">一个会转的地球，装下了大学、地震、世界遗产和 500 强<small>实践手记</small></span></a>
         <a class="item" href="/notes/2026-08-16-ai-tools-personal-website.html"><span class="date">2026-08-16</span><span class="txt">用好 AI 工具，你也可以拥有个人网站<small>工具篇</small></span></a>
         <!-- /AUTO:NOTES_FEED -->
       </div>

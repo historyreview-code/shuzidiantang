@@ -22,7 +22,7 @@ const DIST = path.join(ROOT, 'dist');
 const DEFAULT_LOCAL_EARTH_REPO = path.resolve(ROOT, '..', '数字地球系列');
 
 const LEGACY_STATIC_PATHS = [
-  'assets', 'games', 'cosmos', 'hidden', 'maps', 'novels',
+  'assets', 'games', 'cosmos', 'maps', 'novels',
 ];
 
 function run(cmd, cwd = ROOT) {
@@ -415,6 +415,9 @@ if (publicItems.length > 0) {
 }
 
 // --- 暗室·投资研究 (同一套机制) ---
+// 2026-09-01 起暗室移出公开仓库（本地备份 ~/数字殿堂-暗室备份/hidden），
+// 待架构完善后以二级域名独立建设。hidden/ 存在时才执行以下注入。
+if (existsSync(path.join(ROOT, 'hidden', 'invest'))) {
 const investItems = collectNotes(
   path.join(ROOT, 'hidden', 'invest', 'notes'),
   /\s*·\s*(投资研究|数字殿堂).*/g,
@@ -469,6 +472,9 @@ ${itemXml}
 }
 writeFileSync(path.join(DIST, 'hidden', 'invest', 'feed.xml'), buildInvestRss(investItems));
 console.log(`  投资研究 RSS 已生成 → dist/hidden/invest/feed.xml (${Math.min(investItems.length, 20)} 条)`);
+} else {
+console.log('  暗室已移出公开仓库，跳过投资研究注入（恢复：把备份回填 hidden/ 即可）');
+}
 
 // 4. 访问计数器注入 (Vercount 公共实例, 备案后可按 README ⑦ 换成自建)
 //    给所有带 site-footer 的页面注入计数位 + 脚本; 暗室 hidden/ 不注入 (地址保密)。

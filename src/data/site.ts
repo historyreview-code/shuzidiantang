@@ -114,7 +114,23 @@ export const cosmosSeries = [
   { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
+// 旅行系列：路线规划案例 + 示意图 + 控制台 + 视频系列（自动视频打磨中，留空占位）
+export const travelSeries = [
+  { title: '英伦漫记', sub: 'B站视频系列 · 速写与漫步', href: 'https://space.bilibili.com/13483307/video', img: '', external: true },
+  { title: '旅行路线规划 · 路书', sub: '英国自驾环线等案例', href: '/travel/', img: '/assets/img/travel/roadbook.webp' },
+  { title: '大航海时代示意', sub: '动态路线示意图', href: '/travel/dahanghai.html', img: '/assets/img/travel/voyage-map.webp' },
+  { title: '旅行控制台', sub: '行程与路线的总控台', href: '/travel/console/', img: '/assets/img/travel/console.webp' },
+  { title: '旅行视频笔记 · 自动生成', sub: '照片自动编排成片 · 打磨中', href: '', img: '', pending: true },
+];
+
 export const notes = [
+  {
+    title: '一条 Blender 生产线：陶土手作、室内软装与小区效果图',
+    date: '2026-09-01',
+    category: '工具篇',
+    href: '/notes/2026-09-01-blender-pipeline.html',
+    summary: '捏陶土、做软装、出效果图——三个项目一条生产线，以及 AI 在管线里的协作方式。',
+  },
   {
     title: '不踩雷，只算数——数字扫雷的创意与进化之路',
     date: '2026-08-17',

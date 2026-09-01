@@ -12,7 +12,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = process.env.RESEARCH_SRC || '/Users/newclaw/创意编程探索';
-const DST = path.join(ROOT, 'hidden', 'invest', 'research');
+// 2026-09-01 起暗室移出公开仓库：输出到本地备份目录，待二级域名建设时再进站。
+const DST = process.env.RESEARCH_DST || '/Users/newclaw/数字殿堂-暗室备份/hidden/invest/research';
 
 const ITEMS = [
   { id: 'airport', src: '机场行业投资研究', files: ['index.html'] },

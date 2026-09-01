@@ -1,0 +1,37 @@
+---
+import { travelSeries } from '../data/site';
+---
+<div class="series-block">
+  <div class="series-head">
+    <span class="kicker">旅行 · Travel</span>
+    <h3>带着地图去旅行</h3>
+    <p>路线规划、路书、示意图与影像笔记——旅行相关的东西都在这里。</p>
+  </div>
+  <div class="series-grid">
+    {travelSeries.map((item) => (
+      item.href ? (
+        <a class="series-card" href={item.href} {...item.external ? { target: '_blank', rel: 'noopener' } : {}}>
+          {item.img ? (
+            <div class="series-frame"><img src={item.img} alt={`${item.title}预览`} loading="lazy" /></div>
+          ) : (
+            <div class="series-frame series-frame-empty" aria-hidden="true"><span class="stamp">旅</span></div>
+          )}
+          <div class="series-body">
+            <span class="meta">{item.external ? '外部 · B站' : '站内'}</span>
+            <h4>{item.title}</h4>
+            <small>{item.sub}</small>
+          </div>
+        </a>
+      ) : (
+        <article class="series-card series-card-pending" aria-label={`${item.title}，打磨中`}>
+          <div class="series-frame series-frame-empty" aria-hidden="true"><span class="stamp">打磨中</span></div>
+          <div class="series-body">
+            <span class="meta">占位</span>
+            <h4>{item.title}</h4>
+            <small>{item.sub}</small>
+          </div>
+        </article>
+      )
+    ))}
+  </div>
+</div>

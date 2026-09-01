@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const cases = [
+  { title: '英国自驾环线 · 交互式路书', desc: '环线路线、途经点与里程一页交互查看。', href: '/travel/cases/英国自驾环线-交互式路书.html', tag: '路书' },
+  { title: '英国自驾环线 · 驾车路线图', desc: '静态路线图，打印与分享友好。', href: '/travel/cases/英国自驾环线-驾车路线图.html', tag: '路线图' },
+  { title: '东方明珠 → 浦东机场', desc: '上海示例：起终点驾车路线测算。', href: '/travel/cases/东方明珠-浦东机场-驾车路线图.html', tag: '路线图' },
+  { title: '东方明珠 → 哈尔滨火车站', desc: '跨省长途示例：距离、时长与走法。', href: '/travel/cases/东方明珠-哈尔滨火车站-驾车路线图.html', tag: '路线图' },
+  { title: '大航海时代动态示意图', desc: '航线动画示意：六位航海家与关键港口。', href: '/travel/dahanghai.html', tag: '示意图' },
+  { title: '旅行控制台', desc: '行程与路线管理的小控制台。', href: '/travel/console/', tag: '工具' },
+];
+---
+<BaseLayout current="works" title="旅行 · 数字殿堂" description="旅行实验室：路线规划路书、驾车路线图、大航海示意图与旅行控制台案例。">
+  <main id="content" class="page">
+    <header class="page-title">
+      <span class="kicker">旅行 · Travel</span>
+      <h1>旅行实验室</h1>
+      <p>
+        旅行相关的产出都放在这里：路线规划路书、驾车路线图、动态示意图与控制台。
+        每份案例都保留真实入口，可以点开、缩放、拖动慢慢看。
+      </p>
+    </header>
+    <section class="section">
+      <div class="work-grid collection-grid">
+        {cases.map((c) => (
+          <a class="work-card" href={c.href}>
+            <div class="card-ph" aria-hidden="true"><span class="stamp">{c.tag}</span></div>
+            <div class="work-card-body">
+              <span class="meta">案例 · Case</span>
+              <h3>{c.title}</h3>
+              <p>{c.desc}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+      <p class="exhibit-note">
+        注：地图底图与瓦片来自 OpenStreetMap / Esri / OpenTopoMap 公共源，国内加载偶有延迟，属正常现象。
+      </p>
+    </section>
+    <div class="notes-more">
+      <a class="button" href="/">返回首页</a>
+    </div>
+  </main>
+</BaseLayout>

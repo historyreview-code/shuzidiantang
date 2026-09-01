@@ -587,6 +587,18 @@ p { margin-bottom: 0; }
   border-bottom: 1px solid var(--line);
   background: var(--paper-3);
 }
+.series-frame-empty {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(260px 160px at 30% 24%, rgba(180, 85, 30, 0.07), transparent 70%),
+    var(--paper-2);
+}
+.series-frame-empty .stamp {
+  transform: rotate(-6deg);
+}
+.series-card-pending { opacity: 0.72; }
 .series-frame img {
   width: 100%;
   aspect-ratio: 16 / 9;
