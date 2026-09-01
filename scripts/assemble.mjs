@@ -348,7 +348,7 @@ function injectOgImage(notesDistDir, file, stem) {
 
 // --- 公开手记 ---
 const PUBLIC_NOTES_DIR = path.join(ROOT, 'notes');
-const publicItems = collectNotes(PUBLIC_NOTES_DIR, /\s*·\s*数字殿堂.*$/);
+const publicItems = collectNotes(PUBLIC_NOTES_DIR, /\s*·\s*(数字殿堂|劳伦斯在上海).*$/);
 const placeholderPublic =
   '<div class="item"><span class="date">筹备中</span><span class="txt">第一篇手记撰写中<small>每天一篇 · 敬请期待</small></span></div>';
 
@@ -390,7 +390,7 @@ function buildRss(items) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>数字殿堂 · 手记</title>
+    <title>劳伦斯在上海 · 手记</title>
     <link>https://shuzidiantang.com/</link>
     <description>馆主的手记与经验分享：每天一篇，记录作品开发与生活见闻。</description>
     <language>zh-CN</language>

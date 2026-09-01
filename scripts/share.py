@@ -188,9 +188,9 @@ def render_og(title, meta_line, desc):
     # 左上: 朱印 logo + 品牌行
     lw, lh = draw_seal(img, 46, 40, 62)
     brand_font = load_font("cn", 27)
-    bbox = draw.textbbox((0, 0), "数字殿堂 · 手记", font=brand_font)
+    bbox = draw.textbbox((0, 0), "劳伦斯在上海 · 手记", font=brand_font)
     draw.text((46 + lw + 18 - bbox[0], 40 + lh / 2 - 14 - bbox[1]),
-              "数字殿堂 · 手记", font=brand_font, fill=CYAN)
+              "劳伦斯在上海 · 手记", font=brand_font, fill=CYAN)
     en_font = load_font("en", 15)
     draw.text((46 + lw + 18, 40 + lh / 2 + 8), "SHUZIDIANTANG.COM",
               font=en_font, fill=CYAN_DIM)
@@ -260,7 +260,7 @@ def collect_notes():
             continue
         raw = open(os.path.join(NOTES_DIR, f), encoding="utf-8").read()
         tm = re.search(r"<title>([^<]+)</title>", raw)
-        title = re.sub(r"\s*·\s*数字殿堂.*$", "", tm.group(1)).strip() if tm else m.group(2)
+        title = re.sub(r"\s*·\s*(数字殿堂|劳伦斯在上海).*$", "", tm.group(1)).strip() if tm else m.group(2)
         dm = re.search(r'<meta name="description" content="([^"]*)"', raw)
         desc = dm.group(1).strip() if dm else ""
         cm = re.search(r"分类[:：]\s*([^<]+)", raw)

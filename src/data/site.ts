@@ -1,7 +1,7 @@
 export const site = {
-  name: '数字殿堂',
-  title: '数字殿堂 · 劳伦斯在上海',
-  description: '劳伦斯在上海的个人数字作品馆：地球、星空、游戏与手记，每件展品都有真实入口。',
+  name: '劳伦斯在上海',
+  title: '劳伦斯在上海 · 个人主站',
+  description: '劳伦斯在上海的个人主站：数字作品、旅行实验室与手记。',
   url: 'https://shuzidiantang.com',
   social: [
     {
