@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout current="works" title="手绘风小红书卡 · 旅行实验室" description="输入行程基础数据，自动生成手绘水彩风行程卡片与小红书封面；网页版在手机上随时可查。">
+  <main id="content" class="page">
+    <a class="back-link" href="/travel/">← 旅行实验室</a>
+
+    <div class="nameplate">
+      <span class="np-num">NO.02 · TRAVEL LAB</span>
+      <h1 class="np-title">手绘风小红书卡</h1>
+      <div class="np-chips">
+        <span>trip.yaml 驱动</span>
+        <span>手绘水彩</span>
+        <span>自动出图</span>
+        <span>手机友好</span>
+      </div>
+      <p class="np-desc">输入行程的基础数据，自动生成手绘水彩风的行程卡片与小红书封面；网页版保留，在手机上随时可查。</p>
+    </div>
+
+    <section class="section">
+      <div class="xhs-flow">
+        <div class="flow-step"><b>①</b><span>基础数据</span><p>站点名称 · 坐标 · 天数 · 风格偏好</p></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step"><b>②</b><span>自动测算出图</span><p>道路测算 + 手绘水彩渲染</p></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step"><b>③</b><span>成片输出</span><p>小红书封面 · 行程卡 · 移动端版</p></div>
+      </div>
+      <figure class="xhs-hero">
+        <img src="/travel/xhs/lab-watercolor.webp" alt="手绘水彩风路线图" loading="lazy" />
+        <figcaption>手绘水彩风路线图：底图 © Stamen Design · © OpenStreetMap</figcaption>
+      </figure>
+      <div class="xhs-row">
+        <figure>
+          <img src="/travel/xhs/xhs-cover.webp" alt="小红书封面卡" loading="lazy" />
+          <figcaption>小红书封面卡</figcaption>
+        </figure>
+        <figure>
+          <img src="/travel/xhs/xhs-card.webp" alt="行程卡" loading="lazy" />
+          <figcaption>行程卡</figcaption>
+        </figure>
+        <figure>
+          <img src="/travel/xhs/xhs-card-mobile.webp" alt="移动端行程卡" loading="lazy" />
+          <figcaption>移动端版 · 手机网页查询</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <details class="tech-details">
+      <summary>工程细节 · TECH NOTES</summary>
+      <ul>
+        <li>输入：行程工作区里一份 trip.yaml（stops/legs/天数/风格），无需手绘</li>
+        <li>输出：手绘水彩地图、路线图、小红书封面与行程卡，自动命名进工作区</li>
+        <li>底图：水彩底图 © Stamen Design · © OpenStreetMap（自然地理参考 Natural Earth）</li>
+        <li>查询：生成的卡片保留网页版，手机浏览器直接看，分享即发链接</li>
+      </ul>
+    </details>
+  </main>
+</BaseLayout>
+
+<style>
+  .xhs-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .flow-step {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+  .flow-step b {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid var(--amber);
+    border-radius: 50%;
+    color: var(--amber);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+  .flow-step span {
+    display: block;
+    font-family: var(--serif);
+    font-size: 1.05rem;
+  }
+  .flow-step p {
+    margin-top: 6px;
+    color: var(--ink-3);
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .flow-arrow {
+    align-self: center;
+    color: var(--amber);
+    font-family: var(--mono);
+    font-size: 1.2rem;
+  }
+  .xhs-hero {
+    margin: 0 0 20px;
+  }
+  .xhs-hero img {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+  .xhs-hero figcaption {
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-align: center;
+    margin-top: 8px;
+  }
+  @media (max-width: 720px) {
+    .xhs-flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); align-self: center; }
+  }
+</style>

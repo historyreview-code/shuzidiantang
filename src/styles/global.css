@@ -707,7 +707,7 @@ p { margin-bottom: 0; }
 .play-zone iframe {
   display: block;
   width: 100%;
-  height: 760px;
+  height: min(900px, 86vh);
   border: 0;
   background: var(--paper);
 }

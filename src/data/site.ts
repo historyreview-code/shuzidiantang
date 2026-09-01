@@ -114,12 +114,12 @@ export const cosmosSeries = [
   { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
-// 旅行系列：站内展示真实产出（活路书/路线图/小红书卡）；英伦漫记在首页「系列推荐位」单独展示不重复；
-// 旅行视频生成工具留空占位，后补。
+// 旅行系列：旅行实验室 = 本章总目录（/travel/），位置在作品流之后、天文系列之前。
+// 展品：活路书 / 手绘风小红书卡；旅行视频生成留空占位，后补。
 export const travelSeries = [
-  { title: '旅行实验室', sub: '路线 · 路书 · 小红书卡', href: '/travel/', img: '/assets/img/travel/lab.webp' },
+  { title: '旅行实验室', sub: '本章总目录 · 路线 / 路书 / 卡片', href: '/travel/', img: '/assets/img/travel/lab.webp' },
   { title: '活路书', sub: '英国自驾环线 · 交互路书', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp' },
-  { title: '驾车路线图', sub: '英国自驾环线 · 静态出图', href: '/travel/uk-route/', img: '/assets/img/travel/uk-route.webp' },
+  { title: '手绘风小红书卡', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
   { title: '旅行视频生成', sub: '照片自动编排成片 · 后补', href: '', img: '', pending: true },
 ];
 
