@@ -139,10 +139,11 @@ p { margin-bottom: 0; }
   opacity: 0;
 }
 .paper-intro .intro-stamp {
-  width: 96px;
+  min-width: 96px;
   height: 96px;
+  padding: 0 12px;
   border-width: 3px;
-  font-size: 2rem;
+  font-size: 1.9rem;
   opacity: 0;
 }
 .paper-intro.play .intro-stamp {
@@ -185,6 +186,7 @@ p { margin-bottom: 0; }
   line-height: 1;
   position: relative;
   flex: none;
+  white-space: nowrap;
 }
 .stamp::after {
   content: "";
@@ -233,8 +235,9 @@ p { margin-bottom: 0; }
   text-decoration: none;
 }
 .brand-mark {
-  width: 40px;
+  min-width: 40px;
   height: 40px;
+  padding: 0 7px;
   display: grid;
   place-items: center;
   border: 2px solid var(--amber);
@@ -242,8 +245,10 @@ p { margin-bottom: 0; }
   color: var(--amber);
   background: rgba(180, 85, 30, 0.05);
   font-family: var(--serif);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 .brand-copy strong {
   display: block;
@@ -373,7 +378,7 @@ p { margin-bottom: 0; }
   gap: 14px;
   margin-bottom: 26px;
 }
-.hero-kicker-row .stamp { width: 34px; height: 34px; font-size: 0.7rem; border-width: 1.5px; letter-spacing: 0; }
+.hero-kicker-row .stamp { min-width: 34px; height: 34px; padding: 0 6px; font-size: 0.66rem; border-width: 1.5px; letter-spacing: 0; }
 .hero-title {
   margin: 0 0 26px;
   font-family: var(--serif);
@@ -458,20 +463,32 @@ p { margin-bottom: 0; }
 }
 .exhibit-dots {
   display: flex;
-  gap: 7px;
-  margin: 12px 6px 0;
+  gap: 2px;
+  margin: 10px 2px 0;
 }
 .exhibit-dots button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+.exhibit-dots button::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: 9px;
   height: 9px;
-  padding: 0;
+  transform: translate(-50%, -50%);
   border: 1px solid var(--amber);
   border-radius: 50%;
   background: transparent;
-  cursor: pointer;
   transition: background 0.18s ease;
 }
-.exhibit-dots button.on { background: var(--amber); }
+.exhibit-dots button.on::after { background: var(--amber); }
 .exhibit-dots button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .exhibit-label {
   display: flex;
@@ -479,7 +496,7 @@ p { margin-bottom: 0; }
   gap: 12px;
   padding: 16px 6px 4px;
 }
-.exhibit-label .stamp { width: 34px; height: 34px; font-size: 0.7rem; border-width: 1.5px; letter-spacing: 0; }
+.exhibit-label .stamp { min-width: 34px; height: 34px; padding: 0 6px; font-size: 0.66rem; border-width: 1.5px; letter-spacing: 0; }
 .exhibit-label span {
   color: var(--ink-3);
   font-family: var(--mono);
@@ -797,10 +814,11 @@ a.work-card:hover {
 .recommend p { color: var(--ink-2); font-size: 0.95rem; }
 .recommend .yt {
   display: inline-block;
-  margin-top: 12px;
+  margin-top: 10px;
+  padding: 8px 0;
   color: var(--ink-3);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-decoration: none;
   border-bottom: 1px dashed var(--line-strong);
@@ -1065,6 +1083,8 @@ a.social-row:hover { color: var(--amber); }
 .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
 .footer-links a,
 .footer-links span {
+  display: inline-block;
+  padding: 8px 0;
   color: var(--ink-2);
   text-decoration: none;
 }
