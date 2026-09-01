@@ -467,8 +467,8 @@ p { margin-bottom: 0; }
   margin: 10px 2px 0;
 }
 .exhibit-dots button {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border: none;
   background: transparent;
@@ -1078,13 +1078,18 @@ a.social-row:hover { color: var(--amber); }
 }
 .site-footer p { margin: 4px 0 0; }
 .footer-beian { margin-top: 10px; font-size: 0.8rem; }
-.footer-beian a { color: var(--ink-3); text-decoration: none; }
+.footer-beian a {
+  display: inline-block;
+  padding: 8px 0;
+  color: var(--ink-3);
+  text-decoration: none;
+}
 .footer-beian a:hover { color: var(--amber); }
 .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
 .footer-links a,
 .footer-links span {
   display: inline-block;
-  padding: 8px 0;
+  padding: 8px 10px;
   color: var(--ink-2);
   text-decoration: none;
 }
