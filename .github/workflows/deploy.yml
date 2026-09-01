@@ -56,6 +56,13 @@ jobs:
         with:
           name: site-dist
           path: dist
+      - name: 诊断 token（只打印长度与空白检查，不打印值）
+        env:
+          T: ${{ secrets.EDGEONE_PAGES_API_TOKEN }}
+        run: |
+          echo "token_length=${#T}"
+          if [ -z "$T" ]; then echo "token_empty=yes"; fi
+          case "$T" in *[[:space:]]*) echo "token_has_whitespace=yes";; *) echo "token_has_whitespace=no";; esac
       - name: 部署到 EdgeOne Pages
         uses: TencentEdgeOne/edgeone-pages-action@v1
         with:
