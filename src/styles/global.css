@@ -530,7 +530,90 @@ p { margin-bottom: 0; }
 }
 .section-head .side { text-align: right; }
 
-/* ---------- 作品卡区 ---------- */
+/* ---------- 作品卡片流（首页长滚动） ---------- */
+.works-stream {
+  display: grid;
+  gap: 64px;
+}
+.work-stream-item {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 44px;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: none;
+}
+.ws-thumb {
+  border: 1px solid var(--line);
+  background: var(--paper-3);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.work-stream-item:hover .ws-thumb {
+  transform: rotate(-0.6deg) scale(1.012);
+  box-shadow: var(--shadow-lift);
+}
+.ws-thumb img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.ws-num {
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ws-body h3 {
+  margin: 12px 0 10px;
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  line-height: 1.15;
+}
+.ws-body p {
+  max-width: 560px;
+  color: var(--ink-2);
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+.ws-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-strong);
+}
+.ws-status {
+  padding: 3px 10px;
+  border: 1px solid var(--amber);
+  border-radius: 999px;
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+.ws-enter {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  transition: color 0.16s ease, transform 0.16s ease;
+}
+.work-stream-item:hover .ws-enter {
+  color: var(--amber);
+  transform: translateX(4px);
+}
+.work-stream-item:nth-child(even) .ws-thumb { order: 2; }
+@media (max-width: 720px) {
+  .works-stream { gap: 44px; }
+  .work-stream-item { grid-template-columns: 1fr; gap: 18px; }
+  .work-stream-item:nth-child(even) .ws-thumb { order: 0; }
+}
+
+/* ---------- 作品卡区（作品馆页网格） ---------- */
 .work-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

@@ -30,12 +30,12 @@ export const site = {
   },
 };
 
-// 首页作品卡区：按 v3.1 重要性排序。href 为空 = 入馆筹备中（灰卡）。
+// 首页作品卡片流：不再分厅，直接按卡片平铺。顺序 = 重要程度。
 export const works = [
   {
     id: 'earth',
     title: '数字地球',
-    eyebrow: '地球厅',
+    eyebrow: '3D 数据可视化',
     href: '/earth/',
     image: '/assets/img/earth.webp',
     summary: '把全球大学、世界遗产与 500 强总部放到同一颗可旋转的数字地球上。',
@@ -45,22 +45,12 @@ export const works = [
   {
     id: 'cosmos',
     title: '天文馆',
-    eyebrow: '星空放映厅',
+    eyebrow: '交互科普影像',
     href: '/cosmos/',
     image: '/assets/img/cosmos.webp',
-    summary: '宇宙之旅五集连播与宇宙演化全景，用自动放映厅承载科普叙事和旁白。',
+    summary: '宇宙之旅五集连播与宇宙演化全景，自动放映厅承载科普叙事和旁白。',
     tags: ['科普', '影像', '叙事'],
     status: '已上线',
-  },
-  {
-    id: 'games',
-    title: '游戏厅',
-    eyebrow: '网页游戏实验',
-    href: '/games/',
-    image: '/assets/img/games/games-hall.png',
-    summary: '数字扫雷、五色石补天记、像素打砖块与记忆自测，把小规则做成可玩的网页作品。',
-    tags: ['Canvas', 'Game Design', 'AI 协作'],
-    status: '4 款可玩',
   },
   {
     id: 'clay',
@@ -68,9 +58,9 @@ export const works = [
     eyebrow: 'Blender 手作',
     href: '/clay/',
     image: '/assets/img/clay/10.webp',
-    summary: '十只用 Blender 捏出来的小动物：一只一只手作入馆，图鉴加全家福。',
+    summary: '十七只用 Blender 捏出来的小动物：一只一只手作入馆，图鉴加全家福。',
     tags: ['Blender', '手作', '图鉴'],
-    status: '10 只入馆',
+    status: '17 只入馆',
   },
   {
     id: 'dataism',
@@ -91,6 +81,46 @@ export const works = [
     summary: '从 CAD 白模到材质再到成片：一条可以拖动的效果图流水线。',
     tags: ['CAD', '渲染', '流程'],
     status: '4 阶段滑杆',
+  },
+  {
+    id: 'numsweeper',
+    title: '数字扫雷',
+    eyebrow: '网页游戏 · 益智策略',
+    href: '/games/numsweeper.html',
+    image: '/assets/img/games/numsweeper.png',
+    summary: '把传统扫雷改造成数字风险决策：一条 250 的生死线，加上概率、策略和语音反馈。',
+    tags: ['概率', '策略', '移动端'],
+    status: '可试玩',
+  },
+  {
+    id: 'naoliceshi',
+    title: '脑力测试',
+    eyebrow: '网页游戏 · 记忆自测',
+    href: '/games/naoliceshi.html',
+    image: '/assets/img/games/naoliceshi.webp',
+    summary: '短期记忆自测：看数字、记数字、报数字，看看你的脑力水位。',
+    tags: ['记忆', '自测', '语音'],
+    status: '新升级',
+  },
+  {
+    id: 'pixel-breaker',
+    title: '像素打砖块',
+    eyebrow: '网页游戏 · 街机',
+    href: '/games/pixel-breaker.html',
+    image: '/assets/img/games/pixel-breaker.webp',
+    summary: '像素风打砖块：接住小球，把砖墙一块块敲掉。',
+    tags: ['Canvas', '街机', '手感'],
+    status: '可试玩',
+  },
+  {
+    id: 'wuse',
+    title: '五色石补天记',
+    eyebrow: '网页游戏 · 叙事',
+    href: '/games/wuse-bu-tian/',
+    image: '/assets/img/games/wuse.webp',
+    summary: '以女娲补天为背景的小游戏：集齐五色石，把天补起来。',
+    tags: ['神话', '叙事', 'AI 协作'],
+    status: '可试玩',
   },
 ];
 

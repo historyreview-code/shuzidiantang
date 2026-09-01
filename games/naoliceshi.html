@@ -4,307 +4,520 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 <title>短期记忆自测 - 脑力训练游戏</title>
+<meta name="description" content="短期记忆趣味自测：记忆物品、干扰答题，再在两个时间点回忆，约3分钟生成记忆报告。大字、高对比、语音朗读适老设计，数据全程留在本机。仅供自娱参考，不构成医疗诊断。">
+<meta name="theme-color" content="#f6eedd">
+<link rel="canonical" href="https://shuzidiantang.com/games/naoliceshi.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="短期记忆自测 · 脑力训练游戏">
+<meta property="og:description" content="记忆物品、干扰答题、双时点回忆，约3分钟生成记忆报告。适老大字与语音朗读，数据全程留在本机。">
+<meta property="og:url" content="https://shuzidiantang.com/games/naoliceshi.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23c2620a'/%3E%3Crect x='6' y='6' width='88' height='88' rx='19' fill='none' stroke='%23fff8ec' stroke-opacity='.55' stroke-width='2'/%3E%3Ctext x='50' y='70' font-size='52' text-anchor='middle' fill='%23fff8ec' font-family='serif' font-weight='700'%3E%E5%BF%86%3C/text%3E%3C/svg%3E">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ===========================================================
+     暖纸墨编辑风 · 设计令牌
+     =========================================================== */
   :root {
-    --bg: #fef7ee;
-    --card: #ffffff;
-    --text: #1a1a1a;
-    --primary: #d97706;
-    --primary-hover: #b45309;
-    --success: #d97706;
-    --danger: #dc2626;
-    --muted: #92400e;
-    --border: #fde68a;
-    --radius: 12px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --bg: #f6eedd;
+    --card: #fffdf8;
+    --paper: #ffffff;
+    --soft: #faf3e3;
+    --soft-2: #f4e8cf;
+    --primary-soft: #faeed8;
+    --ink: #2e2114;
+    --text: #43371f;
+    --muted: #7d6a4f;
+    --primary: #c2620a;
+    --primary-hover: #9e5007;
+    --success: #2f7d4f;
+    --warning: #c2620a;
+    --danger: #bf3b2b;
+    --border: #eddfc2;
+    --border-strong: #dcc394;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(97,66,22,.06), 0 14px 34px -16px rgba(97,66,22,.28);
     --fs-base: 20px;
     --fs-lg: 22px;
-    --fs-xl: 26px;
+    --fs-xl: 28px;
+    --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
   }
-  body.large-text { --fs-base: 22px; --fs-lg: 24px; --fs-xl: 28px; }
-  body.high-contrast { --bg: #1a0f05; --card: #1c1308; --text: #fde68a; --border: #92400e; --muted: #d97706; --shadow: 0 0 0 1px #92400e; }
-  body.high-contrast .option-btn { background: #222; border-color: #555; color: #eee; }
-  body.high-contrast .option-btn:hover { background: #333; }
-  body.high-contrast .step-info { background: #1a1a1a; }
-  body.high-contrast .object-card { background: #1a1a1a; border-color: #555; }
-  body.high-contrast .result-detail { background: #1a1a1a; }
-  body.high-contrast .suggestion-box { background: #1a1a1a; border-color: #555; color: #ccc; }
-  body.high-contrast .phase-badge { background: #222; color: #4ade80; }
-  body.high-contrast #progress-bar-wrap { background: #222; }
-  body.high-contrast .history-item { background: #1a1a1a; border-color: #333; }
-  body.high-contrast .toggle-btn { background: #222; border-color: #555; color: #eee; }
-  body.high-contrast .diff-btn { background: #222; color: #eee; }
-  body.high-contrast .diff-btn:hover { border-color: #4ade80; background: #1a3a1a; }
-  body.high-contrast .diff-btn.selected { border-color: #4ade80; background: #0d2f0d; color: #4ade80; }
-  body.high-contrast .diff-btn .diff-sub { color: #aaa; }
-  body.high-contrast .study-ring-bg { stroke: #333; }
-  body.high-contrast .recall-confirm-box { background: #111; border: 1px solid #555; }
-  body.high-contrast .phase-notice-inner { background: #111; border: 1px solid #555; }
-
-  .diff-selector { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
-  .diff-btn { flex: 1; max-width: 120px; padding: 12px 8px; border: 2px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-  .diff-btn:hover { border-color: var(--primary); background: #fffbeb; }
-  .diff-btn.selected { border-color: var(--primary); background: #fef3c7; color: #92400e; }
-  .diff-btn .diff-sub { display: block; font-size: 0.7rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
-
-  .study-ring-wrap { position: relative; width: 100px; height: 100px; margin: 16px auto; }
-  .study-ring-svg { transform: rotate(-90deg); }
-  .study-ring-bg { fill: none; stroke: #fde68a; stroke-width: 6; }
-  .study-ring-bar { fill: none; stroke: #d97706; stroke-width: 6; stroke-linecap: round; }
-  .study-ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: 700; color: #d97706; }
-
-  .recall-confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.2s ease-out; padding: 20px; }
-  .recall-confirm-box { background: var(--card); border-radius: var(--radius); padding: 28px 24px; max-width: 300px; width: 100%; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
-  .recall-confirm-box p { font-size: 1rem; color: var(--text); margin-bottom: 16px; }
-  .recall-confirm-actions { display: flex; gap: 10px; justify-content: center; }
-
-  .result-score.success { color: #d97706; }
-  .result-score.pass { color: var(--warning); }
-  .result-score.fail { color: var(--danger); }
-
-  .screen { animation: fadeIn 0.3s ease-out; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .result-score { animation: scorePop 0.4s ease-out; }
-  @keyframes scorePop { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
-
-  .phase-notice { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.25s ease-out; padding: 24px; }
-  .phase-notice-inner { background: var(--card); border-radius: var(--radius); padding: 32px 28px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.2); animation: scorePop 0.35s ease-out; }
-  .phase-notice-inner h2 { font-size: 1.4rem; margin-bottom: 8px; }
-  .phase-notice-inner p { font-size: 0.95rem; margin-bottom: 16px; }
-  .phase-notice-inner .phase-notice-detail { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
-
-  .chart-wrap { margin: 12px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .chart-inner { display: flex; align-items: flex-end; gap: 4px; height: 100px; min-width: 100%; padding: 0 4px; }
-  .chart-bar { flex: 1; min-width: 12px; background: var(--primary); border-radius: 4px 4px 0 0; position: relative; transition: height 0.3s; cursor: pointer; }
-  .chart-bar:hover { opacity: 0.8; }
-  .chart-bar .chart-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 0.5rem; white-space: nowrap; color: var(--muted); }
-  .chart-bar .chart-val { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; font-weight: 600; color: var(--text); white-space: nowrap; }
-
-  .share-result { margin-top: 12px; }
-  .share-btn { background: #1da1f2; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.9rem; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: opacity 0.15s; }
-  .share-btn:active { opacity: 0.8; }
-  .share-btn.copy { background: var(--primary); }
-
-  .tts-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; margin-left: 6px; vertical-align: middle; transition: background 0.2s; }
-  .tts-indicator.on { background: var(--success); }
-  .tts-indicator.off { background: #d1d5db; }
-  .btn-gray { background: var(--muted); }
-  .btn-gray:hover { background: #4b5563; }
-  .btn, .option-btn, .toggle-btn, .diff-btn, .share-btn { touch-action: manipulation; }
-
-  @media (max-width: 420px) {
-    body { padding: 10px; }
-    .card { padding: 20px 16px; border-radius: 10px; }
-    .objects-grid { gap: 8px; }
-    .object-card { width: 80px; max-width: 30vw; flex: 0 0 calc(50% - 6px); padding: 10px 8px; }
-    .object-card .emoji { font-size: 2.4rem; }
-    .object-card .label { font-size: 0.85rem; }
-    .btn { padding: 14px 36px; font-size: 1.1rem; }
-    .timer { font-size: 1.8rem; }
-    h1 { font-size: calc(var(--fs-xl, 1.6rem) * 0.9); }
-    .diff-btn { font-size: 0.85rem; padding: 10px 6px; }
-    .toggle-btn { padding: 6px 10px; font-size: 0.75rem; }
-  }
-  @media (max-width: 360px) {
-    .object-card { width: 72px; flex: 0 0 calc(50% - 5px); max-width: 28vw; padding: 8px 6px; }
-    .object-card .emoji { font-size: 1.8rem; }
-    .object-card .label { font-size: 0.75rem; }
-    .btn { padding: 12px 28px; font-size: 1rem; }
-    .option-btn { padding: 12px 16px; font-size: 0.95rem; }
-  }
+  body.large-text { --fs-base: 22px; --fs-lg: 24px; --fs-xl: 30px; }
 
   html { font-size: var(--fs-base); }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif;
     background: var(--bg);
+    background-image:
+      radial-gradient(1100px 560px at 12% -6%, #fdf4de 0%, rgba(253,244,222,0) 62%),
+      radial-gradient(900px 520px at 108% 106%, #f1dfba 0%, rgba(241,223,186,0) 56%);
+    background-attachment: fixed;
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    transition: background 0.2s, color 0.2s;
+    padding: 24px 20px;
+    transition: background .3s, color .3s;
   }
-  .container { max-width: 680px; width: 100%; }
+  /* 纸纹颗粒 */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.045'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  ::selection { background: #f2ddb4; }
+
+  .container { max-width: 680px; width: 100%; position: relative; z-index: 1; }
   .card {
     background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 32px 28px;
+    border: 1px solid #eee0c4;
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.65), var(--shadow);
+    padding: 30px 30px 34px;
     text-align: center;
-    transition: background 0.2s;
+    transition: background .3s;
   }
 
-  h1 { font-size: var(--fs-xl, 1.6rem); font-weight: 700; margin-bottom: 8px; }
-  h2 { font-size: calc(var(--fs-base) * 1.25); font-weight: 600; margin-bottom: 12px; }
-  p  { font-size: 1rem; color: var(--muted); margin-bottom: 20px; }
+  h1 { font-family: var(--serif); font-size: var(--fs-xl); font-weight: 700; letter-spacing: .05em; color: var(--ink); margin-bottom: 8px; }
+  h2 { font-size: calc(var(--fs-base) * 1.2); font-weight: 600; margin-bottom: 12px; color: var(--ink); }
+  p  { font-size: 1rem; color: var(--muted); margin-bottom: 18px; }
 
-  .btn {
-    display: inline-block;
-    background: var(--primary);
-    color: #fff;
-    font-size: 1.25rem;
-    font-weight: 600;
-    padding: 16px 52px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn:hover { background: var(--primary-hover); }
-  .btn:active { transform: scale(0.97); }
-  .btn-sm { padding: 12px 28px; font-size: 1rem; }
-  .btn-success { background: var(--success); }
-  .btn-success:hover { background: #15803d; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 6px; }
 
   .hidden { display: none !important; }
 
-  /* Toolbar */
-  .toolbar {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    margin-bottom: 16px;
+  /* ===========================================================
+     顶部常驻：阶段进度器 + 工具栏
+     =========================================================== */
+  .stepper {
+    display: flex; justify-content: center; align-items: flex-start;
+    list-style: none; margin: 2px 0 4px; padding: 0 4px;
   }
+  .step { flex: 1; max-width: 74px; position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .step::before {
+    content: ''; position: absolute; top: 15px; left: calc(-50% + 16px); right: calc(50% + 16px);
+    height: 2px; background: var(--border); border-radius: 1px;
+  }
+  .step:first-child::before { display: none; }
+  .step .dot {
+    width: 31px; height: 31px; border-radius: 50%;
+    background: var(--card); border: 2px solid var(--border-strong);
+    color: var(--muted); font-family: var(--serif); font-weight: 700; font-size: .85rem;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    transition: background .3s, border-color .3s, color .3s, box-shadow .3s;
+  }
+  .step .lbl { font-size: .72rem; color: var(--muted); letter-spacing: .08em; transition: color .3s; }
+  .step.active .dot { background: var(--primary); border-color: var(--primary); color: #fff8ec; box-shadow: 0 3px 10px -2px rgba(160,86,10,.55); }
+  .step.active .lbl { color: var(--primary); font-weight: 700; }
+  .step.done .dot { background: var(--soft-2); border-color: var(--border-strong); color: #8a5a12; font-size: 0; }
+  .step.done .dot::after { content: '✓'; font-size: .8rem; }
+  .step.done .lbl { color: var(--muted); }
+
+  .toolbar { display: flex; gap: 8px; justify-content: center; margin: 12px 0 22px; }
   .toggle-btn {
-    background: #f3f4f6;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 0.85rem;
+    background: transparent; border: 1px solid var(--border-strong); border-radius: 999px;
+    padding: 7px 16px; font-size: .85rem; cursor: pointer; color: var(--muted);
+    transition: background .15s, color .15s, border-color .15s;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    font-family: inherit;
+  }
+  .toggle-btn:hover { background: var(--soft); color: var(--text); }
+  .toggle-btn.active { background: var(--primary); border-color: var(--primary); color: #fff8ec; }
+  .tts-indicator {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border-strong); margin-left: 2px; vertical-align: middle;
+    transition: background .2s;
+  }
+  .toggle-btn.active .tts-indicator { background: #fff8ec; }
+
+  /* ===========================================================
+     通用按钮
+     =========================================================== */
+  .btn {
+    display: inline-block;
+    background: var(--primary); color: #fff8ec;
+    font-size: 1.2rem; font-weight: 600; font-family: inherit;
+    padding: 15px 50px;
+    border: none; border-radius: 12px;
     cursor: pointer;
-    transition: background 0.12s;
-    color: var(--text);
-    -webkit-tap-highlight-color: transparent;
+    letter-spacing: .06em;
+    box-shadow: 0 4px 14px -4px rgba(160,86,10,.5);
+    transition: background .15s, transform .12s, box-shadow .2s;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .toggle-btn:hover { background: #e5e7eb; }
-  .toggle-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 7px 18px -5px rgba(160,86,10,.55); }
+  .btn:active { transform: translateY(0) scale(.98); }
+  .btn-sm { padding: 11px 26px; font-size: 1rem; border-radius: 10px; }
+  .btn-ghost {
+    background: transparent; color: var(--primary); border: 1.5px solid var(--border-strong);
+    box-shadow: none; font-size: .95rem; padding: 9px 26px;
+  }
+  .btn-ghost:hover { background: var(--primary-soft); border-color: var(--primary); box-shadow: none; }
+  .btn-gray { background: #8d7b60; box-shadow: none; }
+  .btn-gray:hover { background: #77684f; box-shadow: none; }
+  .btn, .option-btn, .toggle-btn, .diff-btn, .share-btn { touch-action: manipulation; }
 
-  /* Progress bar */
-  #progress-bar-wrap {
-    display: flex; align-items: center; gap: 0;
-    background: #e5e7eb; border-radius: 10px; overflow: hidden;
-    height: 28px; margin-bottom: 18px; padding: 0;
-    font-size: 0.7rem; font-weight: 600;
-  }
-  .progress-seg {
-    flex: 1; height: 100%; display: flex; align-items: center;
-    justify-content: center; transition: background 0.3s, color 0.3s;
-    color: var(--muted); border-right: 1px solid rgba(0,0,0,0.08);
-    white-space: nowrap; overflow: hidden;
-  }
-  .progress-seg:last-child { border-right: none; }
-  .progress-seg.active { background: var(--primary); color: #fff; }
-  .progress-seg.done { background: #fde68a; color: #92400e; }
+  /* ===========================================================
+     屏幕切换与动效
+     =========================================================== */
+  .screen { animation: fadeUp .38s cubic-bezier(.22,1,.36,1); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popIn { 0% { opacity: 0; transform: scale(.7); } 60% { transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 
-  /* Timer */
+  .pop-in { animation: popIn .5s cubic-bezier(.34,1.56,.64,1) backwards; }
+
+  /* ===========================================================
+     印章与欢迎页
+     =========================================================== */
+  .seal {
+    width: 56px; height: 56px; margin: 2px auto 16px;
+    background: var(--primary); color: #fff8ec;
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px -3px rgba(160,86,10,.55);
+    position: relative;
+  }
+  .seal::after { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(255,248,236,.55); border-radius: 8px; }
+
+  .lead { font-size: 1rem; }
+
+  .flow-note {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin: 16px 0 4px; padding: 14px 6px 12px;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .flow-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .flow-item i { font-style: normal; font-family: var(--serif); color: var(--primary); font-size: 1.02rem; font-weight: 700; }
+  .flow-item b { font-size: .82rem; color: var(--ink); font-weight: 600; }
+  .flow-item span { font-size: .68rem; color: var(--muted); }
+
+  .diff-label { font-size: .9rem; font-weight: 600; color: var(--ink); margin: 16px 0 8px; }
+  .diff-selector { display: flex; gap: 10px; justify-content: center; margin: 0 0 18px; }
+  .diff-btn {
+    flex: 1; max-width: 126px; padding: 13px 8px;
+    border: 2px solid var(--border); border-radius: var(--radius);
+    background: var(--paper); color: var(--text);
+    font-size: .95rem; font-weight: 600; font-family: inherit;
+    cursor: pointer; text-align: center;
+    transition: border-color .2s, background .2s, box-shadow .2s, transform .12s;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .diff-btn:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 6px 14px -8px rgba(160,86,10,.4); }
+  .diff-btn.selected {
+    border-color: var(--primary); background: var(--primary-soft); color: #8a4a08;
+    box-shadow: inset 0 0 0 1px var(--primary);
+  }
+  .diff-btn .diff-sub { display: block; font-size: .72rem; font-weight: 400; color: var(--muted); margin-top: 3px; }
+  .diff-btn.selected .diff-sub { color: #a9742c; }
+
+  /* ===========================================================
+     阶段页头
+     =========================================================== */
+  .phase-head { display: flex; flex-direction: column; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .phase-badge {
+    display: inline-block; background: var(--primary-soft); color: #8a4a08;
+    font-size: .85rem; font-weight: 700; padding: 5px 16px; border-radius: 999px;
+    letter-spacing: .05em;
+  }
+  .phase-sub { font-size: .85rem; color: var(--muted); }
+  .phase-title { font-family: var(--serif); letter-spacing: .03em; }
+
+  /* ===========================================================
+     学习阶段
+     =========================================================== */
+  .study-ring-wrap { position: relative; width: 118px; height: 118px; margin: 12px auto 6px; }
+  .study-ring-svg { transform: rotate(-90deg); }
+  .study-ring-bg { fill: none; stroke: var(--soft-2); stroke-width: 7; }
+  .study-ring-bar { fill: none; stroke: var(--primary); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .study-ring-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-family: var(--serif); font-size: 2rem; font-weight: 700; color: var(--primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .study-ring-text.warning { color: var(--danger); animation: pulse 1s ease-in-out infinite; }
+
+  .objects-grid { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 14px 0; }
+  .object-card {
+    background: var(--paper); border: 2px solid var(--border-strong); border-radius: var(--radius);
+    padding: 14px 10px 12px; width: 98px; text-align: center;
+    box-shadow: 0 3px 10px -4px rgba(97,66,22,.16);
+  }
+  .object-card .emoji { font-size: 3rem; display: block; margin-bottom: 4px; line-height: 1.15; }
+  .object-card .label { font-size: 1rem; font-weight: 700; color: var(--ink); letter-spacing: .04em; }
+  .study-hint { font-size: .75rem; color: var(--muted); margin-top: 6px; }
+
+  /* ===========================================================
+     干扰阶段
+     =========================================================== */
   .timer {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--primary);
-    margin: 16px 0;
+    font-family: var(--serif);
+    font-size: 1.7rem; font-weight: 700; color: var(--primary);
+    margin: 10px 0 4px; min-height: 1.5em;
+    font-variant-numeric: tabular-nums;
   }
   .timer.warning { color: var(--danger); animation: pulse 1s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 
-  /* Objects display */
-  .objects-grid {
-    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 12px 0;
-  }
-  .object-card {
-    background: #fffbeb; border: 2px solid var(--border); border-radius: 10px;
-    padding: 10px 8px; width: 80px; max-width: 30vw; text-align: center; transition: transform 0.2s;
-  }
-  .object-card .emoji { font-size: 2.8rem; display: block; margin-bottom: 4px; line-height: 1.2; }
-  .object-card .label { font-size: 1rem; font-weight: 700; color: var(--text); }
-
-  .phase-badge {
-    display: inline-block; background: #e0e7ff; color: var(--primary);
-    font-size: 0.85rem; font-weight: 600; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
-  }
-
-  /* Question */
-  .question-text { font-size: 1.35rem; font-weight: 600; margin: 16px 0; line-height: 1.5; }
-  .options { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .question-wrap { text-align: left; max-width: 500px; margin: 0 auto; }
+  .q-counter { font-size: .75rem; color: var(--muted); margin-bottom: 6px; letter-spacing: .1em; }
+  .question-text { font-size: 1.3rem; font-weight: 600; color: var(--ink); margin: 10px 0 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin: 0 0 10px; }
   .option-btn {
-    background: #f3f4f6; border: 2px solid var(--border); border-radius: 10px;
-    padding: 14px 20px; font-size: 1.05rem; cursor: pointer; transition: all 0.12s; text-align: left;
+    background: var(--paper); border: 2px solid var(--border); border-radius: 12px;
+    padding: 14px 20px; font-size: 1.05rem; font-family: inherit; color: var(--text);
+    cursor: pointer; transition: border-color .15s, background .15s, transform .1s; text-align: left;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .option-btn:hover { background: #e5e7eb; border-color: var(--primary); }
-  .option-btn:active { transform: scale(0.98); }
-  .option-btn.selected { background: #dbeafe; border-color: var(--primary); }
-  .option-btn.correct { background: #dcfce7; border-color: var(--success); }
-  .option-btn.wrong { background: #fee2e2; border-color: var(--danger); }
-  .feedback-text { font-size: 0.95rem; margin-top: 8px; font-weight: 600; }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-soft); }
+  .option-btn:active { transform: scale(.985); }
+  .option-btn.selected { background: var(--primary-soft); border-color: var(--primary); }
+  .option-btn.correct { background: #e9f4ec; border-color: var(--success); }
+  .option-btn.wrong { background: #fae9e6; border-color: var(--danger); animation: shake .3s; }
+  .option-btn:disabled { cursor: default; }
+  .feedback-text { font-size: .95rem; margin-top: 8px; font-weight: 600; min-height: 1.6em; }
   .feedback-text.correct { color: var(--success); }
   .feedback-text.wrong { color: var(--danger); }
 
-  /* Recall input */
-  .recall-grid {
-    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 16px 0;
+  /* ===========================================================
+     回忆阶段
+     =========================================================== */
+  .recall-hint { font-size: .9rem; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+  .recall-hint.full { color: var(--success); }
+  .recall-slots { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 6px 0 4px; }
+  .recall-slot {
+    width: 92px; min-height: 100px; padding: 8px 6px;
+    border: 2px dashed var(--border-strong); border-radius: var(--radius);
+    background: var(--soft); cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    transition: border-color .2s, background .2s;
+    -webkit-tap-highlight-color: transparent;
   }
-  .recall-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .recall-slot label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
-  .recall-slot input {
-    width: 120px; padding: 10px 12px; font-size: 1.1rem;
-    border: 2px solid var(--border); border-radius: 8px; text-align: center;
-    outline: none; transition: border-color 0.12s;
+  .recall-slot .slot-num { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: var(--muted); opacity: .55; }
+  .recall-slot .slot-lbl { font-size: .7rem; color: var(--muted); }
+  .recall-slot.filled { border-style: solid; border-color: var(--primary); background: var(--paper); animation: popIn .35s cubic-bezier(.34,1.56,.64,1); }
+  .recall-slot .emoji { font-size: 2.1rem; line-height: 1.2; }
+  .recall-slot .label { font-size: .85rem; font-weight: 700; color: var(--ink); }
+  .recall-slot .slot-hint { font-size: .6rem; color: var(--muted); margin-top: 2px; }
+  .recall-pool { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin: 14px 0 4px; }
+  .recall-opt {
+    background: var(--paper); border: 1.5px solid var(--border-strong); border-radius: 999px;
+    padding: 9px 17px; font-size: 1rem; font-family: inherit; color: var(--text);
+    cursor: pointer; transition: border-color .15s, background .15s, opacity .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .recall-slot input:focus { border-color: var(--primary); }
-  body.large-text .recall-slot input { width: 150px; }
+  .recall-opt:hover { border-color: var(--primary); background: var(--primary-soft); }
+  .recall-opt:active { transform: scale(.96); }
+  .recall-opt.used { opacity: .32; cursor: default; }
+  #recall-submit.ready { animation: readyGlow 1.6s ease-in-out infinite; }
+  @keyframes readyGlow {
+    0%,100% { box-shadow: 0 4px 14px -4px rgba(160,86,10,.5); }
+    50% { box-shadow: 0 4px 22px -2px rgba(160,86,10,.85); }
+  }
+  .recall-inline-result {
+    margin: 14px 0 0; padding: 12px 14px;
+    background: #e9f4ec; border-radius: 10px; font-size: .9rem; color: var(--text);
+  }
+  .recall-inline-result .inline-answers { font-size: .8rem; color: var(--muted); }
 
-  .step-info {
-    font-size: 0.85rem; color: var(--muted); margin-top: 12px;
-    padding: 8px; background: #f9fafb; border-radius: 8px;
+  /* 确认弹层 */
+  .recall-confirm-overlay, .phase-notice {
+    position: fixed; inset: 0;
+    background: rgba(46,33,20,.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 24px;
+    animation: fadeUp .22s ease-out;
+    backdrop-filter: blur(2px);
+  }
+  .recall-confirm-box {
+    background: var(--card); border-radius: 16px; padding: 26px 24px;
+    max-width: 320px; width: 100%; text-align: center;
+    border: 1px solid var(--border); box-shadow: 0 18px 44px -14px rgba(30,20,8,.45);
+  }
+  .recall-confirm-box p { font-size: 1rem; color: var(--ink); margin-bottom: 16px; }
+  .recall-confirm-box .confirm-sub { font-size: .85rem; color: var(--muted); }
+  .recall-confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* 阶段过渡弹窗 */
+  .phase-notice { z-index: 200; }
+  .phase-notice-inner {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    padding: 30px 26px; max-width: 370px; width: 100%; text-align: center;
+    box-shadow: 0 18px 44px -14px rgba(30,20,8,.5);
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .phase-notice-inner h2 { font-family: var(--serif); font-size: 1.35rem; margin-bottom: 8px; letter-spacing: .04em; }
+  .phase-notice-inner p { font-size: .95rem; margin-bottom: 12px; color: var(--text); }
+  .phase-notice-inner .phase-notice-detail {
+    font-size: .85rem; color: var(--muted); margin-bottom: 20px; line-height: 1.6;
+    white-space: pre-line; text-align: left;
+    background: var(--soft); border-radius: 10px; padding: 10px 14px;
   }
 
-  /* Results */
-  .result-score { font-size: 2.5rem; font-weight: 800; margin: 16px 0; }
-  .result-score.pass { color: var(--success); }
-  .result-score.fail { color: var(--danger); }
-  .result-detail { text-align: left; margin: 12px 0; padding: 12px 16px; background: #f9fafb; border-radius: 8px; font-size: 0.95rem; }
-  .result-detail li { list-style: none; padding: 4px 0; }
-  .result-detail li::before { content: "• "; color: var(--muted); }
+  /* ===========================================================
+     结果页
+     =========================================================== */
+  .tier-chip {
+    display: inline-block; font-size: 1rem; font-weight: 700;
+    padding: 6px 20px; border-radius: 999px; letter-spacing: .08em; margin-bottom: 2px;
+  }
+  .tier-chip.tier-excellent { background: #e8f3ec; color: #256b43; }
+  .tier-chip.tier-good { background: var(--primary-soft); color: #8a4a08; }
+  .tier-chip.tier-fair { background: #f7ead2; color: #96590d; }
+  .tier-chip.tier-attention { background: #fae9e6; color: #a3301f; }
+  .tier-text-excellent { color: var(--success); }
+  .tier-text-good { color: var(--warning); }
+  .tier-text-fair { color: #96590d; }
+  .tier-text-attention { color: var(--danger); }
+
+  .score-ring-wrap { position: relative; width: 152px; height: 152px; margin: 14px auto 2px; }
+  .score-ring-bg { fill: none; stroke: var(--soft-2); stroke-width: 8; }
+  .score-ring-bar { fill: none; stroke: var(--primary); stroke-width: 8; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .result-score {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -58%);
+    font-family: var(--serif); font-size: 3.1rem; font-weight: 800; color: var(--ink);
+    font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .score-unit { position: absolute; top: 50%; left: 50%; transform: translate(-50%, 18%); font-size: .8rem; color: var(--muted); letter-spacing: .3em; }
+  .score-ring-wrap.score-anim { animation: popIn .45s cubic-bezier(.34,1.56,.64,1); }
+
+  .result-detail {
+    text-align: left; margin: 16px 0 0; padding: 6px 18px;
+    background: var(--soft); border-radius: 12px; font-size: .95rem;
+  }
+  .summary-head { font-weight: 700; padding: 10px 0 6px; }
+  .stat-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+  .stat-row:last-of-type { border-bottom: none; }
+  .stat-label { flex: 0 0 auto; min-width: 6.6em; color: var(--text); font-weight: 600; }
+  .stat-bar { flex: 1; height: 8px; border-radius: 4px; background: var(--soft-2); overflow: hidden; }
+  .stat-bar i { display: block; height: 100%; width: 0; border-radius: 4px; background: var(--primary); transition: width .9s cubic-bezier(.22,1,.36,1); }
+  .stat-val { flex: 0 0 auto; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .summary-objects { font-size: .8rem; color: var(--muted); padding: 8px 0 10px; }
 
   .suggestion-box {
-    background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px;
-    padding: 16px; margin: 16px 0; text-align: left; font-size: 0.95rem; color: #9a3412;
+    background: var(--primary-soft); border: 1px solid var(--border-strong); border-left: 4px solid var(--primary);
+    border-radius: 10px; padding: 14px 16px; margin: 16px 0 0;
+    text-align: left; font-size: .92rem; color: #6d4a17;
   }
-  .suggestion-box strong { display: block; margin-bottom: 6px; }
+  .suggestion-box strong { display: block; margin-bottom: 5px; color: #8a4a08; }
 
-  /* History */
-  .history-section { margin-top: 16px; text-align: left; }
-  .history-section summary { cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--muted); padding: 4px 0; }
-  .history-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 12px; background: #f9fafb; border-radius: 8px; margin: 6px 0;
-    font-size: 0.85rem;
+  .share-result { margin-top: 18px; }
+  .share-btn {
+    background: var(--paper); color: var(--primary); border: 1.5px solid var(--border-strong);
+    border-radius: 10px; padding: 10px 22px; font-size: .9rem; font-weight: 600; font-family: inherit;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    transition: border-color .15s, background .15s;
   }
-  .history-item .h-date { color: var(--muted); }
-  .history-item .h-score { font-weight: 700; }
-  .history-item .h-score.good { color: var(--success); }
-  .history-item .h-score.mid { color: #d97706; }
-  .history-item .h-score.bad { color: var(--danger); }
+  .share-btn:hover { border-color: var(--primary); background: var(--primary-soft); }
+  .share-btn:disabled { opacity: .6; cursor: wait; }
 
-  /* Resume banner */
+  /* ===========================================================
+     历史记录
+     =========================================================== */
+  .history-section { margin-top: 22px; text-align: left; border-top: 1px solid var(--border); padding-top: 12px; }
+  .history-section summary {
+    cursor: pointer; font-size: .88rem; font-weight: 700; color: var(--muted);
+    padding: 4px 2px; letter-spacing: .04em;
+  }
+  .history-section summary .h-meta { font-weight: 400; margin-left: 6px; }
+  .chart-wrap { margin: 12px 0 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .chart-inner {
+    display: flex; align-items: flex-end; gap: 6px; height: 96px; min-width: 100%;
+    padding: 0 4px; border-bottom: 2px solid var(--border-strong);
+  }
+  .chart-bar {
+    flex: 1; min-width: 14px; min-height: 4px;
+    background: linear-gradient(180deg, #e0a23c, var(--primary));
+    border-radius: 5px 5px 0 0; position: relative; cursor: default;
+    transition: height .4s cubic-bezier(.22,1,.36,1);
+  }
+  .chart-bar:hover { filter: brightness(1.08); }
+  .chart-bar .chart-label {
+    position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+    font-size: .58rem; white-space: nowrap; color: var(--muted);
+  }
+  .chart-bar .chart-val {
+    position: absolute; top: -17px; left: 50%; transform: translateX(-50%);
+    font-size: .62rem; font-weight: 700; color: var(--ink); white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .history-note { margin-top: 26px; font-size: .75rem; color: var(--muted); }
+
+  /* 续测横幅 */
   #resume-banner {
-    background: #fef9c3; border: 1px solid #fde047; border-radius: 10px;
-    padding: 12px 16px; margin-bottom: 16px; font-size: 0.9rem; color: #854d0e;
+    background: var(--primary-soft); border: 1px solid var(--border-strong); border-radius: 12px;
+    padding: 13px 16px; margin-bottom: 18px; font-size: .9rem; color: #6d4a17; font-weight: 600;
   }
-  #resume-banner .btn { margin: 6px 4px 0; font-size: 0.9rem; padding: 8px 20px; }
+  #resume-banner .banner-actions { margin-top: 8px; display: flex; gap: 8px; justify-content: center; }
+
+  /* ===========================================================
+     高对比模式
+     =========================================================== */
+  body.high-contrast {
+    --bg: #14100a; --card: #1f170c; --paper: #241a0d; --soft: #241a0d; --soft-2: #2c2010; --primary-soft: #2c2010;
+    --ink: #f7ead0; --text: #eddcbd; --muted: #c9a86f;
+    --primary: #f0a24b; --primary-hover: #f7b263;
+    --success: #7fd6a0; --warning: #f0a24b; --danger: #ff9077;
+    --border: #5c4520; --border-strong: #7a5d2b;
+    --shadow: 0 0 0 1px #5c4520;
+    background-image: none; /* 关闭浅色暖光晕，保持纯暗底 */
+  }
+  body.high-contrast .card { border-color: #5c4520; }
+  body.high-contrast .step.done .dot { color: #f0a24b; }
+  body.high-contrast .diff-btn.selected { color: #f0a24b; }
+  body.high-contrast .diff-btn.selected .diff-sub { color: #c9a86f; }
+  body.high-contrast .seal { color: #14100a; }
+  body.high-contrast .option-btn.correct { background: #14351f; }
+  body.high-contrast .option-btn.wrong { background: #3d1712; }
+  body.high-contrast .phase-badge { background: #2c2010; color: #7fd6a0; }
+  body.high-contrast .tier-chip.tier-excellent { background: #14351f; color: #7fd6a0; }
+  body.high-contrast .tier-chip.tier-good { background: #2c2010; color: #f0a24b; }
+  body.high-contrast .tier-chip.tier-fair { background: #2c2010; color: #f0a24b; }
+  body.high-contrast .tier-chip.tier-attention { background: #3d1712; color: #ff9077; }
+  body.high-contrast .suggestion-box { color: #e3c288; border-left-color: var(--primary); }
+  body.high-contrast .suggestion-box strong { color: #f0a24b; }
+  body.high-contrast .recall-inline-result { background: #14351f; }
+  body.high-contrast #resume-banner { color: #e3c288; }
+  body.high-contrast .btn { color: #14100a; }
+  body.high-contrast .btn-gray { color: #f7ead0; }
+  body.high-contrast .share-btn { color: #f0a24b; }
+
+  /* ===========================================================
+     动效偏好与响应式
+     =========================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 
   @media (max-width: 480px) {
-    body { font-size: 17px; }
-    .card { padding: 24px 18px; }
-    .object-card { width: 80px; padding: 10px 8px; }
-    .object-card .emoji { font-size: 2.2rem; }
-    .recall-slot input { width: 100px; }
-    body.large-text .recall-slot input { width: 130px; }
+    body { padding: 12px 10px; font-size: 17px; }
+    .card { padding: 22px 16px 26px; border-radius: 15px; }
+    .step { max-width: 58px; }
+    .step .dot { width: 27px; height: 27px; font-size: .78rem; }
+    .step .lbl { font-size: .64rem; }
+    .toolbar { gap: 6px; margin-bottom: 18px; }
+    .toggle-btn { font-size: .78rem; padding: 6px 12px; }
+    .flow-note { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
+    .objects-grid { gap: 9px; }
+    .object-card { width: 88px; padding: 12px 8px 10px; }
+    .object-card .emoji { font-size: 2.5rem; }
+    .recall-slot { width: 82px; min-height: 94px; }
+    .btn { padding: 14px 42px; font-size: 1.1rem; }
+    .timer { font-size: 1.45rem; }
     .container { max-width: 100%; }
-    .progress-seg { font-size: 0.6rem; }
-    .toolbar { gap: 4px; }
-    .toggle-btn { font-size: 0.8rem; padding: 4px 10px; }
+  }
+  @media (max-width: 360px) {
+    .object-card { width: 78px; }
+    .object-card .emoji { font-size: 2rem; }
+    .recall-slot { width: 72px; min-height: 88px; }
+    .recall-opt { padding: 8px 13px; font-size: .9rem; }
+    .btn { padding: 12px 32px; font-size: 1rem; }
+    .option-btn { padding: 12px 14px; font-size: .95rem; }
   }
 </style>
 </head>
@@ -312,167 +525,121 @@
 <div class="container">
 <div class="card" id="app">
 
+  <div id="resume-banner" class="hidden" role="status"></div>
 
+  <!-- 常驻：阶段进度器 + 辅助工具栏 -->
+  <ol class="stepper" id="stepper" aria-label="测试进度">
+    <li class="step"><span class="dot">1</span><span class="lbl">学习</span></li>
+    <li class="step"><span class="dot">2</span><span class="lbl">干扰</span></li>
+    <li class="step"><span class="dot">3</span><span class="lbl">回忆</span></li>
+    <li class="step"><span class="dot">4</span><span class="lbl">延迟</span></li>
+    <li class="step"><span class="dot">5</span><span class="lbl">结果</span></li>
+  </ol>
+  <div class="toolbar" role="group" aria-label="辅助设置">
+    <button type="button" class="toggle-btn" id="btn-large" aria-pressed="false">🔤 大字</button>
+    <button type="button" class="toggle-btn" id="btn-contrast" aria-pressed="false">👁 高对比</button>
+    <button type="button" class="toggle-btn" id="btn-tts" aria-pressed="false">🔊 语音 <span class="tts-indicator" id="tts-indicator" aria-hidden="true"></span></button>
+  </div>
 
-
-
-  <!-- Resume banner -->
-  <div id="resume-banner" class="hidden"></div>
-
-    <div id="screen-welcome">
+  <!-- ============ 欢迎 ============ -->
+  <section id="screen-welcome" class="screen">
+    <div class="seal" aria-hidden="true">忆</div>
     <h1>短期记忆自测</h1>
-    <p style="margin-bottom:16px">记忆物品，完成干扰题，<br>然后在不同时间点回忆物品。</p>
-    <div style="margin:4px 0 16px;font-size:0.85rem;color:var(--muted);background:#f3f4f6;border-radius:8px;padding:10px 14px;text-align:left;line-height:1.7">
-      <strong>测试流程：</strong><br>
-      ① 记忆物品（倒计时） → ② 答题干扰（约2.5分钟）<br>
-      ③ 立即回忆（30秒后） → ④ 延迟回忆（约2分钟后）
+    <p class="lead">记住几件小物品，经过答题干扰，<br>再在两个时间点回忆它们。</p>
+    <div class="flow-note" aria-label="测试流程">
+      <div class="flow-item"><i>壹</i><b>记忆物品</b><span>30 秒</span></div>
+      <div class="flow-item"><i>贰</i><b>干扰答题</b><span>约 2.5 分钟</span></div>
+      <div class="flow-item"><i>叁</i><b>立即回忆</b><span>30 秒后</span></div>
+      <div class="flow-item"><i>肆</i><b>延迟回忆</b><span>约 2 分钟后</span></div>
     </div>
-    <div style="font-size:0.9rem;font-weight:600;margin:4px 0 8px">选择难度：</div>
+    <div class="diff-label">选择难度：</div>
     <div class="diff-selector">
-      <button class="diff-btn" data-diff="easy" onclick="selectDifficulty('easy')">😊 简单<span class="diff-sub">记忆2个物品</span></button>
-      <button class="diff-btn selected" data-diff="normal" onclick="selectDifficulty('normal')">🤔 中等<span class="diff-sub">记忆3个物品</span></button>
-      <button class="diff-btn" data-diff="hard" onclick="selectDifficulty('hard')">🧐 困难<span class="diff-sub">记忆4个物品</span></button>
+      <button type="button" class="diff-btn" data-diff="easy" aria-pressed="false">😊 简单<span class="diff-sub">记忆2个物品</span></button>
+      <button type="button" class="diff-btn selected" data-diff="normal" aria-pressed="true">🤔 中等<span class="diff-sub">记忆3个物品</span></button>
+      <button type="button" class="diff-btn" data-diff="hard" aria-pressed="false">🧐 困难<span class="diff-sub">记忆4个物品</span></button>
     </div>
-    <button class="btn" onclick="startTest()" style="margin-top:8px">开始测试 →</button>
+    <button type="button" class="btn" id="btn-start">开始测试</button>
 
-    <!-- History -->
     <div class="history-section hidden" id="history-section">
       <details>
-        <summary>📋 历史记录</summary>
+        <summary>📋 历史记录<span class="h-meta" id="history-meta"></span></summary>
         <div id="history-list"></div>
       </details>
     </div>
-  </div>
+  </section>
 
-  <div id="screen-study" class="screen hidden">
-      <div class="toolbar">
-        <button class="toggle-btn" id="btn-large" onclick="toggleLarge()">🔤 大字</button>
-        <button class="toggle-btn" id="btn-contrast" onclick="toggleContrast()">👁 高对比</button>
-        <button class="toggle-btn" id="btn-tts" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator"></span></button>
-      </div>
-      <div id="progress-bar-wrap" class="hidden">
-        <div class="progress-seg">学习</div>
-        <div class="progress-seg">干扰</div>
-        <div class="progress-seg">回忆</div>
-        <div class="progress-seg">延迟</div>
-        <div class="progress-seg">结果</div>
-      </div>
-      <h2 style="color:var(--muted);font-size:1rem;font-weight:400;margin-bottom:4px">📖 请记忆以下物品</h2>
-      <p>倒计时结束后将进入答题环节</p>
-      <div class="study-ring-wrap">
-        <svg class="study-ring-svg" width="100" height="100" viewBox="0 0 100 100">
-          <circle class="study-ring-bg" cx="50" cy="50" r="42"/>
-          <circle class="study-ring-bar" id="study-ring-bar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
-        </svg>
-        <div class="study-ring-text" id="study-timer">30</div>
-      </div>
-      <div class="objects-grid" id="study-objects"></div>
-      <button class="btn btn-sm" id="btn-ready" onclick="studyReady()" style="margin-top:12px;background:var(--muted);font-size:0.9rem;padding:8px 24px">
-        准备好了 →
-      </button>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px">倒计时自动进入下一步，也可点击上方按钮提前</p>
+  <!-- ============ 学习 ============ -->
+  <section id="screen-study" class="screen hidden">
+    <div class="phase-head">
+      <span class="phase-badge">📖 学习</span>
+      <h2 class="phase-title">请记住这几件物品</h2>
+      <span class="phase-sub">倒计时结束后将进入答题环节</span>
     </div>
+    <div class="study-ring-wrap">
+      <svg class="study-ring-svg" width="118" height="118" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="study-ring-bg" cx="50" cy="50" r="42"/>
+        <circle class="study-ring-bar" id="study-ring-bar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
+      </svg>
+      <div class="study-ring-text" id="study-timer" aria-hidden="true">30</div>
+    </div>
+    <div class="objects-grid" id="study-objects"></div>
+    <button type="button" class="btn btn-ghost" id="btn-ready">准备好了 →</button>
+    <p class="study-hint">倒计时自动进入下一步，也可点击上方按钮提前</p>
+  </section>
 
-  <div id="screen-distract" class="screen hidden">
-      <div class="toolbar">
-        <button class="toggle-btn" id="btn-large2" onclick="toggleLarge()">🔤 大字</button>
-        <button class="toggle-btn" id="btn-contrast2" onclick="toggleContrast()">👁 高对比</button>
-        <button class="toggle-btn" id="btn-tts2" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator2"></span></button>
-      </div>
-      <div id="progress-bar-wrap2" class="hidden">
-        <div class="progress-seg done">学习</div>
-        <div class="progress-seg active">干扰</div>
-        <div class="progress-seg">回忆</div>
-        <div class="progress-seg">延迟</div>
-        <div class="progress-seg">结果</div>
-      </div>
-      <div class="step-info">
-        <span class="phase-badge">🧠 干扰题</span>
-        <span style="font-size:0.85rem;color:var(--muted)">边答题边等待回忆阶段</span>
-      </div>
-      <div class="timer" id="distract-timer"></div>
-      <div id="question-area"></div>
+  <!-- ============ 干扰 ============ -->
+  <section id="screen-distract" class="screen hidden">
+    <div class="phase-head">
+      <span class="phase-badge">🧮 干扰答题</span>
+      <span class="phase-sub">边答题边等待回忆时刻</span>
     </div>
+    <div class="timer" id="distract-timer"></div>
+    <div id="question-area"></div>
+  </section>
 
-  <div id="screen-recall1" class="screen hidden">
-      <div class="toolbar">
-        <button class="toggle-btn" id="btn-large3" onclick="toggleLarge()">🔤 大字</button>
-        <button class="toggle-btn" id="btn-contrast3" onclick="toggleContrast()">👁 高对比</button>
-        <button class="toggle-btn" id="btn-tts3" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator3"></span></button>
-      </div>
-      <div id="progress-bar-wrap3" class="hidden">
-        <div class="progress-seg done">学习</div>
-        <div class="progress-seg done">干扰</div>
-        <div class="progress-seg active">回忆</div>
-        <div class="progress-seg">延迟</div>
-        <div class="progress-seg">结果</div>
-      </div>
-      <div class="step-info">
-        <span class="phase-badge">📝 立即回忆</span>
-        <span style="font-size:0.85rem;color:var(--muted)">请选出刚才记忆的物品</span>
-      </div>
-      <div class="recall-hint" id="recall-hint1"></div>
-      <div id="recall-targets1" class="recall-slots"></div>
-      <div id="recall-pool1" class="recall-pool"></div>
-      <button class="btn" id="recall1-submit" onclick="submitRecall1()" style="margin-top:16px">提交回忆 →</button>
+  <!-- ============ 回忆（立即 / 延迟 共用） ============ -->
+  <section id="screen-recall" class="screen hidden">
+    <div class="phase-head">
+      <span class="phase-badge" id="recall-badge">📝 立即回忆</span>
+      <span class="phase-sub" id="recall-sub">请选出刚才记忆的物品</span>
     </div>
+    <div class="recall-hint" id="recall-hint" aria-live="polite"></div>
+    <div id="recall-targets" class="recall-slots"></div>
+    <div id="recall-pool" class="recall-pool"></div>
+    <button type="button" class="btn" id="recall-submit">提交回忆 →</button>
+    <div id="recall-inline-result" class="recall-inline-result hidden" aria-live="polite"></div>
+  </section>
 
-  <div id="screen-recall2" class="screen hidden">
-      <div class="toolbar">
-        <button class="toggle-btn" id="btn-large4" onclick="toggleLarge()">🔤 大字</button>
-        <button class="toggle-btn" id="btn-contrast4" onclick="toggleContrast()">👁 高对比</button>
-        <button class="toggle-btn" id="btn-tts4" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator4"></span></button>
-      </div>
-      <div id="progress-bar-wrap4" class="hidden">
-        <div class="progress-seg done">学习</div>
-        <div class="progress-seg done">干扰</div>
-        <div class="progress-seg done">回忆</div>
-        <div class="progress-seg active">延迟</div>
-        <div class="progress-seg">结果</div>
-      </div>
-      <div class="step-info">
-        <span class="phase-badge">⏳ 延迟回忆</span>
-        <span style="font-size:0.85rem;color:var(--muted)">再请选出刚才记忆的物品</span>
-      </div>
-      <div class="recall-hint" id="recall-hint2"></div>
-      <div id="recall-targets2" class="recall-slots"></div>
-      <div id="recall-pool2" class="recall-pool"></div>
-      <button class="btn" id="recall2-submit" onclick="submitRecall2()" style="margin-top:16px">提交回忆 →</button>
+  <!-- ============ 结果 ============ -->
+  <section id="screen-result" class="screen hidden">
+    <div id="result-badge" class="tier-chip hidden"></div>
+    <div class="score-ring-wrap">
+      <svg width="152" height="152" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="score-ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="score-ring-bar" id="result-ring-bar" cx="60" cy="60" r="52" stroke-dasharray="327" stroke-dashoffset="0"/>
+      </svg>
+      <div class="result-score" id="result-score">0</div>
+      <div class="score-unit" aria-hidden="true">分</div>
     </div>
-
-  <div id="screen-result" class="screen hidden">
-      <div class="toolbar">
-        <button class="toggle-btn" id="btn-large5" onclick="toggleLarge()">🔤 大字</button>
-        <button class="toggle-btn" id="btn-contrast5" onclick="toggleContrast()">👁 高对比</button>
-        <button class="toggle-btn" id="btn-tts5" onclick="toggleTTS()">🔊 语音 <span class="tts-indicator" id="tts-indicator5"></span></button>
-      </div>
-      <div id="progress-bar-wrap5" class="hidden">
-        <div class="progress-seg done">学习</div>
-        <div class="progress-seg done">干扰</div>
-        <div class="progress-seg done">回忆</div>
-        <div class="progress-seg done">延迟</div>
-        <div class="progress-seg active">结果</div>
-      </div>
-      <div id="result-badge" style="margin-bottom:4px"></div>
-      <div id="result-score" class="result-score">0</div>
-      <p style="color:var(--muted);font-size:0.9rem">分</p>
-      <div id="result-summary" class="result-detail"></div>
-      <div id="result-suggestion" class="suggestion-box hidden">
-        <strong>💡 建议</strong><br>
-        <span id="suggestion-text"></span>
-      </div>
-      <div class="share-result">
-        <button class="share-btn copy" onclick="shareResult()">📤 分享结果</button>
-      </div>
-      <button class="btn" onclick="resetTest()" style="margin-top:20px">重新测试</button>
+    <div id="result-summary" class="result-detail"></div>
+    <div id="result-suggestion" class="suggestion-box hidden">
+      <strong>💡 建议</strong>
+      <span id="suggestion-text"></span>
     </div>
+    <div class="share-result">
+      <button type="button" class="share-btn" id="btn-share">📤 保存 / 分享海报</button>
+    </div>
+    <button type="button" class="btn" id="btn-reset" style="margin-top:20px">重新测试</button>
+  </section>
 
 </div>
 </div>
+<noscript><p style="text-align:center;padding:20px">本测试需要启用 JavaScript 才能进行。</p></noscript>
 
 <script>
+'use strict';
 // ===================================================================
-// DATA
+// 数据
 // ===================================================================
 const OBJECT_POOL = [
   { emoji: '🍎', name: '苹果' }, { emoji: '🔑', name: '钥匙' },
@@ -489,7 +656,7 @@ const OBJECT_POOL = [
   { emoji: '📷', name: '相机' }, { emoji: '⏰', name: '闹钟' },
 ];
 let currentObjects = [];
-let selectedDifficulty = 2;
+let selectedDifficulty = 3; // 与界面默认选中的「中等」一致
 
 const QUESTIONS = [
   { q: '25 + 17 = ?', opts: ['38', '42', '43', '32'], ans: 1 },
@@ -524,61 +691,124 @@ const QUESTIONS = [
 ];
 
 // ===================================================================
-// STATE
+// 常量配置
 // ===================================================================
-let state = {
-  phase: 'welcome', recall1Results: [], recall2Results: [],
-  recall1Done: false, recall2Done: false,
-  questionsAsked: 0, totalQuestions: 0, correctAnswers: 0,
-  questionTimerInterval: null, objectsTimerInterval: null,
-  studyStartTime: null, distractStartTime: null,
-  currentDistractIndex: 0, distractQuestions: [],
+const STUDY_SECONDS = 30;
+const RECALL1_AT_MS = 30000;   // 学习结束后 30 秒触发立即回忆
+const RECALL2_AT_MS = 210000;  // 学习结束后 3.5 分钟触发延迟回忆
+const BACKUP_TTL_MS = 300000;  // 断点续测有效期 5 分钟
+const PHASES = ['学习', '干扰', '回忆', '延迟', '结果'];
+
+const TIERS = [
+  { min: 85, key: 'excellent', label: '优秀', icon: '🌟', color: '#2f7d4f',
+    summary: '短期记忆功能良好。', suggestion: null },
+  { min: 65, key: 'good', label: '良好', icon: '🌱', color: '#c2620a',
+    summary: '短期记忆基本正常。',
+    suggestion: '保持健康生活方式，多进行脑力锻炼，如阅读、数独、学习新技能。' },
+  { min: 50, key: 'fair', label: '一般', icon: '🌿', color: '#96590d',
+    summary: '短期记忆有部分减损迹象。',
+    suggestion: '建议多进行脑力锻炼，如阅读、数独、学习新技能。如有持续记忆下降，建议咨询医生做进一步评估。' },
+  { min: 0, key: 'attention', label: '建议关注', icon: '🍂', color: '#bf3b2b',
+    summary: '短期记忆有明显减损迹象。',
+    suggestion: '本测试仅为初步筛查，不能代替专业诊断。强烈建议您咨询神经内科或老年科医生。早期发现、早期干预非常重要。' },
+];
+
+// 两次回忆共用一套流程，仅文案与状态键不同
+// badge 文案参与语音键匹配（speak 会剔除 emoji），不可改动
+const RECALLS = {
+  1: {
+    badge: '📝 立即回忆', sub: '请选出刚才记忆的物品',
+    confirm: '确认提交回忆结果？', voicePrefix: '即时回忆完成',
+    resultsKey: 'recall1Results', correctKey: 'recall1Correct', doneKey: 'recall1Done',
+  },
+  2: {
+    badge: '⏳ 延迟回忆', sub: '再次选出刚才记忆的物品',
+    confirm: '确认提交延迟回忆结果？', voicePrefix: '延迟回忆完成',
+    resultsKey: 'recall2Results', correctKey: 'recall2Correct', doneKey: 'recall2Done',
+  },
 };
 
+// ===================================================================
+// 状态
+// ===================================================================
+function defaultState() {
+  return {
+    phase: 'welcome', currentRecall: 1,
+    recall1Results: [], recall2Results: [],
+    recall1Done: false, recall2Done: false,
+    recall1Correct: 0, recall2Correct: 0,
+    questionsAsked: 0, totalQuestions: 0, correctAnswers: 0,
+    objectsTimerInterval: null, questionTimerInterval: null,
+    studyStartTime: null, distractQuestions: [], currentDistractIndex: 0,
+  };
+}
+let state = defaultState();
 let prefs = { largeText: false, highContrast: false, ttsEnabled: false };
 
 // ===================================================================
-// PREFERENCES
+// 小工具
+// ===================================================================
+function $(id) { return document.getElementById(id); }
+function bind(id, fn) { const el = $(id); if (el) el.addEventListener('click', fn); }
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return m > 0 ? m + '分' + s + '秒' : s + '秒';
+}
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+// ===================================================================
+// 偏好设置
 // ===================================================================
 function loadPrefs() {
-  try { const d = JSON.parse(localStorage.getItem('brain_prefs')); if (d) prefs = d; } catch(e) {}
+  try { const d = JSON.parse(localStorage.getItem('brain_prefs')); if (d) prefs = d; } catch (e) {}
 }
 function savePrefs() {
-  try { localStorage.setItem('brain_prefs', JSON.stringify(prefs)); } catch(e) {}
+  try { localStorage.setItem('brain_prefs', JSON.stringify(prefs)); } catch (e) {}
+}
+function setPressed(id, on) {
+  const el = $(id);
+  if (el) { el.classList.toggle('active', on); el.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+}
+function refreshToolbar() {
+  setPressed('btn-large', prefs.largeText);
+  setPressed('btn-contrast', prefs.highContrast);
+  setPressed('btn-tts', prefs.ttsEnabled);
+  updateTTSIndicator();
 }
 function toggleLarge() {
   prefs.largeText = !prefs.largeText;
   document.body.classList.toggle('large-text', prefs.largeText);
-  document.getElementById('btn-large').classList.toggle('active', prefs.largeText);
-  if (document.getElementById('btn-large2')) document.getElementById('btn-large2').classList.toggle('active', prefs.largeText);
-  if (document.getElementById('btn-large3')) document.getElementById('btn-large3').classList.toggle('active', prefs.largeText);
-  if (document.getElementById('btn-large4')) document.getElementById('btn-large4').classList.toggle('active', prefs.largeText);
-  if (document.getElementById('btn-large5')) document.getElementById('btn-large5').classList.toggle('active', prefs.largeText);
-  savePrefs();
+  savePrefs(); refreshToolbar();
 }
 function toggleContrast() {
   prefs.highContrast = !prefs.highContrast;
-  ['btn-contrast','btn-contrast2','btn-contrast3','btn-contrast4','btn-contrast5'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', prefs.highContrast);
-  });
   document.body.classList.toggle('high-contrast', prefs.highContrast);
-  savePrefs();
+  savePrefs(); refreshToolbar();
 }
 function toggleTTS() {
   prefs.ttsEnabled = !prefs.ttsEnabled;
-  ['btn-tts','btn-tts2','btn-tts3','btn-tts4','btn-tts5'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', prefs.ttsEnabled);
-  });
-  updateTTSIndicator();
-  savePrefs();
+  savePrefs(); refreshToolbar();
 }
 function updateTTSIndicator() {
   document.querySelectorAll('.tts-indicator').forEach(el => {
     el.className = 'tts-indicator ' + (prefs.ttsEnabled ? 'on' : 'off');
   });
 }
+
+// ===================================================================
+// 语音（预录 mp3 优先，speechSynthesis 兜底）
+// ===================================================================
+let ttsAudio = null;
 function speak(text) {
   if (!prefs.ttsEnabled) return;
   // 归一化: 仅剔除表情符号/空白, 保留中文、字母、数字与全部标点 (标点参与键匹配)
@@ -586,25 +816,27 @@ function speak(text) {
   const file = TTS_MAP[key];
   if (file) {
     try {
-      if (window.__naoliAudio) { try { window.__naoliAudio.pause(); } catch(e) {} }
-      window.__naoliAudio = new Audio('tts-naoli/' + file + '.mp3');
-      const pp = window.__naoliAudio.play();
+      if (!ttsAudio) ttsAudio = new Audio();
+      else ttsAudio.pause();
+      ttsAudio.src = 'tts-naoli/' + file + '.mp3';
+      const pp = ttsAudio.play();
       if (pp && pp.catch) pp.catch(function() {});
       return;
-    } catch(e) {}
+    } catch (e) {}
   }
   try {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(text);
     u.lang = 'zh-CN';
     u.rate = 0.9;
     u.onerror = function() {};
     window.speechSynthesis.speak(u);
-  } catch(e) { /* TTS not available */ }
+  } catch (e) { /* TTS not available */ }
 }
 
 // 预录配音（edge-tts · zh-CN-XiaoxiaoNeural 晓晓女声，tts-naoli/ 目录按需加载）
+// 键与 mp3 一一对应，改动任何一句文案前必须同步重新生成音频
 const TTS_MAP = {
   '已选择简单模式': 'p00',
   '已选择中等模式': 'p01',
@@ -646,60 +878,59 @@ const TTS_MAP = {
   '测试完成。一般': 'p37',
   '测试完成。建议关注': 'p38'
 };
+
+// 提示音：AudioContext 单例复用，避免每次新建导致泄漏
+let beepCtx = null;
 function playBeep() {
   try {
-    var AC = window.AudioContext || window.webkitAudioContext;
+    const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
-    var ctx = new AC();
-    var o = ctx.createOscillator();
-    var g = ctx.createGain();
+    if (!beepCtx || beepCtx.state === 'closed') beepCtx = new AC();
+    if (beepCtx.state === 'suspended') beepCtx.resume();
+    const o = beepCtx.createOscillator();
+    const g = beepCtx.createGain();
     o.type = 'sine'; o.frequency.value = 800;
     g.gain.value = 0.15;
-    o.connect(g); g.connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime + 0.12);
-  } catch(e) {}
+    o.connect(g); g.connect(beepCtx.destination);
+    o.start(); o.stop(beepCtx.currentTime + 0.12);
+  } catch (e) {}
 }
 function vibrate(pattern) {
-  try { if (navigator.vibrate) navigator.vibrate(pattern || 15); } catch(e) {}
-}
-// ===================================================================
-// DIFFICULTY
-// ===================================================================
-function selectDifficulty(level) {
-  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelector('.diff-btn[data-diff="' + level + '"]').classList.add('selected');
-  if (level === 'easy') selectedDifficulty = 2;
-  else if (level === 'normal') selectedDifficulty = 3;
-  else selectedDifficulty = 4;
-  speak('已选择' + (level === 'easy' ? '简单' : level === 'normal' ? '中等' : '困难') + '模式');
+  try { if (navigator.vibrate) navigator.vibrate(pattern || 15); } catch (e) {}
 }
 
 // ===================================================================
-// PROGRESS
+// 阶段进度器 / 屏幕切换
 // ===================================================================
 function showProgress(activePhase) {
-  const phases = ['学习','干扰','回忆','延迟','结果'];
-  for (let i = 0; i < 5; i++) {
-    for (let j = 1; j <= 5; j++) {
-      const wrap = document.getElementById('progress-bar-wrap' + (j > 1 ? j : ''));
-      if (!wrap) continue;
-      const seg = wrap.children[i];
-      if (!seg) continue;
-      seg.className = 'progress-seg';
-      const idx = phases.indexOf(activePhase);
-      if (i < idx) seg.classList.add('done');
-      else if (i === idx) seg.classList.add('active');
-    }
-  }
+  const idx = PHASES.indexOf(activePhase);
+  document.querySelectorAll('#stepper .step').forEach((el, i) => {
+    el.classList.remove('active', 'done');
+    el.removeAttribute('aria-current');
+    if (idx < 0) return;
+    if (i < idx) el.classList.add('done');
+    else if (i === idx) { el.classList.add('active'); el.setAttribute('aria-current', 'step'); }
+  });
+}
+function showScreen(id) {
+  window.scrollTo(0, 0);
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = $(id);
+  if (el) el.classList.remove('hidden');
+}
+function stopTimers() {
+  if (state.objectsTimerInterval) { clearInterval(state.objectsTimerInterval); state.objectsTimerInterval = null; }
+  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
 }
 
 // ===================================================================
-// BACKUP / RESUME
+// 断点续测（sessionStorage，5 分钟有效）
 // ===================================================================
 function backupState() {
   try {
     sessionStorage.setItem('ad_backup', JSON.stringify({
       currentObjects: currentObjects.map(o => ({ emoji: o.emoji, name: o.name })),
+      difficulty: selectedDifficulty,
       studyStartTime: state.studyStartTime,
       recall1Done: state.recall1Done,
       recall2Done: state.recall2Done,
@@ -707,17 +938,17 @@ function backupState() {
       totalQuestions: state.totalQuestions,
       correctAnswers: state.correctAnswers,
     }));
-  } catch(e) {}
+  } catch (e) {}
 }
 function clearBackup() {
-  try { sessionStorage.removeItem('ad_backup'); } catch(e) {}
+  try { sessionStorage.removeItem('ad_backup'); } catch (e) {}
 }
 
 // ===================================================================
-// HISTORY
+// 历史记录（localStorage，最多 30 条）
 // ===================================================================
 function loadHistory() {
-  try { return JSON.parse(localStorage.getItem('brain_history')) || []; } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem('brain_history')) || []; } catch (e) { return []; }
 }
 function saveToHistory(entry) {
   try {
@@ -725,139 +956,120 @@ function saveToHistory(entry) {
     h.push(entry);
     if (h.length > 30) h.splice(0, h.length - 30);
     localStorage.setItem('brain_history', JSON.stringify(h));
-  } catch(e) {}
+  } catch (e) {}
 }
 function renderHistory() {
-  const el = document.getElementById('history-list');
-  if (!el) return;
+  const section = $('history-section');
+  const list = $('history-list');
+  if (!section || !list) return;
   const h = loadHistory();
-  if (h.length === 0) { el.innerHTML = '<p style="font-size:0.85rem;color:var(--muted)">暂无历史记录</p>'; return; }
-
-  // Chart
+  if (h.length === 0) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  const meta = $('history-meta');
+  if (meta) meta.textContent = '· 共 ' + h.length + ' 次';
   const recent = h.slice(-10);
-  const maxScore = Math.max(...recent.map(e => e.score));
+  const maxScore = Math.max.apply(null, recent.map(e => e.score));
   let chartHtml = '<div class="chart-wrap"><div class="chart-inner">';
-  recent.forEach((e, i) => {
+  recent.forEach(e => {
     const pct = maxScore > 0 ? (e.score / maxScore) * 100 : 0;
     const d = new Date(e.date);
-    const label = (d.getMonth()+1) + '/' + d.getDate();
-    chartHtml += '<div class="chart-bar" style="height:' + Math.max(pct, 3) + '%" title="' + d.toLocaleDateString('zh-CN') + ' ' + e.score + '分">'
+    const label = (d.getMonth() + 1) + '/' + d.getDate();
+    chartHtml += '<div class="chart-bar" style="height:' + Math.max(pct, 4) + '%" title="' + d.toLocaleDateString('zh-CN') + ' ' + e.score + '分">'
       + '<span class="chart-val">' + e.score + '</span>'
       + '<span class="chart-label">' + label + '</span>'
       + '</div>';
   });
   chartHtml += '</div></div>';
-  el.innerHTML = chartHtml + '<div style="margin-top:8px;font-size:0.75rem;color:var(--muted)">最近' + recent.length + '次测试得分趋势</div>';
+  const last = h[h.length - 1];
+  const ld = new Date(last.date);
+  chartHtml += '<div class="history-note">最近 ' + recent.length + ' 次得分趋势 · 上次 ' + last.score
+    + ' 分（' + (ld.getMonth() + 1) + '月' + ld.getDate() + '日）</div>';
+  list.innerHTML = chartHtml;
 }
 
 // ===================================================================
-// HELPERS
+// 阶段过渡弹窗
 // ===================================================================
-function showScreen(id) {
-  window.scrollTo(0, 0);
-  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  const el = document.getElementById(id);
-  if (el) el.classList.remove('hidden');
-}
-function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return m > 0 ? m + '分' + s + '秒' : s + '秒';
-}
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-function isMatch(input, target) {
-  return input.emoji === target.emoji && input.name === target.name;
-}
-
-// ===================================================================
-// PHASE TRANSITION NOTICE
-// ===================================================================
-function showPhaseNotice(title, message, detail, callback) {
+function showPhaseNotice(title, message, detail, onContinue) {
   const overlay = document.createElement('div');
   overlay.className = 'phase-notice';
-  overlay.innerHTML = '<div class="phase-notice-inner">'
-    + '<h2>' + title + '</h2>'
-    + '<p>' + message + '</p>'
-    + '<div class="phase-notice-detail">' + detail + '</div>'
-    + '<button class="btn" onclick="this.closest(\'.phase-notice\').remove(); (' + callback + ')()">继续</button>'
-    + '</div>';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  const box = document.createElement('div');
+  box.className = 'phase-notice-inner';
+  const h = document.createElement('h2'); h.textContent = title;
+  const p = document.createElement('p'); p.textContent = message;
+  const d = document.createElement('div'); d.className = 'phase-notice-detail'; d.textContent = detail;
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'btn btn-sm'; btn.textContent = '继续 →';
+  btn.addEventListener('click', function() { overlay.remove(); onContinue(); });
+  box.appendChild(h); box.appendChild(p); box.appendChild(d); box.appendChild(btn);
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
+  btn.focus();
   speak(title);
 }
 
 // ===================================================================
-// STUDY PHASE
+// 难度选择
+// ===================================================================
+function selectDifficulty(level) {
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    const on = b.dataset.diff === level;
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  if (level === 'easy') selectedDifficulty = 2;
+  else if (level === 'normal') selectedDifficulty = 3;
+  else selectedDifficulty = 4;
+  speak('已选择' + (level === 'easy' ? '简单' : level === 'normal' ? '中等' : '困难') + '模式');
+}
+
+// ===================================================================
+// 学习阶段
 // ===================================================================
 function startTest() {
-  // Reset state
+  stopTimers();
   clearBackup();
-  state = { phase:'study', recall1Results:[], recall2Results:[], recall1Done:false, recall2Done:false,
-    questionsAsked:0, totalQuestions:0, correctAnswers:0, questionTimerInterval:null, objectsTimerInterval:null,
-    studyStartTime:null, distractStartTime:null, currentDistractIndex:0, distractQuestions:[] };
-
-  // Select objects based on difficulty
-  const shuffled = shuffle([...OBJECT_POOL]);
-  currentObjects = shuffled.slice(0, selectedDifficulty);
-
+  state = defaultState();
+  state.phase = 'study';
+  currentObjects = shuffle(OBJECT_POOL.slice()).slice(0, selectedDifficulty);
   renderStudyPhase();
 }
 
 function renderStudyPhase() {
-  window.scrollTo(0, 0);
-  // Hide welcome card elements to free up space
-  const welcomeEl = document.getElementById('screen-welcome');
-  if (welcomeEl) welcomeEl.style.display = 'none';
   showScreen('screen-study');
-  document.querySelectorAll('#progress-bar-wrap, #progress-bar-wrap2, #progress-bar-wrap3, #progress-bar-wrap4, #progress-bar-wrap5').forEach(el => el.classList.remove('hidden'));
   showProgress('学习');
-  document.getElementById('btn-large').classList.toggle('active', prefs.largeText);
-  document.getElementById('btn-contrast').classList.toggle('active', prefs.highContrast);
-  document.getElementById('btn-tts').classList.toggle('active', prefs.ttsEnabled);
-  updateTTSIndicator();
 
-  var readyBtn = document.getElementById('btn-ready');
-  if (readyBtn) readyBtn.classList.add('hidden');
+  const grid = $('study-objects');
+  grid.innerHTML = currentObjects.map(function(o, i) {
+    return '<div class="object-card pop-in" style="animation-delay:' + (i * 0.12) + 's">'
+      + '<span class="emoji">' + o.emoji + '</span>'
+      + '<span class="label">' + o.name + '</span></div>';
+  }).join('');
 
-  const grid = document.getElementById('study-objects');
-  grid.innerHTML = currentObjects.map(o => '<div class="object-card">'
-    + '<span class="emoji">' + o.emoji + '</span>'
-    + '<span class="label">' + o.name + '</span></div>').join('');
-
-  // Ring animation
-  const ring = document.getElementById('study-ring-bar');
+  // 倒计时圆环：先归零再走秒，保证每圈动画从满环开始
+  const ring = $('study-ring-bar');
   const circumference = 2 * Math.PI * 42;
-  const totalSec = 30;
-  let secLeft = totalSec;
-  const timerEl = document.getElementById('study-timer');
-  timerEl.textContent = secLeft;
+  const timerEl = $('study-timer');
+  ring.style.transition = 'none';
+  ring.style.strokeDashoffset = '0';
+  void ring.getBoundingClientRect();
+  ring.style.transition = '';
+  timerEl.textContent = STUDY_SECONDS;
+  timerEl.classList.remove('warning');
 
   speak('请记忆以下物品。记忆倒计时30秒。');
   playBeep();
-  // Show ready button
-  readyBtn = document.getElementById('btn-ready');
-  if (readyBtn) readyBtn.classList.remove('hidden');
-  // Hide ready button after click
-  readyBtn = document.getElementById('btn-ready');
 
-  // Start countdown
+  let secLeft = STUDY_SECONDS;
   if (state.objectsTimerInterval) clearInterval(state.objectsTimerInterval);
   state.objectsTimerInterval = setInterval(function() {
     secLeft--;
     timerEl.textContent = secLeft;
-    const offset = circumference * (1 - secLeft / totalSec);
-    ring.style.strokeDashoffset = offset;
-
-    if (secLeft <= 5) {
-      timerEl.style.color = '#b45309';
-      if (secLeft <= 3) playBeep();
-    }
-
+    ring.style.strokeDashoffset = circumference * (1 - secLeft / STUDY_SECONDS);
+    if (secLeft <= 5) timerEl.classList.add('warning');
+    if (secLeft <= 3 && secLeft > 0) playBeep();
     if (secLeft <= 0) {
       clearInterval(state.objectsTimerInterval);
       state.objectsTimerInterval = null;
@@ -868,120 +1080,121 @@ function renderStudyPhase() {
   }, 1000);
 }
 
-// Skip waiting when player clicks "准备好了"
 function studyReady() {
   if (state.objectsTimerInterval) {
     clearInterval(state.objectsTimerInterval);
     state.objectsTimerInterval = null;
   }
   state.studyStartTime = Date.now();
-  var readyBtn = document.getElementById('btn-ready');
-  if (readyBtn) readyBtn.classList.add('hidden');
   backupState();
   checkAndTriggerRecall();
 }
 
 // ===================================================================
-// TRANSITION / CHECK
+// 过渡判定
 // ===================================================================
 function checkAndTriggerRecall() {
   const elapsed = Date.now() - state.studyStartTime;
-  if (!state.recall1Done && elapsed >= 30000) {
-    // Transition to recall1
-    showPhaseNotice('📝 立即回忆', '请选出刚才记忆的物品', '现在测试您的即时记忆能力。\n从下方选择您记住的物品。', 'goToRecall1');
+  if (!state.recall1Done && elapsed >= RECALL1_AT_MS) {
+    showPhaseNotice('📝 立即回忆', '请选出刚才记忆的物品', '现在测试您的即时记忆能力。\n从下方选择您记住的物品。', function() { goToRecall(1); });
     return;
   }
-  if (state.recall1Done && !state.recall2Done && elapsed >= 210000) {
-    showPhaseNotice('⏳ 延迟回忆', '再次选出刚才记忆的物品', '延迟回忆测试：\n过了约2分钟，您还能记住哪些物品？', 'goToRecall2');
+  if (state.recall1Done && !state.recall2Done && elapsed >= RECALL2_AT_MS) {
+    showPhaseNotice('⏳ 延迟回忆', '再次选出刚才记忆的物品', '延迟回忆测试：\n过了约2分钟，您还能记住哪些物品？', function() { goToRecall(2); });
     return;
   }
-  // Otherwise do distraction
   startDistractionPhase(false);
 }
 
 // ===================================================================
-// DISTRACTION PHASE
+// 干扰阶段
 // ===================================================================
 function startDistractionPhase(resuming) {
   state.phase = 'distract';
   showScreen('screen-distract');
   showProgress('干扰');
-  document.getElementById('btn-large2').classList.toggle('active', prefs.largeText);
-  document.getElementById('btn-contrast2').classList.toggle('active', prefs.highContrast);
-  document.getElementById('btn-tts2').classList.toggle('active', prefs.ttsEnabled);
-  updateTTSIndicator();
 
   if (!resuming) {
-    state.distractQuestions = shuffle([...QUESTIONS]);
+    state.distractQuestions = shuffle(QUESTIONS.slice());
     state.currentDistractIndex = 0;
   }
-
-  const distractTimerEl = document.getElementById('distract-timer');
+  presentDistractQuestion();
 
   if (state.questionTimerInterval) clearInterval(state.questionTimerInterval);
+  state.questionTimerInterval = setInterval(updateTimers, 1000);
+  updateTimers();
 
   function updateTimers() {
     const elapsed = Date.now() - state.studyStartTime;
-    const recall1Due = !state.recall1Done && elapsed >= 30000;
-    const recall2Due = state.recall1Done && !state.recall2Done && elapsed >= 210000;
+    const timerEl = $('distract-timer');
+    const recall1Due = !state.recall1Done && elapsed >= RECALL1_AT_MS;
+    const recall2Due = state.recall1Done && !state.recall2Done && elapsed >= RECALL2_AT_MS;
 
-    // Show elapsed time
-    const remaining1 = Math.max(0, 30 - Math.floor(elapsed / 1000));
     if (!state.recall1Done) {
-      distractTimerEl.textContent = '回忆倒计时: ' + remaining1 + 's';
-      if (remaining1 <= 0) distractTimerEl.textContent = '🟢 回忆已就绪!';
-      if (remaining1 <= 5 && remaining1 > 0) distractTimerEl.classList.add('warning');
-      else distractTimerEl.classList.remove('warning');
+      const remaining1 = Math.max(0, RECALL1_AT_MS / 1000 - Math.floor(elapsed / 1000));
+      timerEl.textContent = remaining1 > 0 ? '回忆倒计时 ' + remaining1 + ' 秒' : '🟢 回忆已就绪！';
+      timerEl.classList.toggle('warning', remaining1 > 0 && remaining1 <= 5);
     } else if (!state.recall2Done) {
-      const elapsedQ = Math.floor((elapsed - 30000) / 1000);
+      const elapsedQ = Math.floor((elapsed - RECALL1_AT_MS) / 1000);
       const remaining2 = Math.max(0, 180 - elapsedQ);
-      distractTimerEl.textContent = '延迟回忆倒计时: ' + formatTime(remaining2);
-      if (remaining2 <= 0) distractTimerEl.textContent = '🟢 延迟回忆已就绪!';
-      if (remaining2 <= 10 && remaining2 > 0) distractTimerEl.classList.add('warning');
-      else distractTimerEl.classList.remove('warning');
+      timerEl.textContent = remaining2 > 0 ? '延迟回忆倒计时 ' + formatTime(remaining2) : '🟢 延迟回忆已就绪！';
+      timerEl.classList.toggle('warning', remaining2 > 0 && remaining2 <= 10);
     } else {
-      distractTimerEl.textContent = '';
+      timerEl.textContent = '';
     }
 
     if (recall1Due) {
       clearInterval(state.questionTimerInterval);
       state.questionTimerInterval = null;
-      showPhaseNotice('📝 立即回忆', '请选出刚才记忆的物品', '现在测试您的即时记忆能力。\n从下方选择您记住的物品。', 'goToRecall1');
+      showPhaseNotice('📝 立即回忆', '请选出刚才记忆的物品', '现在测试您的即时记忆能力。\n从下方选择您记住的物品。', function() { goToRecall(1); });
       return;
     }
     if (recall2Due) {
       clearInterval(state.questionTimerInterval);
       state.questionTimerInterval = null;
-      showPhaseNotice('⏳ 延迟回忆', '再次选出刚才记忆的物品', '延迟回忆测试：\n过了约2分钟，您还能记住哪些物品？', 'goToRecall2');
+      showPhaseNotice('⏳ 延迟回忆', '再次选出刚才记忆的物品', '延迟回忆测试：\n过了约2分钟，您还能记住哪些物品？', function() { goToRecall(2); });
       return;
     }
   }
-
-  presentDistractQuestion();
-
-  state.questionTimerInterval = setInterval(updateTimers, 1000);
-  updateTimers();
 }
 
 function presentDistractQuestion() {
-  const area = document.getElementById('question-area');
+  const area = $('question-area');
   const idx = state.currentDistractIndex;
   const qs = state.distractQuestions;
   if (idx >= qs.length) {
-    // Re-shuffle
-    state.distractQuestions = shuffle([...QUESTIONS]);
+    state.distractQuestions = shuffle(QUESTIONS.slice());
     state.currentDistractIndex = 0;
     presentDistractQuestion();
     return;
   }
   const q = qs[idx];
-  area.innerHTML = '<div style="text-align:left;max-width:500px;margin:0 auto">'
-    + '<div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">第 ' + (state.questionsAsked + 1) + ' 题 / 共 ' + (state.questionsAsked + 99) + ' 题</div>'
-    + '<div class="question-text">' + q.q + '</div>'
-    + '<div class="options" id="q-options">'
-    + q.opts.map((o, i) => '<button class="option-btn" onclick="answerDistractQuestion(' + i + ')">' + o + '</button>').join('')
-    + '</div>'
-    + '<div id="q-feedback" class="feedback-text" style="min-height:1.6em"></div></div>';
+
+  area.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'question-wrap';
+  const counter = document.createElement('div');
+  counter.className = 'q-counter';
+  counter.textContent = '第 ' + (state.questionsAsked + 1) + ' 题';
+  const qt = document.createElement('div');
+  qt.className = 'question-text';
+  qt.textContent = q.q;
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  q.opts.forEach(function(o, i) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'option-btn';
+    b.textContent = o;
+    b.addEventListener('click', function() { answerDistractQuestion(i); });
+    opts.appendChild(b);
+  });
+  const fb = document.createElement('div');
+  fb.className = 'feedback-text';
+  fb.id = 'q-feedback';
+  fb.setAttribute('aria-live', 'polite');
+  wrap.appendChild(counter); wrap.appendChild(qt); wrap.appendChild(opts); wrap.appendChild(fb);
+  area.appendChild(wrap);
 }
 
 function answerDistractQuestion(selected) {
@@ -991,405 +1204,433 @@ function answerDistractQuestion(selected) {
   const correct = selected === q.ans;
   if (correct) state.correctAnswers++;
 
-  // Disable all buttons
-  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  document.querySelectorAll('#question-area .option-btn').forEach(function(b, i) {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === selected) b.classList.add('wrong');
+  });
 
-  const fb = document.getElementById('q-feedback');
+  const fb = $('q-feedback');
   if (correct) {
     fb.textContent = '✅ 正确！';
-    fb.style.color = 'var(--success)';
+    fb.classList.add('correct');
     vibrate(10);
   } else {
     fb.textContent = '❌ 错误。正确答案：' + q.opts[q.ans];
-    fb.style.color = 'var(--danger)';
+    fb.classList.add('wrong');
   }
 
   state.currentDistractIndex++;
   backupState();
 
-  // Next question after short delay
   setTimeout(function() {
-    if (state.phase === 'distract') {
-      presentDistractQuestion();
-    }
+    if (state.phase === 'distract') presentDistractQuestion();
   }, 800);
 }
 
 // ===================================================================
-// RECALL 1
+// 回忆阶段（立即 / 延迟 共用）
 // ===================================================================
-function goToRecall1() {
+function goToRecall(n) {
   if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
-  state.recall1Done = true;
-  state.phase = 'recall1';
-  showScreen('screen-recall1');
-  showProgress('回忆');
-  document.getElementById('btn-large3').classList.toggle('active', prefs.largeText);
-  document.getElementById('btn-contrast3').classList.toggle('active', prefs.highContrast);
-  document.getElementById('btn-tts3').classList.toggle('active', prefs.ttsEnabled);
-  updateTTSIndicator();
+  const R = RECALLS[n];
+  state.currentRecall = n;
+  state[R.doneKey] = true;
+  state.phase = 'recall' + n;
+  showScreen('screen-recall');
+  showProgress(n === 1 ? '回忆' : '延迟');
+
+  $('recall-badge').textContent = R.badge;
+  $('recall-sub').textContent = R.sub;
+  const inline = $('recall-inline-result');
+  inline.classList.add('hidden');
+  inline.innerHTML = '';
+  const submitBtn = $('recall-submit');
+  submitBtn.classList.remove('hidden', 'ready');
+
+  buildRecallBoard(n);
   backupState();
+}
 
+function buildRecallBoard(n) {
+  const R = RECALLS[n];
   const needed = selectedDifficulty;
-  const hint = document.getElementById('recall-hint1');
-  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 0/' + needed + '）';
-  hint.style.fontSize = '0.9rem'; hint.style.color = 'var(--muted)'; hint.style.marginBottom = '10px';
+  state[R.resultsKey] = new Array(needed).fill(null);
+  updateRecallHint();
 
-  // Build pool: correct objects + random distractors
-  const pool = shuffle([
-    ...currentObjects,
-    ...shuffle(OBJECT_POOL.filter(o => !currentObjects.some(c => c.name === o.name))).slice(0, Math.max(4, needed + 2))
-  ]);
-
-  const targets = document.getElementById('recall-targets1');
+  // 槽位
+  const targets = $('recall-targets');
   targets.innerHTML = '';
   for (let i = 0; i < needed; i++) {
     const slot = document.createElement('div');
     slot.className = 'recall-slot';
-    slot.id = 'recall1-slot-' + i;
-    slot.innerHTML = '<div style="font-size:1.8rem;opacity:0.25">⬜</div><div style="font-size:0.7rem;color:var(--muted)">物品 ' + (i+1) + '</div>';
+    slot.dataset.index = i;
     slot.dataset.filled = 'false';
+    slot.innerHTML = '<span class="slot-num">' + (i + 1) + '</span><span class="slot-lbl">物品 ' + (i + 1) + '</span>';
+    slot.addEventListener('click', function() { if (slot.dataset.filled === 'true') returnToPool(slot); });
     targets.appendChild(slot);
   }
 
-  const poolEl = document.getElementById('recall-pool1');
-  poolEl.innerHTML = '<div class="recall-grid" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px">'
-    + pool.map(o => '<button class="option-btn recall-opt" data-emoji="' + o.emoji + '" data-name="' + o.name + '">'
-      + o.emoji + ' ' + o.name + '</button>').join('') + '</div>';
-
-  document.querySelectorAll('#recall-pool1 .recall-opt').forEach(btn => {
-    btn.onclick = function() {
-      const emoji = this.dataset.emoji;
-      const name = this.dataset.name;
-      if (this.disabled) return;
-      // Find first empty slot
-      for (let i = 0; i < needed; i++) {
-        const slot = document.getElementById('recall1-slot-' + i);
-        if (slot.dataset.filled === 'false') {
-          state.recall1Results[i] = { emoji: emoji, name: name };
-          slot.innerHTML = '<div style="font-size:1.8rem">' + emoji + '</div><div style="font-size:0.7rem;color:var(--text)">' + name + '</div>';
-          slot.dataset.filled = 'true';
-          this.disabled = true;
-          this.style.opacity = '0.4';
-          updateRecallHint1();
-          playBeep();
-          break;
-        }
-      }
-    };
+  // 候选池：目标物品 + 干扰物品
+  const pool = shuffle(
+    currentObjects.concat(
+      shuffle(OBJECT_POOL.filter(function(o) {
+        return !currentObjects.some(function(c) { return c.name === o.name; });
+      })).slice(0, Math.max(4, needed + 2))
+    )
+  );
+  const poolEl = $('recall-pool');
+  poolEl.innerHTML = '';
+  pool.forEach(function(o) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'recall-opt';
+    btn.dataset.emoji = o.emoji;
+    btn.dataset.name = o.name;
+    btn.textContent = o.emoji + ' ' + o.name;
+    btn.addEventListener('click', function() { pickRecallOption(btn); });
+    poolEl.appendChild(btn);
   });
 }
 
-function updateRecallHint1() {
-  const filled = document.querySelectorAll('#recall-targets1 .recall-slot[data-filled="true"]').length;
-  const needed = selectedDifficulty;
-  const hint = document.getElementById('recall-hint1');
-  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 ' + filled + '/' + needed + '）';
-  if (filled === needed) hint.style.color = 'var(--success)';
-  else hint.style.color = 'var(--muted)';
+function pickRecallOption(btn) {
+  if (btn.disabled) return;
+  const n = state.currentRecall;
+  const R = RECALLS[n];
+  const item = { emoji: btn.dataset.emoji, name: btn.dataset.name };
+  const slots = document.querySelectorAll('#recall-targets .recall-slot');
+  for (let i = 0; i < slots.length; i++) {
+    const slot = slots[i];
+    if (slot.dataset.filled === 'false') {
+      state[R.resultsKey][i] = item;
+      slot.dataset.filled = 'true';
+      slot.innerHTML = '<span class="emoji">' + item.emoji + '</span>'
+        + '<span class="label">' + item.name + '</span>'
+        + '<span class="slot-hint">点按退回</span>';
+      btn.disabled = true;
+      btn.classList.add('used');
+      updateRecallHint();
+      playBeep();
+      vibrate(10);
+      return;
+    }
+  }
 }
 
-function submitRecall1() {
-  const filled = document.querySelectorAll('#recall-targets1 .recall-slot[data-filled="true"]').length;
+function returnToPool(slot) {
+  const n = state.currentRecall;
+  const R = RECALLS[n];
+  const i = parseInt(slot.dataset.index, 10);
+  const item = state[R.resultsKey][i];
+  if (!item) return;
+  state[R.resultsKey][i] = null;
+  const poolBtn = Array.prototype.find.call(
+    document.querySelectorAll('#recall-pool .recall-opt'),
+    function(b) { return b.dataset.emoji === item.emoji && b.dataset.name === item.name; }
+  );
+  if (poolBtn) { poolBtn.disabled = false; poolBtn.classList.remove('used'); }
+  slot.dataset.filled = 'false';
+  const num = i + 1;
+  slot.innerHTML = '<span class="slot-num">' + num + '</span><span class="slot-lbl">物品 ' + num + '</span>';
+  updateRecallHint();
+}
+
+function updateRecallHint() {
+  const n = state.currentRecall;
+  const R = RECALLS[n];
   const needed = selectedDifficulty;
+  const filled = state[R.resultsKey].filter(Boolean).length;
+  const hint = $('recall-hint');
+  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 ' + filled + '/' + needed + '）';
+  hint.classList.toggle('full', filled === needed);
+  $('recall-submit').classList.toggle('ready', filled === needed);
+}
+
+function submitRecall() {
+  const n = state.currentRecall;
+  const R = RECALLS[n];
+  const needed = selectedDifficulty;
+  const filled = state[R.resultsKey].filter(Boolean).length;
   if (filled < needed) {
     speak('请选够' + needed + '个物品');
     return;
   }
-  // Show confirm overlay
   const overlay = document.createElement('div');
   overlay.className = 'recall-confirm-overlay';
-  overlay.innerHTML = '<div class="recall-confirm-box">'
-    + '<p>确认提交回忆结果？<br><span style="font-size:0.85rem;color:var(--muted)">提交后不能修改</span></p>'
-    + '<div class="recall-confirm-actions">'
-    + '<button class="btn btn-sm" onclick="doSubmitRecall1()">确认提交</button>'
-    + '<button class="btn btn-sm" style="background:#6b7280" onclick="this.closest(\'.recall-confirm-overlay\').remove()">再想想</button>'
-    + '</div></div>';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  const box = document.createElement('div');
+  box.className = 'recall-confirm-box';
+  const p = document.createElement('p');
+  p.innerHTML = R.confirm + '<br><span class="confirm-sub">提交后不能修改</span>';
+  const actions = document.createElement('div');
+  actions.className = 'recall-confirm-actions';
+  const ok = document.createElement('button');
+  ok.type = 'button'; ok.className = 'btn btn-sm'; ok.textContent = '确认提交';
+  const no = document.createElement('button');
+  no.type = 'button'; no.className = 'btn btn-sm btn-gray'; no.textContent = '再想想';
+  ok.addEventListener('click', function() { overlay.remove(); doSubmitRecall(); });
+  no.addEventListener('click', function() { overlay.remove(); });
+  actions.appendChild(ok); actions.appendChild(no);
+  box.appendChild(p); box.appendChild(actions);
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
+  ok.focus();
 }
 
-function doSubmitRecall1() {
-  document.querySelectorAll('.recall-confirm-overlay').forEach(e => e.remove());
-  // Grade results
-  let correct = 0;
-  for (let i = 0; i < selectedDifficulty; i++) {
-    const res = state.recall1Results[i];
-    if (res && currentObjects.some(c => c.name === res.name && c.emoji === res.emoji)) {
-      correct++;
-    }
-  }
-  state.recall1Correct = correct;
-
-  const correctCount = correct;
-  const total = selectedDifficulty;
-  speak('即时回忆完成，正确' + correctCount + '个，共' + total + '个');
-
-  // Show inline result
-  const area = document.getElementById('recall1-submit');
-  const resultDiv = document.createElement('div');
-  resultDiv.style.cssText = 'margin:12px 0;padding:12px;background:#f0fdf4;border-radius:8px;font-size:0.9rem';
-  resultDiv.innerHTML = '✅ 即时回忆结果：正确 <strong>' + correctCount + '</strong>/' + total + ' 个'
-    + '<br><span style="font-size:0.8rem;color:var(--muted)">正确答案: ' + currentObjects.map(o => o.emoji + o.name).join('、') + '</span>';
-
-  // Check if we should go to distract2
-  if (!state.recall2Done) {
-    area.parentNode.insertBefore(resultDiv, area);
-    document.getElementById('recall1-submit').classList.add('hidden');
-    showPhaseNotice('⏳ 延迟回忆阶段', '请继续答题，约2分钟后会再次测试', '继续完成干扰题，等待延迟回忆倒计时结束。\n您可以在干扰阶段继续答题。', 'startDistractionPhase');
-  }
-}
-
-// ===================================================================
-// RECALL 2
-// ===================================================================
-function goToRecall2() {
-  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
-  state.recall2Done = true;
-  state.phase = 'recall2';
-  showScreen('screen-recall2');
-  showProgress('延迟');
-  document.getElementById('btn-large4').classList.toggle('active', prefs.largeText);
-  document.getElementById('btn-contrast4').classList.toggle('active', prefs.highContrast);
-  document.getElementById('btn-tts4').classList.toggle('active', prefs.ttsEnabled);
-  updateTTSIndicator();
-  backupState();
-
+function doSubmitRecall() {
+  const n = state.currentRecall;
+  const R = RECALLS[n];
   const needed = selectedDifficulty;
-  const hint = document.getElementById('recall-hint2');
-  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 0/' + needed + '）';
-  hint.style.fontSize = '0.9rem'; hint.style.color = 'var(--muted)'; hint.style.marginBottom = '10px';
-
-  // Build pool (different arrangement from recall1 for variety)
-  const pool = shuffle([
-    ...currentObjects,
-    ...shuffle(OBJECT_POOL.filter(o => !currentObjects.some(c => c.name === o.name))).slice(0, Math.max(4, needed + 2))
-  ]);
-
-  const targets = document.getElementById('recall-targets2');
-  targets.innerHTML = '';
+  let correct = 0;
   for (let i = 0; i < needed; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'recall-slot';
-    slot.id = 'recall2-slot-' + i;
-    slot.innerHTML = '<div style="font-size:1.8rem;opacity:0.25">⬜</div><div style="font-size:0.7rem;color:var(--muted)">物品 ' + (i+1) + '</div>';
-    slot.dataset.filled = 'false';
-    targets.appendChild(slot);
+    const res = state[R.resultsKey][i];
+    if (res && currentObjects.some(function(c) { return c.name === res.name && c.emoji === res.emoji; })) correct++;
   }
+  state[R.correctKey] = correct;
+  speak(R.voicePrefix + '，正确' + correct + '个，共' + needed + '个');
 
-  const poolEl = document.getElementById('recall-pool2');
-  poolEl.innerHTML = '<div class="recall-grid" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px">'
-    + pool.map(o => '<button class="option-btn recall-opt" data-emoji="' + o.emoji + '" data-name="' + o.name + '">'
-      + o.emoji + ' ' + o.name + '</button>').join('') + '</div>';
-
-  document.querySelectorAll('#recall-pool2 .recall-opt').forEach(btn => {
-    btn.onclick = function() {
-      const emoji = this.dataset.emoji;
-      const name = this.dataset.name;
-      if (this.disabled) return;
-      for (let i = 0; i < needed; i++) {
-        const slot = document.getElementById('recall2-slot-' + i);
-        if (slot.dataset.filled === 'false') {
-          state.recall2Results[i] = { emoji: emoji, name: name };
-          slot.innerHTML = '<div style="font-size:1.8rem">' + emoji + '</div><div style="font-size:0.7rem;color:var(--text)">' + name + '</div>';
-          slot.dataset.filled = 'true';
-          this.disabled = true;
-          this.style.opacity = '0.4';
-          updateRecallHint2();
-          playBeep();
-          break;
-        }
-      }
-    };
-  });
-}
-
-function updateRecallHint2() {
-  const filled = document.querySelectorAll('#recall-targets2 .recall-slot[data-filled="true"]').length;
-  const needed = selectedDifficulty;
-  const hint = document.getElementById('recall-hint2');
-  hint.textContent = '请从下方选择 ' + needed + ' 个物品（已选 ' + filled + '/' + needed + '）';
-  if (filled === needed) hint.style.color = 'var(--success)';
-  else hint.style.color = 'var(--muted)';
-}
-
-function submitRecall2() {
-  const filled = document.querySelectorAll('#recall-targets2 .recall-slot[data-filled="true"]').length;
-  const needed = selectedDifficulty;
-  if (filled < needed) {
-    speak('请选够' + needed + '个物品');
-    return;
-  }
-  // Confirm
-  const overlay = document.createElement('div');
-  overlay.className = 'recall-confirm-overlay';
-  overlay.innerHTML = '<div class="recall-confirm-box">'
-    + '<p>确认提交延迟回忆结果？<br><span style="font-size:0.85rem;color:var(--muted)">提交后不能修改</span></p>'
-    + '<div class="recall-confirm-actions">'
-    + '<button class="btn btn-sm" onclick="doSubmitRecall2()">确认提交</button>'
-    + '<button class="btn btn-sm" style="background:#6b7280" onclick="this.closest(\'.recall-confirm-overlay\').remove()">再想想</button>'
-    + '</div></div>';
-  document.body.appendChild(overlay);
-}
-
-function doSubmitRecall2() {
-  document.querySelectorAll('.recall-confirm-overlay').forEach(e => e.remove());
-  let correct = 0;
-  for (let i = 0; i < selectedDifficulty; i++) {
-    const res = state.recall2Results[i];
-    if (res && currentObjects.some(c => c.name === res.name && c.emoji === res.emoji)) {
-      correct++;
-    }
-  }
-  state.recall2Correct = correct;
-  speak('延迟回忆完成，正确' + correct + '个，共' + selectedDifficulty + '个');
-  showResults();
-}
-
-// ===================================================================
-// SHARE
-// ===================================================================
-function shareResult() {
-  var btn = document.querySelector('.share-btn');
-  btn.disabled = true;
-  btn.textContent = '生成海报中...';
-
-  var r1 = state.recall1Correct || 0;
-  var r2 = state.recall2Correct || 0;
-  var total = selectedDifficulty;
-  var totalPossibleRecall = total * 2;
-  var recallScore = (r1 + r2) / totalPossibleRecall * 60;
-  var questionScore = state.totalQuestions > 0 ? (state.correctAnswers / state.totalQuestions) * 40 : 0;
-  var totalScore = Math.round(recallScore + questionScore);
-
-  var badge, encourage, badgeIcon;
-  if (totalScore >= 85) {
-    badge = '优秀'; badgeIcon = '⭐';
-    encourage = '记忆力非常棒！继续保持健康的生活方式，\n多阅读、多动脑，大脑会越来越灵活！';
-  } else if (totalScore >= 65) {
-    badge = '良好'; badgeIcon = '🌱';
-    encourage = '记忆力状态不错！坚持脑力锻炼，\n如数独、阅读、学习新技能，会越来越好！';
-  } else if (totalScore >= 50) {
-    badge = '一般'; badgeIcon = '🌿';
-    encourage = '记忆有些减退迹象，建议增加脑力锻炼。\n每天做些简单的计算或记忆练习会有帮助。';
+  if (n === 1) {
+    const inline = $('recall-inline-result');
+    inline.innerHTML = '✅ 即时回忆结果：正确 <strong>' + correct + '</strong>/' + needed + ' 个'
+      + '<br><span class="inline-answers">正确答案: ' + currentObjects.map(function(o) { return o.emoji + o.name; }).join('、') + '</span>';
+    inline.classList.remove('hidden');
+    $('recall-submit').classList.add('hidden');
+    showPhaseNotice('⏳ 延迟回忆阶段', '请继续答题，约2分钟后会再次测试', '继续完成干扰题，等待延迟回忆倒计时结束。\n您可以在干扰阶段继续答题。', function() { startDistractionPhase(false); });
   } else {
-    badge = '建议关注'; badgeIcon = '🍂';
-    encourage = '建议关注自己的记忆变化，\n如有持续下降趋势可咨询医生做进一步评估。';
+    showResults();
+  }
+}
+
+// ===================================================================
+// 评分（唯一来源，结果页与海报共用）
+// ===================================================================
+function computeResult() {
+  const r1 = state.recall1Correct || 0;
+  const r2 = state.recall2Correct || 0;
+  const total = selectedDifficulty;
+  const recallScore = (r1 + r2) / (total * 2) * 60;
+  const questionScore = state.totalQuestions > 0 ? (state.correctAnswers / state.totalQuestions) * 40 : 0;
+  const totalScore = Math.round(recallScore + questionScore);
+  const tier = TIERS.find(function(t) { return totalScore >= t.min; });
+  return { r1: r1, r2: r2, total: total, totalScore: totalScore, tier: tier };
+}
+
+// ===================================================================
+// 结果页
+// ===================================================================
+function showResults() {
+  stopTimers();
+  state.phase = 'result';
+  clearBackup();
+  showScreen('screen-result');
+  showProgress('结果');
+
+  const res = computeResult();
+  const objectsNamed = currentObjects.map(function(o) { return o.emoji + o.name; }).join('、');
+  const tier = res.tier;
+
+  const badgeEl = $('result-badge');
+  badgeEl.className = 'tier-chip tier-' + tier.key;
+  badgeEl.textContent = tier.icon + ' ' + tier.label;
+
+  function statRow(label, val, max) {
+    const pct = max > 0 ? Math.round(val / max * 100) : 0;
+    const valText = max > 0 ? val + '/' + max : '—';
+    return '<div class="stat-row"><span class="stat-label">' + label + '</span>'
+      + '<span class="stat-bar"><i data-w="' + pct + '%"></i></span>'
+      + '<span class="stat-val">' + valText + '</span></div>';
+  }
+  $('result-summary').innerHTML = '<div class="summary-head tier-text-' + tier.key + '">' + tier.summary + '</div>'
+    + statRow('📝 即时回忆', res.r1, res.total)
+    + statRow('⏳ 延迟回忆', res.r2, res.total)
+    + statRow('✅ 答题正确率', state.correctAnswers, state.totalQuestions)
+    + '<div class="summary-objects">本次物品：' + objectsNamed + '</div>';
+
+  const suggestEl = $('result-suggestion');
+  if (tier.suggestion) {
+    $('suggestion-text').textContent = tier.suggestion;
+    suggestEl.classList.remove('hidden');
+  } else {
+    suggestEl.classList.add('hidden');
   }
 
-  var W = 600, H = 850;
-  var canvas = document.createElement('canvas');
-  canvas.width = W; canvas.height = H;
-  var ctx = canvas.getContext('2d');
+  animateScore(res.totalScore, tier.color);
 
-  // Background gradient
-  var grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#f0fdf4'); grad.addColorStop(0.5, '#f5f3ef'); grad.addColorStop(1, '#ecfdf5');
+  saveToHistory({
+    date: new Date().toISOString(),
+    score: res.totalScore,
+    recall1: res.r1,
+    recall2: res.r2,
+    correctRate: state.correctAnswers,
+    totalQ: state.totalQuestions,
+    objects: objectsNamed,
+  });
+  renderHistory();
+
+  speak('测试完成。' + tier.label);
+}
+
+function animateScore(target, color) {
+  const numEl = $('result-score');
+  const ring = $('result-ring-bar');
+  const wrapEl = document.querySelector('.score-ring-wrap');
+  const C = 2 * Math.PI * 52;
+  ring.style.stroke = color;
+  wrapEl.classList.remove('score-anim');
+  void wrapEl.offsetWidth;
+  wrapEl.classList.add('score-anim');
+  if (prefersReducedMotion()) {
+    numEl.textContent = target;
+    ring.style.strokeDashoffset = C * (1 - target / 100);
+    return;
+  }
+  const dur = 900;
+  const t0 = performance.now();
+  let done = false;
+  function finish() {
+    if (done) return;
+    done = true;
+    numEl.textContent = target;
+    ring.style.strokeDashoffset = C * (1 - target / 100);
+  }
+  requestAnimationFrame(function frame(t) {
+    if (done) return;
+    const p = Math.min(1, (t - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    numEl.textContent = Math.round(target * e);
+    ring.style.strokeDashoffset = C * (1 - (target * e) / 100);
+    if (p < 1) requestAnimationFrame(frame); else finish();
+  });
+  // 后台标签页 rAF 会暂停，超时兜底把分数归位
+  setTimeout(finish, dur + 120);
+  // 细分条延迟一拍再展开，配合 CSS 过渡
+  requestAnimationFrame(function() {
+    document.querySelectorAll('#result-summary .stat-bar i').forEach(function(el) {
+      el.style.width = el.dataset.w;
+    });
+  });
+}
+
+// ===================================================================
+// 结果海报（奶油琥珀主题；移动端优先调起原生分享）
+// ===================================================================
+const POSTER_SANS = '-apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
+const POSTER_SERIF = '"Noto Serif SC","Songti SC","STSong","SimSun",serif';
+
+function drawPoster(ctx, W, H, res) {
+  const tier = res.tier;
+  // 背景
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#fdf6e9'); grad.addColorStop(0.55, '#f8ecd4'); grad.addColorStop(1, '#fbf1dc');
   ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
-
-  // Decorative circles
-  ctx.globalAlpha = 0.08; ctx.fillStyle = '#16a34a';
-  ctx.beginPath(); ctx.arc(80, 80, 120, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(W-60, 200, 90, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(W/2, H-60, 150, 0, Math.PI*2); ctx.fill();
+  // 装饰圆
+  ctx.globalAlpha = 0.06; ctx.fillStyle = '#c2620a';
+  ctx.beginPath(); ctx.arc(80, 90, 120, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W - 60, 210, 90, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W / 2, H - 50, 150, 0, Math.PI * 2); ctx.fill();
   ctx.globalAlpha = 1;
 
-  // Icon & Title
-  ctx.font = '48px serif'; ctx.textAlign = 'center';
-  ctx.fillText('\uD83E\uDDE0', W/2, 70);
-  ctx.font = 'bold 28px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillText('短期记忆自测结果', W/2, 120);
+  // 印章
+  ctx.fillStyle = '#c2620a';
+  roundRect(ctx, W / 2 - 27, 34, 54, 54, 12); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,248,236,.6)'; ctx.lineWidth = 1.5;
+  roundRect(ctx, W / 2 - 22, 39, 44, 44, 9); ctx.stroke();
+  ctx.font = '700 30px ' + POSTER_SERIF;
+  ctx.fillStyle = '#fff8ec'; ctx.textAlign = 'center';
+  ctx.fillText('忆', W / 2, 74);
 
-  // Date
-  var now = new Date();
-  var dateStr = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日 ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  ctx.font = '14px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#9ca3af'; ctx.fillText(dateStr, W/2, 150);
+  // 标题与日期
+  ctx.font = '700 28px ' + POSTER_SERIF;
+  ctx.fillStyle = '#2e2114';
+  ctx.fillText('短期记忆自测结果', W / 2, 128);
+  const now = new Date();
+  const dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日 '
+    + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  ctx.font = '14px ' + POSTER_SANS;
+  ctx.fillStyle = '#a08b6d';
+  ctx.fillText(dateStr, W / 2, 156);
+  ctx.strokeStyle = '#e8d9bd'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80, 178); ctx.lineTo(W - 80, 178); ctx.stroke();
 
-  // Line
-  ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(80, 170); ctx.lineTo(W-80, 170); ctx.stroke();
+  // 分数圆环
+  ctx.beginPath(); ctx.arc(W / 2, 272, 76, 0, Math.PI * 2);
+  ctx.strokeStyle = '#f0e2c6'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.beginPath(); ctx.arc(W / 2, 272, 68, 0, Math.PI * 2);
+  ctx.fillStyle = '#fffdf8';
+  ctx.shadowColor = 'rgba(194,98,10,.18)'; ctx.shadowBlur = 22; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(W / 2, 272, 68, 0, Math.PI * 2);
+  ctx.strokeStyle = tier.color; ctx.lineWidth = 5; ctx.stroke();
+  ctx.font = '800 46px ' + POSTER_SERIF;
+  ctx.fillStyle = tier.color;
+  ctx.fillText(String(res.totalScore), W / 2, 284);
+  ctx.font = '15px ' + POSTER_SANS;
+  ctx.fillStyle = '#a08b6d';
+  ctx.fillText('分', W / 2, 314);
 
-  // Score circle
-  ctx.beginPath(); ctx.arc(W/2, 280, 70, 0, Math.PI*2);
-  ctx.fillStyle = '#ffffff'; ctx.shadowColor = 'rgba(22,163,74,0.15)'; ctx.shadowBlur = 20; ctx.fill(); ctx.shadowBlur = 0;
-  ctx.beginPath(); ctx.arc(W/2, 280, 70, 0, Math.PI*2);
-  ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 4; ctx.stroke();
+  // 评语徽章
+  ctx.font = '700 20px ' + POSTER_SANS;
+  ctx.fillStyle = tier.color;
+  ctx.fillText(tier.icon + ' ' + tier.label, W / 2, 372);
+  ctx.strokeStyle = '#e8d9bd';
+  ctx.beginPath(); ctx.moveTo(80, 394); ctx.lineTo(W - 80, 394); ctx.stroke();
 
-  ctx.font = 'bold 44px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#16a34a'; ctx.fillText(totalScore, W/2, 288);
-  ctx.font = '16px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#6b7280'; ctx.fillText('分', W/2, 316);
-
-  // Badge
-  ctx.font = 'bold 20px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#374151'; ctx.fillText(badgeIcon + ' ' + badge, W/2, 370);
-
-  // Line
-  ctx.strokeStyle = '#e5e7eb';
-  ctx.beginPath(); ctx.moveTo(80, 395); ctx.lineTo(W-80, 395); ctx.stroke();
-
-  // Detail cards
-  var details = [
-    { icon: '\uD83D\uDCDD', label: '即时回忆', val: r1 + '/' + total + ' 正确' },
-    { icon: '\u23F3', label: '延迟回忆', val: r2 + '/' + total + ' 正确' },
-    { icon: '\u2705', label: '答题正确率', val: state.correctAnswers + '/' + state.totalQuestions },
+  // 明细卡
+  const difficultyLabel = res.total === 2 ? '简单' : res.total === 3 ? '中等' : '困难';
+  const details = [
+    { icon: '📝', label: '即时回忆', val: res.r1 + '/' + res.total + ' 正确' },
+    { icon: '⏳', label: '延迟回忆', val: res.r2 + '/' + res.total + ' 正确' },
+    { icon: '✅', label: '答题正确率', val: state.correctAnswers + '/' + state.totalQuestions },
+    { icon: '🎯', label: '难度', val: difficultyLabel },
   ];
-  var difficultyLabel = total === 2 ? '简单' : total === 3 ? '中等' : '困难';
-  details.push({ icon: '\uD83C\uDFAF', label: '难度', val: difficultyLabel });
-
-  var cardW = 240, cardH = 52, gap = 10, sx = (W - cardW) / 2;
+  const cardW = 250, cardH = 52, gap = 10, sx = (W - cardW) / 2;
   details.forEach(function(item, i) {
-    var y = 430 + i * (cardH + gap);
-    ctx.fillStyle = '#ffffff'; ctx.shadowColor = 'rgba(0,0,0,0.05)'; ctx.shadowBlur = 6;
-    roundRect(ctx, sx, y, cardW, cardH, 8); ctx.fill(); ctx.shadowBlur = 0;
-    ctx.font = '20px serif'; ctx.textAlign = 'left';
-    ctx.fillText(item.icon, sx + 14, y + 32);
-    ctx.font = '13px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-    ctx.fillStyle = '#9ca3af'; ctx.fillText(item.label, sx + 46, y + 24);
-    ctx.font = 'bold 16px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-    ctx.fillStyle = '#1f2937'; ctx.fillText(item.val, sx + 46, y + 44);
+    const y = 426 + i * (cardH + gap);
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(97,66,22,.08)'; ctx.shadowBlur = 6;
+    roundRect(ctx, sx, y, cardW, cardH, 10); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#eadbbd'; ctx.lineWidth = 1;
+    roundRect(ctx, sx, y, cardW, cardH, 10); ctx.stroke();
+    ctx.font = '20px ' + POSTER_SANS; ctx.textAlign = 'left';
+    ctx.fillText(item.icon, sx + 16, y + 33);
+    ctx.font = '13px ' + POSTER_SANS;
+    ctx.fillStyle = '#8a755a'; ctx.fillText(item.label, sx + 48, y + 23);
+    ctx.font = '700 16px ' + POSTER_SANS;
+    ctx.fillStyle = '#2e2114'; ctx.fillText(item.val, sx + 48, y + 43);
   });
+  ctx.textAlign = 'center';
 
-  // Objects
+  // 本次物品
+  const objY = 426 + 4 * (cardH + gap) + 22;
   if (currentObjects && currentObjects.length > 0) {
-    var objStrs = []; for (var k = 0; k < currentObjects.length; k++) { objStrs.push(currentObjects[k].emoji); }
-    ctx.font = '13px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-    ctx.fillStyle = '#9ca3af'; ctx.textAlign = 'center';
-    ctx.fillText('本次记忆物品：' + objStrs.join(' '), W/2, 430 + 4 * (cardH + gap) + 25);
+    ctx.font = '13px ' + POSTER_SANS;
+    ctx.fillStyle = '#8a755a';
+    ctx.fillText('本次记忆物品：' + currentObjects.map(function(o) { return o.emoji; }).join(' '), W / 2, objY);
   }
 
-  // Encouragement card
-  var ey = 430 + 4 * (cardH + gap) + 55;
-  ctx.fillStyle = '#f0fdf4'; ctx.shadowColor = 'rgba(22,163,74,0.08)'; ctx.shadowBlur = 8;
-  roundRect(ctx, 50, ey, W-100, 95, 12); ctx.fill(); ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#bbf7d0'; ctx.lineWidth = 1;
-  roundRect(ctx, 50, ey, W-100, 95, 12); ctx.stroke();
+  // 寄语卡
+  const ey = objY + 16;
+  ctx.fillStyle = '#fbf2df';
+  ctx.shadowColor = 'rgba(194,98,10,.08)'; ctx.shadowBlur = 8;
+  roundRect(ctx, 50, ey, W - 100, 92, 12); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#ecd9b0'; ctx.lineWidth = 1;
+  roundRect(ctx, 50, ey, W - 100, 92, 12); ctx.stroke();
+  ctx.font = '14px ' + POSTER_SANS;
+  ctx.fillStyle = '#7c5316';
+  const encourage = tier.suggestion || '记忆力非常棒！继续保持健康的生活方式，\n多阅读、多动脑，大脑会越来越灵活！';
+  encourage.split('\n').forEach(function(line, li) {
+    ctx.fillText(line, W / 2, ey + 34 + li * 28);
+  });
 
-  ctx.font = '14px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#166534'; ctx.textAlign = 'center';
-  var lines = encourage.split('\n');
-  for (var li = 0; li < lines.length; li++) { ctx.fillText(lines[li], W/2, ey + 30 + li * 28); }
-
-  // Footer
-  ctx.font = '12px -apple-system, "PingFang SC", "Noto Sans SC", sans-serif';
-  ctx.fillStyle = '#d1d5db'; ctx.textAlign = 'center';
-  ctx.fillText('本测试仅为初步筛查，不能代替专业诊断', W/2, H - 28);
-
-  // Save as download
-  canvas.toBlob(function(blob) {
-    var url = URL.createObjectURL(blob);
-    var link = document.createElement('a');
-    link.href = url; link.download = '短期记忆自测结果.png';
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    btn.textContent = '✅ 已保存到相册';
-    btn.disabled = false;
-    setTimeout(function() { btn.textContent = '📤 保存结果海报'; }, 3000);
-  }, 'image/png');
+  // 页脚
+  ctx.font = '12px ' + POSTER_SANS;
+  ctx.fillStyle = '#b7a68b';
+  ctx.fillText('本测试仅为初步筛查，不能代替专业诊断', W / 2, H - 26);
 }
 
-// Helper: Canvas roundRect polyfill
+// Canvas roundRect 兼容
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
@@ -1403,118 +1644,73 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+function shareResult() {
+  const btn = $('btn-share');
+  btn.disabled = true;
+  btn.textContent = '生成海报中…';
 
-function downloadCanvas(canvas, btn) {
-  // Create download link
-  const link = document.createElement('a');
-  link.download = '短期记忆自测结果.png';
-  link.href = canvas.toDataURL('image/png');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  btn.textContent = '已保存到相册';
-  setTimeout(function() { btn.textContent = '📤 分享结果'; }, 2000);
+  const res = computeResult();
+  const W = 600, H = 850;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  drawPoster(ctx, W, H, res);
+
+  canvas.toBlob(function(blob) {
+    if (!blob) { downloadBlob(null, btn); return; }
+    let file = null;
+    try { file = new File([blob], '短期记忆自测结果.png', { type: 'image/png' }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: '短期记忆自测结果' }).then(function() {
+        btn.textContent = '✅ 已调起分享';
+        btn.disabled = false;
+        setTimeout(function() { btn.textContent = '📤 保存 / 分享海报'; }, 3000);
+      }).catch(function() {
+        downloadBlob(blob, btn);
+      });
+    } else {
+      downloadBlob(blob, btn);
+    }
+  }, 'image/png');
 }
-// ===================================================================
-// RESULTS
-// ===================================================================
-function showResults() {
-  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
-  if (state.objectsTimerInterval) { clearInterval(state.objectsTimerInterval); state.objectsTimerInterval = null; }
-  state.phase = 'result';
-  clearBackup();
-  showScreen('screen-result');
-  showProgress('结果');
-  document.getElementById('btn-large5').classList.toggle('active', prefs.largeText);
-  document.getElementById('btn-contrast5').classList.toggle('active', prefs.highContrast);
-  document.getElementById('btn-tts5').classList.toggle('active', prefs.ttsEnabled);
-  updateTTSIndicator();
 
-  const r1 = state.recall1Correct || 0;
-  const r2 = state.recall2Correct || 0;
-  const total = selectedDifficulty;
-  const objectsNamed = currentObjects.map(o => o.emoji + o.name).join('、');
-  const totalPossibleRecall = total * 2;
-
-  // Scoring: recall accounts for 60%, questions for 40%
-  const recallScore = (r1 + r2) / totalPossibleRecall * 60;
-  const questionScore = state.totalQuestions > 0 ? (state.correctAnswers / state.totalQuestions) * 40 : 0;
-  const totalScore = Math.round(recallScore + questionScore);
-
-  const badgeEl = document.getElementById('result-badge');
-  const scoreEl = document.getElementById('result-score');
-  const summaryEl = document.getElementById('result-summary');
-  const suggestEl = document.getElementById('result-suggestion');
-  const suggestText = document.getElementById('suggestion-text');
-
-  scoreEl.textContent = totalScore;
-
-  if (totalScore >= 85) {
-    scoreEl.className = 'result-score success';
-    badgeEl.textContent = '🌟 优秀';
-    summaryEl.innerHTML = '短期记忆功能良好。<br>'
-      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
-      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
-      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
-    suggestEl.classList.add('hidden');
-  } else if (totalScore >= 65) {
-    scoreEl.className = 'result-score pass';
-    badgeEl.textContent = '🌱 良好';
-    summaryEl.innerHTML = '短期记忆基本正常。<br>'
-      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
-      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
-      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
-    suggestEl.classList.remove('hidden');
-    suggestText.textContent = '保持健康生活方式，多进行脑力锻炼，如阅读、数独、学习新技能。';
-  } else if (totalScore >= 50) {
-    scoreEl.className = 'result-score pass';
-    badgeEl.textContent = '🌱 一般';
-    summaryEl.innerHTML = '短期记忆有部分减损迹象。<br>'
-      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
-      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
-      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
-    suggestEl.classList.remove('hidden');
-    suggestText.textContent = '建议多进行脑力锻炼，如阅读、数独、学习新技能。如有持续记忆下降，建议咨询医生做进一步评估。';
-  } else {
-    scoreEl.className = 'result-score fail';
-    badgeEl.textContent = '🍂 建议关注';
-    summaryEl.innerHTML = '短期记忆有明显减损迹象。<br>'
-      + '即时回忆: ' + r1 + '/' + total + ' 正确 | 延迟回忆: ' + r2 + '/' + total + ' 正确<br>'
-      + '答题正确率: ' + state.correctAnswers + '/' + state.totalQuestions
-      + '<br><span style="font-size:0.85rem;color:var(--muted)">本次物品: ' + objectsNamed + '</span>';
-    suggestEl.classList.remove('hidden');
-    suggestText.textContent = '本测试仅为初步筛查，不能代替专业诊断。强烈建议您咨询神经内科或老年科医生。早期发现、早期干预非常重要。';
+function downloadBlob(blob, btn) {
+  if (blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '短期记忆自测结果.png';
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
   }
-
-  saveToHistory({
-    date: new Date().toISOString(),
-    score: totalScore,
-    recall1: r1,
-    recall2: r2,
-    correctRate: state.correctAnswers,
-    totalQ: state.totalQuestions,
-    objects: objectsNamed,
-  });
-  renderHistory();
-
-  speak('测试完成。' + badgeEl.textContent);
+  btn.textContent = '✅ 已保存图片';
+  btn.disabled = false;
+  setTimeout(function() { btn.textContent = '📤 保存 / 分享海报'; }, 3000);
 }
 
 // ===================================================================
-// RESUME CHECK
+// 断点续测
 // ===================================================================
 function checkResume() {
   try {
-    var data = JSON.parse(sessionStorage.getItem('ad_backup'));
+    const data = JSON.parse(sessionStorage.getItem('ad_backup'));
     if (!data || !data.studyStartTime) return;
     const elapsed = Date.now() - data.studyStartTime;
-    if (elapsed > 300000) { clearBackup(); return; }
-    const banner = document.getElementById('resume-banner');
+    if (elapsed > BACKUP_TTL_MS) { clearBackup(); return; }
+    const banner = $('resume-banner');
     banner.classList.remove('hidden');
-    banner.innerHTML = '⏸ 检测到未完成的测试，是否继续？<br>'
-      + '<button class="btn btn-sm" onclick="resumeTest()">继续测试</button> '
-      + '<button class="btn btn-sm" style="background:#6b7280" onclick="clearBackup();banner.classList.add(\'hidden\')">放弃</button>';
-  } catch(e) {}
+    banner.textContent = '⏸ 检测到未完成的测试，是否继续？';
+    const row = document.createElement('div');
+    row.className = 'banner-actions';
+    const yes = document.createElement('button');
+    yes.type = 'button'; yes.className = 'btn btn-sm'; yes.textContent = '继续测试';
+    yes.addEventListener('click', resumeTest);
+    const no = document.createElement('button');
+    no.type = 'button'; no.className = 'btn btn-sm btn-gray'; no.textContent = '放弃';
+    no.addEventListener('click', function() { clearBackup(); banner.classList.add('hidden'); });
+    row.appendChild(yes); row.appendChild(no);
+    banner.appendChild(row);
+  } catch (e) {}
 }
 
 function resumeTest() {
@@ -1522,65 +1718,61 @@ function resumeTest() {
     const data = JSON.parse(sessionStorage.getItem('ad_backup'));
     if (!data) return;
     currentObjects = data.currentObjects || OBJECT_POOL.slice(0, 3);
+    // 旧备份无 difficulty 字段时按物品数推断
+    selectedDifficulty = data.difficulty || (data.currentObjects && data.currentObjects.length) || 3;
     state.studyStartTime = data.studyStartTime;
     state.recall1Done = data.recall1Done;
     state.recall2Done = data.recall2Done;
     state.questionsAsked = data.questionsAsked || 0;
     state.totalQuestions = data.totalQuestions || 0;
     state.correctAnswers = data.correctAnswers || 0;
-    state.recall1Results = [];
-    state.recall2Results = [];
 
-    document.getElementById('resume-banner').classList.add('hidden');
+    const banner = $('resume-banner');
+    if (banner) banner.classList.add('hidden');
 
-    if (state.recall1Done && state.recall2Done) {
-      showResults();
-      return;
-    }
-
+    if (state.recall1Done && state.recall2Done) { showResults(); return; }
     const elapsed = Date.now() - state.studyStartTime;
-    if (!state.recall1Done && elapsed >= 30000) {
-      goToRecall1();
-      return;
-    }
-    if (state.recall1Done && !state.recall2Done && elapsed >= 210000) {
-      goToRecall2();
-      return;
-    }
+    if (!state.recall1Done && elapsed >= RECALL1_AT_MS) { goToRecall(1); return; }
+    if (state.recall1Done && !state.recall2Done && elapsed >= RECALL2_AT_MS) { goToRecall(2); return; }
     startDistractionPhase(true);
-  } catch(e) { clearBackup(); }
+  } catch (e) { clearBackup(); }
 }
 
 // ===================================================================
-// RESET
+// 重置
 // ===================================================================
 function resetTest() {
-  if (state.objectsTimerInterval) { clearInterval(state.objectsTimerInterval); state.objectsTimerInterval = null; }
-  if (state.questionTimerInterval) { clearInterval(state.questionTimerInterval); state.questionTimerInterval = null; }
+  stopTimers();
   clearBackup();
-  state = { phase:'welcome', recall1Results:[], recall2Results:[], recall1Done:false, recall2Done:false,
-    questionsAsked:0, totalQuestions:0, correctAnswers:0, questionTimerInterval:null, objectsTimerInterval:null,
-    studyStartTime:null, distractStartTime:null, currentDistractIndex:0, distractQuestions:[] };
-  // Restore welcome display
-  const welcomeEl = document.getElementById('screen-welcome');
-  if (welcomeEl) welcomeEl.style.display = '';
+  state = defaultState();
   showScreen('screen-welcome');
-  document.querySelectorAll('#progress-bar-wrap, #progress-bar-wrap2, #progress-bar-wrap3, #progress-bar-wrap4, #progress-bar-wrap5').forEach(el => el.classList.add('hidden'));
+  showProgress('');
+  renderHistory();
 }
 
 // ===================================================================
-// INIT
+// 初始化
 // ===================================================================
 loadPrefs();
 document.body.classList.toggle('large-text', prefs.largeText);
-document.getElementById('btn-large').classList.toggle('active', prefs.largeText);
 document.body.classList.toggle('high-contrast', prefs.highContrast);
-document.getElementById('btn-contrast').classList.toggle('active', prefs.highContrast);
-document.getElementById('btn-tts').classList.toggle('active', prefs.ttsEnabled);
-updateTTSIndicator();
+
+bind('btn-large', toggleLarge);
+bind('btn-contrast', toggleContrast);
+bind('btn-tts', toggleTTS);
+bind('btn-start', startTest);
+bind('btn-ready', studyReady);
+bind('recall-submit', submitRecall);
+bind('btn-share', shareResult);
+bind('btn-reset', resetTest);
+document.querySelectorAll('.diff-btn').forEach(function(b) {
+  b.addEventListener('click', function() { selectDifficulty(b.dataset.diff); });
+});
+
+refreshToolbar();
+showProgress('');
 renderHistory();
 checkResume();
-
 </script>
 </body>
 </html>
