@@ -12,7 +12,6 @@ const urls = [
   ['/clay/', 'monthly', '0.7'],
   ['/cad/', 'monthly', '0.7'],
   ['/dataism/', 'monthly', '0.7'],
-  ['/travel/', 'monthly', '0.7'],
   ['/games/numsweeper.html', 'monthly', '0.6'],
   ['/games/pixel-breaker.html', 'monthly', '0.6'],
   ['/games/naoliceshi.html', 'monthly', '0.6'],

@@ -114,13 +114,11 @@ export const cosmosSeries = [
   { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
-// 旅行系列：路线规划案例 + 示意图 + 控制台 + 视频系列（自动视频打磨中，留空占位）
+// 旅行系列：2026-09-01 用户拍板——大航海示意不成熟不发布；
+// 旅行控制台 / 自动视频笔记 / 案例页整合进独立「发布包」（筹备中，作为项目介绍），站点只留英伦漫记 + 整合中占位。
 export const travelSeries = [
   { title: '英伦漫记', sub: 'B站视频系列 · 速写与漫步', href: 'https://space.bilibili.com/13483307/video', img: '', external: true },
-  { title: '旅行路线规划 · 路书', sub: '英国自驾环线等案例', href: '/travel/', img: '/assets/img/travel/roadbook.webp' },
-  { title: '大航海时代示意', sub: '动态路线示意图', href: '/travel/dahanghai.html', img: '/assets/img/travel/voyage-map.webp' },
-  { title: '旅行控制台', sub: '行程与路线的总控台', href: '/travel/console/', img: '/assets/img/travel/console.webp' },
-  { title: '旅行视频笔记 · 自动生成', sub: '照片自动编排成片 · 打磨中', href: '', img: '', pending: true },
+  { title: '旅行规划工具 · 发布包整合中', sub: '路线规划 / 手绘地图 / 视频笔记 · 筹备中', href: '', img: '', pending: true },
 ];
 
 export const notes = [
