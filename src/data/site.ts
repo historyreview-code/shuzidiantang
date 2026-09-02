@@ -62,7 +62,6 @@ export const works = [
     summary: '随十二时辰流转的数据粒子艺术：桌面进现场交互展品，手机看十二时辰静态画册。',
     tags: ['数据艺术', '声音交互', '十二时辰'],
     status: '现场 + 画册',
-    github: 'https://github.com/historyreview-code/dataism',
   },
   {
     id: 'cad',
@@ -84,7 +83,6 @@ export const works = [
     tags: ['历史地图', '时间轴', '交互'],
     status: '在线可玩',
     external: true,
-    github: 'https://github.com/historyreview-code/shanghai-time-map',
   },
   {
     id: 'naoliceshi',
