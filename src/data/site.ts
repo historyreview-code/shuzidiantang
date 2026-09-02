@@ -176,26 +176,3 @@ export const notes = [
   },
 ];
 
-export const videoChannels = [
-  {
-    platform: 'B站',
-    handle: '劳伦斯在sh · UID 13483307',
-    href: 'https://space.bilibili.com/13483307',
-    tone: '长视频、系列化作品、科普与项目讲解',
-    cta: '进入 B站主页',
-  },
-  {
-    platform: '小红书',
-    handle: '劳伦斯在sh',
-    href: 'https://www.xiaohongshu.com/user/profile/5d8d47d80000000001019d89',
-    tone: '短视频、图文卡片、创作过程与生活化表达',
-    cta: '进入小红书主页',
-  },
-  {
-    platform: 'YouTube',
-    handle: '@SketchbookBritain',
-    href: 'https://www.youtube.com/@SketchbookBritain',
-    tone: '海外同步 · 英伦漫记系列',
-    cta: '进入 YouTube 频道',
-  },
-];

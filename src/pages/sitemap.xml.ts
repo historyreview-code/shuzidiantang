@@ -4,7 +4,6 @@ const urls = [
   ['/', 'weekly', '1.0'],
   ['/works/', 'weekly', '0.9'],
   ['/notes/', 'weekly', '0.8'],
-  ['/videos/', 'monthly', '0.7'],
   ['/about/', 'yearly', '0.5'],
   ['/earth/', 'weekly', '0.9'],
   ['/games/', 'monthly', '0.8'],
