@@ -2,11 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const exhibits = [
-  { num: 'NO.01', title: '会飞的手账', desc: '点击任意一天，地图飞到当天路段。', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', tag: '交互' },
-  { num: 'NO.02', title: '手绘风小红书卡', desc: '输入行程基础数据，自动生成手绘水彩卡片。', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp', tag: '自动出图' },
+  { num: 'NO.01', title: '会飞的路书', desc: '点击任意一天，地图飞到当天路段。', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', tag: '交互' },
+  { num: 'NO.02', title: '小红书卡片工具', desc: '输入行程基础数据，自动生成手绘水彩卡片。', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp', tag: '自动出图' },
 ];
 ---
-<BaseLayout current="works" title="旅行实验室 · 劳伦斯在上海" description="旅行实验室：会飞的手账、手绘风小红书卡与旅行视频生成。">
+<BaseLayout current="works" title="旅行实验室 · 劳伦斯在上海" description="旅行实验室：会飞的路书、小红书卡片工具与唯美记录视频。">
   <main id="content" class="page">
     <header class="page-title">
       <span class="kicker">旅行实验室 · Travel Lab</span>
@@ -30,11 +30,11 @@ const exhibits = [
             </div>
           </a>
         ))}
-        <article class="work-card" aria-label="旅行视频生成，后补">
+        <article class="work-card" aria-label="唯美记录视频，后补">
           <div class="card-ph" aria-hidden="true"><span class="stamp">后补</span></div>
           <div class="work-card-body">
             <span class="meta">NO.03 · 占位</span>
-            <h3>旅行视频生成</h3>
+            <h3>唯美记录视频</h3>
             <p>照片自动编排成片，工具打磨好后补上。</p>
           </div>
         </article>

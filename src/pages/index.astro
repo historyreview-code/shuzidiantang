@@ -30,16 +30,6 @@ const carousel = [
     href: w.href,
   })),
 ];
-
-const recommend = {
-  kicker: '系列推荐 · B站',
-  title: '英伦漫记',
-  desc: '把在英国的速写与漫步剪成影像笔记：路上的风景、建筑与手账，一集一集慢慢放。',
-  href: 'https://space.bilibili.com/13483307/video',
-  cta: '去 B站 看系列',
-  yt: '海外同步：YouTube @SketchbookBritain',
-  ytHref: 'https://www.youtube.com/@SketchbookBritain',
-};
 ---
 <BaseLayout current="home">
   <main id="content" class="page">
@@ -108,19 +98,6 @@ const recommend = {
     <!-- ============ 天文与宇宙系列（靠后位置） ============ -->
     <section class="section" id="cosmos">
       <CosmosSeries />
-    </section>
-
-    <!-- ============ 系列推荐位 ============ -->
-    <section class="section">
-      <div class="recommend">
-        <div class="recommend-copy">
-          <span class="kicker">{recommend.kicker}</span>
-          <h3>{recommend.title}</h3>
-          <p>{recommend.desc}</p>
-          <a class="yt" href={recommend.ytHref} target="_blank" rel="noopener">{recommend.yt}</a>
-        </div>
-        <a class="button primary" href={recommend.href} target="_blank" rel="noopener">{recommend.cta}</a>
-      </div>
     </section>
 
     <!-- ============ 手记流 ============ -->

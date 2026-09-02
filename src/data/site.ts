@@ -108,21 +108,23 @@ export const cosmosSeries = [
   { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
-// 旅行系列：旅行实验室 = 本章总目录（/travel/），位置在作品流之后、天文系列之前。
-// 展品：会飞的手账 / 手绘风小红书卡；英伦漫记目的地系列（每卡导流 B站）；旅行视频生成留空占位，后补。
+// 旅行系列：旅行实验室 = 本章总目录（/travel/）。
+// 旅行工具：会飞的路书 / 小红书卡片工具 / 唯美记录视频（占位后补）；
+// 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
-  { title: '旅行实验室', sub: '本章总目录 · 路线 / 路书 / 卡片', href: '/travel/', img: '/assets/img/travel/lab.webp', github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console' },
-  { title: '会飞的手账', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
-  { title: '手绘风小红书卡', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
-  { title: '斯特拉特福德', sub: '莎翁小镇 · 艾汶河畔', href: 'https://www.bilibili.com/video/BV12L8n6mEDK', img: '/assets/img/travel/bili/stratford.webp', external: true, meta: 'B站 · 英伦漫记', groupLabel: '英伦漫记 · 手绘目的地系列（B站）' },
-  { title: '圣比斯', sub: '海边小镇 · 沙滩与徒步', href: 'https://www.bilibili.com/video/BV1t58n6EEzZ', img: '/assets/img/travel/bili/st-bees.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '湖区', sub: '自然与文化遗产', href: 'https://www.bilibili.com/video/BV1YW8J6WEuJ', img: '/assets/img/travel/bili/lake-district.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '斯凯岛', sub: '中国人的天空之岛', href: 'https://www.bilibili.com/video/BV1Yy8R6dEUj', img: '/assets/img/travel/bili/skye.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '巴斯', sub: '从罗马闻名的温泉小城', href: 'https://www.bilibili.com/video/BV1FqtH6vEMo', img: '/assets/img/travel/bili/bath.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '约克', sub: '大教堂和铁路博物馆', href: 'https://www.bilibili.com/video/BV1Cs8R6zEu3', img: '/assets/img/travel/bili/york.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '爱丁堡', sub: '艺术节 · 城堡与卡尔顿山', href: 'https://www.bilibili.com/video/BV1kt8R6qEca', img: '/assets/img/travel/bili/edinburgh.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '牛津', sub: '辉煌的学术与建筑', href: 'https://www.bilibili.com/video/BV1wYtH6MEaL', img: '/assets/img/travel/bili/oxford.webp', external: true, meta: 'B站 · 英伦漫记' },
-  { title: '剑桥', sub: '人类群星闪耀', href: 'https://www.bilibili.com/video/BV1JQ4d6FEgP', img: '/assets/img/travel/bili/cambridge.webp', external: true, meta: 'B站 · 英伦漫记' },
+  { title: '旅行实验室', sub: '本章总目录 · 工具与手绘系列', href: '/travel/', img: '/assets/img/travel/lab.webp', github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console' },
+  { title: '会飞的路书', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
+  { title: '小红书卡片工具', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
+  { title: '唯美记录视频', sub: '照片自动编排成片 · 打磨中后补', href: '', img: '', pending: true },
+  { title: '斯特拉特福德', sub: '莎翁小镇 · 艾汶河畔', href: 'https://www.bilibili.com/video/BV12L8n6mEDK', img: '/assets/img/travel/bili/stratford.webp', external: true, meta: 'B站', groupLabel: '手绘跨时空旅行系列 · B站（未来不止英伦）' },
+  { title: '圣比斯', sub: '海边小镇 · 沙滩与徒步', href: 'https://www.bilibili.com/video/BV1t58n6EEzZ', img: '/assets/img/travel/bili/st-bees.webp', external: true, meta: 'B站' },
+  { title: '湖区', sub: '自然与文化遗产', href: 'https://www.bilibili.com/video/BV1YW8J6WEuJ', img: '/assets/img/travel/bili/lake-district.webp', external: true, meta: 'B站' },
+  { title: '斯凯岛', sub: '中国人的天空之岛', href: 'https://www.bilibili.com/video/BV1Yy8R6dEUj', img: '/assets/img/travel/bili/skye.webp', external: true, meta: 'B站' },
+  { title: '巴斯', sub: '从罗马闻名的温泉小城', href: 'https://www.bilibili.com/video/BV1FqtH6vEMo', img: '/assets/img/travel/bili/bath.webp', external: true, meta: 'B站' },
+  { title: '约克', sub: '大教堂和铁路博物馆', href: 'https://www.bilibili.com/video/BV1Cs8R6zEu3', img: '/assets/img/travel/bili/york.webp', external: true, meta: 'B站' },
+  { title: '爱丁堡', sub: '艺术节 · 城堡与卡尔顿山', href: 'https://www.bilibili.com/video/BV1kt8R6qEca', img: '/assets/img/travel/bili/edinburgh.webp', external: true, meta: 'B站' },
+  { title: '牛津', sub: '辉煌的学术与建筑', href: 'https://www.bilibili.com/video/BV1wYtH6MEaL', img: '/assets/img/travel/bili/oxford.webp', external: true, meta: 'B站' },
+  { title: '剑桥', sub: '人类群星闪耀', href: 'https://www.bilibili.com/video/BV1JQ4d6FEgP', img: '/assets/img/travel/bili/cambridge.webp', external: true, meta: 'B站' },
   { title: '旅行视频生成', sub: '照片自动编排成片 · 后补', href: '', img: '', pending: true },
 ];
 
