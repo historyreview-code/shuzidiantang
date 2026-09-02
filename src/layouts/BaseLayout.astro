@@ -56,7 +56,8 @@ const nav = [
         var el = document.getElementById('paper-intro');
         if (!el) return;
         var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduced || sessionStorage.getItem('paperIntroSeen')) { el.remove(); return; }
+        var force = /(?:\?|&)intro=1(?:&|$)/.test(location.search); // ?intro=1 强制重播，便于预览
+        if (reduced || (!force && sessionStorage.getItem('paperIntroSeen'))) { el.remove(); return; }
         sessionStorage.setItem('paperIntroSeen', '1');
         document.body.classList.add('intro-hold');
 
@@ -66,7 +67,9 @@ const nav = [
         var cap = document.getElementById('intro-cap');
         var ul = document.getElementById('intro-ul');
         var stack = document.getElementById('intro-stack');
+        var center = document.querySelector('.intro-center');
         var accSpans = document.querySelectorAll('#intro-title .accent');
+        var introSpans = document.querySelectorAll('#intro-title span');
         if (!ctx || !stack || !accSpans.length) {
           document.body.classList.remove('intro-hold');
           el.remove();
@@ -74,7 +77,7 @@ const nav = [
         }
 
         /* 万墨归字：0/1 墨粒在纸上漂散，被吸拢凝成主标，最后散作星尘 */
-        var SERIF = '"Noto Serif SC","Songti SC","STSong","SimSun",serif';
+        var TITLE_FONT = '"MaShanZheng","Noto Serif SC","Songti SC","STSong","SimSun",serif';
         var MONO = '"SF Mono","Cascadia Code","JetBrains Mono",Consolas,"PingFang SC",monospace';
         var INK = '#26221a', AMBER = '#b4551e', AMBER2 = '#d98a3d';
         var CHARS = [
@@ -82,10 +85,10 @@ const nav = [
           { ch: '在', amber: true }, { ch: '上', amber: true }, { ch: '海', amber: true }
         ];
         // 时间轴（秒，按模拟时间推进）：墨雾漂移 → 逐字凝聚分色 → 主题词收拢 → 定格 → 散作星尘
-        var T_DRIFT = 0.4, T_KW = 1.7, T_UL = 1.95, T_CAP = 2.2, T_DIS = 3.5, T_END = 4.25;
+        var T_DRIFT = 0.4, T_KW = 1.9, T_UL = 2.15, T_CAP = 2.4, T_DIS = 3.6, T_END = 4.35;
 
         var dpr = Math.min(2, window.devicePixelRatio || 1);
-        var vw = 0, vh = 0, fs = 0;
+        var vw = 0, vh = 0, fs = 0, anchored = false;
         var targets = [], parts = [];
         var sprites = null;
         var t0 = 0, last = 0, simT = 0, raf = 0, ended = false, liftOn = false;
@@ -99,9 +102,27 @@ const nav = [
           cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
           cv.style.width = vw + 'px'; cv.style.height = vh + 'px';
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          // 与首页 .hero-title 同源：clamp(3rem, 8vw, 6.4rem)，另受视口高度保护
-          var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-          fs = Math.min(Math.max(3 * rem, vw * 0.08), 6.4 * rem, vh * 0.22);
+          // 粒子直接聚合到首页主标题的位置（有 hero 时锚定其版面，无则视口居中）
+          var anchor = document.querySelector('.hero-title');
+          if (anchor) {
+            anchored = true;
+            fs = parseFloat(getComputedStyle(anchor).fontSize) || 48;
+            var hr = anchor.getBoundingClientRect();
+            center.style.position = 'fixed';
+            center.style.left = hr.left + 'px';
+            center.style.top = hr.top + 'px';
+            center.style.placeItems = 'start';
+            stack.style.justifyItems = 'start';
+          } else {
+            anchored = false;
+            var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            fs = Math.min(Math.max(3.2 * rem, vw * 0.084), 6.8 * rem, vh * 0.22);
+            center.style.position = '';
+            center.style.left = '';
+            center.style.top = '';
+            center.style.placeItems = 'center';
+            stack.style.justifyItems = 'center';
+          }
           stack.style.fontSize = fs + 'px';
           // 隐形 DOM 主标只负责排版：量出「在上海」笔触下划线位置
           var lastAcc = accSpans[accSpans.length - 1].getBoundingClientRect();
@@ -141,35 +162,31 @@ const nav = [
           var S = 2; // 超采样绘制，提高采样精度
           var oc = document.createElement('canvas');
           var ox = oc.getContext('2d', { willReadFrequently: true });
-          ox.font = '700 ' + fs * S + 'px ' + SERIF;
-          ox.textBaseline = 'alphabetic';
-          ox.textAlign = 'left';
-          var widths = CHARS.map(function (c) { return ox.measureText(c.ch).width; });
+          ox.font = '400 ' + fs * S + 'px ' + TITLE_FONT;
           var m = ox.measureText('劳');
           var asc = m.actualBoundingBoxAscent || fs * S * 0.88;
           var desc = m.actualBoundingBoxDescent || fs * S * 0.12;
-          var gap = fs * S * 0.02; // 与 hero 标题 0.02em 字距一致
-          var totalW = widths.reduce(function (a, b) { return a + b; }, 0) + gap * CHARS.length;
-          var startX = (vw * S - totalW) / 2;
-          var baseY = vh * S * 0.455 + (asc - desc) / 2;
+          // 字形目标直接取自隐形 DOM 主标的逐字 span 版面 → 与 hero 主标像素级重合
+          var r0 = introSpans[0].getBoundingClientRect();
+          var lineH = r0.height || fs * 1.04;
+          var baseline = r0.top + (lineH - (asc + desc) / S) / 2 + asc / S;
           // 步长按粒子预算自适应：字大机器好 → 粒子更多更密
           var step = 2 * fs * Math.sqrt((0.30 * CHARS.length) / budget);
           step = Math.max(2.4, Math.min(7, step)) * S;
           var pts = [];
-          var cx = startX;
           CHARS.forEach(function (c, i) {
-            oc.width = Math.ceil(widths[i] + 8); oc.height = Math.ceil(asc + desc + 8);
-            ox.font = '700 ' + fs * S + 'px ' + SERIF; ox.textBaseline = 'alphabetic'; ox.fillStyle = '#000';
+            var r = introSpans[i].getBoundingClientRect();
+            oc.width = Math.ceil(r.width * S + 8); oc.height = Math.ceil(asc + desc + 8);
+            ox.font = '400 ' + fs * S + 'px ' + TITLE_FONT; ox.textBaseline = 'alphabetic'; ox.fillStyle = '#000';
             ox.fillText(c.ch, 4, asc + 4);
             var data = ox.getImageData(0, 0, oc.width, oc.height).data;
             for (var y = 0; y < oc.height; y += step) {
               for (var x = 0; x < oc.width; x += step) {
                 if (data[((y | 0) * oc.width + (x | 0)) * 4 + 3] > 120) {
-                  pts.push({ x: cx + x / S - 4 / S, y: baseY - asc / S + y / S - 4 / S + rnd(-0.6, 0.6), amber: c.amber, ci: i });
+                  pts.push({ x: r.left + x / S - 4 / S, y: baseline + (y - asc - 4) / S + rnd(-0.6, 0.6), amber: c.amber, ci: i });
                 }
               }
             }
-            cx += widths[i] + gap;
           });
           if (!pts.length) { pts = [{ x: vw / 2, y: vh / 2, amber: false, ci: 0 }]; }
           // 打乱后按预算取用/补足
@@ -322,7 +339,19 @@ const nav = [
         document.addEventListener('visibilitychange', function () {
           if (!document.hidden && !ended && !liftOn) restart(false);
         });
-        init();
+        // 等书法字体就绪再采样（1.6s 超时则回落系统衬线，视觉仍一致）
+        var booted = false;
+        function boot() {
+          if (booted) return;
+          booted = true;
+          init();
+        }
+        if (document.fonts && document.fonts.load) {
+          setTimeout(boot, 1600);
+          document.fonts.load('400 32px MaShanZheng', '劳伦斯在上海').then(boot, boot);
+        } else {
+          boot();
+        }
         // 兜底：任何原因导致动画走不完，12 秒后强制揭页
         setTimeout(function () {
           if (ended || !document.body.contains(el)) return;

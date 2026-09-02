@@ -27,6 +27,17 @@
   --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
   --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
   --mono: "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, "PingFang SC", monospace;
+  /* 主标书法体（马善政毛笔楷书，OFL）：仅子集化「劳伦斯在上海」六字，其余回落衬线 */
+  --title-font: "MaShanZheng", "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+}
+
+@font-face {
+  font-family: "MaShanZheng";
+  src: url("/assets/fonts/mashanzheng-title.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+52B3, U+4F26, U+65AF, U+5728, U+4E0A, U+6D77;
 }
 
 * { box-sizing: border-box; }
@@ -89,13 +100,14 @@ p { margin-bottom: 0; }
   justify-items: center;
 }
 .intro-title-row { display: flex; align-items: center; }
-/* 隐形 DOM 主标只负责排版与下划线定位，字形由 canvas 粒子呈现 */
+/* 隐形 DOM 主标只负责排版与下划线定位，字形由 canvas 粒子呈现；
+   排版属性与 .hero-title 完全一致，粒子因此聚合在首页主标题的原位 */
 .intro-title {
   display: flex;
-  font-family: var(--serif);
+  font-family: var(--title-font);
   font-size: 1em;
-  font-weight: 700;
-  line-height: 1;
+  font-weight: 400;
+  line-height: 1.04;
   letter-spacing: 0.02em;
   color: var(--ink);
   visibility: hidden;
@@ -142,9 +154,10 @@ p { margin-bottom: 0; }
   from { transform: scaleX(0); opacity: 1; }
   to { transform: scaleX(1); opacity: 1; }
 }
-/* 开屏期间按住首屏入场：粒子散场、纸面升起时再放行 hero 逐项浮现 */
+/* 开屏期间按住首屏入场并锁定滚动；粒子散场、纸面升起时再放行逐项浮现。
+   主标本身不放行——它须提前静止在粒子聚合的原位，完成无缝交接 */
+body.intro-hold { overflow: hidden; }
 body.intro-hold .hero-kicker-row,
-body.intro-hold .hero-title,
 body.intro-hold .hero-lead,
 body.intro-hold .hero-scroll,
 body.intro-hold .hero-side { animation-play-state: paused; }
@@ -362,9 +375,9 @@ body.intro-hold .hero-side { animation-play-state: paused; }
 .hero-kicker-row .stamp { min-width: 34px; height: 34px; padding: 0 6px; font-size: 0.66rem; border-width: 1.5px; letter-spacing: 0; }
 .hero-title {
   margin: 0 0 26px;
-  font-family: var(--serif);
-  font-size: clamp(3rem, 8vw, 6.4rem);
-  font-weight: 700;
+  font-family: var(--title-font);
+  font-size: clamp(3.2rem, 8.4vw, 6.8rem);
+  font-weight: 400;
   line-height: 1.04;
   letter-spacing: 0.02em;
   color: var(--ink);
