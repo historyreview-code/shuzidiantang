@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { site, works } from '../data/site';
+import { site } from '../data/site';
 
 interface Props {
   title?: string;
@@ -13,15 +13,6 @@ const {
   description = site.description,
   current = '',
 } = Astro.props;
-
-// 开屏胶片带：馆藏卡片缩略图连续飞过（上下两条，反向）
-const introFrames = [
-  ...works.filter((w) => !w.footer).slice(0, 7).map((w) => w.image),
-  '/assets/img/travel/uk-roadbook.webp',
-  '/assets/img/travel/bili/skye.webp',
-  '/assets/img/travel/bili/cambridge.webp',
-];
-const introFramesB = [...introFrames].reverse();
 
 const nav = [
   { label: '首页', href: '/', key: 'home' },
@@ -48,33 +39,15 @@ const nav = [
   </head>
   <body>
     <div id="paper-intro" class="paper-intro" aria-hidden="true">
-      <div class="intro-digits" aria-hidden="true">
-        <span>0101 0110 1001 0011</span>
-        <span>1001 0101 1100 0101</span>
-        <span>0011 1010 0101 1100</span>
-        <span>1100 0110 0011 0101</span>
-      </div>
-      <div class="intro-film intro-film--top" aria-hidden="true">
-        <div class="intro-film-track">{[...introFrames, ...introFrames].map((src) => <img src={src} alt="" />)}</div>
-      </div>
-      <div class="intro-film intro-film--bottom" aria-hidden="true">
-        <div class="intro-film-track">{[...introFramesB, ...introFramesB].map((src) => <img src={src} alt="" />)}</div>
-      </div>
+      <canvas id="intro-cv"></canvas>
       <div class="intro-center">
-        <div class="intro-title-row">
-          <div class="intro-title">
-            <span>劳</span><span>伦</span><span>斯</span><span class="accent">在</span><span class="accent">上</span><span class="accent">海</span>
+        <div class="intro-stack" id="intro-stack">
+          <div class="intro-title-row">
+            <div class="intro-title" id="intro-title"><span>劳</span><span>伦</span><span>斯</span><span class="accent">在</span><span class="accent">上</span><span class="accent">海</span></div>
           </div>
-          <div class="intro-stamp-wrap">
-            <div class="intro-ring" aria-hidden="true"></div>
-            <div class="stamp intro-stamp">数字</div>
-          </div>
-        </div>
-        <div class="intro-ticker" aria-hidden="true">
-          <div class="intro-ticker-inner">
-            <span>SHUZIDIANTANG.COM · 劳伦斯在上海 · AI 浪潮 ·&nbsp;</span>
-            <span>SHUZIDIANTANG.COM · 劳伦斯在上海 · AI 浪潮 ·&nbsp;</span>
-          </div>
+          <div class="intro-kw" id="intro-kw"><span>数字</span><i>·</i><span>AI</span><i>·</i><span>探索</span></div>
+          <div class="intro-cap" id="intro-cap">DIGITAL · AI · EXPLORATION · EST. 2026</div>
+          <div class="intro-uline" id="intro-ul"></div>
         </div>
       </div>
     </div>
@@ -83,16 +56,260 @@ const nav = [
         var el = document.getElementById('paper-intro');
         if (!el) return;
         var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduced || sessionStorage.getItem('paperIntroSeen')) {
+        if (reduced || sessionStorage.getItem('paperIntroSeen')) { el.remove(); return; }
+        sessionStorage.setItem('paperIntroSeen', '1');
+        document.body.classList.add('intro-hold');
+
+        var cv = document.getElementById('intro-cv');
+        var ctx = cv && cv.getContext('2d');
+        var kw = document.getElementById('intro-kw');
+        var cap = document.getElementById('intro-cap');
+        var ul = document.getElementById('intro-ul');
+        var stack = document.getElementById('intro-stack');
+        var accSpans = document.querySelectorAll('#intro-title .accent');
+        if (!ctx || !stack || !accSpans.length) {
+          document.body.classList.remove('intro-hold');
           el.remove();
           return;
         }
-        sessionStorage.setItem('paperIntroSeen', '1');
-        el.classList.add('play');
-        el.addEventListener('animationend', function (e) {
-          if (e.target === el) el.remove();
+
+        /* 万墨归字：0/1 墨粒在纸上漂散，被吸拢凝成主标，最后散作星尘 */
+        var SERIF = '"Noto Serif SC","Songti SC","STSong","SimSun",serif';
+        var MONO = '"SF Mono","Cascadia Code","JetBrains Mono",Consolas,"PingFang SC",monospace';
+        var INK = '#26221a', AMBER = '#b4551e', AMBER2 = '#d98a3d';
+        var CHARS = [
+          { ch: '劳', amber: false }, { ch: '伦', amber: false }, { ch: '斯', amber: false },
+          { ch: '在', amber: true }, { ch: '上', amber: true }, { ch: '海', amber: true }
+        ];
+        // 时间轴（秒）：墨雾漂移 → 逐字凝聚 → 主题词收拢 → 散作星尘
+        var T_DRIFT = 0.55, T_KW = 1.95, T_UL = 2.4, T_CAP = 2.55, T_DIS = 3.7, T_END = 4.45;
+
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+        var vw = 0, vh = 0, fs = 0;
+        var targets = [], parts = [];
+        var sprites = null;
+        var t0 = 0, last = 0, raf = 0, ended = false, liftOn = false;
+        var kwOn = false, capOn = false, ulOn = false;
+        var ptr = { x: -1e4, y: -1e4 };
+
+        function rnd(a, b) { return a + Math.random() * (b - a); }
+
+        function layout() {
+          vw = innerWidth; vh = innerHeight;
+          cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
+          cv.style.width = vw + 'px'; cv.style.height = vh + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // 与首页 .hero-title 同源：clamp(3rem, 8vw, 6.4rem)，另受视口高度保护
+          var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+          fs = Math.min(Math.max(3 * rem, vw * 0.08), 6.4 * rem, vh * 0.22);
+          stack.style.fontSize = fs + 'px';
+          // 隐形 DOM 主标只负责排版：量出「在上海」笔触下划线位置
+          var lastAcc = accSpans[accSpans.length - 1].getBoundingClientRect();
+          var firstAcc = accSpans[0].getBoundingClientRect();
+          var srect = stack.getBoundingClientRect();
+          ul.style.left = (firstAcc.left - srect.left) + 'px';
+          ul.style.top = (firstAcc.bottom - srect.top + fs * 0.035) + 'px';
+          ul.style.width = (lastAcc.right - firstAcc.left) + 'px';
+        }
+
+        function makeSprites() {
+          var g1 = Math.max(8, fs * 0.085), g2 = g1 * 0.62, dot = Math.max(3.2, fs * 0.045);
+          function mk(txt, size, color, isDot) {
+            var c = document.createElement('canvas');
+            var s = Math.ceil(size) + 4;
+            c.width = c.height = Math.ceil(s * dpr);
+            var x = c.getContext('2d');
+            x.scale(dpr, dpr);
+            x.fillStyle = color;
+            if (isDot) {
+              x.beginPath(); x.arc(s / 2, s / 2, size * 0.42, 0, 7); x.fill();
+            } else {
+              x.font = '600 ' + size + 'px ' + MONO;
+              x.textAlign = 'center'; x.textBaseline = 'middle';
+              x.fillText(txt, s / 2, s / 2 + size * 0.05);
+            }
+            return { c: c, w: s, h: s };
+          }
+          sprites = {
+            ink: [mk('0', g1, INK), mk('1', g1, INK), mk('0', g2, INK), mk('1', g2, INK), mk('', dot, INK, true)],
+            amber: [mk('0', g1, AMBER), mk('1', g1, AMBER), mk('0', g2, AMBER), mk('1', g2, AMBER), mk('', dot, AMBER, true), mk('0', g2, AMBER2), mk('', dot * 1.15, AMBER2, true)]
+          };
+        }
+
+        function sampleTargets() {
+          var budget = Math.round(Math.min(7000, Math.max(2400, (vw * vh) / 165)));
+          var S = 2; // 超采样绘制，提高采样精度
+          var oc = document.createElement('canvas');
+          var ox = oc.getContext('2d', { willReadFrequently: true });
+          ox.font = '700 ' + fs * S + 'px ' + SERIF;
+          ox.textBaseline = 'alphabetic';
+          ox.textAlign = 'left';
+          var widths = CHARS.map(function (c) { return ox.measureText(c.ch).width; });
+          var m = ox.measureText('劳');
+          var asc = m.actualBoundingBoxAscent || fs * S * 0.88;
+          var desc = m.actualBoundingBoxDescent || fs * S * 0.12;
+          var gap = fs * S * 0.02; // 与 hero 标题 0.02em 字距一致
+          var totalW = widths.reduce(function (a, b) { return a + b; }, 0) + gap * CHARS.length;
+          var startX = (vw * S - totalW) / 2;
+          var baseY = vh * S * 0.455 + (asc - desc) / 2;
+          // 步长按粒子预算自适应：字大机器好 → 粒子更多更密
+          var step = 2 * fs * Math.sqrt((0.30 * CHARS.length) / budget);
+          step = Math.max(2.4, Math.min(7, step)) * S;
+          var pts = [];
+          var cx = startX;
+          CHARS.forEach(function (c, i) {
+            oc.width = Math.ceil(widths[i] + 8); oc.height = Math.ceil(asc + desc + 8);
+            ox.font = '700 ' + fs * S + 'px ' + SERIF; ox.textBaseline = 'alphabetic'; ox.fillStyle = '#000';
+            ox.fillText(c.ch, 4, asc + 4);
+            var data = ox.getImageData(0, 0, oc.width, oc.height).data;
+            for (var y = 0; y < oc.height; y += step) {
+              for (var x = 0; x < oc.width; x += step) {
+                if (data[((y | 0) * oc.width + (x | 0)) * 4 + 3] > 120) {
+                  pts.push({ x: cx + x / S - 4 / S, y: baseY - asc / S + y / S - 4 / S + rnd(-0.6, 0.6), amber: c.amber, ci: i });
+                }
+              }
+            }
+            cx += widths[i] + gap;
+          });
+          if (!pts.length) { pts = [{ x: vw / 2, y: vh / 2, amber: false, ci: 0 }]; }
+          // 打乱后按预算取用/补足
+          for (var i = pts.length - 1; i > 0; i--) { var j = (Math.random() * (i + 1)) | 0; var tmp = pts[i]; pts[i] = pts[j]; pts[j] = tmp; }
+          targets = [];
+          for (var k = 0; k < budget; k++) {
+            var p = pts[k % pts.length];
+            targets.push({ x: p.x + (k >= pts.length ? rnd(-1.4, 1.4) : 0), y: p.y + (k >= pts.length ? rnd(-1.4, 1.4) : 0), amber: p.amber, ci: p.ci });
+          }
+        }
+
+        function buildParts() {
+          parts = targets.map(function (t) {
+            var inBand = Math.random() < 0.62;
+            return {
+              tx: t.x, ty: t.y, amber: t.amber,
+              x: inBand ? rnd(vw * 0.08, vw * 0.92) : rnd(-40, vw + 40),
+              y: inBand ? rnd(vh * 0.18, vh * 0.74) : rnd(-40, vh + 40),
+              vx: rnd(-12, 12), vy: rnd(-12, 12),
+              delay: T_DRIFT + t.ci * 0.115 + rnd(0, 0.42),
+              sprI: 0, j: rnd(0.85, 1.25), alpha: 0, seed: rnd(0, 100),
+              dis: null
+            };
+          });
+          for (var i = 0; i < parts.length; i++) {
+            var p = parts[i];
+            var arr = p.amber ? sprites.amber : sprites.ink;
+            var r = Math.random();
+            p.sprI = r < 0.34 ? 0 : r < 0.6 ? 1 : r < 0.74 ? 2 : r < 0.84 ? 3 : r < 0.94 ? 4 : (arr.length > 5 ? 5 + ((Math.random() * 2) | 0) : 4);
+          }
+        }
+
+        function noiseAng(x, y, t) {
+          return Math.sin(x * 0.0042 + t * 0.9) * 1.8
+               + Math.cos(y * 0.0038 - t * 0.7) * 1.8
+               + Math.sin((x + y) * 0.0016 + t * 0.35) * 1.2;
+        }
+
+        function tick(t, dt) {
+          if (t >= T_KW && !kwOn) { kwOn = true; kw.classList.add('go'); }
+          if (t >= T_UL && !ulOn) { ulOn = true; ul.classList.add('go'); }
+          if (t >= T_CAP && !capOn) { capOn = true; cap.classList.add('go'); }
+
+          for (var n = 0; n < parts.length; n++) {
+            var p = parts[n];
+            if (t < T_DIS) {
+              if (t < p.delay) { // 墨雾漂移
+                var a = noiseAng(p.x, p.y, t);
+                p.vx += Math.cos(a) * 16 * dt; p.vy += (Math.sin(a) * 16 - 7) * dt;
+                p.vx *= 0.96; p.vy *= 0.96;
+                p.alpha = Math.min(0.5, p.alpha + dt * 0.75);
+              } else { // 被吸向字模
+                var el2 = t - p.delay, ramp = Math.min(1, el2 / 0.55);
+                var dx = p.tx - p.x, dy = p.ty - p.y;
+                var d = Math.hypot(dx, dy) || 1;
+                var K = 34 + 150 * ramp * ramp;
+                p.vx += (dx / d) * K * dt; p.vy += (dy / d) * K * dt;
+                if (el2 < 0.34 && d > 8) { // 起飞阶段加一点旋度，路径呈卷流
+                  p.vx += (-dy / d) * 62 * (1 - el2 / 0.34) * dt;
+                  p.vy += (dx / d) * 62 * (1 - el2 / 0.34) * dt;
+                }
+                var f = Math.exp(-(d < 7 ? 11 : 4.1) * dt);
+                p.vx *= f; p.vy *= f;
+                if (d < 1.4) { p.x = p.tx; p.y = p.ty; p.vx = p.vy = 0; }
+                p.alpha = Math.min(0.92, p.alpha + dt * 2.4);
+              }
+              // 指针搅动
+              var pdx = p.x - ptr.x, pdy = p.y - ptr.y, pr2 = pdx * pdx + pdy * pdy;
+              if (pr2 < 12100 && pr2 > 0.01) {
+                var pr = Math.sqrt(pr2), fo = (1 - pr / 110) * 560;
+                p.vx += (pdx / pr) * fo * dt; p.vy += (pdy / pr) * fo * dt;
+              }
+              p.x += p.vx * dt; p.y += p.vy * dt;
+              // 落定后的微颤（墨粒仍活着）
+              if (p.x === p.tx && t > p.delay + 0.8) { p.x += Math.sin(t * 21 + p.seed) * 0.32; }
+            } else { // 散作星尘：缓缓上扬、渐次熄灭
+              if (!p.dis) {
+                var da = noiseAng(p.x, p.y, 7) + rnd(-0.5, 0.5);
+                p.dis = { vx: Math.cos(da) * rnd(30, 170), vy: Math.sin(da) * rnd(30, 170) - rnd(20, 110) };
+              }
+              p.x += p.dis.vx * dt; p.y += p.dis.vy * dt;
+              p.alpha = Math.max(0, p.alpha - dt * 1.5);
+            }
+          }
+        }
+
+        function draw(t) {
+          var gA = t > T_DIS ? Math.max(0, 1 - (t - T_DIS) / 0.58) : 1;
+          ctx.clearRect(0, 0, vw, vh);
+          for (var n = 0; n < parts.length; n++) {
+            var p = parts[n];
+            if (p.alpha <= 0.01) continue;
+            var spr = (p.amber ? sprites.amber : sprites.ink)[p.sprI];
+            ctx.globalAlpha = p.alpha * gA;
+            var w = spr.w * p.j, h = spr.h * p.j;
+            ctx.drawImage(spr.c, p.x - w / 2, p.y - h / 2, w, h);
+          }
+          ctx.globalAlpha = 1;
+        }
+
+        function frame(now) {
+          if (!t0) { t0 = now; last = now; }
+          var t = (now - t0) / 1000;
+          var dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
+          last = now;
+          tick(t, dt);
+          draw(t);
+          if (t >= T_DIS + 0.15 && !liftOn) {
+            liftOn = true;
+            el.classList.add('lift');
+            document.body.classList.remove('intro-hold');
+          }
+          if (t < T_END) { raf = requestAnimationFrame(frame); }
+          else {
+            ended = true;
+            cancelAnimationFrame(raf);
+            removeEventListener('pointermove', onMove);
+            setTimeout(function () { el.remove(); }, 650);
+          }
+        }
+
+        function onMove(e) { ptr.x = e.clientX; ptr.y = e.clientY; }
+
+        function init() {
+          layout(); makeSprites(); sampleTargets(); buildParts();
+          raf = requestAnimationFrame(frame);
+        }
+
+        addEventListener('pointermove', onMove, { passive: true });
+        addEventListener('resize', function () {
+          if (ended) return;
+          clearTimeout(init._rt);
+          init._rt = setTimeout(function () {
+            cancelAnimationFrame(raf);
+            t0 = 0; last = 0; kwOn = capOn = ulOn = false;
+            [kw, cap, ul].forEach(function (n) { n.classList.remove('go'); });
+            init();
+          }, 180);
         });
-        setTimeout(function () { el.remove(); }, 3400);
+        init();
       })();
     </script>
     <a class="skip-link" href="#content">跳到正文</a>
