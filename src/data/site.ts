@@ -38,7 +38,7 @@ export const works = [
     eyebrow: '3D 数据可视化',
     href: '/earth/',
     image: '/assets/img/earth.webp',
-    summary: '把全球大学、世界遗产与 500 强总部放到同一颗可旋转的数字地球上。',
+    summary: '常青藤大学在哪些城市？濒危世界遗产在哪里？最近一个月的地震火山、全球 500 强总部最多的城市——旋转这颗地球，答案尽在掌握。',
     tags: ['Three.js', 'globe.gl', '数据叙事'],
     status: '旗舰作品',
     github: 'https://github.com/historyreview-code/digital-earth-series',
@@ -112,7 +112,7 @@ export const cosmosSeries = [
 // 展品：活路书 / 手绘风小红书卡；旅行视频生成留空占位，后补。
 export const travelSeries = [
   { title: '旅行实验室', sub: '本章总目录 · 路线 / 路书 / 卡片', href: '/travel/', img: '/assets/img/travel/lab.webp', github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console' },
-  { title: '活路书', sub: '英国自驾环线 · 交互路书', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
+  { title: '会飞的手账', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
   { title: '手绘风小红书卡', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
   { title: '旅行视频生成', sub: '照片自动编排成片 · 后补', href: '', img: '', pending: true },
 ];

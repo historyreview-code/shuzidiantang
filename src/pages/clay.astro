@@ -13,12 +13,12 @@ const animals = [
   { num: '07', name: '象', views: 3 },
   { num: '08', name: '鸭', views: 3 },
   { num: '09', name: '狐狸', views: 3 },
-  { num: '11', name: '老虎', views: 1 },
-  { num: '12', name: '鹈鹕', views: 1 },
-  { num: '13', name: '熊猫', views: 1 },
-  { num: '14', name: '卡皮巴拉', views: 1 },
-  { num: '15', name: '玉兔', views: 1 },
-  { num: '16', name: '青铜犀甲虫', views: 1 },
+  { num: '11', name: '老虎', views: 3 },
+  { num: '12', name: '鹈鹕', views: 3 },
+  { num: '13', name: '熊猫', views: 3 },
+  { num: '14', name: '卡皮巴拉', views: 3 },
+  { num: '15', name: '玉兔', views: 3 },
+  { num: '16', name: '青铜犀甲虫', views: 3 },
 ];
 ---
 <BaseLayout current="works" title="陶土动物园 · 劳伦斯在上海" description="十七只用 Blender 捏出来的陶土小动物图鉴：前 10 只点击切换三视图，附全家福。">
@@ -28,7 +28,7 @@ const animals = [
       <h1>陶土动物园</h1>
       <p>
         十七只用 Blender 捏出来的陶土小动物：从捏形、上釉到打光，一只一只手作入馆。
-        前 10 只点击可切换三视图，最后一张全家福，给动物园收尾。
+        点击图片切换三视图，最后一张全家福，给动物园收尾。
       </p>
     </header>
 
@@ -54,7 +54,7 @@ const animals = [
           <h2>十七只小动物，一只一页</h2>
         </div>
         <div class="side">
-          <p>前 10 只点击图片切换三视图；新入馆的 6 只先放多视角拼图。</p>
+          <p>点击图片切换三视图（正 / 侧 / 背）。</p>
         </div>
       </div>
       <div class="clay-grid">
