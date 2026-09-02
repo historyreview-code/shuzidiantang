@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>转身就忘的事，值得当回事——三分钟记忆自测小工具的由来 · 劳伦斯在上海</title>
+<meta name="description" content="从曹奶奶的新闻说起：为什么说阿尔茨海默病早期可治了、最早的信号为什么是短期记忆，以及我给家里长辈做的三分钟自测小工具。">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; margin: 36px 0 12px; padding-left: 12px;
+    border-left: 3px solid var(--amber); }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  figure { margin: 22px 0; }
+  figure img { width: 100%; border: 1px solid var(--line); background: var(--card);
+    box-shadow: 0 1px 2px rgba(38,34,26,.05), 0 14px 40px rgba(74,58,32,.1); }
+  figcaption { color: var(--ink-3); font-size: .8rem; text-align: center; margin-top: 8px; }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  ul { padding-left: 22px; margin: 12px 0; }
+  li { margin: 6px 0; }
+  .cta { margin: 26px 0; padding: 14px 18px; border: 1px solid rgba(180,85,30,.3); border-radius: 10px;
+    background: rgba(180,85,30,.05); }
+  .cta p { margin: 6px 0; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span><strong>劳伦斯在上海</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品馆</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>转身就忘的事，值得当回事——三分钟记忆自测小工具的由来</h1>
+    <p class="meta">2026-09-02 · 分类：实践手记</p>
+
+    <p>八月底，「曹奶奶」走了。这位在短视频里被家人记录了好几年的沈阳奶奶，让很多网友记住了她的豁达风趣，也记住了那个让人心里一沉的细节：阿尔茨海默病加重之后，她的瞬时记忆只剩下三四秒，上午说过的话，下午会原原本本再说一遍。</p>
+    <p>刷到这条新闻的那天晚上，我索性坐下来查资料，想弄明白一件事：正常的健忘，和生病的遗忘，边界到底在哪里。</p>
+    <p>这一查，查到了两个我此前完全不知道的变化。正是这两个变化，让我在第二天动手写了一个小工具。</p>
+
+    <h2>一、这病最狡猾的地方：确诊之前，它已经潜伏了很多年</h2>
+    <p>阿尔茨海默病是老年痴呆最常见的病因。它的病理改变——β淀粉样蛋白在脑内沉积成斑块、tau蛋白在细胞里缠结成丝——早在症状出现的十五到二十年前就开始了。</p>
+    <p>也就是说，大脑一直在默默代偿：通路被侵蚀，就绕道走；零件失灵，就加派人手补位。等哪天代偿不住了，记忆减退的症状才浮出水面。而等家人察觉「不对劲」再走进医院时，病理进程往往已经走完了大半。</p>
+    <p>这是它最狡猾的地方：病人和家属眼里的「发病」，其实是一场持续了近二十年的侵蚀的尾声。</p>
+
+    <h2>二、变化之一：早期，真的有药可治了</h2>
+    <p>过去几十年，这个病只有对症药物，能暂时改善症状、改变不了病程，所以「老年痴呆治不好」成了几代人的共识。</p>
+    <p>2023 年起，情况变了。仑卡奈单抗（lecanemab）和多奈单抗（donanemab）先后获批，它们能清除脑内沉积的淀粉样蛋白，把病程实实在在地放缓约四分之一到三分之一。仑卡奈单抗也已经在国内上市。当然也有现实限制：这类药只对早期患者——轻度认知障碍和轻度痴呆阶段——有效，到了中晚期基本无用武之地；用药期间还要定期做核磁监测副作用，并不适合所有人。</p>
+    <p>所以医学界现在的说法叫「治疗窗口」：从症状冒头到窗口关闭，中间只有一段有限的时间，越早发现，能做的事越多。错过窗口，再好的药也用不上。</p>
+
+    <h2>三、变化之二：诊断在变快、变便宜</h2>
+    <p>以前确诊需要很复杂的检查，近两年随着医学的发展，抽一管血就行，准确率很高；门诊初筛靠量表（MMSE、MoCA），几分钟就能做完——但你得先走进诊室。</p>
+    <p>对，得有人先「觉得不对劲」，并且愿意走进医院。耽误了大部分早期发现的，恰恰是这一步。</p>
+
+    <h2>四、最早的信号，往往就是短期记忆</h2>
+    <p>为什么偏偏是短期记忆？因为阿尔茨海默病最早侵蚀的是海马体——大脑里负责把新经历转存成长期记忆的「写入器」。写入器坏了，新的事情存不进去，几十年前的旧事反而完好无损。</p>
+    <p>所以典型的早期画面是：刚发生的事转身就忘，同一个问题隔十分钟又问一遍；但你问她年轻时在哪上班、老家门口有哪棵树，她记得清清楚楚。</p>
+    <p>和正常衰老的健忘怎么区分？大体上是：正常健忘是「想不起来，提醒一下能想起」；病理性遗忘是「根本没存进去，怎么提醒都没用」，而且会进行性地加重。曹奶奶的家人后来回忆，「上午说完的话，下午再重复一遍」——这就是教科书式的早期描述。只是当时，没有人把它当成一个信号。</p>
+
+    <h2>五、于是，做了这个三分钟的小工具</h2>
+    <p>既然短期记忆是哨兵，那在家里能不能先做一层粗筛？我把神经心理学检查里最经典的「学习—干扰—延迟回忆」范式（Mini-Cog、ADAS-Cog 里都有它的影子），做成了一个长辈能当小游戏玩的小工具：</p>
+    <ul>
+      <li>先记住两到四件日常物品，难度三档可选；</li>
+      <li>中间做几道简单算术，故意「冲掉」刚才记下的东西；</li>
+      <li>先立即回忆一轮，隔一会儿再做一轮延迟回忆——延迟那一轮，才是海马体真正的考题。</li>
+    </ul>
+    <p>全程三分钟。结果按「良好 / 一般 / 建议关注」三档给出，历史记录存在本机，隔几个月再测一次，看的不是单次分数，而是趋势。</p>
+    <figure>
+      <img src="/assets/img/games/naoliceshi.webp" alt="记忆自测工具的测试界面" loading="lazy">
+      <figcaption>测试界面：先记住几件物品，做完算术再回忆</figcaption>
+    </figure>
+    <p>做给长辈用的东西，适老化不是口号：一键大字模式、高对比配色、语音朗读，手机浏览器直接打开、免安装。整个工具就是一个网页文件，已经完整开源在 GitHub 上——任何人都可以克隆到自己的电脑上运行，也可以在它基础上修改、升级。遵循互联网的共享精神，造福于更多的人群。</p>
+
+    <h2>六、它是什么，不是什么</h2>
+    <p>先划清边界：它不是诊断。它更像一支体温计——体温计不能告诉你得的是流感还是肺炎，但能告诉你「该去医院了」。</p>
+    <p>分数低了也不用慌：头天没睡好、情绪低落、刚跟人怄过气，都会拉低成绩。真正值得留意的是两种情况：多次测都偏低；或者比半年前明显下滑。出现这两种情况，建议去挂神经内科或记忆门诊的号，把量表、血液标志物这些正规检查做一遍——现在这一步，比过去任何时候都值得走。</p>
+    <p>「早期发现、早期干预」这八个字，也写在了工具的结果页里。对这个病来说，这是目前唯一被验证有效的「战机」，我们至少，不要输在「没当回事」上。</p>
+
+    <blockquote>愿每一份「转身就忘」，都只是普通的健忘。</blockquote>
+
+    <div class="cta">
+      <p>👉 在线自测（3 分钟，手机直接打开）：<a href="/games/naoliceshi.html">阿尔茨海默病早期风险自测</a></p>
+      <p>⌨️ 开源代码：<a href="https://github.com/historyreview-code/naoliceshi" target="_blank" rel="noopener">github.com/historyreview-code/naoliceshi</a></p>
+      <p>👵 周末回家的时候，不妨陪长辈玩一局——就当是个小游戏。</p>
+    </div>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+</body>
+</html>

@@ -93,11 +93,11 @@ export const works = [
   },
   {
     id: 'naoliceshi',
-    title: '阿兹海默症早期风险自测',
+    title: '阿尔茨海默病早期风险自测',
     eyebrow: '3 分钟 · 短期记忆检查',
     href: '/games/naoliceshi.html',
     image: '/assets/img/games/naoliceshi.webp',
-    summary: '短期记忆先行衰退是阿兹海默病典型早期征兆：3 分钟两轮回忆，给自己的短期记忆做一次自查。',
+    summary: '短期记忆先行衰退是阿尔茨海默病典型早期征兆：3 分钟两轮回忆，给自己的短期记忆做一次自查。',
     tags: ['记忆力', '自查', '适老'],
     status: '免费自测',
     github: 'https://github.com/historyreview-code/naoliceshi',
@@ -146,6 +146,13 @@ export const travelSeries = [
 ];
 
 export const notes = [
+  {
+    title: '转身就忘的事，值得当回事——三分钟记忆自测小工具的由来',
+    date: '2026-09-02',
+    category: '实践手记',
+    href: '/notes/2026-09-02-naoliceshi.html',
+    summary: '从曹奶奶的新闻说起：早期为什么可治、信号为什么是短期记忆，以及给家里长辈做的自测小工具。',
+  },
   {
     title: '一条 Blender 生产线：陶土手作、室内软装与小区效果图',
     date: '2026-09-01',
