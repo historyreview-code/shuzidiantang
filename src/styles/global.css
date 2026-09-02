@@ -896,13 +896,26 @@ p { margin-bottom: 0; }
   font-size: 0.98rem;
   line-height: 1.8;
 }
+.ws-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 14px;
+}
+.ws-title-row h3 { flex: 1; }
+.ws-title-row .ws-enter {
+  white-space: nowrap;
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  transition: color 0.16s ease, transform 0.16s ease;
+}
 .ws-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--line-strong);
+  gap: 14px;
+  margin-top: 18px;
 }
 .ws-status {
   padding: 3px 10px;
@@ -913,22 +926,13 @@ p { margin-bottom: 0; }
   font-size: 0.7rem;
   letter-spacing: 0.08em;
 }
-.ws-enter {
-  color: var(--ink-3);
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  transition: color 0.16s ease, transform 0.16s ease;
-}
-.work-stream-item:hover .ws-enter {
+.work-stream-item:hover .ws-title-row .ws-enter {
   color: var(--amber);
   transform: translateX(4px);
 }
-.work-stream-item:nth-child(even) .ws-thumb { order: 2; }
 @media (max-width: 720px) {
   .works-stream { gap: 44px; }
   .work-stream-item { grid-template-columns: 1fr; gap: 18px; }
-  .work-stream-item:nth-child(even) .ws-thumb { order: 0; }
 }
 
 /* ---------- 作品卡区（作品馆页网格） ---------- */

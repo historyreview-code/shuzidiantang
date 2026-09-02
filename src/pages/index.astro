@@ -73,14 +73,16 @@ const carousel = [
               </div>
               <div class="ws-body">
                 <span class="ws-num">NO.{String(index + 1).padStart(2, '0')} · {work.eyebrow}</span>
-                <h3>{work.title}</h3>
+                <div class="ws-title-row">
+                  <h3>{work.title}</h3>
+                  <span class="ws-enter">进入 →</span>
+                </div>
                 <p>{work.summary}</p>
                 <div class="tag-list">
                   {work.tags.map((tag) => <span>{tag}</span>)}
                 </div>
                 <div class="ws-meta">
                   <span class="ws-status">{work.status}</span>
-                  <span class="ws-enter">进入 →</span>
                   {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
                 </div>
               </div>
