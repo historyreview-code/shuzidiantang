@@ -82,7 +82,7 @@ const nav = [
           { ch: '在', amber: true }, { ch: '上', amber: true }, { ch: '海', amber: true }
         ];
         // 时间轴（秒，按模拟时间推进）：墨雾漂移 → 逐字凝聚分色 → 主题词收拢 → 定格 → 散作星尘
-        var T_DRIFT = 0.55, T_KW = 2.3, T_UL = 2.7, T_CAP = 2.95, T_DIS = 4.7, T_END = 5.45;
+        var T_DRIFT = 0.4, T_KW = 1.7, T_UL = 1.95, T_CAP = 2.2, T_DIS = 3.5, T_END = 4.25;
 
         var dpr = Math.min(2, window.devicePixelRatio || 1);
         var vw = 0, vh = 0, fs = 0;
@@ -189,7 +189,7 @@ const nav = [
               x: inBand ? rnd(vw * 0.08, vw * 0.92) : rnd(-40, vw + 40),
               y: inBand ? rnd(vh * 0.18, vh * 0.74) : rnd(-40, vh + 40),
               vx: rnd(-12, 12), vy: rnd(-12, 12),
-              delay: T_DRIFT + t.ci * 0.115 + rnd(0, 0.42),
+              delay: T_DRIFT + t.ci * 0.07 + rnd(0, 0.18),
               sprI: 0, j: rnd(0.85, 1.25), alpha: 0, seed: rnd(0, 100),
               dis: null
             };
@@ -218,28 +218,28 @@ const nav = [
             if (t < T_DIS) {
               if (t < p.delay) { // 墨雾漂移
                 var a = noiseAng(p.x, p.y, t);
-                p.vx += Math.cos(a) * 16 * dt; p.vy += (Math.sin(a) * 16 - 7) * dt;
-                p.vx *= 0.96; p.vy *= 0.96;
+                p.vx += Math.cos(a) * 210 * dt; p.vy += (Math.sin(a) * 210 - 9) * dt;
+                p.vx *= 0.93; p.vy *= 0.93;
                 p.alpha = Math.min(0.5, p.alpha + dt * 0.75);
-              } else { // 被吸向字模
-                var el2 = t - p.delay, ramp = Math.min(1, el2 / 0.55);
+              } else { // 被吸向字模：速度转向（远处全速冲、近处指数缓收）
+                var el2 = t - p.delay, ramp = Math.min(1, el2 / 0.3);
                 var dx = p.tx - p.x, dy = p.ty - p.y;
                 var d = Math.hypot(dx, dy) || 1;
-                var K = 34 + 150 * ramp * ramp;
-                p.vx += (dx / d) * K * dt; p.vy += (dy / d) * K * dt;
-                if (el2 < 0.34 && d > 8) { // 起飞阶段加一点旋度，路径呈卷流
-                  p.vx += (-dy / d) * 62 * (1 - el2 / 0.34) * dt;
-                  p.vy += (dx / d) * 62 * (1 - el2 / 0.34) * dt;
+                var want = Math.min(d * 8, 1600) * ramp;
+                var steer = Math.min(1, 10 * dt);
+                p.vx += ((dx / d) * want - p.vx) * steer;
+                p.vy += ((dy / d) * want - p.vy) * steer;
+                if (el2 < 0.3 && d > 12) { // 起飞阶段加一点旋度，路径呈卷流
+                  p.vx += (-dy / d) * 340 * (1 - el2 / 0.3) * dt;
+                  p.vy += (dx / d) * 340 * (1 - el2 / 0.3) * dt;
                 }
-                var f = Math.exp(-(d < 7 ? 11 : 4.1) * dt);
-                p.vx *= f; p.vy *= f;
-                if (d < 1.4) { p.x = p.tx; p.y = p.ty; p.vx = p.vy = 0; }
-                p.alpha = Math.min(0.92, p.alpha + dt * 2.4);
+                if (d < 1.6) { p.x = p.tx; p.y = p.ty; p.vx = p.vy = 0; }
+                p.alpha = Math.min(0.92, p.alpha + dt * 3.2);
               }
               // 指针搅动
               var pdx = p.x - ptr.x, pdy = p.y - ptr.y, pr2 = pdx * pdx + pdy * pdy;
               if (pr2 < 12100 && pr2 > 0.01) {
-                var pr = Math.sqrt(pr2), fo = (1 - pr / 110) * 560;
+                var pr = Math.sqrt(pr2), fo = (1 - pr / 110) * 1400;
                 p.vx += (pdx / pr) * fo * dt; p.vy += (pdy / pr) * fo * dt;
               }
               p.x += p.vx * dt; p.y += p.vy * dt;
@@ -248,16 +248,16 @@ const nav = [
             } else { // 散作星尘：缓缓上扬、渐次熄灭
               if (!p.dis) {
                 var da = noiseAng(p.x, p.y, 7) + rnd(-0.5, 0.5);
-                p.dis = { vx: Math.cos(da) * rnd(30, 170), vy: Math.sin(da) * rnd(30, 170) - rnd(20, 110) };
+                p.dis = { vx: Math.cos(da) * rnd(60, 260), vy: Math.sin(da) * rnd(60, 260) - rnd(30, 150) };
               }
               p.x += p.dis.vx * dt; p.y += p.dis.vy * dt;
-              p.alpha = Math.max(0, p.alpha - dt * 1.5);
+              p.alpha = Math.max(0, p.alpha - dt * 2.2);
             }
           }
         }
 
         function draw(t) {
-          var gA = t > T_DIS ? Math.max(0, 1 - (t - T_DIS) / 0.58) : 1;
+          var gA = t > T_DIS ? Math.max(0, 1 - (t - T_DIS) / 0.5) : 1;
           ctx.clearRect(0, 0, vw, vh);
           for (var n = 0; n < parts.length; n++) {
             var p = parts[n];
