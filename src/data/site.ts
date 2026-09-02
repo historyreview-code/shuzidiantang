@@ -127,12 +127,12 @@ export const cosmosSeries = [
 ];
 
 // 旅行系列：本章总目录在 /travel/（入口在旅行区头部的「目录」链接，不单列卡片）。
-// 旅行工具：会飞的路书 / 小红书卡片工具 / 唯美记录视频（占位后补）；
+// 旅行工具：会飞的路书 / 小红书卡片工具 / 旅行记录视频（占位后补）；
 // 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
   { title: '会飞的路书', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
   { title: '小红书卡片工具', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
-  { title: '唯美记录视频', sub: '照片自动编排成片 · 打磨中后补', href: '', img: '', pending: true },
+  { title: '旅行记录视频', sub: '照片自动编排成片 · 打磨中后补', href: '', img: '', pending: true },
   { title: '斯特拉特福德', sub: '莎翁小镇 · 艾汶河畔', href: 'https://www.bilibili.com/video/BV12L8n6mEDK', img: '/assets/img/travel/bili/stratford.webp', external: true, meta: 'B站', groupLabel: '手绘跨时空旅行系列 · B站（未来不止英伦）' },
   { title: '圣比斯', sub: '海边小镇 · 沙滩与徒步', href: 'https://www.bilibili.com/video/BV1t58n6EEzZ', img: '/assets/img/travel/bili/st-bees.webp', external: true, meta: 'B站' },
   { title: '湖区', sub: '自然与文化遗产', href: 'https://www.bilibili.com/video/BV1YW8J6WEuJ', img: '/assets/img/travel/bili/lake-district.webp', external: true, meta: 'B站' },
