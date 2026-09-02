@@ -41,6 +41,7 @@ export const works = [
     summary: '把全球大学、世界遗产与 500 强总部放到同一颗可旋转的数字地球上。',
     tags: ['Three.js', 'globe.gl', '数据叙事'],
     status: '旗舰作品',
+    github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
     id: 'clay',
@@ -61,6 +62,7 @@ export const works = [
     summary: '随十二时辰流转的数据粒子艺术：桌面进现场交互展品，手机看十二时辰静态画册。',
     tags: ['数据艺术', '声音交互', '十二时辰'],
     status: '现场 + 画册',
+    github: 'https://github.com/historyreview-code/dataism',
   },
   {
     id: 'cad',
@@ -73,16 +75,6 @@ export const works = [
     status: '4 阶段滑杆',
   },
   {
-    id: 'numsweeper',
-    title: '数字扫雷',
-    eyebrow: '网页游戏 · 益智策略',
-    href: '/games/numsweeper.html',
-    image: '/assets/img/games/numsweeper.png',
-    summary: '把传统扫雷改造成数字风险决策：一条 250 的生死线，加上概率、策略和语音反馈。',
-    tags: ['概率', '策略', '移动端'],
-    status: '可试玩',
-  },
-  {
     id: 'naoliceshi',
     title: '阿兹海默症早期风险自测',
     eyebrow: '3 分钟 · 短期记忆检查',
@@ -91,16 +83,18 @@ export const works = [
     summary: '短期记忆先行衰退是阿兹海默病典型早期征兆：3 分钟两轮回忆，给自己的短期记忆做一次自查。',
     tags: ['记忆力', '自查', '适老'],
     status: '免费自测',
+    github: 'https://github.com/historyreview-code/naoliceshi',
   },
   {
-    id: 'pixel-breaker',
-    title: '像素打砖块',
-    eyebrow: '网页游戏 · 街机',
-    href: '/games/pixel-breaker.html',
-    image: '/assets/img/games/pixel-breaker.webp',
-    summary: '像素风打砖块：接住小球，把砖墙一块块敲掉。',
-    tags: ['Canvas', '街机', '手感'],
-    status: '可试玩',
+    id: 'mini-games',
+    title: '创意小游戏',
+    eyebrow: '网页游戏 · 精选',
+    href: '/games/',
+    image: '/assets/img/games/games-hall.webp',
+    summary: '数字扫雷与像素打砖块：把小规则做成可玩的网页作品。',
+    tags: ['Canvas', 'Game Design', 'AI 协作'],
+    status: '2 款可玩',
+    github: 'https://github.com/historyreview-code/Numsweeper',
   },
 ];
 
@@ -117,8 +111,8 @@ export const cosmosSeries = [
 // 旅行系列：旅行实验室 = 本章总目录（/travel/），位置在作品流之后、天文系列之前。
 // 展品：活路书 / 手绘风小红书卡；旅行视频生成留空占位，后补。
 export const travelSeries = [
-  { title: '旅行实验室', sub: '本章总目录 · 路线 / 路书 / 卡片', href: '/travel/', img: '/assets/img/travel/lab.webp' },
-  { title: '活路书', sub: '英国自驾环线 · 交互路书', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp' },
+  { title: '旅行实验室', sub: '本章总目录 · 路线 / 路书 / 卡片', href: '/travel/', img: '/assets/img/travel/lab.webp', github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console' },
+  { title: '活路书', sub: '英国自驾环线 · 交互路书', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
   { title: '手绘风小红书卡', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
   { title: '旅行视频生成', sub: '照片自动编排成片 · 后补', href: '', img: '', pending: true },
 ];

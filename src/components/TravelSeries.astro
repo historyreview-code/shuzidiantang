@@ -20,6 +20,7 @@ import { travelSeries } from '../data/site';
             <span class="meta">{item.meta || (item.external ? '外部' : '站内')}</span>
             <h4>{item.title}</h4>
             <small>{item.sub}</small>
+            {item.github && <a class="github-badge" href={item.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
           </div>
         </a>
       ) : (

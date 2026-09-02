@@ -15,6 +15,7 @@ import { works } from '../data/site';
               <h3>{work.title}</h3>
               <p>{work.summary}</p>
               <div class="tag-list">{work.tags.map((tag) => <span>{tag}</span>)}</div>
+              {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener" style="margin-top:12px">⌥ 开源代码 ↗</a>}
             </div>
           </a>
         ))}
