@@ -233,6 +233,28 @@ body.intro-hold .hero-side { animation-play-state: paused; }
   letter-spacing: 0.14em;
   line-height: 1.3;
 }
+.brand-copy small {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.kw-zh {
+  font-family: var(--serif);
+  letter-spacing: 0.3em;
+  color: var(--ink-2);
+}
+.kw-en {
+  font-family: var(--mono);
+  letter-spacing: 0.16em;
+  color: var(--ink-3);
+}
+.brand-copy .kw-zh { font-size: 0.62rem; }
+.brand-copy .kw-en { font-size: 0.56rem; }
+@media (min-width: 721px) and (max-width: 920px) {
+  .brand-copy .kw-en { display: none; }
+}
 .site-nav {
   display: flex;
   gap: 4px;
@@ -1389,6 +1411,14 @@ a.social-row:hover { color: var(--amber); }
   font-size: 1.02rem;
   letter-spacing: 0.1em;
 }
+.footer-kw {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.footer-kw .kw-zh { font-size: 0.74rem; }
+.footer-kw .kw-en { font-size: 0.62rem; }
 .site-footer p { margin: 4px 0 0; }
 .footer-beian { margin-top: 10px; font-size: 0.8rem; }
 .footer-beian a {
