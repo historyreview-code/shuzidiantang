@@ -6,9 +6,9 @@ import { works } from '../data/site';
 <BaseLayout current="works" title="作品 · 劳伦斯在上海" description="数字地球、网页游戏、天文影像、陶土手作与数据艺术——每件作品都有真实入口。">
   <main id="content" class="page">
     <section class="section">
-      <div class="work-grid collection-grid">
+      <div class="work-grid">
         {works.map((work) => (
-          <a class="work-card" href={work.href}>
+          <a class="work-card" href={work.href} {...work.external ? { target: '_blank', rel: 'noopener' } : {}}>
             <img src={work.image} alt={`${work.title}封面`} />
             <div class="work-card-body">
               <span class="meta">{work.eyebrow} · {work.status}</span>

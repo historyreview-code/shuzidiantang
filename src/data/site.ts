@@ -75,6 +75,18 @@ export const works = [
     status: '4 阶段滑杆',
   },
   {
+    id: 'shanghai-time-map',
+    title: '上海时间地图',
+    eyebrow: '数据可视化 · 时空穿越',
+    href: 'https://historyreview-code.github.io/shanghai-time-map/',
+    image: '/assets/img/shanghai-time-map.webp',
+    summary: '1855–2025 六个时代的上海：时间滑杆、卷帘对比与名称变迁，一座城的时空穿越。',
+    tags: ['历史地图', '时间轴', '交互'],
+    status: '在线可玩',
+    external: true,
+    github: 'https://github.com/historyreview-code/shanghai-time-map',
+  },
+  {
     id: 'naoliceshi',
     title: '阿兹海默症早期风险自测',
     eyebrow: '3 分钟 · 短期记忆检查',
