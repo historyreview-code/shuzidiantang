@@ -142,7 +142,7 @@ export const travelSeries = [
   { title: '爱丁堡', sub: '艺术节 · 城堡与卡尔顿山', href: 'https://www.bilibili.com/video/BV1kt8R6qEca', img: '/assets/img/travel/bili/edinburgh.webp', external: true, meta: 'B站' },
   { title: '牛津', sub: '辉煌的学术与建筑', href: 'https://www.bilibili.com/video/BV1wYtH6MEaL', img: '/assets/img/travel/bili/oxford.webp', external: true, meta: 'B站' },
   { title: '剑桥', sub: '人类群星闪耀', href: 'https://www.bilibili.com/video/BV1JQ4d6FEgP', img: '/assets/img/travel/bili/cambridge.webp', external: true, meta: 'B站' },
-  { title: '旅行视频生成', sub: '照片自动编排成片 · 后补', href: '', img: '', pending: true },
+  // 后续补充的仍为手绘时空短片
 ];
 
 export const notes = [
