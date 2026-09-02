@@ -300,7 +300,6 @@ p { margin-bottom: 0; }
 .brand:focus-visible,
 .work-card:focus-visible,
 .card-link:focus-visible,
-.perk-card:focus-visible,
 .timeline-item:focus-visible,
 .social-row:focus-visible,
 .notes-feed .item:focus-visible {
@@ -873,63 +872,7 @@ p { margin-bottom: 0; }
   z-index: 2;
 }
 
-/* ---------- 好友福利自取卡（体验券样式） ---------- */
-.perk-card {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  padding: 24px 26px;
-  background: var(--card);
-  border: 1.5px dashed var(--amber);
-  border-radius: 14px;
-  text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-.perk-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lift);
-  background: #fdfaf1;
-}
-.perk-stamp { flex: none; }
-.perk-body { flex: 1; min-width: 0; }
-.perk-body h3 {
-  font-family: var(--serif);
-  font-size: 1.15rem;
-  letter-spacing: 0.02em;
-  margin: 4px 0 6px;
-}
-.perk-body p {
-  color: var(--ink-2);
-  font-size: 0.92rem;
-  line-height: 1.7;
-  margin: 0;
-}
-.perk-cta {
-  flex: none;
-  align-self: stretch;
-  display: inline-flex;
-  align-items: center;
-  padding-left: 22px;
-  margin-left: 4px;
-  border-left: 1.5px dashed var(--line-strong);
-  color: var(--amber);
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-@media (max-width: 640px) {
-  .perk-card { flex-direction: column; align-items: flex-start; gap: 14px; padding: 20px; }
-  .perk-cta {
-    align-self: stretch;
-    justify-content: center;
-    margin: 6px 0 0;
-    padding: 12px 0 0;
-    border-left: 0;
-    border-top: 1.5px dashed var(--line-strong);
-  }
-}
+/* ---------- 好友福利：已并入首页轮播首位，样式随卡片移除 ---------- */
 
 /* 系列区头部的目录轻链接（与开源徽章并列） */
 .series-index-link {
@@ -1451,13 +1394,11 @@ a.social-row:hover { color: var(--amber); }
   html { scroll-behavior: auto; }
   .button,
   .work-card,
-  .perk-card,
   .timeline-item,
   .exhibit,
   .notes-feed .item { transition: none; }
   .button:hover,
   .work-card:hover,
-  .perk-card:hover,
   .exhibit:hover,
   .notes-feed .item:hover { transform: none; }
 }

@@ -6,7 +6,7 @@ import { cosmosSeries, notes, site, works } from '../data/site';
 
 const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
 
-// 右侧轮播：地球、天文系列、陶土、时辰、时间地图、旅行实验室、CAD 七件主力
+// 右侧轮播：福利券置顶，其后地球、天文系列、陶土、时辰、时间地图、旅行实验室、CAD
 const workCard = (w) => ({
   name: w.title,
   eyebrow: `${w.eyebrow} · ${w.status}`,
@@ -21,7 +21,17 @@ const travelCard = {
   img: '/assets/img/travel/uk-roadbook.webp',
   href: '/travel/',
 };
+// 好友福利券：置顶轮播首位，名额领完即整体移除这张卡
+const perkCard = {
+  name: '赠你 7 天 AI 编程体验卡',
+  eyebrow: '好友福利 · 没用过智谱的朋友可领',
+  note: '我在用 GLM Coding Plan 大幅提升开发效率，支持最新 GLM-5.3 与 5.3-Flash 双模型——没用过智谱的朋友可以直接领取，一起试试吧。',
+  img: '/assets/img/perk-glm.webp',
+  href: 'https://bigmodel.cn/activity/trial-card/788GGWO3LG',
+  external: true,
+};
 const carousel = [
+  perkCard,
   workCard(works[0]), // 数字地球
   {
     name: '天文馆 · 宇宙之旅',
@@ -52,7 +62,7 @@ const carousel = [
 
       <div class="hero-side">
         <figure class="exhibit" id="exhibit" aria-roledescription="轮播">
-          <a class="exhibit-frame" id="ex-link" href={carousel[0].href}>
+          <a class="exhibit-frame" id="ex-link" href={carousel[0].href} target={carousel[0].external ? '_blank' : undefined} rel={carousel[0].external ? 'noopener' : undefined}>
             <img id="ex-img" src={carousel[0].img} alt={`${carousel[0].name}预览`} />
           </a>
           <figcaption class="exhibit-label">
@@ -122,18 +132,7 @@ const carousel = [
       </a>
     </section>
 
-    <!-- ============ 好友福利 · 自取 ============ -->
-    <section class="section perk" id="perk">
-      <a class="perk-card" href="https://bigmodel.cn/activity/trial-card/788GGWO3LG" target="_blank" rel="noopener">
-        <span class="stamp perk-stamp" aria-hidden="true">福利</span>
-        <div class="perk-body">
-          <span class="meta">好友福利 · 自取体验</span>
-          <h3>赠你 7 天 AI 编程体验卡</h3>
-          <p>我在用 GLM Coding Plan 大幅提升开发效率，支持最新 GLM-5.3 与 5.3-Flash 双模型——没用过智谱的朋友可以直接领取，一起试试吧。</p>
-        </div>
-        <span class="perk-cta">领取体验卡 ↗</span>
-      </a>
-    </section>
+    <!-- ============ 好友福利：已并入首页轮播首位（名额领完即撤） ============ -->
 
     <!-- ============ 手记流 ============ -->
     <section class="section">
@@ -210,6 +209,13 @@ const carousel = [
           img.onload = function () { img.style.opacity = '1'; };
           img.src = it.img;
           link.href = it.href;
+          if (it.external) {
+            link.target = '_blank';
+            link.rel = 'noopener';
+          } else {
+            link.removeAttribute('target');
+            link.removeAttribute('rel');
+          }
           nameEl.textContent = it.name;
           eyebrowEl.textContent = it.eyebrow;
           noteEl.textContent = it.note;
