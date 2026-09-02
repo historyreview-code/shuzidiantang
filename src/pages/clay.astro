@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// 前 10 只：三视图（正 / 侧 / 背，马为 主照/侧/头）；新 6 只：单张多视角拼图
 const animals = [
   { num: '00', name: '马', views: 3 },
   { num: '01', name: '羊', views: 3 },
@@ -21,52 +20,28 @@ const animals = [
   { num: '16', name: '青铜犀甲虫', views: 3 },
 ];
 ---
-<BaseLayout current="works" title="陶土动物园 · 劳伦斯在上海" description="十七只用 Blender 捏出来的陶土小动物图鉴：前 10 只点击切换三视图，附全家福。">
+<BaseLayout current="works" title="陶土动物园 · 劳伦斯在上海" description="十七只用 Blender 捏出来的陶土小动物图鉴：点击任意一只，满屏自动播放三视图。">
   <main id="content" class="page">
     <header class="page-title">
       <span class="kicker">作品 · Blender 手作</span>
       <h1>陶土动物园</h1>
       <p>
         十七只用 Blender 捏出来的陶土小动物：从捏形、上釉到打光，一只一只手作入馆。
-        点击图片切换三视图，最后一张全家福，给动物园收尾。
+        点击任意一只，满屏自动播放它的三视图。
       </p>
     </header>
 
-    <section class="clay-family">
-      <figure class="exhibit">
-        <div class="exhibit-frame">
-          <img src="/assets/img/clay/10.webp" alt="陶土动物园全家福" />
-        </div>
-        <figcaption class="exhibit-label">
-          <span class="stamp" aria-hidden="true">陶</span>
-          <div>
-            <span>全家福 · Family Photo</span>
-            <strong>陶土动物园 · 十七只到齐</strong>
-          </div>
-        </figcaption>
-      </figure>
-    </section>
-
     <section class="section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">图鉴 · Catalog</span>
-          <h2>十七只小动物，一只一页</h2>
-        </div>
-        <div class="side">
-          <p>点击图片切换三视图（正 / 侧 / 背）。</p>
-        </div>
-      </div>
       <div class="clay-grid">
         {animals.map((a) => (
-          <article class="clay-card" data-num={a.num} data-views={a.views}>
+          <article class="clay-card" data-num={a.num} data-name={a.name} data-views={a.views}>
             <div class="clay-frame">
               <img src={`/assets/img/clay/${a.num}-0.webp`} alt={`陶土${a.name}`} loading="lazy" />
             </div>
             <div class="clay-body">
               <span class="meta">NO.{a.num}</span>
               <h3>{a.name}</h3>
-              <span class="view-indicator" aria-hidden="true"></span>
+              <span class="view-indicator" aria-hidden="true">点击看三视图</span>
             </div>
           </article>
         ))}
@@ -78,34 +53,70 @@ const animals = [
       <a class="button" href="/works/">返回作品</a>
     </div>
   </main>
+
+  <div id="clay-overlay" class="clay-overlay" aria-hidden="true">
+    <div class="co-stage">
+      <img id="co-img" src="" alt="动物三视图" />
+    </div>
+    <div class="co-bar">
+      <span id="co-name">—</span>
+      <span id="co-indicator" aria-hidden="true"></span>
+      <span class="co-hint">点击任意处返回</span>
+    </div>
+  </div>
 </BaseLayout>
 
 <script>
+  const overlay = document.getElementById('clay-overlay');
+  const img = document.getElementById('co-img');
+  const nameEl = document.getElementById('co-name');
+  const indicator = document.getElementById('co-indicator');
+  let timer = null;
+  let views = 0;
+  let idx = 0;
+  let num = '';
+
+  function close() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  function advance() {
+    idx = (idx + 1) % views;
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = `/assets/img/clay/${num}-${idx}.webp`;
+      img.onload = () => { img.style.opacity = '1'; };
+    }, 220);
+    indicator.textContent = `${idx + 1}/${views}`;
+  }
+
+  function open(card) {
+    num = card.dataset.num;
+    views = Number(card.dataset.views);
+    nameEl.textContent = card.dataset.name;
+    idx = 0;
+    img.style.opacity = '1';
+    img.src = `/assets/img/clay/${num}-0.webp`;
+    indicator.textContent = `1/${views}`;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    if (timer) clearInterval(timer);
+    const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (views > 1 && !reduced) {
+      timer = setInterval(advance, 1800);
+    }
+  }
+
   document.querySelectorAll('.clay-card').forEach((card) => {
-    const views = Number(card.dataset.views);
-    if (views <= 1) return;
-    const num = card.dataset.num;
-    const img = card.querySelector('.clay-frame img');
-    const indicator = card.querySelector('.view-indicator');
-    let idx = 0;
-    const update = () => {
-      indicator.textContent = `${idx + 1}/${views} · 点击切换`;
-    };
-    update();
-    card.querySelector('.clay-frame').addEventListener('click', () => {
-      idx = (idx + 1) % views;
-      img.style.opacity = '0';
-      setTimeout(() => {
-        img.src = `/assets/img/clay/${num}-${idx}.webp`;
-        img.onload = () => { img.style.opacity = '1'; };
-      }, 250);
-      update();
-    });
+    card.addEventListener('click', () => open(card));
   });
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 </script>
 
 <style>
-  .clay-family { max-width: 560px; margin: 8px auto 0; }
   .clay-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -116,6 +127,7 @@ const animals = [
     background: var(--card);
     box-shadow: var(--shadow);
     overflow: hidden;
+    cursor: pointer;
     transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   }
   .clay-card:hover {
@@ -126,13 +138,11 @@ const animals = [
   .clay-frame {
     border-bottom: 1px solid var(--line);
     background: var(--paper-2);
-    cursor: pointer;
   }
   .clay-frame img {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    transition: opacity 0.25s ease;
   }
   .clay-body {
     display: flex;
@@ -154,4 +164,42 @@ const animals = [
     font-size: 0.62rem;
     letter-spacing: 0.05em;
   }
+  /* 满屏三视图播放层 */
+  .clay-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    flex-direction: column;
+    background: rgba(26, 22, 16, 0.94);
+    cursor: zoom-out;
+  }
+  .clay-overlay.open { display: flex; }
+  .co-stage {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
+  .co-stage img {
+    max-width: 100%;
+    max-height: 100%;
+    border: 1px solid rgba(246, 241, 229, 0.25);
+    background: var(--paper-2);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.22s ease;
+  }
+  .co-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 16px;
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+  }
+  .co-bar #co-name { font-family: var(--serif); font-size: 1.15rem; }
+  .co-bar .co-hint { color: rgba(246, 241, 229, 0.55); font-size: 0.72rem; }
 </style>
