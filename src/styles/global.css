@@ -1,5 +1,5 @@
 /* ============================================================
-   劳伦斯在上海 v2 · 纸感设计系统
+   劳伦斯实验室 v2 · 纸感设计系统
    米纸 / 墨 / 琥珀 · 编辑三件套（眉题·主标·正文）· 纸感开机动画
    ============================================================ */
 
@@ -27,7 +27,7 @@
   --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
   --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
   --mono: "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, "PingFang SC", monospace;
-  /* 主标书法体（马善政毛笔楷书，OFL）：仅子集化「劳伦斯在上海」六字，其余回落衬线 */
+  /* 主标书法体（马善政毛笔楷书，OFL）：仅子集化「劳伦斯实验室」六字，其余回落衬线 */
   --title-font: "MaShanZheng", "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
 }
 
@@ -37,7 +37,7 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+52B3, U+4F26, U+65AF, U+5728, U+4E0A, U+6D77;
+  unicode-range: U+52B3, U+4F26, U+65AF, U+5B9E, U+9A8C, U+5BA4;
 }
 
 * { box-sizing: border-box; }
@@ -101,17 +101,19 @@ p { margin-bottom: 0; }
 }
 .intro-title-row { display: flex; align-items: center; }
 /* 隐形 DOM 主标只负责排版与下划线定位，字形由 canvas 粒子呈现；
-   排版属性与 .hero-title 完全一致，粒子因此聚合在首页主标题的原位 */
+   排版属性与 .hero-title 完全一致（两行错开），粒子因此聚合在首页主标题的原位 */
 .intro-title {
-  display: flex;
+  display: block;
   font-family: var(--title-font);
   font-size: 1em;
   font-weight: 400;
-  line-height: 1.04;
+  line-height: 1.06;
   letter-spacing: 0.02em;
   color: var(--ink);
   visibility: hidden;
 }
+.intro-title .t-row { display: block; }
+.intro-title .t-row2 { margin-left: 1.02em; }
 .intro-title .accent { color: var(--amber); }
 /* 主标下的主题词：数字 · AI · 探索（呼应站点 slogan） */
 .intro-kw {
@@ -366,16 +368,18 @@ body.intro-hold .hero-side { animation-play-state: paused; }
 .hero-title {
   margin: 0 0 26px;
   font-family: var(--title-font);
-  font-size: clamp(3rem, 8vw, 6.4rem);
+  font-size: clamp(3.2rem, 9.5vw, 6.8rem);
   font-weight: 400;
-  line-height: 1.04;
+  line-height: 1.06;
   letter-spacing: 0.02em;
   color: var(--ink);
-  white-space: nowrap;
 }
+.hero-title .t-line { display: block; }
 .hero-title .accent {
   color: var(--amber);
-  display: inline-block;
+  display: block;
+  width: max-content;
+  margin-left: 1.02em;
   padding-bottom: 0.06em;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M3 8.5 C 28 3.5, 58 3.5, 117 7.5' fill='none' stroke='%23b4551e' stroke-width='5.5' stroke-linecap='round' opacity='0.5'/%3E%3C/svg%3E") bottom / 100% 0.3em no-repeat;
 }
@@ -1470,7 +1474,7 @@ a.social-row:hover { color: var(--amber); }
   .site-nav a { min-width: max-content; }
   .page { padding-inline: 18px; }
   .hero { gap: 34px; padding-top: 26px; }
-  .hero-title { font-size: clamp(2.9rem, 13.5vw, 4.4rem); }
+  .hero-title { font-size: clamp(3rem, 15vw, 4.8rem); }
   .hero-lead { font-size: 1rem; }
   .ledger > div { min-width: 46%; }
   .section { padding: 52px 0; }

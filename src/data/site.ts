@@ -1,7 +1,7 @@
 export const site = {
-  name: '劳伦斯在上海',
-  title: '劳伦斯在上海 · 个人主站',
-  description: '劳伦斯在上海的个人主站：数字作品、旅行实验室与手记。',
+  name: '劳伦斯实验室',
+  title: '劳伦斯实验室 · 个人主站',
+  description: '劳伦斯实验室：数字作品、旅行实验室与手记。',
   url: 'https://shuzidiantang.com',
   social: [
     {

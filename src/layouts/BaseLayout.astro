@@ -34,7 +34,7 @@ const nav = [
     <meta property="og:type" content="website" />
     <meta property="og:image" content={`${site.url}/assets/og/brand.png`} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="alternate" type="application/rss+xml" title="劳伦斯在上海 · 手记 RSS" href="/feed.xml" />
+    <link rel="alternate" type="application/rss+xml" title="劳伦斯实验室 · 手记 RSS" href="/feed.xml" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='14' y='14' width='72' height='72' rx='12' fill='none' stroke='%23b4551e' stroke-width='6'/%3E%3Crect x='22' y='22' width='56' height='56' rx='8' fill='none' stroke='%23b4551e' stroke-width='2' opacity='.5'/%3E%3Ctext x='50' y='61' font-family='serif' font-size='29' font-weight='700' fill='%23b4551e' text-anchor='middle'%3E%E6%95%B0%E5%AD%97%3C/text%3E%3C/svg%3E" />
   </head>
   <body>
@@ -43,7 +43,7 @@ const nav = [
       <div class="intro-center">
         <div class="intro-stack" id="intro-stack">
           <div class="intro-title-row">
-            <div class="intro-title" id="intro-title"><span>劳</span><span>伦</span><span>斯</span><span class="accent">在</span><span class="accent">上</span><span class="accent">海</span></div>
+            <div class="intro-title" id="intro-title"><div class="t-row"><span>劳</span><span>伦</span><span>斯</span></div><div class="t-row t-row2"><span class="accent">实</span><span class="accent">验</span><span class="accent">室</span></div></div>
           </div>
           <div class="intro-kw" id="intro-kw"><span>数字</span><i>·</i><span>AI</span><i>·</i><span>探索</span></div>
           <div class="intro-cap" id="intro-cap">DIGITAL · AI · EXPLORATION · EST. 2026</div>
@@ -82,7 +82,7 @@ const nav = [
         var INK = '#26221a', AMBER = '#b4551e', AMBER2 = '#d98a3d';
         var CHARS = [
           { ch: '劳', amber: false }, { ch: '伦', amber: false }, { ch: '斯', amber: false },
-          { ch: '在', amber: true }, { ch: '上', amber: true }, { ch: '海', amber: true }
+          { ch: '实', amber: true }, { ch: '验', amber: true }, { ch: '室', amber: true }
         ];
         // 时间轴（秒，按模拟时间推进）：墨雾漂移 → 逐字凝聚分色 → 主题词收拢 → 定格 → 散作星尘
         var T_DRIFT = 0.4, T_KW = 1.9, T_UL = 2.15, T_CAP = 2.4, T_DIS = 3.6, T_END = 4.35;
@@ -116,7 +116,7 @@ const nav = [
           } else {
             anchored = false;
             var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-            fs = Math.min(Math.max(3 * rem, vw * 0.08), 6.4 * rem, vh * 0.22);
+            fs = Math.min(Math.max(3.2 * rem, vw * 0.095), 6.8 * rem, vh * 0.17);
             center.style.position = '';
             center.style.left = '';
             center.style.top = '';
@@ -124,7 +124,7 @@ const nav = [
             stack.style.justifyItems = 'center';
           }
           stack.style.fontSize = fs + 'px';
-          // 隐形 DOM 主标只负责排版：量出「在上海」笔触下划线位置
+          // 隐形 DOM 主标只负责排版：量出「实验室」笔触下划线位置
           var lastAcc = accSpans[accSpans.length - 1].getBoundingClientRect();
           var firstAcc = accSpans[0].getBoundingClientRect();
           var srect = stack.getBoundingClientRect();
@@ -167,15 +167,16 @@ const nav = [
           var asc = m.actualBoundingBoxAscent || fs * S * 0.88;
           var desc = m.actualBoundingBoxDescent || fs * S * 0.12;
           // 字形目标直接取自隐形 DOM 主标的逐字 span 版面 → 与 hero 主标像素级重合
-          var r0 = introSpans[0].getBoundingClientRect();
-          var lineH = r0.height || fs * 1.04;
-          var baseline = r0.top + (lineH - (asc + desc) / S) / 2 + asc / S;
+          // 两行错开排版：基线须逐字计算（第二行的 span 在另一条基线上）
+          var lineHDef = fs * 1.06;
           // 步长按粒子预算自适应：字大机器好 → 粒子更多更密
           var step = 2 * fs * Math.sqrt((0.30 * CHARS.length) / budget);
           step = Math.max(2.4, Math.min(7, step)) * S;
           var pts = [];
           CHARS.forEach(function (c, i) {
             var r = introSpans[i].getBoundingClientRect();
+            var lineH = r.height || lineHDef;
+            var baseline = r.top + (lineH - (asc + desc) / S) / 2 + asc / S;
             oc.width = Math.ceil(r.width * S + 8); oc.height = Math.ceil(asc + desc + 8);
             ox.font = '400 ' + fs * S + 'px ' + TITLE_FONT; ox.textBaseline = 'alphabetic'; ox.fillStyle = '#000';
             ox.fillText(c.ch, 4, asc + 4);
@@ -348,7 +349,7 @@ const nav = [
         }
         if (document.fonts && document.fonts.load) {
           setTimeout(boot, 1600);
-          document.fonts.load('400 32px MaShanZheng', '劳伦斯在上海').then(boot, boot);
+          document.fonts.load('400 32px MaShanZheng', '劳伦斯实验室').then(boot, boot);
         } else {
           boot();
         }
@@ -364,7 +365,7 @@ const nav = [
     </script>
     <a class="skip-link" href="#content">跳到正文</a>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="劳伦斯在上海 首页">
+      <a class="brand" href="/" aria-label="劳伦斯实验室 首页">
         <span class="brand-copy">
           <strong>{site.name}</strong>
           <small><span class="kw-zh">数字 · AI · 探索</span><span class="kw-en">DIGITAL · AI · EXPLORATION</span></small>
@@ -379,7 +380,7 @@ const nav = [
     <slot />
     <footer class="site-footer">
       <div>
-        <strong>劳伦斯在上海</strong>
+        <strong>劳伦斯实验室</strong>
         <p class="footer-kw"><span class="kw-zh">数字 · AI · 探索</span><span class="kw-en">DIGITAL · AI · EXPLORATION</span></p>
         <p>个人主站 · 数字作品 / 旅行实验室 / 手记</p>
         <p class="footer-beian">

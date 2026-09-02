@@ -37,16 +37,16 @@ def main():
     # 左上：朱印 + 品牌行
     lw, lh = S.draw_seal(img, 46, 40, 62)
     brand_font = S.load_font("cn", 27)
-    bbox = draw.textbbox((0, 0), "劳伦斯在上海", font=brand_font)
+    bbox = draw.textbbox((0, 0), "劳伦斯实验室", font=brand_font)
     draw.text((46 + lw + 18 - bbox[0], 40 + lh / 2 - 14 - bbox[1]),
-              "劳伦斯在上海", font=brand_font, fill=S.CYAN)
+              "劳伦斯实验室", font=brand_font, fill=S.CYAN)
     en_font = S.load_font("en", 15)
     draw.text((46 + lw + 18, 40 + lh / 2 + 8), "SHUZIDIANTANG.COM",
               font=en_font, fill=S.CYAN_DIM)
 
     # 主标题
-    title_font, _size = S.fit_font_size(draw, "劳伦斯在上海", "cn", 150, W - 220)
-    S.draw_centered(draw, "劳伦斯在上海", title_font, S.CYAN_BRIGHT, W / 2, 270)
+    title_font, _size = S.fit_font_size(draw, "劳伦斯实验室", "cn", 150, W - 220)
+    S.draw_centered(draw, "劳伦斯实验室", title_font, S.CYAN_BRIGHT, W / 2, 270)
 
     # 副题
     sub_font = S.load_font("cn", 30)
