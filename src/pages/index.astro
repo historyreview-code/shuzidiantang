@@ -58,6 +58,8 @@ const carousel = [
         </div>
         <h1 class="hero-title">劳伦斯<span class="accent">在上海</span></h1>
         <p class="hero-lead">搭建一个数字空间，一起分享AI实践，探索未知世界。</p>
+        <span class="hero-year" aria-hidden="true">EST. 2026</span>
+        <a class="hero-scroll" href="#works"><span class="arr">↓</span> 展开参观</a>
       </div>
 
       <div class="hero-side">
@@ -230,7 +232,7 @@ const carousel = [
 
       function restart() {
         if (timer) clearInterval(timer);
-        if (!paused) timer = setInterval(function () { show(idx + 1); }, 4500);
+        if (!paused) timer = setInterval(function () { show(idx + 1); }, 5500);
       }
 
       var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;

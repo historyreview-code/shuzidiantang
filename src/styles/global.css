@@ -61,7 +61,7 @@ h1, h2, h3, p { margin-top: 0; }
 p { margin-bottom: 0; }
 ::selection { background: var(--amber); color: var(--paper); }
 
-/* ---------- 纸感开机动画（数字浪潮版） ---------- */
+/* ---------- 纸感开机动画（数字浪潮 + 馆藏胶片飞过版） ---------- */
 .paper-intro {
   position: fixed;
   inset: 0;
@@ -87,22 +87,140 @@ p { margin-bottom: 0; }
   opacity: 0.14;
   mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
   -webkit-mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
+  pointer-events: none;
 }
 .intro-digits span {
   white-space: nowrap;
-  animation: digit-shift 2.2s steps(2) infinite alternate;
+  animation: digit-wave 3.2s ease-in-out infinite alternate;
 }
 .intro-digits span:nth-child(2n) { animation-direction: alternate-reverse; }
-@keyframes digit-shift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-2.2em); }
+@keyframes digit-wave {
+  from { transform: translateY(0.5em); }
+  to { transform: translateY(-0.5em); }
 }
+/* 馆藏胶片带：深棕胶片 + 齿孔 + 作品缩略图，上下反向飞过 */
+.intro-film {
+  position: absolute;
+  left: -6vw;
+  right: -6vw;
+  height: 104px;
+  overflow: hidden;
+  background: #31281f;
+  box-shadow: 0 10px 30px rgba(43, 33, 20, 0.18);
+  opacity: 0;
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+.intro-film::before,
+.intro-film::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background-image: radial-gradient(circle at 4px 4px, var(--paper-2) 2.2px, transparent 2.6px);
+  background-size: 24px 8px;
+  z-index: 1;
+}
+.intro-film::before { top: 6px; }
+.intro-film::after { bottom: 6px; }
+.intro-film--top { top: 13%; transform: rotate(-1.6deg); }
+.intro-film--bottom { bottom: 13%; transform: rotate(1.4deg); }
+.intro-film-track {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+  width: max-content;
+}
+.intro-film-track img {
+  height: 66px;
+  width: 98px;
+  object-fit: cover;
+  border: 2px solid #efe7d4;
+  border-radius: 2px;
+  flex: none;
+}
+.paper-intro.play .intro-film--top { opacity: 0.96; }
+.paper-intro.play .intro-film--bottom { opacity: 0.96; }
+.paper-intro.play .intro-film--top .intro-film-track {
+  animation: film-fly 3s cubic-bezier(0.3, 0.1, 0.4, 1) forwards;
+}
+.paper-intro.play .intro-film--bottom .intro-film-track {
+  animation: film-fly-rev 3s cubic-bezier(0.3, 0.1, 0.4, 1) forwards;
+}
+@keyframes film-fly {
+  from { transform: translateX(0); }
+  to { transform: translateX(-38%); }
+}
+@keyframes film-fly-rev {
+  from { transform: translateX(-38%); }
+  to { transform: translateX(0); }
+}
+/* 主角：劳伦斯在上海 · 活字逐字浮起，印章随后落定 */
 .intro-center {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   justify-items: center;
-  gap: 30px;
+  gap: 26px;
+}
+.intro-title-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.intro-title {
+  display: flex;
+  font-family: var(--serif);
+  font-size: clamp(2.7rem, 7.4vw, 4.8rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.intro-title .accent { color: var(--amber); }
+.intro-title span { opacity: 0; }
+.paper-intro.play .intro-title span {
+  animation: char-rise 0.5s cubic-bezier(0.2, 0.9, 0.25, 1.12) forwards;
+}
+.paper-intro.play .intro-title span:nth-child(1) { animation-delay: 0.35s; }
+.paper-intro.play .intro-title span:nth-child(2) { animation-delay: 0.44s; }
+.paper-intro.play .intro-title span:nth-child(3) { animation-delay: 0.53s; }
+.paper-intro.play .intro-title span:nth-child(4) { animation-delay: 0.62s; }
+.paper-intro.play .intro-title span:nth-child(5) { animation-delay: 0.71s; }
+.paper-intro.play .intro-title span:nth-child(6) { animation-delay: 0.8s; }
+@keyframes char-rise {
+  from { opacity: 0; transform: translateY(0.45em) rotate(3.5deg) scale(1.04); }
+  to { opacity: 1; transform: none; }
+}
+.intro-stamp-wrap {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  flex: none;
+}
+.intro-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--amber);
+  border-radius: 50%;
+  opacity: 0;
+}
+.paper-intro .intro-stamp {
+  min-width: 66px;
+  height: 66px;
+  padding: 0 8px;
+  border-width: 2.5px;
+  font-size: 1.25rem;
+  opacity: 0;
+}
+.paper-intro.play .intro-stamp {
+  animation: stamp-press 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.15) 1.15s forwards;
+}
+.paper-intro.play .intro-ring {
+  animation: ink-ring 0.9s ease-out 1.7s forwards;
 }
 .intro-ticker {
   width: min(560px, 84vw);
@@ -115,45 +233,19 @@ p { margin-bottom: 0; }
 }
 .paper-intro.play .intro-ticker {
   opacity: 1;
-  transition: opacity 0.35s ease 0.1s;
+  transition: opacity 0.35s ease 1.15s;
 }
 .intro-ticker-inner {
   display: inline-block;
   white-space: nowrap;
-  animation: ticker-scroll 2.4s linear 0.15s infinite;
+  animation: ticker-scroll 2.4s linear 1.15s infinite;
 }
 @keyframes ticker-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-.intro-stamp-wrap {
-  position: relative;
-  width: 96px;
-  height: 96px;
-}
-.intro-ring {
-  position: absolute;
-  inset: 0;
-  border: 2px solid var(--amber);
-  border-radius: 50%;
-  opacity: 0;
-}
-.paper-intro .intro-stamp {
-  min-width: 96px;
-  height: 96px;
-  padding: 0 12px;
-  border-width: 3px;
-  font-size: 1.9rem;
-  opacity: 0;
-}
-.paper-intro.play .intro-stamp {
-  animation: stamp-press 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.15) 0.95s forwards;
-}
-.paper-intro.play .intro-ring {
-  animation: ink-ring 1s ease-out 1.55s forwards;
-}
 .paper-intro.play {
-  animation: sheet-up 0.7s ease 2.35s forwards;
+  animation: sheet-up 0.65s ease 2.35s forwards;
 }
 @keyframes stamp-press {
   0%   { opacity: 0; transform: scale(2.2) rotate(-12deg); }
@@ -372,7 +464,7 @@ p { margin-bottom: 0; }
   min-height: calc(88svh - 90px);
   padding: 44px 0 60px;
 }
-.hero-copy { max-width: 720px; }
+.hero-copy { position: relative; max-width: 720px; }
 .hero-kicker-row {
   display: flex;
   align-items: center;
@@ -438,6 +530,63 @@ p { margin-bottom: 0; }
   color: var(--ink-3);
 }
 .hero-side { position: relative; }
+
+/* 首屏装饰：标题右侧竖排年份 + 左下「展开参观」引导 */
+.hero-year {
+  position: absolute;
+  right: 0;
+  top: 44%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.52em;
+  color: var(--amber);
+  opacity: 0.72;
+  pointer-events: none;
+}
+.hero-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 52px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.34em;
+  color: var(--ink-2);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.18s ease;
+}
+.hero-scroll:hover { color: var(--amber); }
+.hero-scroll .arr {
+  display: inline-block;
+  animation: scroll-bob 1.6s ease-in-out infinite;
+}
+@keyframes scroll-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+@media (max-width: 1040px) { .hero-year { display: none; } }
+
+/* 开屏掀纸后的首屏入场衔接 */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-kicker-row, .hero-title, .hero-lead, .hero-scroll {
+    animation: rise-in 0.6s ease both;
+  }
+  .hero-title { animation-delay: 0.08s; }
+  .hero-lead { animation-delay: 0.16s; }
+  .hero-scroll { animation-delay: 0.24s; }
+  .hero-side { animation: rise-in 0.7s ease 0.15s both; }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-kicker-row, .hero-title, .hero-lead, .hero-scroll, .hero-side { animation: none; }
+  .hero-scroll .arr { animation: none; }
+}
 .exhibit {
   position: relative;
   padding: 16px;
