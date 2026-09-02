@@ -20,14 +20,14 @@ const animals = [
   { num: '16', name: '青铜犀甲虫', views: 3 },
 ];
 ---
-<BaseLayout current="works" title="陶土动物园 · 劳伦斯在上海" description="十七只用 Blender 捏出来的陶土小动物图鉴：点击任意一只，满屏自动播放三视图。">
+<BaseLayout current="works" title="陶土动物园 · 劳伦斯在上海" description="十七只用 Blender 手作的小动物图鉴：陶土为底，兼有玉石与青铜质感。点击任意一只，满屏自动播放三视图。">
   <main id="content" class="page">
     <header class="page-title">
       <span class="kicker">作品 · Blender 手作</span>
       <h1>陶土动物园</h1>
       <p>
-        十七只用 Blender 捏出来的陶土小动物：从捏形、上釉到打光，一只一只手作入馆。
-        点击任意一只，满屏自动播放它的三视图。
+        十七只用 Blender 手作的小动物——陶土为底，也尝试玉石与青铜的质感：
+        从捏形、上釉到打光，一只一只入馆。点击任意一只，满屏自动播放它的三视图。
       </p>
     </header>
 
@@ -83,12 +83,16 @@ const animals = [
   }
 
   function advance() {
-    idx = (idx + 1) % views;
-    img.style.opacity = '0';
-    setTimeout(() => {
-      img.src = `/assets/img/clay/${num}-${idx}.webp`;
-      img.onload = () => { img.style.opacity = '1'; };
-    }, 220);
+    idx = idx + 1;
+    if (idx >= views) {
+      // 三视图播完：回到第一视图并停止
+      idx = 0;
+      img.src = `/assets/img/clay/${num}-0.webp`;
+      indicator.textContent = `1/${views}`;
+      if (timer) { clearInterval(timer); timer = null; }
+      return;
+    }
+    img.src = `/assets/img/clay/${num}-${idx}.webp`;
     indicator.textContent = `${idx + 1}/${views}`;
   }
 

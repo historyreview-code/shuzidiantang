@@ -49,7 +49,7 @@ export const works = [
     eyebrow: 'Blender 手作',
     href: '/clay/',
     image: '/assets/img/clay/10.webp',
-    summary: '十七只用 Blender 捏出来的小动物：一只一只手作入馆，图鉴加全家福。',
+    summary: '十七只用 Blender 手作的小动物：陶土为底，兼有玉石与青铜质感，一只一只入馆。',
     tags: ['Blender', '手作', '图鉴'],
     status: '17 只入馆',
   },
