@@ -416,8 +416,9 @@ if (publicItems.length > 0) {
 
 // --- 暗室·投资研究 (同一套机制) ---
 // 2026-09-01 起暗室移出公开仓库（本地备份 ~/数字殿堂-暗室备份/hidden），
-// 待架构完善后以二级域名独立建设。hidden/ 存在时才执行以下注入。
-if (existsSync(path.join(ROOT, 'hidden', 'invest'))) {
+// 待架构完善后以二级域名独立建设。仅当完整暗室（含 invest/index.html）回填时才注入；
+// 晨报机器人每日重建的 hidden/invest/notes 不触发（缺 index.html）。
+if (existsSync(path.join(ROOT, 'hidden', 'invest', 'index.html'))) {
 const investItems = collectNotes(
   path.join(ROOT, 'hidden', 'invest', 'notes'),
   /\s*·\s*(投资研究|数字殿堂).*/g,
@@ -470,7 +471,9 @@ ${itemXml}
 </rss>
 `;
 }
-writeFileSync(path.join(DIST, 'hidden', 'invest', 'feed.xml'), buildInvestRss(investItems));
+const investFeedPath = path.join(DIST, 'hidden', 'invest', 'feed.xml');
+mkdirSync(path.dirname(investFeedPath), { recursive: true });
+writeFileSync(investFeedPath, buildInvestRss(investItems));
 console.log(`  投资研究 RSS 已生成 → dist/hidden/invest/feed.xml (${Math.min(investItems.length, 20)} 条)`);
 } else {
 console.log('  暗室已移出公开仓库，跳过投资研究注入（恢复：把备份回填 hidden/ 即可）');
