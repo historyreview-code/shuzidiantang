@@ -67,7 +67,8 @@ const carousel = [
       <div class="works-stream">
         {works.filter((w) => !w.footer).map((work, index) => (
           <>
-            <a class="work-stream-item" href={work.href}>
+            <article class="work-stream-item">
+              <a class="card-link" href={work.href} aria-label={`${work.title}，进入作品`}></a>
               <div class="ws-thumb">
                 <img src={work.image} alt={`${work.title}预览`} loading="lazy" />
               </div>
@@ -86,7 +87,7 @@ const carousel = [
                   <span class="ws-status">{work.status}</span>
                 </div>
               </div>
-            </a>
+            </article>
           </>
         ))}
       </div>

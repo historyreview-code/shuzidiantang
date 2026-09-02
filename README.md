@@ -1,7 +1,7 @@
 # 数字殿堂 · 总站门户
 
 > 一座收藏数字作品的殿堂 —— 地球厅 · 游戏厅 · 天文馆
-> 主域名：`shuzidiantang.com`（已注册，实名通过，ICP 备案审核中）· 海外过渡：GitHub Pages
+> 主域名：`shuzidiantang.com`（已上线腾讯云 EdgeOne Pages，ICP 备案：沪ICP备2026042531号）· 海外兜底：GitHub Pages
 
 ## 目录结构
 

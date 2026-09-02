@@ -8,8 +8,9 @@ import { works } from '../data/site';
     <section class="section">
       <div class="work-grid">
         {works.map((work) => (
-          <a class="work-card" href={work.href} {...work.external ? { target: '_blank', rel: 'noopener' } : {}}>
-            <img src={work.image} alt={`${work.title}封面`} />
+          <article class="work-card">
+            <a class="card-link" href={work.href} aria-label={`${work.title}，进入作品`} {...work.external ? { target: '_blank', rel: 'noopener' } : {}}></a>
+            <img src={work.image} alt={`${work.title}封面`} loading="lazy" />
             <div class="work-card-body">
               <span class="meta">{work.eyebrow} · {work.status}</span>
               <h3>{work.title}</h3>
@@ -18,7 +19,7 @@ import { works } from '../data/site';
               {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
               </div>
             </div>
-          </a>
+          </article>
         ))}
       </div>
     </section>

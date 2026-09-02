@@ -299,6 +299,7 @@ p { margin-bottom: 0; }
 .site-nav a:focus-visible,
 .brand:focus-visible,
 .work-card:focus-visible,
+.card-link:focus-visible,
 .timeline-item:focus-visible,
 .social-row:focus-visible,
 .notes-feed .item:focus-visible {
@@ -848,6 +849,23 @@ p { margin-bottom: 0; }
 .github-badge:hover { background: var(--amber); color: var(--paper); }
 .series-body .github-badge { margin-top: 10px; }
 
+/* ---------- 卡片整卡可点（stretched link，避免 a 嵌套 a） ---------- */
+.work-card,
+.work-stream-item,
+.series-card,
+.mini-games-card {
+  position: relative;
+}
+.card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.github-badge {
+  position: relative;
+  z-index: 2;
+}
+
 /* ---------- 作品卡片流（首页长滚动） ---------- */
 .works-stream {
   display: grid;
@@ -953,7 +971,7 @@ p { margin-bottom: 0; }
   box-shadow: var(--shadow);
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
-a.work-card:hover {
+.work-card:hover {
   transform: translateY(-5px);
   border-color: var(--amber);
   box-shadow: var(--shadow-lift);
@@ -1357,7 +1375,7 @@ a.social-row:hover { color: var(--amber); }
   .exhibit,
   .notes-feed .item { transition: none; }
   .button:hover,
-  a.work-card:hover,
+  .work-card:hover,
   .exhibit:hover,
   .notes-feed .item:hover { transform: none; }
 }

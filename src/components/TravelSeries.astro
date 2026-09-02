@@ -14,7 +14,8 @@ const groupLabel = destItems[0]?.groupLabel;
   <div class="series-grid">
     {mainItems.map((item) => (
       item.href ? (
-        <a class="series-card" href={item.href} {...item.external ? { target: '_blank', rel: 'noopener' } : {}}>
+        <article class="series-card">
+          <a class="card-link" href={item.href} aria-label={`${item.title}，进入作品`} {...item.external ? { target: '_blank', rel: 'noopener' } : {}}></a>
           {item.img ? (
             <div class="series-frame"><img src={item.img} alt={`${item.title}预览`} loading="lazy" /></div>
           ) : (
@@ -26,7 +27,7 @@ const groupLabel = destItems[0]?.groupLabel;
             <small>{item.sub}</small>
             {item.github && <a class="github-badge" href={item.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
           </div>
-        </a>
+        </article>
       ) : (
         <article class="series-card series-card-pending" aria-label={`${item.title}，打磨中`}>
           <div class="series-frame series-frame-empty" aria-hidden="true"><span class="stamp">打磨中</span></div>
@@ -43,14 +44,26 @@ const groupLabel = destItems[0]?.groupLabel;
   {groupLabel && <div class="series-group-head"><span>{groupLabel}</span></div>}
   <div class="series-grid series-grid--small">
     {destItems.map((item) => (
-      <a class="series-card series-card--small" href={item.href} {...item.external ? { target: '_blank', rel: 'noopener' } : {}}>
-        <div class="series-frame"><img src={item.img} alt={`${item.title}预览`} loading="lazy" /></div>
-        <div class="series-body">
-          <span class="meta">{item.meta || 'B站'}</span>
-          <h4>{item.title}</h4>
-          <small>{item.sub}</small>
-        </div>
-      </a>
+      item.href ? (
+        <article class="series-card series-card--small">
+          <a class="card-link" href={item.href} aria-label={`${item.title}，观看视频`} {...item.external ? { target: '_blank', rel: 'noopener' } : {}}></a>
+          <div class="series-frame"><img src={item.img} alt={`${item.title}预览`} loading="lazy" /></div>
+          <div class="series-body">
+            <span class="meta">{item.meta || 'B站'}</span>
+            <h4>{item.title}</h4>
+            <small>{item.sub}</small>
+          </div>
+        </article>
+      ) : (
+        <article class="series-card series-card--small series-card-pending" aria-label={`${item.title}，打磨中`}>
+          <div class="series-frame series-frame-empty" aria-hidden="true"><span class="stamp">打磨中</span></div>
+          <div class="series-body">
+            <span class="meta">占位</span>
+            <h4>{item.title}</h4>
+            <small>{item.sub}</small>
+          </div>
+        </article>
+      )
     ))}
   </div>
 </div>
