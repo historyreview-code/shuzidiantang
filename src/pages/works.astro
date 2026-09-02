@@ -14,8 +14,9 @@ import { works } from '../data/site';
               <span class="meta">{work.eyebrow} · {work.status}</span>
               <h3>{work.title}</h3>
               <p>{work.summary}</p>
-              <div class="tag-list">{work.tags.map((tag) => <span>{tag}</span>)}</div>
-              {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener" style="margin-top:12px">⌥ 开源代码 ↗</a>}
+              <div class="tag-list">{work.tags.map((tag) => <span>{tag}</span>)}
+              {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
+              </div>
             </div>
           </a>
         ))}

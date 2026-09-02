@@ -80,10 +80,10 @@ const carousel = [
                 <p>{work.summary}</p>
                 <div class="tag-list">
                   {work.tags.map((tag) => <span>{tag}</span>)}
+                  {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
                 </div>
                 <div class="ws-meta">
                   <span class="ws-status">{work.status}</span>
-                  {work.github && <a class="github-badge" href={work.github} target="_blank" rel="noopener">⌥ 开源代码 ↗</a>}
                 </div>
               </div>
             </a>
