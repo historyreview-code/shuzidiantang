@@ -1,15 +1,18 @@
 ---
 import { travelSeries } from '../data/site';
 
-const mainItems = travelSeries.slice(0, 4);
-const destItems = travelSeries.slice(4);
+const mainItems = travelSeries.slice(0, 3);
+const destItems = travelSeries.slice(3);
 const groupLabel = destItems[0]?.groupLabel;
 ---
 <div class="series-block">
   <div class="series-head">
     <span class="kicker">旅行 · Travel</span>
     <h3>旅行实验室</h3>
-    <p>目的地历史文化手绘介绍 → 路线确定生成路书（旅途助手）→ 过程生成小红书卡片 → 视频记录短片：一切都智能高效，富有知识向与审美标准。</p>
+    <p>目的地历史文化手绘介绍 → 路线确定生成路书（旅途助手）→ 过程生成小红书卡片 → 视频记录短片：一切都智能高效，富有知识向与审美标准。
+      <a class="github-badge" href="https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console" target="_blank" rel="noopener">⌥ 开源代码 ↗</a>
+      <a class="series-index-link" href="/travel/">目录 ↗</a>
+    </p>
   </div>
   <div class="series-grid">
     {mainItems.map((item) => (

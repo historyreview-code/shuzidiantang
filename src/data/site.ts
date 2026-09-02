@@ -119,11 +119,10 @@ export const cosmosSeries = [
   { ep: '短片', title: '宇宙的诞生与演进', sub: '从大爆炸到旅行者号', href: '/cosmos/?ep=5', img: '/assets/img/cosmos/06.webp' },
 ];
 
-// 旅行系列：旅行实验室 = 本章总目录（/travel/）。
+// 旅行系列：本章总目录在 /travel/（入口在旅行区头部的「目录」链接，不单列卡片）。
 // 旅行工具：会飞的路书 / 小红书卡片工具 / 唯美记录视频（占位后补）；
 // 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
-  { title: '旅行实验室', sub: '本章总目录 · 工具与手绘系列', href: '/travel/', img: '/assets/img/travel/lab.webp', github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/travel-console' },
   { title: '会飞的路书', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
   { title: '小红书卡片工具', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
   { title: '唯美记录视频', sub: '照片自动编排成片 · 打磨中后补', href: '', img: '', pending: true },

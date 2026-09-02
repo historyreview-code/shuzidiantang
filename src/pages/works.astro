@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CosmosSeries from '../components/CosmosSeries.astro';
+import TravelSeries from '../components/TravelSeries.astro';
 import { works } from '../data/site';
 ---
 <BaseLayout current="works" title="作品 · 劳伦斯在上海" description="数字地球、网页游戏、天文影像、陶土手作与数据艺术——每件作品都有真实入口。">
@@ -22,6 +23,9 @@ import { works } from '../data/site';
           </article>
         ))}
       </div>
+    </section>
+    <section class="section">
+      <TravelSeries />
     </section>
     <section class="section">
       <CosmosSeries />
