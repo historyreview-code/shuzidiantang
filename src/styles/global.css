@@ -614,6 +614,52 @@ p { margin-bottom: 0; }
   font-size: 0.72rem;
   letter-spacing: 0.14em;
 }
+/* 手绘系列：小卡（低调不喧宾夺主） */
+.series-grid--small {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.series-card--small .series-frame img { aspect-ratio: 16 / 10; }
+.series-card--small .series-body { padding: 10px 12px 12px; }
+.series-card--small h4 { font-size: 0.95rem; }
+.series-card--small small { font-size: 0.7rem; }
+.series-card--small .meta { font-size: 0.62rem; }
+@media (max-width: 900px) {
+  .series-grid--small { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* 全站最后的小游戏卡（低调） */
+.mini-games-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+.mini-games-card:hover { border-color: var(--amber); transform: translateY(-2px); }
+.mini-games-card img {
+  width: 92px;
+  height: 69px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  flex: none;
+}
+.mini-games-card h3 {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  margin: 2px 0;
+}
+.mini-games-card p { color: var(--ink-3); font-size: 0.82rem; }
+.mini-games-card .ws-enter { margin-left: auto; white-space: nowrap; }
+@media (max-width: 560px) {
+  .mini-games-card p { display: none; }
+}
 .series-frame img {
   width: 100%;
   aspect-ratio: 16 / 9;

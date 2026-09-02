@@ -65,7 +65,7 @@ const carousel = [
     <!-- ============ 作品卡片流 ============ -->
     <section class="section" id="works">
       <div class="works-stream">
-        {works.map((work, index) => (
+        {works.filter((w) => !w.footer).map((work, index) => (
           <>
             <a class="work-stream-item" href={work.href}>
               <div class="ws-thumb">
@@ -98,6 +98,19 @@ const carousel = [
     <!-- ============ 天文与宇宙系列（靠后位置） ============ -->
     <section class="section" id="cosmos">
       <CosmosSeries />
+    </section>
+
+    <!-- ============ 创意小游戏（全站最后，低调） ============ -->
+    <section class="section" id="mini-games">
+      <a class="mini-games-card" href={works.find((w) => w.footer)?.href}>
+        <img src={works.find((w) => w.footer)?.image} alt="创意小游戏" loading="lazy" />
+        <div>
+          <span class="meta">创意小游戏 · 精选机台</span>
+          <h3>{works.find((w) => w.footer)?.title}</h3>
+          <p>{works.find((w) => w.footer)?.summary}</p>
+        </div>
+        <span class="ws-enter">进入 →</span>
+      </a>
     </section>
 
     <!-- ============ 手记流 ============ -->

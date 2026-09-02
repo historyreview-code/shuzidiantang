@@ -105,6 +105,7 @@ export const works = [
     tags: ['Canvas', 'Game Design', 'AI 协作'],
     status: '2 款可玩',
     github: 'https://github.com/historyreview-code/Numsweeper',
+    footer: true,
   },
 ];
 
