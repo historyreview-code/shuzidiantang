@@ -22,6 +22,12 @@ export const site = {
       href: 'https://www.youtube.com/@SketchbookBritain',
       note: '海外同步 · 英伦漫记系列',
     },
+    {
+      name: 'GitHub',
+      handle: 'historyreview-code',
+      href: 'https://github.com/historyreview-code',
+      note: '开源代码与项目仓库',
+    },
   ],
   beian: {
     icp: '沪ICP备2026042531号',
@@ -74,6 +80,7 @@ export const works = [
     status: '4 阶段滑杆',
   },
   {
+    // 历史地理可视化：暂列作品流，未来可能单独成栏目
     id: 'shanghai-time-map',
     title: '上海时间地图',
     eyebrow: '数据可视化 · 时空穿越',

@@ -6,15 +6,23 @@ import { cosmosSeries, notes, site, works } from '../data/site';
 
 const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
 
-// 右侧轮播：地球、天文系列、陶土、数据艺术、CAD 五件主力
+// 右侧轮播：地球、天文系列、陶土、时辰、时间地图、旅行实验室、CAD 七件主力
+const workCard = (w) => ({
+  name: w.title,
+  eyebrow: `${w.eyebrow} · ${w.status}`,
+  note: w.summary,
+  img: w.image,
+  href: w.href,
+});
+const travelCard = {
+  name: '旅行实验室',
+  eyebrow: '系列 · 路书 × 手绘 × 短片',
+  note: '会飞的路书、自动出图的小红书卡片与手绘跨时空旅行短片：目的地的历史文化，一路智能高效。',
+  img: '/assets/img/travel/uk-roadbook.webp',
+  href: '/travel/',
+};
 const carousel = [
-  ...works.slice(0, 1).map((w) => ({
-    name: w.title,
-    eyebrow: `${w.eyebrow} · ${w.status}`,
-    note: w.summary,
-    img: w.image,
-    href: w.href,
-  })),
+  workCard(works[0]), // 数字地球
   {
     name: '天文馆 · 宇宙之旅',
     eyebrow: '系列 · 六集六主题',
@@ -22,13 +30,11 @@ const carousel = [
     img: cosmosSeries[0].img,
     href: '/cosmos/',
   },
-  ...works.slice(1, 4).map((w) => ({
-    name: w.title,
-    eyebrow: `${w.eyebrow} · ${w.status}`,
-    note: w.summary,
-    img: w.image,
-    href: w.href,
-  })),
+  workCard(works[1]), // 陶土动物园
+  workCard(works[2]), // dataism《时辰》
+  workCard(works[4]), // 上海时间地图
+  travelCard,
+  workCard(works[3]), // CAD→效果图流水线
 ];
 ---
 <BaseLayout current="home">
@@ -41,7 +47,7 @@ const carousel = [
           <span class="kicker">Shuzidiantang.com · 个人主站</span>
         </div>
         <h1 class="hero-title">劳伦斯<span class="accent">在上海</span></h1>
-        <p class="hero-lead">学习和分享 AI 实践，探索未知世界。</p>
+        <p class="hero-lead">搭建一个数字空间，一起分享AI实践，探索未知世界。</p>
       </div>
 
       <div class="hero-side">

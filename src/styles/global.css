@@ -616,17 +616,23 @@ p { margin-bottom: 0; }
   font-size: 0.72rem;
   letter-spacing: 0.14em;
 }
-/* 手绘系列：小卡（低调不喧宾夺主） */
+/* 手绘系列：小卡（低调不喧宾夺主，紧凑少占屏） */
 .series-grid--small {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
 }
 .series-card--small .series-frame img { aspect-ratio: 16 / 10; }
-.series-card--small .series-body { padding: 10px 12px 12px; }
-.series-card--small h4 { font-size: 0.95rem; }
-.series-card--small small { font-size: 0.7rem; }
-.series-card--small .meta { font-size: 0.62rem; }
+.series-card--small .series-body { padding: 8px 10px 10px; }
+.series-card--small h4 { font-size: 0.88rem; }
+.series-card--small small { font-size: 0.68rem; }
+.series-card--small .meta { font-size: 0.6rem; }
+@media (max-width: 1040px) {
+  .series-grid--small { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (max-width: 900px) {
+  .series-grid--small { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
   .series-grid--small { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 /* 全站最后的小游戏卡（低调） */
