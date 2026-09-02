@@ -38,7 +38,7 @@ export const works = [
     eyebrow: '3D 数据可视化',
     href: '/earth/',
     image: '/assets/img/earth.webp',
-    summary: '常青藤大学在哪些城市？濒危世界遗产在哪里？最近一个月的地震火山、全球 500 强总部最多的城市——旋转这颗地球，答案尽在掌握。',
+    summary: '常青藤大学在哪些城市？濒危世界遗产在哪里？全球 500 强总部最多的城市——旋转这颗地球，答案尽在掌握。',
     tags: ['Three.js', 'globe.gl', '数据叙事'],
     status: '旗舰作品',
     github: 'https://github.com/historyreview-code/digital-earth-series',
@@ -142,7 +142,7 @@ export const notes = [
     summary: '从扫雷变体到策略引擎，记录一个小游戏如何在 AI 协作下快速进化。',
   },
   {
-    title: '一个会转的地球，装下了大学、地震、世界遗产和 500 强',
+    title: '一个会转的地球，装下了大学、世界遗产和 500 强',
     date: '2026-08-16',
     category: '实践手记',
     href: '/notes/2026-08-16-digital-earth-series.html',
