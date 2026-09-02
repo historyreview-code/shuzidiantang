@@ -376,13 +376,15 @@ body.intro-hold .hero-side { animation-play-state: paused; }
 .hero-title {
   margin: 0 0 26px;
   font-family: var(--title-font);
-  font-size: clamp(3.2rem, 8.4vw, 6.8rem);
+  font-size: clamp(3rem, 8vw, 6.4rem);
   font-weight: 400;
   line-height: 1.04;
   letter-spacing: 0.02em;
   color: var(--ink);
+  white-space: nowrap;
 }
 .hero-title .accent {
+  color: var(--amber);
   display: inline-block;
   padding-bottom: 0.06em;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M3 8.5 C 28 3.5, 58 3.5, 117 7.5' fill='none' stroke='%23b4551e' stroke-width='5.5' stroke-linecap='round' opacity='0.5'/%3E%3C/svg%3E") bottom / 100% 0.3em no-repeat;
