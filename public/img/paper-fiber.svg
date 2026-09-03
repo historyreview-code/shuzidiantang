@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="280" height="280">
-  <!-- 手工纸纹：双色纤维细点（feTurbulence）+ 稀疏长纤维曲线；280px 平铺 -->
+  <!-- 手工纸底：双色纤维细点（feTurbulence），280px 平铺。画作在 ink-wash.svg -->
   <filter id="d">
     <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" seed="7"/>
     <feColorMatrix type="matrix" values="0 0 0 0 0.36 0 0 0 0 0.31 0 0 0 0 0.23 0 0 0 0.28 0"/>
@@ -10,16 +10,4 @@
     <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 0.98 0 0 0 0 0.91 0 0 0 0.18 0"/>
   </filter>
   <rect width="280" height="280" filter="url(#l)"/>
-  <g fill="none" stroke-linecap="round" stroke-width="1.1">
-    <path d="M12 44 Q 92 60 156 36" stroke="rgba(120,104,74,.14)"/>
-    <path d="M180 18 Q 232 40 272 30" stroke="rgba(120,104,74,.11)"/>
-    <path d="M30 128 Q 110 112 170 136" stroke="rgba(120,104,74,.13)"/>
-    <path d="M196 108 Q 240 128 276 118" stroke="rgba(255,252,240,.20)"/>
-    <path d="M8 214 Q 80 232 142 210" stroke="rgba(120,104,74,.13)"/>
-    <path d="M168 196 Q 228 214 270 202" stroke="rgba(120,104,74,.10)"/>
-    <path d="M52 268 Q 120 252 188 270" stroke="rgba(255,252,240,.17)"/>
-    <path d="M210 262 Q 248 252 279 264" stroke="rgba(120,104,74,.12)"/>
-    <path d="M96 84 Q 130 74 164 88" stroke="rgba(120,104,74,.09)"/>
-    <path d="M22 170 Q 60 160 98 174" stroke="rgba(255,252,240,.15)"/>
-  </g>
 </svg>
