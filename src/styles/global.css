@@ -40,6 +40,15 @@
   unicode-range: U+52B3, U+4F26, U+65AF, U+5B9E, U+9A8C, U+5BA4;
 }
 
+/* 片头「纸上殿堂」书法体：主标题 + 匾额/副题用字（含 数字殿堂 四字） */
+@font-face {
+  font-family: "MaShanZhengFilm";
+  src: url("/assets/fonts/mashanzheng-intro.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
@@ -72,92 +81,19 @@ h1, h2, h3, p { margin-top: 0; }
 p { margin-bottom: 0; }
 ::selection { background: var(--amber); color: var(--paper); }
 
-/* ---------- 纸感开机动画（万墨归字：0/1 墨粒凝成主标，散作星尘） ---------- */
+/* ---------- 纸感开机片头（纸上殿堂：纸窗生长→速写蒙太奇→画门穿门→灯夜题字） ---------- */
 .paper-intro {
   position: fixed;
   inset: 0;
   z-index: 90;
-  display: grid;
-  place-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(680px 500px at 50% 44%, #fbf6e9, transparent 70%),
-    var(--paper-2);
+  background: #05070c; /* 放映现场的暗，片头第一帧即纸窗光圈 */
   opacity: 1;
-  transition: opacity 0.55s ease;
+  transition: opacity 0.8s ease;
 }
 .paper-intro.lift { opacity: 0; }
-.paper-intro canvas { position: absolute; inset: 0; }
-.intro-center {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-}
-.intro-stack {
-  position: relative;
-  display: grid;
-  justify-items: center;
-}
-.intro-title-row { display: flex; align-items: center; }
-/* 隐形 DOM 主标只负责排版与下划线定位，字形由 canvas 粒子呈现；
-   排版属性与 .hero-title 完全一致（两行错开），粒子因此聚合在首页主标题的原位 */
-.intro-title {
-  display: block;
-  font-family: var(--title-font);
-  font-size: 1em;
-  font-weight: 400;
-  line-height: 1.06;
-  letter-spacing: 0.02em;
-  color: var(--ink);
-  visibility: hidden;
-}
-.intro-title .t-row { display: block; }
-.intro-title .t-row2 { margin-left: 1.02em; }
-.intro-title .accent { color: var(--amber); }
-/* 主标下的主题词：数字 · AI · 探索（呼应站点 slogan） */
-.intro-kw {
-  margin-top: 0.4em;
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: 0.205em;
-  letter-spacing: 0.5em;
-  color: var(--ink-2);
-  opacity: 0;
-  white-space: nowrap;
-}
-.intro-kw i { font-style: normal; color: var(--amber); }
-.intro-kw.go {
-  transition: opacity 0.55s ease, letter-spacing 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  opacity: 0.92;
-  letter-spacing: 0.17em;
-}
-.intro-cap {
-  margin-top: 0.8em;
-  font-family: var(--mono);
-  font-size: max(10px, 0.105em);
-  letter-spacing: 0.3em;
-  color: var(--ink-3);
-  opacity: 0;
-  white-space: nowrap;
-}
-.intro-cap.go { transition: opacity 0.5s ease; opacity: 0.85; }
-.intro-uline {
-  position: absolute;
-  height: 0.055em;
-  border-radius: 999px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M3 8.5 C 28 3.5, 58 3.5, 117 7.5' fill='none' stroke='%23b4551e' stroke-width='5.5' stroke-linecap='round' opacity='0.55'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
-  transform: scaleX(0);
-  transform-origin: left center;
-  opacity: 0;
-}
-.intro-uline.go { animation: intro-ulx 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s forwards; }
-@keyframes intro-ulx {
-  from { transform: scaleX(0); opacity: 1; }
-  to { transform: scaleX(1); opacity: 1; }
-}
-/* 开屏期间按住首屏入场并锁定滚动；粒子散场、纸面升起时再放行逐项浮现。
-   主标本身不放行——它须提前静止在粒子聚合的原位，完成无缝交接 */
+.paper-intro canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+/* 开屏期间按住首屏入场并锁定滚动；灯夜题字落定、纸面升起时再放行逐项浮现 */
 body.intro-hold { overflow: hidden; }
 body.intro-hold .hero-lead,
 body.intro-hold .hero-scroll,
