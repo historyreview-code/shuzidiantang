@@ -13,6 +13,7 @@ const workCard = (w) => ({
   note: w.summary,
   img: w.image,
   href: w.href,
+  external: w.external || undefined,
 });
 const travelCard = {
   name: '旅行实验室',
@@ -203,7 +204,7 @@ const carousel = [
         img.style.opacity = '0';
         setTimeout(function () {
           img.alt = it.name + '预览';
-          img.onload = function () { img.style.opacity = '1'; };
+          img.onload = img.onerror = function () { img.style.opacity = '1'; }; // 加载失败也复位，避免卡片空白
           img.src = it.img;
           link.href = it.href;
           if (it.external) {
