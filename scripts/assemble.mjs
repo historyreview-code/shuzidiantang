@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 数字殿堂 · 组装脚本
+ * 劳伦斯实验室 · 组装脚本
  * 把新版 Astro 主站与各作品的最新产物组装进 dist/，供 GitHub Pages / EdgeOne Pages 发布。
  *
  * 结构：
@@ -461,7 +461,7 @@ function buildInvestRss(items) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>数字殿堂 · 投资研究（暗室）</title>
+    <title>劳伦斯实验室 · 投资研究（暗室）</title>
     <link>https://shuzidiantang.com/hidden/invest/</link>
     <description>馆主的个人投资学习与研究笔记：个股深度、板块全景、行业快评与每日晨报。仅限受邀访客，不构成投资建议。</description>
     <language>zh-CN</language>

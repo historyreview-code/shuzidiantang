@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-数字殿堂 · 手记「朋友圈分享包」生成脚本
+劳伦斯实验室 · 手记「朋友圈分享包」生成脚本
 =========================================
 
 为 notes/ 下的每一篇公开手记：
@@ -157,14 +157,14 @@ def wrap_title(title):
 
 
 def draw_seal(img, x0, y0, size=62):
-    """绘制琥珀「数字」朱印（双框 + 二字）。"""
+    """绘制琥珀「劳」字朱印（双框 + 单字）。"""
     d = ImageDraw.Draw(img)
     d.rounded_rectangle([x0, y0, x0 + size, y0 + size], radius=12,
                         outline=CYAN, width=3)
     d.rounded_rectangle([x0 + 7, y0 + 7, x0 + size - 7, y0 + size - 7],
                         radius=7, outline=CYAN, width=1)
-    font = load_font("cn", int(size * 0.52))
-    draw_centered(d, "数字", font, CYAN, x0 + size / 2, y0 + size / 2 + 1)
+    font = load_font("cn", int(size * 0.62))
+    draw_centered(d, "劳", font, CYAN, x0 + size / 2, y0 + size / 2 + 1)
     return size, size
 
 
@@ -279,7 +279,7 @@ def collect_notes():
 def make_copy(note):
     """生成朋友圈文案 (标准版 + 短版 + 备案期可选结尾)。"""
     url = "%s/notes/%s" % (SITE, note["file"])
-    standard = "%s\n%s\n全文在数字殿堂手记频道 👉 %s" % (
+    standard = "%s\n%s\n全文在劳伦斯实验室手记频道 👉 %s" % (
         note["title"], note["desc"], url)
     short = "%s｜新一篇手记，全文 👉 %s" % (note["title"], url)
     backup_note = "（海外节点加载稍慢，备案通过后提速）"

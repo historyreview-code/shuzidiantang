@@ -40,7 +40,7 @@
   unicode-range: U+52B3, U+4F26, U+65AF, U+5B9E, U+9A8C, U+5BA4;
 }
 
-/* 片头「纸上殿堂」书法体：主标题 + 匾额/副题用字（含 数字殿堂 四字） */
+/* 片头「纸上实验室」书法体：主标题 + 匾额用字（劳伦斯实验室） */
 @font-face {
   font-family: "MaShanZhengFilm";
   src: url("/assets/fonts/mashanzheng-intro.woff2") format("woff2");
@@ -59,20 +59,49 @@ body {
   background:
     radial-gradient(1100px 720px at 16% -8%, #fbf6e9, transparent 62%),
     radial-gradient(900px 640px at 108% 6%, var(--amber-faint), transparent 56%),
+    radial-gradient(460px 340px at -6% 44%, rgba(180, 85, 30, 0.09), transparent 70%),   /* 时间渍 · 左缘 */
+    radial-gradient(400px 320px at 106% 74%, rgba(180, 85, 30, 0.075), transparent 70%), /* 时间渍 · 右下 */
     var(--paper);
   font-family: var(--sans);
   line-height: 1.7;
 }
 
-/* 纸纤维噪点 */
+/* 放映厅暗角 + 手工纸纹（纤维细点 + 长纤维曲线，280px 平铺） */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background:
+    radial-gradient(115% 90% at 50% 42%, transparent 48%, rgba(38, 34, 26, 0.17) 100%),
+    url("/img/paper-fiber.svg");
+  background-size: cover, 280px 280px;
+}
+
+/* 纸上放映机：片头胶片颗粒的延续——8 帧/秒跳帧的老放映机颗粒，
+   大于视口 60% 留白保证跳帧不露边；multiply 下 10% 透明度，看得见的"放映中" */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -60%;
+  z-index: 80; /* 盖内容、让片头（z-index: 90） */
+  pointer-events: none;
+  background-image: url("/img/grain.png");
+  opacity: 0.10;
+  mix-blend-mode: multiply;
+  animation: grain-jump 0.95s steps(1, end) infinite;
+}
+@keyframes grain-jump {
+  0%    { transform: translate(0, 0); }
+  12.5% { transform: translate(-5%, 3%); }
+  25%   { transform: translate(3%, -6%); }
+  37.5% { transform: translate(-6%, -3%); }
+  50%   { transform: translate(5%, 5%); }
+  62.5% { transform: translate(-3%, 6%); }
+  75%   { transform: translate(6%, -5%); }
+  87.5% { transform: translate(-5%, -5%); }
+  100%  { transform: translate(0, 0); }
 }
 
 a { color: inherit; }
@@ -81,7 +110,7 @@ h1, h2, h3, p { margin-top: 0; }
 p { margin-bottom: 0; }
 ::selection { background: var(--amber); color: var(--paper); }
 
-/* ---------- 纸感开机片头（纸上殿堂：纸窗生长→速写蒙太奇→画门穿门→灯夜题字） ---------- */
+/* ---------- 纸感开机片头（纸上实验室：纸窗生长→速写蒙太奇→画门穿门→灯夜题字） ---------- */
 .paper-intro {
   position: fixed;
   inset: 0;
@@ -1381,6 +1410,7 @@ a.social-row:hover { color: var(--amber); }
 /* ---------- 动效降级 ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  body::after { animation: none; opacity: 0.07; } /* 胶片颗粒静止 */
   .button,
   .work-card,
   .timeline-item,

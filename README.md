@@ -1,4 +1,4 @@
-# 数字殿堂 · 总站门户
+# 劳伦斯实验室 · 总站门户
 
 > 一座收藏数字作品的殿堂 —— 地球厅 · 游戏厅 · 天文馆
 > 主域名：`shuzidiantang.com`（已上线腾讯云 EdgeOne Pages，ICP 备案：沪ICP备2026042531号）· 海外兜底：GitHub Pages
@@ -6,7 +6,7 @@
 ## 目录结构
 
 ```
-数字殿堂/
+劳伦斯实验室/
 ├── index.html            # 首页（手记文章流 + 作品展厅）
 ├── notes/                # 手记频道（公开文章，文件名 YYYY-MM-DD- 开头，自动列表+RSS+sitemap）
 ├── assets/style.css      # 比特辉光主题（深空黑蓝 · 比特青 × 算力紫）
@@ -87,7 +87,7 @@ CF_PROJECT_NAME   # Pages 项目名（如 shuzidiantang）
 > `workflow` 权限暂未入库。启用自动部署需在本地执行一次：
 > ```bash
 > gh auth refresh -h github.com -s workflow   # 浏览器授权一次
-> cd 数字殿堂 && git add .github && git commit -m "启用 CI" && git push
+> cd 劳伦斯实验室 && git add .github && git commit -m "启用 CI" && git push
 > ```
 
 ### 访问计数器（Vercount，已接入）

@@ -1,4 +1,4 @@
-/* 纸上殿堂 · 片头放映本体（外置脚本，全站共享浏览器缓存）
+/* 纸上实验室 · 片头放映本体（外置脚本，全站共享浏览器缓存）
    由 BaseLayout 内联门控在「本会话首次访问 / ?intro=1 / ?freeze=秒」时动态加载；
    门控负责 sessionStorage、减弱动效判定与超时兜底，本文件只负责放映。
    Canvas 2D 零依赖。 */
@@ -10,7 +10,7 @@
   var OPTS = window.__INTRO_OPTS || {};
   var FREEZE = OPTS.freeze != null ? OPTS.freeze : null;
   window.__INTRO_BOOTED = true;
-/* 纸上殿堂：毛边纸窗里的纸上电影 ——
+/* 纸上实验室：毛边纸窗里的纸上电影 ——
    纸窗光圈 → 一粒墨生根开花 → 速写本蒙太奇（站内六件作品）→ 墨画宫门 →
    推镜穿门 → 孔明灯灯夜 + 手写题字 → 升起交接首页。Canvas 2D 零依赖。 */
 var sc = document.createElement('canvas');
@@ -508,7 +508,7 @@ function drawDoorScene(t, glowBoost) {
         g.fillStyle = GOLD;
         g.font = u * 0.062 + 'px MaShanZhengFilm, "Noto Serif SC", serif';
         g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.fillText('殿堂', 0, dy - u * 0.178);
+        g.fillText('劳伦斯', 0, dy - u * 0.178);
       }
       g.globalAlpha = 1;
     }
@@ -626,9 +626,9 @@ function drawTitle(t) {
   g.globalAlpha = 1;
   var kb = easeOutCubic(norm(t, TL.titleStart + 1.35, TL.titleStart + 1.9));
   if (kb > 0) {
-    var sub1 = '数字殿堂', sub2 = 'S H U Z I D I A N T A N G . C O M';
-    var f1 = Math.max(16, px * 0.24), f2 = Math.max(10, px * 0.115);
-    g.font = f1 + 'px MaShanZhengFilm, "Noto Serif SC", serif';
+    var sub1 = '数字 · AI · 探索', sub2 = 'S H U Z I D I A N T A N G . C O M';
+    var f1 = Math.max(15, px * 0.20), f2 = Math.max(10, px * 0.115);
+    g.font = f1 + 'px "Noto Serif SC", "Songti SC", serif';
     var w1 = g.measureText(sub1).width;
     g.font = f2 + 'px "SF Mono","Cascadia Code",Consolas,monospace';
     var w2 = g.measureText(sub2).width;
@@ -636,7 +636,7 @@ function drawTitle(t) {
     g.globalAlpha = kb * 0.92 * fadeOut;
     g.textAlign = 'left';
     g.fillStyle = AMBER_L;
-    g.font = f1 + 'px MaShanZhengFilm, "Noto Serif SC", serif';
+    g.font = f1 + 'px "Noto Serif SC", "Songti SC", serif';
     g.fillText(sub1, sx0, syy);
     g.fillStyle = 'rgba(216,224,240,0.55)';
     g.font = f2 + 'px "SF Mono","Cascadia Code",Consolas,monospace';
@@ -917,7 +917,7 @@ makePaperTile(); makeGrains(); makeVignette(); buildWorld(); tree = genTree(2026
 // 等书法字体就绪再开机（1.6s 超时回落衬线，片头仍完整）
 var F = new FontFace('MaShanZhengFilm', 'url(/assets/fonts/mashanzheng-intro.woff2)');
 F.load().then(function (f) { document.fonts.add(f); fontReady = true; }).catch(function () { }).finally(function () {
-  try { document.fonts.load('64px MaShanZhengFilm', '劳伦斯实验室数字殿堂').then(boot, boot); } catch (e) { boot(); }
+  try { document.fonts.load('64px MaShanZhengFilm', '劳伦斯实验室').then(boot, boot); } catch (e) { boot(); }
 });
 setTimeout(boot, 1600);
 })();
