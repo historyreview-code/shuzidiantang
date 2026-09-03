@@ -8,6 +8,8 @@ const urls = [
   ['/earth/', 'weekly', '0.9'],
   ['/games/', 'monthly', '0.8'],
   ['/cosmos/', 'monthly', '0.7'],
+  ['/maps/', 'monthly', '0.6'],
+  ['/novels/', 'monthly', '0.6'],
   ['/clay/', 'monthly', '0.7'],
   ['/cad/', 'monthly', '0.7'],
   ['/dataism/', 'monthly', '0.7'],

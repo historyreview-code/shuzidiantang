@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /hidden/
-
-Sitemap: https://shuzidiantang.com/sitemap.xml
