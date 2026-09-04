@@ -363,6 +363,46 @@ const placeholderPublic =
   console.log(`  手记页 og:image 已注入: ${ogCount} 篇`);
 }
 
+// 手记页脚「上一篇 / 下一篇」互相导流：
+//   publicItems 按日期倒序（最新在前）→ 上一篇 = 更新的一篇，下一篇 = 更早的一篇。
+//   注入 dist 产物（源码保持干净），新篇发布零维护；样式随 nav 一次注入该篇 <style>。
+{
+  const PN_CSS = `
+  .pn-nav { display:flex; gap:14px; margin-top:36px; }
+  .pn-item { flex:1; display:block; padding:14px 16px; border:1px solid var(--line); border-radius:10px;
+    background:var(--card); text-decoration:none; color:var(--ink);
+    transition:border-color .16s ease, transform .16s ease; }
+  a.pn-item:hover { border-color:var(--amber); transform:translateY(-2px); }
+  .pn-dir { display:block; color:var(--ink-3); font-family:var(--mono); font-size:.68rem;
+    letter-spacing:.1em; margin-bottom:4px; }
+  .pn-title { font-family:var(--serif); font-size:.95rem; line-height:1.5; }
+  .pn-older { text-align:right; }
+  .pn-empty { visibility:hidden; }
+  @media (max-width:640px){ .pn-nav{flex-direction:column;} .pn-older{text-align:left;} }
+`;
+  const distNotes = path.join(DIST, 'notes');
+  let pnCount = 0;
+  for (let i = 0; i < publicItems.length; i++) {
+    const it = publicItems[i];
+    const p = path.join(distNotes, it.file);
+    if (!existsSync(p)) continue;
+    let t = readFileSync(p, 'utf8');
+    if (t.includes('class="pn-nav"')) continue;
+    const newer = i > 0 ? publicItems[i - 1] : null;
+    const older = i + 1 < publicItems.length ? publicItems[i + 1] : null;
+    const cell = (sib, dir, cls) => sib
+      ? `<a class="pn-item ${cls}" href="${sib.file}"><span class="pn-dir">${dir}</span><span class="pn-title">${escapeHtml(sib.title)}</span></a>`
+      : `<span class="pn-item pn-empty" aria-hidden="true"></span>`;
+    const nav = `<nav class="pn-nav" aria-label="相邻手记">${cell(newer, '← 上一篇 · 更新', 'pn-newer')}${cell(older, '下一篇 · 更早 →', 'pn-older')}</nav>`;
+    if (!t.includes('<a class="note-back"')) continue;
+    t = t.replace('</style>', PN_CSS + '</style>');
+    t = t.replace('<a class="note-back"', nav + '\n    <a class="note-back"');
+    writeFileSync(p, t);
+    pnCount++;
+  }
+  console.log(`  手记页 prev/next 已注入: ${pnCount} 篇`);
+}
+
 if (injectFeed(path.join(DIST, 'index.html'), 'NOTES_FEED', renderFeedItems(publicItems, 'notes/', 12, placeholderPublic))) {
   console.log(`  首页手记列表已生成: ${Math.min(publicItems.length, 12)} 篇 (最新在前)`);
 }
