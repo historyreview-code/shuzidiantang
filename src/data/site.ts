@@ -147,6 +147,13 @@ export const travelSeries = [
 
 export const notes = [
   {
+    title: '我又用上了 Kimi',
+    date: '2026-09-04',
+    category: 'AI 手记',
+    href: '/notes/2026-09-04-kimi.html',
+    summary: '闲鱼上居然有开通 Kimi Coding Plan 的服务，亲测可用；本站开屏片头就是 Kimi 按指令实现的。',
+  },
+  {
     title: '转身就忘的事，值得当回事——三分钟记忆自测小工具的由来',
     date: '2026-09-02',
     category: '实践手记',
