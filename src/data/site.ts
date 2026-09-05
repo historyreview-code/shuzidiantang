@@ -80,6 +80,16 @@ export const works = [
     status: '4 阶段滑杆',
   },
   {
+    id: 'mindverse',
+    title: 'mindverse · 我的精神世界',
+    eyebrow: '3D 漫游 · 阅读画像',
+    href: '/mindverse/',
+    image: '/assets/img/mindverse.webp',
+    summary: '微信读书长成一座可以走进去的世界：心选书籍生成浮岛，灯火即书摘。黄昏星夜黎明三种时刻，WASD 漫游，明信片随手生成（演示数据）。',
+    tags: ['Three.js', '3D 漫游', '数据叙事'],
+    status: '站内新作',
+  },
+  {
     id: 'huanghe',
     title: '黄河 · 改道两千年',
     eyebrow: '交互图志 · 历史地理',

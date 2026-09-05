@@ -22,7 +22,7 @@ const DIST = path.join(ROOT, 'dist');
 const DEFAULT_LOCAL_EARTH_REPO = path.resolve(ROOT, '..', '数字地球系列');
 
 const LEGACY_STATIC_PATHS = [
-  'assets', 'games', 'cosmos', 'maps', 'novels',
+  'assets', 'games', 'cosmos', 'maps', 'novels', 'mindverse',
 ];
 
 function run(cmd, cwd = ROOT) {

@@ -10,6 +10,7 @@ const urls = [
   ['/cosmos/', 'monthly', '0.7'],
   ['/maps/', 'monthly', '0.6'],
   ['/maps/huanghe/', 'monthly', '0.7'],
+  ['/mindverse/', 'monthly', '0.7'],
   ['/novels/', 'monthly', '0.6'],
   ['/clay/', 'monthly', '0.7'],
   ['/cad/', 'monthly', '0.7'],
