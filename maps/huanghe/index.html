@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黄河 · 改道两千年</title>
+<meta name="description" content="善淤、善决、善徙。前602年至1947年，黄河决口1593次、较大改道26次。一次滚动与拖动，看完这条大河两千年的改道史。">
+<meta property="og:title" content="黄河 · 改道两千年">
+<meta property="og:description" content="前602—1947：1593次决口，26次较大改道，六大迁徙。一份可交互的黄河改道图志。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23A63A2B'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%23F2EBDB' font-family='serif' font-weight='bold'%3E河%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><em>黄河</em>改道两千年</div>
+  <nav>
+    <a href="#story" class="keep">叙事</a>
+    <a href="#atlas">图鉴</a>
+    <a href="#table">一览</a>
+    <a href="#sources">来源</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-kicker">善淤<b>·</b>善决<b>·</b>善徙</div>
+  <div class="hero-row">
+    <h1>黄河</h1>
+    <span class="seal">善徙</span>
+  </div>
+  <p class="hero-sub">改道两千年<em>（前602—1947）</em></p>
+  <p class="hero-lede">华北平原的很大一部分，是黄河淤出来的。这条河不是流过平原——平原是它一次次改道的作品。往下滚，或者亲自拨动时间轴。</p>
+  <div class="proverb">三年两决口，百年一改道。</div>
+  <div class="hero-stats" id="hero-stats"></div>
+  <div class="hero-hint">↓ 从禹河故道开始</div>
+</section>
+
+<section id="story">
+  <div class="section-head">
+    <div class="zh">十次转身</div>
+    <p>从禹河故道到今天的大清河一线，黄河的每次改道都对应一个决口地点、一条新路、一个入海口。滚动屏幕，地图会跟着走到每一处。</p>
+  </div>
+  <div class="scrolly">
+    <div class="steps" id="steps"></div>
+    <div class="scrolly-map-col">
+      <div class="map-frame scrolly-map" id="scrolly-map">
+        <div class="map-note">示意底图 · 河道为文献概化</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="atlas">
+  <div class="section-head">
+    <div class="zh">图鉴 · 亲手拨两千年</div>
+    <p>点朝代按钮，或拖动时间轴：河道会按当年实际流路显影，废弃故道退为残影。「全览」可一次看尽所有河道。</p>
+  </div>
+  <div class="explorer">
+    <div class="explorer-controls">
+      <div class="era-btns" id="era-btns"></div>
+      <div class="slider-block">
+        <input type="range" id="year-slider" min="-800" max="2026" step="1" value="2026">
+        <div class="slider-ticks" id="slider-ticks"></div>
+      </div>
+      <div class="explorer-actions">
+        <button class="btn" id="btn-play">播放两千年</button>
+        <button class="btn ghost" id="btn-atlas">全览河道</button>
+        <button class="btn ghost" id="btn-view">全景视角</button>
+      </div>
+      <div class="toggles" id="toggles"></div>
+    </div>
+    <div class="explorer-grid">
+      <div class="map-frame" id="explorer-map">
+        <div class="map-note">滚轮缩放 · 拖拽平移 · 悬停查看</div>
+      </div>
+      <div class="side-col">
+        <div class="event-card" id="event-card"></div>
+        <div id="legend"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="table" class="appendix">
+  <div class="section-head">
+    <div class="zh">改道一览</div>
+    <p>通行说法「六大迁徙」指前602、公元11、1048、1194、1495（筑堤固淮）、1855六节；1128与1938两次人为决河，各书计入方式不一，本表单列。</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>年份</th><th>决口 / 事件</th><th>改道后入海</th><th>行用</th><th>性质</th></tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+  <p class="footnote">注：决口1593次、较大改道26次为黄河水利委员会统计口径（前602—1946），各家数字略有出入。</p>
+</section>
+
+<section id="sources" class="appendix">
+  <div class="section-head">
+    <div class="zh">来源与说明</div>
+    <p>本页所有古河道位置，均为依据文献记载做的概化示意，不是精确复原。制图取舍若有不当，欢迎指正。</p>
+  </div>
+  <ol class="sources" id="sources-list"></ol>
+</section>
+
+<footer>
+  黄河 · 改道两千年 —— 静态页面，无需联网加载底图（省界数据已随站打包）
+</footer>
+
+<script src="vendor/d3.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

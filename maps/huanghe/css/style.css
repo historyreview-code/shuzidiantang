@@ -1,0 +1,281 @@
+/* 善徙 · 黄河改道两千年 —— 纸上舆图风格 */
+:root {
+  --paper: #F2EBDB;
+  --paper-deep: #EAE0C9;
+  --ink: #2B251C;
+  --ink-soft: #5C5342;
+  --faint: #B0A385;
+  --line: #D6C9AB;
+  --sea: #DCE4DE;
+  --vermilion: #A63A2B;
+  --bronze: #8A5A44;
+  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.9;
+}
+::selection { background: var(--vermilion); color: var(--paper); }
+
+/* ---------- 顶栏 ---------- */
+.topbar {
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 28px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font-size: 15px; letter-spacing: .12em; font-weight: 700; }
+.brand em { font-style: normal; color: var(--vermilion); margin-right: 8px; }
+.topbar nav { display: flex; gap: 22px; }
+.topbar nav a {
+  color: var(--ink-soft); text-decoration: none;
+  font-family: var(--sans); font-size: 13px; letter-spacing: .1em;
+}
+.topbar nav a:hover { color: var(--vermilion); }
+
+/* ---------- 英豪区 ---------- */
+.hero {
+  min-height: 100vh; position: relative;
+  max-width: 1200px; margin: 0 auto; padding: 150px 28px 60px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.hero-kicker {
+  font-family: var(--sans); font-size: 14px; letter-spacing: .5em;
+  color: var(--ink-soft); margin-bottom: 18px;
+}
+.hero-kicker b { color: var(--vermilion); font-weight: 400; padding: 0 2px; }
+.hero-row { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; }
+.hero h1 {
+  font-size: clamp(96px, 17vw, 210px);
+  font-weight: 900; letter-spacing: .06em; line-height: 1.05;
+}
+.seal {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; flex: none; align-self: center;
+  background: var(--vermilion); color: var(--paper);
+  font-size: 21px; font-weight: 700; line-height: 1.1;
+  writing-mode: vertical-rl; letter-spacing: .18em;
+  border-radius: 3px; transform: rotate(-2.5deg);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--paper) 55%, transparent);
+}
+.hero-sub { margin-top: 26px; font-size: 19px; letter-spacing: .06em; }
+.hero-sub em { font-style: normal; color: var(--vermilion); }
+.hero-lede {
+  margin-top: 14px; max-width: 560px;
+  color: var(--ink-soft); font-size: 15.5px;
+}
+.proverb {
+  position: absolute; right: 34px; top: 50%; transform: translateY(-56%);
+  writing-mode: vertical-rl; letter-spacing: .55em;
+  font-size: 16px; color: var(--ink-soft);
+  border-right: 1px solid var(--line); padding-right: 16px; height: 300px;
+}
+.hero-stats {
+  margin-top: 64px; display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--ink); 
+}
+.stat { padding: 18px 8px 0 0; }
+.stat + .stat { padding-left: 22px; border-left: 1px solid var(--line); }
+.stat-num { font-size: 34px; font-weight: 700; line-height: 1.2; }
+.stat-label { font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); letter-spacing: .06em; }
+.hero-hint {
+  margin-top: 56px; font-family: var(--sans); font-size: 12.5px;
+  color: var(--faint); letter-spacing: .3em;
+}
+
+/* ---------- 通用地图框 ---------- */
+.map-frame {
+  position: relative; background: var(--sea);
+  border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
+}
+.map-frame svg { display: block; }
+.map-note {
+  position: absolute; right: 10px; bottom: 8px; z-index: 4;
+  font-family: var(--sans); font-size: 10.5px; color: #7d8a83;
+  letter-spacing: .05em; pointer-events: none;
+}
+
+/* 地图元素 */
+.prov { fill: #F5EFDF; stroke: #C7B892; stroke-width: .6; }
+.prov-label { fill: #B3A78A; font-family: var(--sans); font-size: 13px; letter-spacing: .5em; text-anchor: middle; }
+.sea-label { fill: #93A69C; font-family: var(--sans); font-size: 14px; letter-spacing: .6em; text-anchor: middle; }
+.ref { fill: none; stroke-linecap: round; }
+.lake { fill: #CBDAD3; stroke: #9FB4A6; stroke-width: .7; }
+.dike { fill: none; stroke-width: 2; stroke-dasharray: 9 4; }
+.course {
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+  cursor: pointer; vector-effect: non-scaling-stroke;
+}
+.course.hover { stroke-width: 4.5px !important; stroke-opacity: 1; }
+.course-label {
+  font-family: var(--sans); font-size: 11.5px; letter-spacing: .18em; text-anchor: middle;
+  paint-order: stroke; stroke: var(--paper); stroke-width: 3.5px; cursor: pointer;
+}
+.breach .core { fill: var(--vermilion); stroke: var(--paper); stroke-width: 1; }
+.breach .pulse { fill: none; stroke: var(--vermilion); opacity: 0; }
+.breach-label {
+  font-family: var(--sans); font-size: 11px; fill: #4A4234;
+  paint-order: stroke; stroke: #EDE9DC; stroke-width: 3px;
+}
+.city circle { fill: var(--ink); opacity: .72; }
+.city text { font-family: var(--sans); font-size: 11px; fill: #4A4234; paint-order: stroke; stroke: #EDE9DC; stroke-width: 3px; }
+.city.tier1 circle { r: 3; } .city.tier1 text { font-size: 12px; font-weight: 600; }
+.callout-line { stroke: var(--vermilion); stroke-width: 1; stroke-dasharray: 2 2; }
+.callout-dot { fill: var(--vermilion); }
+.callout-text .t1 { font-family: var(--sans); font-weight: 700; font-size: 13px; fill: var(--vermilion); }
+.callout-text .t2 { font-family: var(--sans); font-size: 11px; fill: var(--ink-soft); paint-order: stroke; stroke: #EDE9DC; stroke-width: 3px; }
+.map-tip {
+  position: absolute; z-index: 8; pointer-events: none; opacity: 0;
+  background: rgba(43, 37, 28, .94); color: #F2EBDB;
+  padding: 8px 11px; border-radius: 3px; max-width: 230px;
+  font-family: var(--sans); font-size: 12px; line-height: 1.5;
+  transition: opacity .15s;
+}
+.map-tip b { display: block; margin-bottom: 2px; letter-spacing: .04em; }
+.map-tip span { display: block; font-size: 11px; opacity: .82; }
+
+/* ---------- 滚动叙事 ---------- */
+.section-head { max-width: 1200px; margin: 0 auto; padding: 90px 28px 34px; }
+.section-head .zh { font-size: 34px; font-weight: 800; letter-spacing: .1em; }
+.section-head .zh::after { content: ""; display: block; width: 46px; border-top: 3px solid var(--vermilion); margin-top: 14px; }
+.section-head p { margin-top: 14px; color: var(--ink-soft); font-size: 15px; max-width: 640px; }
+.scrolly {
+  max-width: 1200px; margin: 0 auto; padding: 0 28px 60px;
+  display: grid; grid-template-columns: minmax(320px, 460px) 1fr; gap: 52px;
+  align-items: start;
+}
+.steps { display: block; }
+.step { padding: 16vh 0; opacity: .3; transition: opacity .45s; }
+.step.active { opacity: 1; }
+.step-kicker {
+  display: flex; gap: 14px; align-items: baseline;
+  font-family: var(--sans); font-size: 12.5px; letter-spacing: .18em; color: var(--vermilion);
+}
+.step-kicker span + span { color: var(--ink-soft); }
+.step-title { font-size: 30px; font-weight: 800; letter-spacing: .05em; margin: 10px 0 18px; }
+.step p { font-size: 16px; line-height: 2.05; color: #3A342A; }
+.step p + p { margin-top: 12px; }
+.scrolly-map-col {
+  position: sticky; top: 74px;
+  height: calc(100vh - 100px); min-height: 480px;
+}
+.scrolly-map { height: 100%; }
+
+/* ---------- 交互探索 ---------- */
+.explorer { max-width: 1280px; margin: 0 auto; padding: 0 28px 80px; }
+.explorer-controls { margin-top: 8px; }
+.era-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.era-btn {
+  font-family: var(--serif); background: none; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 3px;
+  padding: 7px 13px 6px; text-align: left; color: var(--ink);
+  transition: all .18s;
+}
+.era-btn .era-year { display: block; font-size: 15px; font-weight: 700; line-height: 1.3; }
+.era-btn .era-short { display: block; font-family: var(--sans); font-size: 10.5px; color: var(--ink-soft); letter-spacing: .12em; }
+.era-btn:hover { border-color: var(--ink-soft); }
+.era-btn.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.era-btn.active .era-short { color: rgba(242, 235, 219, .75); }
+
+.slider-block { margin: 30px 0 8px; position: relative; }
+#year-slider { width: 100%; accent-color: var(--vermilion); height: 26px; cursor: ew-resize; }
+.slider-ticks { position: relative; height: 30px; font-family: var(--sans); font-size: 10px; color: var(--faint); }
+.tick { position: absolute; transform: translateX(-50%); text-align: center; white-space: nowrap; }
+.tick i { display: block; width: 1px; height: 5px; background: var(--faint); margin: 0 auto 2px; }
+
+.explorer-actions { display: flex; gap: 10px; margin: 18px 0 14px; flex-wrap: wrap; }
+.btn {
+  font-family: var(--sans); font-size: 13px; letter-spacing: .14em;
+  padding: 9px 20px; border-radius: 3px; cursor: pointer; transition: all .18s;
+  background: var(--vermilion); color: var(--paper); border: 1px solid var(--vermilion);
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: none; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover, .btn.ghost.on { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.toggles { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.chip { font-family: var(--sans); font-size: 12px; color: var(--ink-soft); cursor: pointer; }
+.chip input { display: none; }
+.chip span {
+  display: inline-block; padding: 4px 11px; border: 1px solid var(--line);
+  border-radius: 999px; transition: all .15s; user-select: none;
+}
+.chip input:checked + span { background: var(--paper-deep); border-color: var(--bronze); color: var(--ink); }
+
+.explorer-grid { display: grid; grid-template-columns: 1fr 320px; gap: 26px; align-items: stretch; }
+#explorer-map { height: 74vh; min-height: 520px; }
+.side-col { display: flex; flex-direction: column; gap: 18px; min-height: 0; }
+
+.event-card {
+  background: var(--paper-deep); border: 1px solid var(--line); border-radius: 4px;
+  padding: 20px 20px 16px; overflow-y: auto;
+}
+.card-era { font-family: var(--sans); font-size: 12.5px; letter-spacing: .25em; color: var(--vermilion); }
+.card-title { font-size: 22px; font-weight: 800; margin: 6px 0 14px; letter-spacing: .04em; }
+.card-meta { display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; }
+.card-meta > div { display: flex; gap: 10px; font-family: var(--sans); }
+.card-meta dt { flex: none; width: 34px; font-size: 11px; color: var(--faint); letter-spacing: .2em; padding-top: 2px; }
+.card-meta dd { font-size: 12.5px; color: var(--ink); line-height: 1.6; }
+.tag-nature { }
+.tag-nature.is-renwei, dd.nature-人为 { color: var(--vermilion); }
+.card-brief { margin-top: 12px; font-size: 13.5px; line-height: 1.95; color: #453E31; }
+
+#legend { overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px; }
+.legend-item { display: flex; gap: 10px; padding: 7px 6px; border-radius: 3px; cursor: default; }
+.legend-item:hover { background: var(--paper-deep); }
+.swatch { flex: none; width: 22px; height: 0; border-top: 3px solid; margin-top: 10px; }
+.legend-name { font-size: 13.5px; font-weight: 700; line-height: 1.5; }
+.legend-name em { font-style: normal; font-family: var(--sans); font-weight: 400; font-size: 10.5px; color: var(--faint); margin-left: 6px; }
+.legend-sub { font-family: var(--sans); font-size: 11px; color: var(--ink-soft); line-height: 1.5; }
+
+/* ---------- 附录 ---------- */
+.appendix { max-width: 1200px; margin: 0 auto; padding: 0 28px 90px; }
+.table-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+table { width: 100%; border-collapse: collapse; min-width: 760px; }
+th {
+  font-family: var(--sans); font-weight: 400; font-size: 12px; letter-spacing: .2em;
+  color: var(--ink-soft); text-align: left; padding: 14px 12px 10px;
+  border-bottom: 1px solid var(--line);
+}
+td { padding: 13px 12px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+.td-year { font-weight: 700; white-space: nowrap; }
+.td-year em { display: block; font-style: normal; font-family: var(--sans); font-size: 11px; color: var(--ink-soft); font-weight: 400; }
+.tag { font-family: var(--sans); font-size: 11px; padding: 2px 9px; border-radius: 999px; letter-spacing: .15em; white-space: nowrap; }
+.tag-自然 { background: var(--paper-deep); color: var(--bronze); border: 1px solid var(--bronze); }
+.tag-人为 { background: var(--vermilion); color: var(--paper); border: 1px solid var(--vermilion); }
+.tag-治理 { background: none; color: var(--ink-soft); border: 1px solid var(--line); }
+.footnote { margin-top: 14px; font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
+.sources { margin-top: 10px; padding-left: 20px; font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); line-height: 2.1; }
+
+footer {
+  border-top: 1px solid var(--line); padding: 34px 28px 44px; text-align: center;
+  font-family: var(--sans); font-size: 12px; color: var(--faint); letter-spacing: .12em;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 920px) {
+  .topbar { padding: 10px 16px; }
+  .topbar nav { gap: 14px; }
+  .topbar nav a:not(.keep) { display: none; }
+  .hero { padding: 110px 20px 40px; }
+  .proverb { display: none; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
+  .stat + .stat { padding-left: 16px; }
+  .scrolly { display: flex; flex-direction: column; gap: 0; padding: 0 16px 40px; }
+  .scrolly-map-col { order: -1; top: 58px; height: 46vh; min-height: 340px; margin-bottom: 8px; z-index: 5; }
+  .scrolly-map { min-height: 0; }
+  .step { padding: 8vh 0; }
+  .step-title { font-size: 24px; }
+  .explorer-grid { grid-template-columns: 1fr; }
+  #explorer-map { height: 58vh; min-height: 380px; }
+  .era-btns { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 6px; }
+  .era-btn { flex: none; }
+}

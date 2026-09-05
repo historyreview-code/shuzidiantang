@@ -80,6 +80,16 @@ export const works = [
     status: '4 阶段滑杆',
   },
   {
+    id: 'huanghe',
+    title: '黄河 · 改道两千年',
+    eyebrow: '交互图志 · 历史地理',
+    href: '/maps/huanghe/',
+    image: '/assets/img/huanghe.webp',
+    summary: '善淤、善决、善徙：前602—1947 年 1593 次决口、26 次较大改道。滚动看叙事，拨时间轴看河道显影，一条河写给华北平原的传记。',
+    tags: ['D3', '历史地图', '数据叙事'],
+    status: '站内新作',
+  },
+  {
     // 历史地理可视化：暂列作品流，未来可能单独成栏目
     id: 'shanghai-time-map',
     title: '上海时间地图',
