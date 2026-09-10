@@ -18,7 +18,6 @@ const urls = [
   ['/travel/', 'monthly', '0.7'],
   ['/travel/uk-roadbook/', 'monthly', '0.7'],
   ['/travel/xhs-card/', 'monthly', '0.7'],
-  ['/games/kaleidoscope.html', 'monthly', '0.7'],
   ['/games/numsweeper.html', 'monthly', '0.6'],
   ['/games/pixel-breaker.html', 'monthly', '0.6'],
   ['/games/naoliceshi.html', 'monthly', '0.6'],
