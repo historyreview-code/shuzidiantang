@@ -15,6 +15,7 @@ const urls = [
   ['/clay/', 'monthly', '0.7'],
   ['/cad/', 'monthly', '0.7'],
   ['/dataism/', 'monthly', '0.7'],
+  ['/fireworks/', 'monthly', '0.7'],
   ['/travel/', 'monthly', '0.7'],
   ['/travel/uk-roadbook/', 'monthly', '0.7'],
   ['/travel/xhs-card/', 'monthly', '0.7'],

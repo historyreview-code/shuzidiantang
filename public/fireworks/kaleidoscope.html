@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#070912">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>万花筒 · 每次点击一次绽放</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #070912; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    user-select: none; -webkit-user-select: none;
+    overscroll-behavior: none;                /* 禁下拉刷新/回弹 */
+    -webkit-tap-highlight-color: transparent; /* 禁点按灰色高亮 */
+  }
+  canvas { display: block; cursor: crosshair; touch-action: none; } /* 手势全归画布，禁浏览器缩放滚动 */
+
+  #hud {
+    position: fixed; left: 20px; bottom: 20px; z-index: 10;
+    width: 330px; padding: 16px 18px 14px;
+    background: rgba(12, 16, 30, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    color: #e8ecf8;
+  }
+  #hud h1 {
+    font-size: 15px; font-weight: 600; letter-spacing: 2px; margin-bottom: 12px;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  #hud h1 span { font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.35); font-weight: 400; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .stats .cell { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 6px 4px; text-align: center; }
+  .stats label { display: block; font-size: 10px; color: rgba(255,255,255,0.42); margin-bottom: 2px; }
+  .stats b { font-size: 15px; font-weight: 600; color: #9db8ff; font-variant-numeric: tabular-nums; }
+  .cell.tap { cursor: pointer; transition: background .15s; }
+  .cell.tap:active, .cell.tap:hover { background: rgba(157,184,255,0.18); }
+  .btns { display: flex; gap: 6px; margin-bottom: 10px; }
+  .btns button {
+    flex: 1; padding: 6px 0; font-size: 11px; color: #cdd8f5; min-height: 34px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; cursor: pointer; transition: all .15s;
+    font-family: inherit;
+  }
+  .btns button.icon { flex: 0 0 46px; font-size: 15px; padding: 0; }
+  .btns button:hover { background: rgba(157,184,255,0.18); border-color: rgba(157,184,255,0.4); }
+  .btns button.on { background: rgba(157,184,255,0.25); border-color: rgba(157,184,255,0.55); color: #fff; }
+  .tip { font-size: 10.5px; line-height: 1.7; color: rgba(255,255,255,0.42); }
+  .tip .formula { color: rgba(157,184,255,0.75); font-family: "SF Mono", Menlo, monospace; }
+  @media (max-width: 560px) {
+    #hud {
+      width: calc(100% - 20px); left: 10px;
+      bottom: calc(10px + env(safe-area-inset-bottom, 0px)); /* 避开 iPhone 底部横条 */
+      padding: 10px 12px 8px; border-radius: 12px;
+    }
+    #hud h1 { font-size: 13px; margin-bottom: 8px; }
+    .stats { gap: 5px; margin-bottom: 8px; }
+    .stats b { font-size: 14px; }
+    .btns { gap: 5px; margin-bottom: 0; }
+    .btns button { min-height: 40px; font-size: 12px; } /* 手指触控目标 ≥40px */
+    .btns button.icon { flex: 1; font-size: 14px; }
+    .tip { display: none; } /* 小屏隐藏长说明，全部操作改为点按 */
+  }
+</style>
+</head>
+<body>
+<canvas id="kaleido"></canvas>
+
+<div id="hud">
+  <h1>万花筒 <span>KALEIDOSCOPE</span></h1>
+  <div class="stats">
+    <div class="cell tap" id="cellN" title="点按切换对称阶数"><label>对称 N</label><b id="statN">—</b></div>
+    <div class="cell"><label>镜像份数</label><b id="statCopies">—</b></div>
+    <div class="cell"><label>元素数</label><b id="statShapes">0</b></div>
+    <div class="cell"><label>旋转角 θ</label><b id="statRot">0°</b></div>
+  </div>
+  <div class="btns">
+    <button id="btnAuto">自动绽放</button>
+    <button id="btnPause">暂停</button>
+    <button id="btnClear">清空</button>
+    <button id="btnSave">保存</button>
+    <button id="btnSound" class="icon on" title="配乐开关">🔊</button>
+  </div>
+  <p class="tip">
+    点击 / 触摸画布（支持多点触控，每根手指各自绽放）—— 图形被 <span class="formula">D<sub>N</sub></span> 群实时复制成 2N 份：
+    旋转 <span class="formula">θ + 2kπ/N</span> 再加镜像 <span class="formula">(x,y)→(x,−y)</span>。
+    配乐由 Web Audio 按五声音阶实时合成，每次绽放换调、琶音随 N 变化。<br>
+    <span class="kbd">点按「对称 N」切换阶数 · 数字键 4–9 同样可切 · M 或 🔊 开关配乐 · C 清空 · S 保存 · 空格暂停</span>
+  </p>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const TAU = Math.PI * 2;
+  const canvas = document.getElementById('kaleido');
+  const ctx = canvas.getContext('2d');
+  let W, H, CX, CY;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = '#070912';
+    ctx.fillRect(0, 0, W, H);
+    CX = W / 2; CY = H / 2;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const state = {
+    symmetry: 8,
+    rotation: 0,
+    rotSpeed: 0.15,
+    shapes: [],
+    hues: [200, 320, 40],
+    paused: false,
+    auto: false,
+    lastBloom: 0,
+    gemPulse: 0,
+  };
+
+  // 手机端降低图形上限，保证帧率（桌面 700 / 小屏 480）
+  const MAX_SHAPES = Math.min(screen.width, screen.height) < 500 ? 480 : 700;
+
+  // ---------- 配乐：Web Audio 实时合成，无任何音频文件 ----------
+  // 三层结构：① 低音音床（根音+纯五度，缓慢滤波呼吸）
+  //          ② 五声音阶随机游走旋律（延迟混响营造空间感）
+  //          ③ 绽放音效：上行琶音（音区映射点击高度，音符数随 N）+ 低频涟漪扫频
+  const PENTA = [0, 2, 4, 7, 9];                       // 大调五声音阶（半音间隔）
+  const audio = {
+    ctx: null, master: null, fxIn: null, muted: false, key: 0,
+    unlock() {   // 必须在用户手势（pointerdown）内首次调用，满足移动端自动播放策略
+      if (!this.ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = this.muted ? 0 : 0.6;
+        const comp = this.ctx.createDynamicsCompressor();
+        const delay = this.ctx.createDelay(1.5);       // 反馈延迟 ≈ 混响
+        delay.delayTime.value = 0.42;
+        const fb = this.ctx.createGain(); fb.gain.value = 0.32;
+        const wet = this.ctx.createGain(); wet.gain.value = 0.25;
+        this.master.connect(comp);
+        this.master.connect(delay); delay.connect(fb); fb.connect(delay);
+        delay.connect(wet); wet.connect(comp);
+        comp.connect(this.ctx.destination);
+        this.fxIn = delay;
+        this.startPad();
+        this.scheduleMelody();
+      }
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+    },
+    startPad() {   // ① 持续音床
+      const t = this.ctx.currentTime;
+      const filt = this.ctx.createBiquadFilter();
+      filt.type = 'lowpass'; filt.frequency.value = 420; filt.Q.value = 0.6;
+      filt.connect(this.master);
+      const padGain = this.ctx.createGain(); padGain.gain.value = 0.05;
+      padGain.connect(filt);
+      const lfo = this.ctx.createOscillator(); lfo.frequency.value = 0.07;
+      const lfoAmt = this.ctx.createGain(); lfoAmt.gain.value = 160;   // 滤波器缓慢呼吸
+      lfo.connect(lfoAmt); lfoAmt.connect(filt.frequency); lfo.start(t);
+      for (const [semi, type, g] of [[0, 'sine', 0.5], [7, 'triangle', 0.28], [-12, 'sine', 0.4]]) {
+        const o = this.ctx.createOscillator();
+        o.type = type;
+        o.frequency.value = 110 * Math.pow(2, semi / 12);
+        o.detune.value = (Math.random() - 0.5) * 8;
+        const og = this.ctx.createGain(); og.gain.value = g;
+        o.connect(og); og.connect(padGain); o.start(t);
+      }
+    },
+    note(semi, when, { dur = 1.6, gain = 0.1, type = 'triangle' } = {}) {
+      // ②③ 单音发生器：起音-衰减包络 + 随机声像 + 送入延迟
+      const f = 220 * Math.pow(2, (this.key + semi) / 12);
+      const o = this.ctx.createOscillator(); o.type = type; o.frequency.value = f;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0, when);
+      g.gain.linearRampToValueAtTime(gain, when + 0.025);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+      let out = g;
+      if (this.ctx.createStereoPanner) {
+        const p = this.ctx.createStereoPanner();
+        p.pan.value = Math.random() * 1.2 - 0.6;
+        g.connect(p); out = p;
+      }
+      out.connect(this.master); out.connect(this.fxIn);
+      o.connect(g);
+      o.start(when); o.stop(when + dur + 0.1);
+    },
+    scheduleMelody() {   // ② 五声音阶随机游走：每隔 0.7–2.5s 一音，偶尔叠高八度泛音
+      const loop = () => {
+        if (this.ctx && !this.muted) {
+          const now = this.ctx.currentTime;
+          const oct = 12 * (1 + Math.floor(Math.random() * 2));   // A4–A5 音区
+          this.note(PENTA[Math.floor(Math.random() * 5)] + oct, now + 0.05,
+            { dur: 1.4 + Math.random() * 1.4, gain: 0.05 + Math.random() * 0.05 });
+          if (Math.random() < 0.3)
+            this.note(PENTA[Math.floor(Math.random() * 5)] + oct + 12, now + 0.4,
+              { dur: 1.8, gain: 0.03 });
+        }
+        setTimeout(loop, 700 + Math.random() * 1800);
+      };
+      loop();
+    },
+    bloomSound(x, y) {   // ③ 绽放：换调 + 上行琶音 + 低频涟漪
+      if (!this.ctx || this.muted) return;
+      const now = this.ctx.currentTime;
+      this.key = [0, -3, 2, 5, -5][Math.floor(Math.random() * 5)];     // 每次绽放随机转调
+      const reg = y < H * 0.4 ? 24 : y < H * 0.75 ? 12 : 0;           // 点得越高，音区越高
+      const n = Math.min(6, 3 + (state.symmetry >> 1) % 4);           // 音符数与对称阶数联动
+      for (let i = 0; i < n; i++)
+        this.note(PENTA[i % 5] + 12 * Math.floor(i / 5) + reg, now + i * 0.07,
+          { dur: 0.9, gain: 0.14 - i * 0.015, type: 'sine' });
+      const o = this.ctx.createOscillator(); o.type = 'sine';         // 涟漪：110→45Hz 扫频
+      o.frequency.setValueAtTime(110, now);
+      o.frequency.exponentialRampToValueAtTime(45, now + 0.4);
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.22, now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+      o.connect(g); g.connect(this.master);
+      o.start(now); o.stop(now + 0.55);
+    },
+    toggle() {
+      this.muted = !this.muted;
+      if (this.master)
+        this.master.gain.linearRampToValueAtTime(this.muted ? 0 : 0.6, this.ctx.currentTime + 0.2);
+      return this.muted;
+    },
+  };
+
+  // ---------- 生成：一次点击 = 一次"绽放" ----------
+  function pickType() {
+    const r = Math.random();
+    if (r < 0.30) return 'dot';
+    if (r < 0.50) return 'ring';
+    if (r < 0.70) return 'petal';
+    if (r < 0.85) return 'poly';
+    return 'spark';
+  }
+
+  function bloom(x, y) {
+    state.symmetry = [6, 8, 10, 12][Math.floor(Math.random() * 4)];
+    state.rotSpeed = (0.06 + Math.random() * 0.22) * (Math.random() < 0.5 ? -1 : 1);
+
+    const baseHue = Math.random() * 360;
+    const scheme = Math.random();
+    state.hues = scheme < 0.35 ? [baseHue, baseHue + 55, baseHue + 110]    // 邻近色
+               : scheme < 0.7 ? [baseHue, baseHue + 180, baseHue + 25]     // 互补色
+               :                [baseHue, baseHue + 120, baseHue + 240];   // 三角色
+
+    const count = 24 + Math.floor(Math.random() * 18);
+    for (let i = 0; i < count; i++) {
+      state.shapes.push({
+        type: pickType(),
+        ox: x - CX, oy: y - CY,             // 绽放原点（中心坐标系）
+        dir: Math.random() * TAU,           // 运动方向
+        speed: 60 + Math.random() * 240,
+        r: Math.random() * 8,
+        size: 2 + Math.random() * 11,
+        hue: state.hues[i % 3] + (Math.random() * 36 - 18),
+        sat: 65 + Math.random() * 35,
+        lum: 50 + Math.random() * 26,
+        age: 0,
+        life: 2.6 + Math.random() * 2.6,
+        spin: (Math.random() - 0.5) * 4,
+        sides: 3 + Math.floor(Math.random() * 4),
+        hollow: Math.random() < 0.4,
+        wAmp: Math.random() < 0.6 ? 4 + Math.random() * 22 : 0,   // 蛇形摆动幅度
+        wFreq: 1.5 + Math.random() * 3,
+        wPhase: Math.random() * TAU,
+      });
+    }
+    // 点击涟漪（同样被对称群复制）
+    state.shapes.push({
+      type: 'ripple', ox: x - CX, oy: y - CY, dir: 0,
+      speed: 300, r: 4, size: 1, hue: state.hues[0], sat: 90, lum: 78,
+      age: 0, life: 0.9, spin: 0, sides: 3, hollow: false,
+      wAmp: 0, wFreq: 0, wPhase: 0,
+    });
+
+    state.gemPulse = 1;
+    state.lastBloom = performance.now();
+    audio.bloomSound(x, y);                       // 绽放音效（转调 + 琶音 + 涟漪）
+    if (navigator.vibrate) navigator.vibrate(12); // 轻微触觉反馈（支持的设备）
+    if (state.shapes.length > MAX_SHAPES) state.shapes.splice(0, state.shapes.length - MAX_SHAPES);
+  }
+
+  function bloomAtRandom() {
+    const a = Math.random() * TAU;
+    const d = (0.12 + Math.random() * 0.2) * Math.min(W, H);
+    bloom(CX + Math.cos(a) * d, CY + Math.sin(a) * d);
+  }
+
+  // ---------- 演化 ----------
+  function update(dt) {
+    state.rotation += state.rotSpeed * dt;
+    state.gemPulse = Math.max(0, state.gemPulse - dt * 1.6);
+    for (const s of state.shapes) {
+      s.age += dt;
+      s.speed *= Math.pow(0.35, dt);   // 指数阻尼
+      s.r += s.speed * dt;
+    }
+    state.shapes = state.shapes.filter(s => s.age < s.life);
+  }
+
+  // ---------- 单个图形绘制（在已变换坐标处） ----------
+  function drawShape(s, x, y, orient, alpha) {
+    const t = s.age / s.life;
+    const size = s.size * Math.min(1, s.age * 5) * (1 - t * 0.45);
+    if (size < 0.3 && s.type !== 'ripple') return;
+    const col = `hsla(${s.hue}, ${s.sat}%, ${s.lum}%, ${alpha})`;
+    ctx.fillStyle = col; ctx.strokeStyle = col;
+
+    switch (s.type) {
+      case 'dot':
+        ctx.beginPath(); ctx.arc(x, y, size, 0, TAU); ctx.fill();
+        break;
+      case 'ring':
+        ctx.lineWidth = Math.max(0.6, size * 0.4);
+        ctx.beginPath(); ctx.arc(x, y, size, 0, TAU); ctx.stroke();
+        break;
+      case 'petal': {
+        const len = size * 3.2;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(orient);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(size * 0.9, len * 0.55, 0, len);
+        ctx.quadraticCurveTo(-size * 0.9, len * 0.55, 0, 0);
+        ctx.fill(); ctx.restore();
+        break;
+      }
+      case 'poly': {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(orient);
+        ctx.beginPath();
+        for (let i = 0; i < s.sides; i++) {
+          const a = i / s.sides * TAU;
+          const px = Math.cos(a) * size * 1.4, py = Math.sin(a) * size * 1.4;
+          i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+        ctx.closePath();
+        s.hollow ? ctx.stroke() : ctx.fill();
+        ctx.restore();
+        break;
+      }
+      case 'spark': {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(orient);
+        ctx.lineWidth = Math.max(0.6, size * 0.5);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-size * 1.8, 0); ctx.lineTo(size * 1.8, 0);
+        ctx.stroke(); ctx.restore();
+        break;
+      }
+      case 'ripple':
+        ctx.lineWidth = 1.5 * (1 - t) + 0.5;
+        ctx.beginPath(); ctx.arc(x, y, s.r, 0, TAU); ctx.stroke();
+        break;
+    }
+  }
+
+  // ---------- 对称变换：万花筒的核心运算 ----------
+  // 每个局部坐标 p 依次经过 镜像 M = diag(1, ±1) 和 旋转 R(θ + 2kπ/N)：
+  //     p' = R(θ + 2kπ/N) · M · p
+  // N 个旋转 × 2 个镜像 = 2N 份拷贝，构成二面体群 D_N。
+  function draw(now) {
+    // 半透明覆盖形成运动拖影
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'rgba(7, 9, 18, 0.16)';
+    ctx.fillRect(0, 0, W, H);
+
+    // 镜面分割线（每 π/N 一条，即基本扇区的边界）
+    const N = state.symmetry;
+    const RL = Math.hypot(W, H) / 2 + 40;
+    ctx.strokeStyle = 'rgba(140, 160, 255, 0.05)';
+    ctx.lineWidth = 1;
+    for (let m = 0; m < N * 2; m++) {
+      const a = state.rotation + m * Math.PI / N;
+      ctx.beginPath();
+      ctx.moveTo(CX, CY);
+      ctx.lineTo(CX + Math.cos(a) * RL, CY + Math.sin(a) * RL);
+      ctx.stroke();
+    }
+
+    ctx.globalCompositeOperation = 'lighter';   // 发光叠加
+    for (const s of state.shapes) {
+      const t = s.age / s.life;
+      const alpha = Math.min(1, s.age / 0.12) * Math.pow(1 - t, 1.4);
+      if (alpha <= 0.01) continue;
+
+      // 局部位置：径向运动 + 垂直方向的蛇形摆动
+      const wob = Math.sin(now / 1000 * s.wFreq + s.wPhase) * s.wAmp;
+      const px = s.ox + Math.cos(s.dir) * s.r - Math.sin(s.dir) * wob;
+      const py = s.oy + Math.sin(s.dir) * s.r + Math.cos(s.dir) * wob;
+      const orient = s.dir + s.spin * s.age;
+
+      for (let k = 0; k < N; k++) {
+        const a = state.rotation + k * TAU / N;
+        const ca = Math.cos(a), sa = Math.sin(a);
+        for (let m = 0; m < 2; m++) {
+          const sgn = m ? -1 : 1;
+          const lx = px;
+          const ly = sgn * py;                       // 镜像
+          const X = CX + lx * ca - ly * sa;          // 旋转
+          const Y = CY + lx * sa + ly * ca;
+          drawShape(s, X, Y, a + sgn * orient, alpha);
+        }
+      }
+    }
+
+    // 中心宝石：2N 角星，随点击脉冲、随时间呼吸
+    const breathe = Math.sin(now / 900) * 3;
+    const R0 = 22 + breathe + state.gemPulse * 26;
+    ctx.save();
+    ctx.translate(CX, CY);
+    ctx.rotate(state.rotation * 1.5);
+    for (let layer = 0; layer < 2; layer++) {
+      const r = R0 * (layer ? 0.58 : 1);
+      ctx.beginPath();
+      const pts = N * 2;
+      for (let i = 0; i <= pts; i++) {
+        const a = i / pts * TAU;
+        const rr = r * (i % 2 ? 0.55 : 1);
+        const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = `hsla(${state.hues[layer % 3]}, 80%, 62%, 0.5)`;
+      ctx.fill();
+    }
+    ctx.restore();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // ---------- HUD ----------
+  const elN = document.getElementById('statN');
+  const elCopies = document.getElementById('statCopies');
+  const elShapes = document.getElementById('statShapes');
+  const elRot = document.getElementById('statRot');
+  let hudNext = 0;
+  function updateHUD(now) {
+    if (now < hudNext) return;
+    hudNext = now + 150;
+    elN.textContent = state.symmetry;
+    elCopies.textContent = state.symmetry * 2;
+    elShapes.textContent = state.shapes.length;
+    const deg = ((state.rotation * 180 / Math.PI) % 360 + 360) % 360;
+    elRot.textContent = deg.toFixed(0) + '°';
+  }
+
+  // ---------- 主循环 ----------
+  let last = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (state.paused) { last = now; return; }
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (state.auto && now - state.lastBloom > 3400) bloomAtRandom();
+    update(dt);
+    draw(now);
+    updateHUD(now);
+  }
+  requestAnimationFrame(frame);
+
+  // ---------- 交互 ----------
+  // pointerdown：鼠标/触摸统一，多点触控时每根手指各自触发一次绽放
+  canvas.addEventListener('pointerdown', e => {
+    audio.unlock();                        // 在手势内启动 AudioContext（移动端要求）
+    bloom(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('contextmenu', e => e.preventDefault()); // 阻止手机长按弹菜单
+
+  const btnAuto = document.getElementById('btnAuto');
+  const btnPause = document.getElementById('btnPause');
+  const btnSound = document.getElementById('btnSound');
+  btnAuto.addEventListener('click', () => {
+    state.auto = !state.auto;
+    btnAuto.classList.toggle('on', state.auto);
+  });
+  btnPause.addEventListener('click', () => {
+    state.paused = !state.paused;
+    btnPause.classList.toggle('on', state.paused);
+    btnPause.textContent = state.paused ? '继续' : '暂停';
+  });
+  btnSound.addEventListener('click', () => {
+    audio.unlock();
+    const muted = audio.toggle();
+    btnSound.classList.toggle('on', !muted);
+    btnSound.textContent = muted ? '🔇' : '🔊';
+  });
+  document.getElementById('btnClear').addEventListener('click', () => {
+    state.shapes = [];
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#070912';
+    ctx.fillRect(0, 0, W, H);
+  });
+  document.getElementById('btnSave').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = `kaleidoscope-${Date.now()}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  // 点按「对称 N」数值循环切换阶数（手机无键盘的替代入口）
+  document.getElementById('cellN').addEventListener('click', () => {
+    const opts = [6, 8, 10, 12, 14, 16, 18];
+    state.symmetry = opts[(opts.indexOf(state.symmetry) + 1) % opts.length] ?? 8;
+    state.gemPulse = 1;
+  });
+
+  // 切到后台时挂起音频省电，回到前台恢复
+  document.addEventListener('visibilitychange', () => {
+    if (!audio.ctx) return;
+    document.hidden ? audio.ctx.suspend() : audio.ctx.resume();
+  });
+  window.addEventListener('orientationchange', () => setTimeout(resize, 60));
+
+  window.addEventListener('keydown', e => {
+    if (e.key >= '4' && e.key <= '9') state.symmetry = +e.key * 2;
+    else if (e.key === 'm' || e.key === 'M') btnSound.click();
+    else if (e.key === 'c' || e.key === 'C') document.getElementById('btnClear').click();
+    else if (e.key === 's' || e.key === 'S') document.getElementById('btnSave').click();
+    else if (e.key === ' ') { e.preventDefault(); btnPause.click(); }
+  });
+
+  // 初始绽放一次，打开即可看到效果
+  setTimeout(() => bloom(CX, CY - 40), 350);
+})();
+</script>
+</body>
+</html>

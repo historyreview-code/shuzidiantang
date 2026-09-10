@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#060a18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>焰火播放器 · 音乐烟花</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #060a18; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    user-select: none; -webkit-user-select: none;
+    overscroll-behavior: none; -webkit-tap-highlight-color: transparent;
+  }
+  canvas#sky { display: block; cursor: crosshair; touch-action: none; }
+
+  /* ---------- 初始提示 ---------- */
+  #hint {
+    position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%);
+    z-index: 5; pointer-events: none; text-align: center; color: #dfe6ff;
+    transition: opacity .8s;
+  }
+  #hint .big { font-size: 22px; letter-spacing: 4px; text-shadow: 0 0 24px rgba(140,170,255,.6); }
+  #hint .sub { margin-top: 10px; font-size: 12.5px; color: rgba(200,215,255,.55); line-height: 1.9; }
+  #hint.off { opacity: 0; }
+
+  /* ---------- 播放器面板 ---------- */
+  #hud {
+    position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); z-index: 10;
+    width: min(660px, calc(100% - 20px));
+    padding: 6px 14px 10px;
+    background: rgba(10, 14, 30, 0.66);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    color: #e8ecf8; box-shadow: 0 8px 40px rgba(0,0,0,.45);
+  }
+  /* 拖拽手柄：按住移动面板，双击复位 */
+  #grip {
+    display: flex; align-items: center; justify-content: center;
+    height: 18px; margin: 0 -4px 2px; cursor: grab; touch-action: none;
+    color: rgba(200,215,255,.5); font-size: 13px; letter-spacing: 4px; user-select: none;
+  }
+  #grip:hover { color: rgba(220,230,255,.9); text-shadow: 0 0 8px rgba(157,184,255,.5); }
+  #grip:active { cursor: grabbing; }
+  body.hud-off #hud { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(14px); }
+  /* 面板收起后的小圆钮 */
+  #hudTab {
+    position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); z-index: 12; display: none;
+    padding: 9px 16px; border-radius: 999px; font-size: 12px;
+    background: rgba(10,14,30,.72); border: 1px solid rgba(255,255,255,.16); color: #cdd8f5;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  body.hud-off #hudTab { display: block; }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .row + .row { margin-top: 8px; }
+  /* 控制行允许换行，避免挤压切换按钮 */
+  .row.wrap { flex-wrap: wrap; }
+  .seg, .cell, .seg button { flex-shrink: 0; }
+
+  button {
+    color: #cdd8f5; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 9px;
+    cursor: pointer; font-family: inherit; transition: all .15s;
+    min-height: 34px; padding: 4px 10px; font-size: 12px; white-space: nowrap;
+  }
+  button:hover { background: rgba(157,184,255,0.18); border-color: rgba(157,184,255,0.4); }
+  button.on { background: rgba(157,184,255,0.25); border-color: rgba(157,184,255,0.55); color: #fff; }
+  button.sq { width: 38px; padding: 0; font-size: 15px; }
+
+  #title {
+    flex: 1; min-width: 0; font-size: 13px; font-weight: 600; letter-spacing: .5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #title small { color: rgba(200,215,255,.4); font-weight: 400; margin-left: 6px; }
+  #time { font-size: 11px; color: rgba(200,215,255,.55); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  input[type=range] { accent-color: #9db8ff; cursor: pointer; }
+  #seek { flex: 1; min-width: 0; }
+  #vol { width: 66px; }
+
+  #url {
+    flex: 1 1 150px; min-width: 130px; font-size: 12px; color: #e8ecf8;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 9px; padding: 7px 10px; outline: none; font-family: inherit;
+    user-select: text; -webkit-user-select: text;
+  }
+  #url:focus { border-color: rgba(157,184,255,0.55); }
+  #url::placeholder { color: rgba(200,215,255,.3); }
+
+  .cell {
+    background: rgba(255,255,255,0.05); border-radius: 8px; padding: 4px 9px;
+    text-align: center; font-size: 11px; color: rgba(200,215,255,.5); white-space: nowrap;
+  }
+  .cell b { color: #9db8ff; font-variant-numeric: tabular-nums; margin-left: 3px; font-size: 12.5px; }
+  .cell.tap { cursor: pointer; transition: background .15s; }
+  .cell.tap:active, .cell.tap:hover { background: rgba(157,184,255,0.18); }
+
+  .seg { display: flex; overflow: hidden; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; }
+  .seg button { border: none; border-radius: 0; background: transparent; padding: 6px 14px; min-height: 36px; font-size: 12.5px; }
+  .seg button + button { border-left: 1px solid rgba(255,255,255,0.1); }
+  .seg button.on { background: rgba(157,184,255,0.32); color: #fff; font-weight: 700; box-shadow: inset 0 0 14px rgba(157,184,255,0.2); }
+
+  /* ---------- 全屏 / 沉浸模式 ---------- */
+  #hud { transition: opacity .35s, transform .35s; }
+  body.fs #hud.hid { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(14px); }
+  #fsMode {
+    position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(14px + env(safe-area-inset-right, 0px));
+    z-index: 15; display: none;
+  }
+  body.fs #fsMode { display: flex; }
+  #fsMode .seg {
+    box-shadow: 0 4px 24px rgba(0,0,0,.5);
+    background: rgba(10,14,30,.62); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+
+  #meter { display: block; width: 100%; height: 26px; border-radius: 6px; background: rgba(255,255,255,0.03); }
+
+  #playlist {
+    list-style: none; margin-top: 8px; max-height: 92px; overflow-y: auto;
+    border-top: 1px solid rgba(255,255,255,0.07); padding-top: 6px;
+  }
+  #playlist li {
+    padding: 5px 10px; border-radius: 7px; font-size: 12px; color: rgba(200,215,255,.6);
+    cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #playlist li:hover { background: rgba(255,255,255,0.06); }
+  #playlist li.cur { color: #fff; background: rgba(157,184,255,0.16); }
+
+  /* ---------- 拖放遮罩 / 提示条 ---------- */
+  #drop {
+    position: fixed; inset: 0; z-index: 20; display: none;
+    background: rgba(6,10,24,.8); border: 2px dashed rgba(157,184,255,.6); border-radius: 18px;
+    margin: 14px; align-items: center; justify-content: center;
+    color: #dfe6ff; font-size: 18px; letter-spacing: 3px;
+  }
+  #drop.show { display: flex; }
+  #toast {
+    position: fixed; left: 50%; top: 18px; transform: translateX(-50%);
+    z-index: 30; padding: 9px 16px; border-radius: 10px;
+    background: rgba(10,14,30,.85); border: 1px solid rgba(157,184,255,.35); color: #dfe6ff;
+    font-size: 12.5px; opacity: 0; transition: opacity .3s; pointer-events: none; max-width: 86vw;
+  }
+  #toast.show { opacity: 1; }
+
+  @media (max-width: 560px) {
+    #hud { padding: 10px 10px 8px; border-radius: 13px; }
+    #title { font-size: 12px; }
+    #vol { display: none; }
+    button { min-height: 38px; }
+    .seg button { min-height: 40px; padding: 8px 16px; font-size: 13px; }
+    #url { flex-basis: 100%; order: 9; }
+    #hint .big { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<div id="hint">
+  <div class="big">焰 火 播 放 器</div>
+  <div class="sub">内置示范曲：海阔天空 · 我的未来不是梦 · 致爱丽丝<br>
+    也可导入 MP3 / 拖入文件 / 粘贴音乐直链 —— 画面随节奏绽放<br>
+    低音 → 礼花弹 · 中频 → 对称烟花（色相来自音高）· 高频 → 星光闪烁</div>
+</div>
+
+<div id="hud">
+  <div id="grip" title="按住拖动面板 · 双击复位">···</div>
+  <div class="row">
+    <button class="sq" id="btnPrev" title="上一首">⏮</button>
+    <button class="sq" id="btnPlay" title="播放/暂停">▶</button>
+    <button class="sq" id="btnNext" title="下一首">⏭</button>
+    <div id="title">未加载音乐<small id="srcTag"></small></div>
+    <span id="time">0:00 / 0:00</span>
+  </div>
+  <div class="row">
+    <input type="range" id="seek" min="0" max="1000" value="0" step="1">
+  </div>
+  <div class="row wrap">
+    <div class="seg" id="segMode" title="切换视觉模式 (V)">
+      <button id="mFw" class="on">🎆 焰火</button><button id="mKd">❋ 万花筒</button>
+    </div>
+    <button id="btnFile">📂 导入MP3</button>
+    <input type="text" id="url" placeholder="粘贴音乐直链 (https://…mp3)" spellcheck="false">
+    <button id="btnUrl">播放链接</button>
+    <button class="sq" id="btnSound" title="静音">🔊</button>
+    <input type="range" id="vol" min="0" max="100" value="90" title="音量">
+    <div class="cell tap" id="cellN" title="点按切换对称阶数">对称<b id="statN">8</b></div>
+    <div class="cell">元素<b id="statP">0</b></div>
+    <div class="cell">BPM<b id="statBpm">—</b></div>
+    <button id="btnShot" title="保存画面">💾</button>
+    <button id="btnClear" title="清空烟花">🧹</button>
+    <button class="sq" id="btnFs" title="全屏/沉浸模式 (F)">⛶</button>
+    <button class="sq" id="btnHide" title="收起面板 (H)">▾</button>
+  </div>
+  <canvas id="meter" height="26"></canvas>
+  <ul id="playlist"></ul>
+</div>
+
+<div id="drop">🎵 松开导入音乐</div>
+<div id="toast"></div>
+<button id="hudTab" title="展开面板 (H)">🎛 展开面板</button>
+<div class="seg" id="fsMode" title="切换视觉模式 (V)">
+  <button id="mFw2" class="on">🎆 焰火</button><button id="mKd2">❋ 万花筒</button>
+</div>
+<input type="file" id="file" accept="audio/*" multiple hidden>
+
+<script>
+(() => {
+  'use strict';
+  const TAU = Math.PI * 2;
+  const $ = id => document.getElementById(id);
+  const canvas = $('sky');
+  const ctx = canvas.getContext('2d');
+  let W, H, CX, CYK;
+  const IS_SMALL = Math.min(screen.width, screen.height) < 500;
+  const MAX_P = IS_SMALL ? 900 : 1600;        // 粒子上限（性能保护）
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = '#060a18'; ctx.fillRect(0, 0, W, H);
+    CX = W / 2; CYK = H * 0.42;              // 万花筒模式的对称中心
+    makeStars();
+    const m = $('meter');
+    m.width = m.clientWidth * dpr; m.height = 26 * dpr;
+    m.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('orientationchange', () => setTimeout(resize, 60));
+
+  // ---------- 星空背景 ----------
+  let stars = [];
+  function makeStars() {
+    stars = [];
+    const n = Math.floor(W * H / 9000);
+    for (let i = 0; i < n; i++)
+      stars.push({ x: Math.random() * W, y: Math.random() * H * 0.75, r: 0.4 + Math.random() * 1.1, ph: Math.random() * TAU, sp: 0.5 + Math.random() * 2 });
+  }
+
+  // ---------- 焰火 / 万花筒状态 ----------
+  const state = {
+    N: 8,                        // 对称阶数（两种模式共用）
+    mode: 'fw',                  // 'fw' 焰火 | 'kd' 万花筒
+    kdRot: 0, lastIdle: 0,       // 万花筒全局旋转 / 空闲补充计时
+    busy: 0,                     // 节拍密度 0~1：节奏越快，中心亮度越收敛
+    particles: [], shells: [], flashes: [], shapes: [],
+    hueBase: Math.random() * 360,
+    bpm: 0, onsetTimes: [],      // BPM 估计
+    trebE: 0, bassE: 0, midE: 0, // 当前频段能量（也用于画面氛围）
+    lastOnset: 0, lastShell: 0, lastAuto: 0,
+  };
+  const G = 92;                  // 重力 px/s²
+
+  function budget() { return Math.max(0.15, 1 - state.particles.length / MAX_P); }
+
+  function addP(p) { if (state.particles.length < MAX_P) state.particles.push(p); }
+
+  // 上升的礼花弹：到达顶点后爆炸
+  function launchShell(x, targetY, hue, strength = 1) {
+    if (state.shells.length > 26) return;
+    const y0 = H + 6;
+    const vy = -Math.sqrt(2 * G * Math.max(60, y0 - targetY));
+    state.shells.push({ x: Math.max(20, Math.min(W - 20, x)), y: y0, vx: (Math.random() - .5) * 46, vy, hue, strength, r: Math.random() * TAU });
+  }
+
+  // 爆炸主形态：牡丹 / 环形 / 垂柳
+  function explode(x, y, hue, strength = 1) {
+    const bud = budget();
+    const kind = Math.random();
+    const flashR = 60 + 140 * strength;
+    state.flashes.push({ x, y, r: flashR, age: 0, life: 0.4, hue });
+    if (kind < 0.5) {                                   // 牡丹：各向异性散射
+      const n = Math.round((70 + 60 * strength) * bud);
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * TAU, sp = (50 + Math.random() * 230) * (0.7 + 0.5 * strength);
+        addP({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, life: 1.1 + Math.random() * 1.2,
+               hue: hue + (Math.random() * 44 - 22), sat: 85, lum: 58 + Math.random() * 14,
+               size: 1.2 + Math.random() * 1.8, drag: 0.985, grav: 1, tw: Math.random() < 0.3 });
+      }
+    } else if (kind < 0.78) {                           // 环形：等速圆环
+      const n = Math.round((40 + 26 * strength) * bud);
+      const sp = 150 + 90 * strength, off = Math.random() * TAU;
+      for (let i = 0; i < n; i++) {
+        const a = off + i / n * TAU;
+        addP({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, life: 1.3 + Math.random() * 0.5,
+               hue: hue + (Math.random() * 14 - 7), sat: 90, lum: 62,
+               size: 1.4, drag: 0.988, grav: 1, tw: false });
+      }
+    } else {                                            // 垂柳：金色下垂长尾
+      const n = Math.round((46 + 30 * strength) * bud);
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * TAU, sp = 70 + Math.random() * 160;
+        addP({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.8, age: 0, life: 2.4 + Math.random() * 1.2,
+               hue: 38 + Math.random() * 16, sat: 92, lum: 60,
+               size: 1.1, drag: 0.972, grav: 1.5, tw: Math.random() < 0.5 });
+      }
+    }
+  }
+
+  // 万花筒对称烟花：一个扇区的基本图形经 D_N 群（旋转 2kπ/N × 镜像）复制
+  //   沿用 V1 运算：p' = R(θ+2kπ/N)·M·p —— 粒子速度向量做同样的群变换
+  function kaleidoBurst(x, y, hue, strength = 1) {
+    const bud = budget(), N = state.N;
+    state.flashes.push({ x, y, r: 40 + 70 * strength, age: 0, life: 0.32, hue });
+    const base = [];
+    const nb = 4 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < nb; i++)
+      base.push({ a: Math.random() * TAU / N, sp: (90 + Math.random() * 150) * (0.7 + 0.4 * strength) });
+    for (const b of base)
+      for (let k = 0; k < N; k++)
+        for (let m = 0; m < 2; m++) {
+          const a = (m ? -b.a : b.a) + k * TAU / N + Math.random() * 0.03;
+          addP({ x, y, vx: Math.cos(a) * b.sp, vy: Math.sin(a) * b.sp, age: 0,
+                 life: 1.2 + Math.random() * 0.9,
+                 hue: m ? hue : hue + 55, sat: 88, lum: 60 + Math.random() * 12,
+                 size: 1.3 + Math.random() * 1.2, drag: 0.982, grav: 0.9, tw: Math.random() < 0.35 });
+        }
+  }
+
+  // 高频星光：细小白色闪烁
+  function sparkle(x, y, n = 14) {
+    const bud = budget();
+    n = Math.round(n * bud);
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * TAU, sp = 20 + Math.random() * 130;
+      addP({ x: x + (Math.random() - .5) * 40, y: y + (Math.random() - .5) * 40,
+             vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, life: 0.25 + Math.random() * 0.45,
+             hue: 200 + Math.random() * 60, sat: 60, lum: 82, size: 0.9 + Math.random(), drag: 0.96, grav: 0.4, tw: true });
+    }
+  }
+
+  // ---------- 万花筒模式：沿用 V1 的 D_N 对称算法 ----------
+  //   每个基本图形位于扇区内角 ang，经 旋转 k·2π/N × 镜像(±ang) 复制到全圆
+  //   p' = R(θ+2kπ/N)·M·p —— 与 V1 相同的群运算，只是触发源从点击换成了节拍
+  const MAX_SH = 110;
+  function trimSh() { if (state.shapes.length > MAX_SH) state.shapes.splice(0, state.shapes.length - MAX_SH); }
+
+  function kdSpawn(n, big, hue, kinds) {
+    const reach = Math.min(W, H) * 0.24;
+    const push = state.busy * reach * 0.35;       // 快节奏时出生半径整体外推，避免中心堆叠
+    for (let i = 0; i < n; i++) state.shapes.push({
+      kind: kinds[(Math.random() * kinds.length) | 0],
+      ang: Math.random() * TAU / state.N,
+      rad: 34 + Math.random() * reach + push,
+      r: (14 + Math.random() * 46) * big,
+      rot: Math.random() * TAU, rotV: (Math.random() - .5) * 1.3,
+      hue: hue + (Math.random() * 36 - 18), lum: 56 + Math.random() * 16,
+      sides: 3 + (Math.random() * 5 | 0), tilt: (Math.random() - .5) * 1.6,
+      age: 0, life: 2.2 + Math.random() * 2.2,
+      lw: (1.1 + Math.random() * 1.6) * (0.6 + big * 0.5),
+      drift: 8 + Math.random() * 30, ph: Math.random() * TAU,
+    });
+    trimSh();
+  }
+
+  function kdDots(n, hue) {                    // 高频：沿环散布的星点
+    const rad = 40 + Math.random() * Math.min(W, H) * 0.2 + state.busy * 55;
+    for (let i = 0; i < n; i++) state.shapes.push({
+      kind: 'dot', ang: Math.random() * TAU / state.N, rad: rad + (Math.random() - .5) * 18,
+      r: 1.4 + Math.random() * 1.8, rot: 0, rotV: 0, hue: hue + Math.random() * 50 - 25, lum: 78,
+      sides: 0, tilt: 0, age: 0, life: 0.4 + Math.random() * 0.5, lw: 0, drift: 26, ph: 0,
+    });
+    trimSh();
+  }
+
+  // 万花筒模式下的节拍调度（与焰火模式同一检测管线）
+  function kdBeat(power, now, b, m, t) {
+    if (b >= m && b >= t) {                    // 低音 → 大图形 + 中心闪光
+      if (now - state.lastShell < 300 + 320 * state.busy) return;   // 快节奏时拉长中心闪光冷却
+      state.lastShell = now;
+      const s = Math.min(1.5, 0.7 + power * 0.2);
+      const hue = (state.hueBase + 140) % 360;
+      kdSpawn(2 + (Math.random() * 2 | 0), s, hue, ['poly', 'star', 'ring']);
+      state.flashes.push({ x: CX, y: CYK, r: (90 + 130 * s) * (1 - 0.3 * state.busy), age: 0, life: 0.5, hue, k: 1 - 0.45 * state.busy });
+      if (power > 2.2) kdSpawn(2, s * 0.7, (hue + 120) % 360, ['star', 'petal']);
+    } else if (m >= t) {                       // 中频 → 图形群，色相取自主导音高
+      kdSpawn(3 + (Math.random() * 3 | 0), 0.5 + 0.22 * Math.min(3, power),
+              (dominantHue() + state.hueBase * 0.15) % 360, ['petal', 'poly', 'star', 'dot']);
+    } else {                                   // 高频 → 星点环
+      kdDots(10 + 16 * Math.min(2, power), (dominantHue() + state.hueBase * 0.15) % 360);
+    }
+  }
+
+  function drawShapePath(kind, x, y, r, a, sh, m) {
+    ctx.beginPath();
+    if (kind === 'poly') {
+      for (let i = 0; i <= sh.sides; i++) {
+        const b = a + i / sh.sides * TAU;
+        const px = x + Math.cos(b) * r, py = y + Math.sin(b) * r;
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.stroke();
+    } else if (kind === 'star') {
+      const sp = Math.max(3, sh.sides);
+      for (let i = 0; i <= sp * 2; i++) {
+        const b = a + i / (sp * 2) * TAU, rr = i % 2 ? r * 0.46 : r;
+        const px = x + Math.cos(b) * rr, py = y + Math.sin(b) * rr;
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.stroke();
+    } else if (kind === 'petal') {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(a + (m ? -sh.tilt : sh.tilt));
+      ctx.ellipse(0, 0, r * 0.42, r, 0, 0, TAU); ctx.stroke();
+      ctx.restore();
+    } else if (kind === 'ring') {
+      ctx.arc(x, y, r, 0, TAU); ctx.stroke();
+    } else {                                   // dot
+      ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    }
+  }
+
+  // ---------- 音频：播放器 + FFT 分析 ----------
+  const player = {
+    ctx: null, master: null, analyser: null, srcNode: null,
+    el: null, tracks: [], idx: -1, muted: false, volume: 0.9,
+    sim: false,                      // 链接源不支持分析时的律动模拟
+    freq: null, prevFreq: null,
+    fluxAvg: 0.012, bassAvg: 0.1, lastNonZero: 0,
+
+    ensureGraph() {                  // 必须在用户手势内调用
+      if (!this.ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) { this.sim = true; return; }
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = this.muted ? 0 : this.volume;
+        this.analyser = this.ctx.createAnalyser();
+        this.analyser.fftSize = 2048;
+        this.analyser.smoothingTimeConstant = 0.55;
+        this.master.connect(this.ctx.destination);
+        this.freq = new Uint8Array(this.analyser.frequencyBinCount);
+        this.prevFreq = new Uint8Array(this.analyser.frequencyBinCount);
+      }
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+    },
+    ensureEl() {
+      if (!this.el) {
+        this.el = new Audio();
+        this.el.preload = 'auto';
+        this.el.crossOrigin = 'anonymous';   // 链接模式需要 CORS 才能拿到分析数据
+        this.el.addEventListener('ended', () => this.next(true));
+        this.el.addEventListener('error', () => toast('播放失败：请使用直链音频（.mp3/.wav/.ogg）或检查文件'));
+        this.el.addEventListener('playing', () => { $('hint').classList.add('off'); setPlayIcon(); });
+        this.el.addEventListener('pause', setPlayIcon);
+      }
+      return this.el;
+    },
+    route() {                        // 把媒体源接入分析链（每个元素只能接一次）
+      if (this.srcNode || this.sim || !this.analyser) return;
+      this.srcNode = this.ctx.createMediaElementSource(this.el);
+      this.srcNode.connect(this.analyser);
+      this.analyser.connect(this.master);
+    },
+    setTitle(i) {
+      const t = this.tracks[i];
+      const tag = t.kind === 'file' ? '本地文件' : t.kind === 'url' ? '链接' : '内置示范';
+      $('title').innerHTML = escapeHtml(t.name) + `<small>${tag}</small>`;
+    },
+    addTracks(list, autoplay = true) {
+      const start = this.tracks.length;
+      for (const t of list) this.tracks.push(t);
+      renderPlaylist();
+      if (this.idx < 0) {
+        if (autoplay) this.playIdx(start);
+        else { this.idx = start; this.setTitle(start); }   // 示范曲就绪但等用户手势
+      }
+    },
+    playIdx(i) {
+      this.ensureGraph();
+      const el = this.ensureEl();
+      this.route();
+      this.idx = i;
+      const t = this.tracks[i];
+      el.src = t.url; el.play().catch(() => {});
+      this.setTitle(i);
+      this.lastNonZero = performance.now();
+      renderPlaylist();
+      $('hint').classList.add('off');
+    },
+    next(auto) { if (!this.tracks.length) return; this.playIdx((this.idx + 1) % this.tracks.length); },
+    prev()      { if (!this.tracks.length) return; this.playIdx((this.idx - 1 + this.tracks.length) % this.tracks.length); },
+    toggle() {
+      if (!this.tracks.length) { toast('示范曲生成中，请稍候或先导入 MP3'); return; }
+      this.ensureGraph();
+      if (!this.el || !this.el.src) { this.playIdx(this.idx < 0 ? 0 : this.idx); return; }
+      if (this.el.paused) this.el.play().catch(() => {}); else this.el.pause();
+    },
+    playing() { return this.el && !this.el.paused && !this.el.ended; },
+  };
+
+  function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // ---------- 节拍检测与烟花调度 ----------
+  const BAND = (sr, lo, hi) => { const b = sr / player.analyser.fftSize; return [Math.max(1, Math.round(lo / b)), Math.min(player.freq.length - 1, Math.round(hi / b))]; };
+
+  function analyse(now) {
+    if (!player.analyser || player.sim || !player.playing()) {
+      state.bassE *= 0.94; state.midE *= 0.94; state.trebE *= 0.94;
+      return;
+    }
+    player.analyser.getByteFrequencyData(player.freq);
+    const f = player.freq, sr = player.ctx.sampleRate;
+    let anyZero = true;
+    const bandAvg = (lo, hi) => {
+      const [a, b] = BAND(sr, lo, hi); let s = 0;
+      for (let i = a; i <= b; i++) s += f[i];
+      if (s > 40) anyZero = false;
+      return s / ((b - a + 1) * 255);
+    };
+    state.bassE = bandAvg(40, 250);
+    state.midE  = bandAvg(250, 2000);
+    state.trebE = bandAvg(2000, 10000);
+
+    // CORS 静音检测：播放中但频谱长时间全零 → 脱离 WebAudio 链，普通播放 + 律动模拟
+    if (anyZero) {
+      if (now - player.lastNonZero > 1600 && player.el.currentTime > 1) { corsFallback(); return; }
+    } else player.lastNonZero = now;
+
+    // 频谱通量（相邻帧能量增量和）→ 节拍突变
+    let flux = 0;
+    for (let i = 2; i < f.length * 0.6; i++) { const d = f[i] - player.prevFreq[i]; if (d > 0) flux += d; }
+    player.prevFreq.set(f);
+    flux /= 255 * f.length * 0.6;
+    player.fluxAvg = player.fluxAvg * 0.96 + flux * 0.04;
+
+    const th = player.fluxAvg * 1.45 + 0.004;
+    if (flux > th && now - state.lastOnset > 110) {
+      state.lastOnset = now;
+      onBeat(flux / (player.fluxAvg + 1e-4), now);
+    }
+    // 持续高能量但久无节拍 → 补一发小礼花/图形，避免画面沉寂
+    if (player.playing() && now - state.lastOnset > 1500 && now - state.lastAuto > 1300 &&
+        state.bassE + state.midE > 0.5) {
+      state.lastAuto = now;
+      const hue = (state.hueBase += 29) % 360;
+      if (state.mode === 'fw')
+        launchShell(W * (0.2 + Math.random() * 0.6), H * (0.16 + Math.random() * 0.25), hue, 0.6);
+      else kdSpawn(1, 0.6, hue, ['ring', 'petal', 'poly']);
+    }
+  }
+
+  // 一拍到来：按主导频段分配烟花类型
+  function onBeat(power, now) {
+    state.hueBase = (state.hueBase + 21) % 360;
+    state.busy = Math.min(1, state.busy + 0.3);   // 节拍密度上升，update 中衰减
+    const b = state.bassE, m = state.midE, t = state.trebE;
+    // BPM 估计：最近几次节拍间隔取中位数
+    state.onsetTimes.push(now);
+    if (state.onsetTimes.length > 9) state.onsetTimes.shift();
+    if (state.onsetTimes.length > 4) {
+      const iv = [];
+      for (let i = 1; i < state.onsetTimes.length; i++) {
+        const d = state.onsetTimes[i] - state.onsetTimes[i - 1];
+        if (d > 240 && d < 1200) iv.push(d);
+      }
+      if (iv.length > 2) {
+        iv.sort((x, y) => x - y);
+        state.bpm = Math.round(60000 / iv[iv.length >> 1]);
+      }
+    }
+
+    if (state.mode === 'kd') { kdBeat(power, now, b, m, t); return; }
+
+    if (b >= m && b >= t) {                    // 低音主导 → 礼花弹
+      if (now - state.lastShell < 320) return;
+      state.lastShell = now;
+      const s = Math.min(1.6, 0.7 + power * 0.18);
+      launchShell(W * (0.14 + Math.random() * 0.72), H * (0.12 + Math.random() * 0.26),
+                  (state.hueBase + 140) % 360, s);
+      if (power > 2.3)                          // 强拍：双响
+        setTimeout(() => launchShell(W * (0.14 + Math.random() * 0.72), H * (0.12 + Math.random() * 0.26), (state.hueBase + 60) % 360, s * 0.8), 140);
+    } else if (m >= t) {                       // 中频主导 → 万花筒烟花，色相取自主导音高
+      const hue = dominantHue();
+      kaleidoBurst(W * (0.18 + Math.random() * 0.64), H * (0.14 + Math.random() * 0.34),
+                   (hue + state.hueBase * 0.15) % 360, Math.min(1.4, 0.6 + power * 0.15));
+    } else {                                    // 高频主导 → 星光
+      sparkle(W * (0.15 + Math.random() * 0.7), H * (0.1 + Math.random() * 0.3), 10 + 14 * Math.min(2, power));
+    }
+  }
+
+  // 主导频率 → 音高 → 色相（midi 音高类 × 30°）
+  function dominantHue() {
+    if (!player.freq) return state.hueBase;
+    let best = 4, bv = 0;
+    for (let i = 4; i < 420; i++) if (player.freq[i] > bv) { bv = player.freq[i]; best = i; }
+    const hz = best * player.ctx.sampleRate / player.analyser.fftSize;
+    const midi = 69 + 12 * Math.log2(hz / 440);
+    return ((midi % 12) + 12) % 12 * 30;
+  }
+
+  // CORS 被拒：重建一个不走 WebAudio 的音频元素（恢复出声），画面转为律动模拟
+  function corsFallback() {
+    if (player.sim) return;
+    player.sim = true;
+    try { player.el.pause(); player.el.src = ''; } catch (e) {}
+    const el = new Audio();
+    el.src = player.tracks[player.idx]?.url || '';
+    el.volume = player.muted ? 0 : player.volume;
+    el.addEventListener('ended', () => player.next(true));
+    el.play().catch(() => {});
+    player.el = el; player.srcNode = null;
+    toast('该链接不允许频谱分析，已切换：正常播放 + 律动模拟烟花');
+    $('srcTag').textContent = '（模拟律动）';
+  }
+
+  // 模拟律动：无分析数据时按 2Hz 脉冲近似节拍
+  function simulate(now) {
+    if (!player.sim || !player.playing()) return;
+    const ph = (now / 500) % 1;                 // 120 BPM
+    state.bassE = 0.35 + 0.4 * Math.exp(-ph * 6);
+    state.midE = 0.25 + 0.3 * Math.exp(-((now / 1000 + 0.25) % 1) * 5);
+    state.trebE = 0.15 + 0.25 * Math.abs(Math.sin(now / 170));
+    if (ph < 0.08 && now - state.lastOnset > 240) {
+      state.lastOnset = now;
+      onBeat(1.4, now);
+    }
+  }
+
+  // ---------- 演化与绘制 ----------
+  function update(dt, now) {
+    for (let i = state.shells.length - 1; i >= 0; i--) {
+      const s = state.shells[i];
+      s.vy += G * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.r += dt * 6;
+      addP({ x: s.x + (Math.random() - .5) * 2, y: s.y, vx: (Math.random() - .5) * 12, vy: 26 + Math.random() * 20,
+             age: 0, life: 0.3 + Math.random() * 0.25, hue: s.hue, sat: 70, lum: 70,
+             size: 0.8, drag: 0.95, grav: 0.15, tw: false });
+      if (s.vy >= -34) {                        // 上升耗尽 → 爆炸
+        explode(s.x, s.y, s.hue, s.strength);
+        state.shells.splice(i, 1);
+      }
+    }
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+      const p = state.particles[i];
+      p.age += dt;
+      if (p.age >= p.life) { state.particles.splice(i, 1); continue; }
+      p.vy += G * p.grav * dt;
+      const d = Math.pow(p.drag, dt * 60);
+      p.vx *= d; p.vy *= d;
+      p.x += p.vx * dt; p.y += p.vy * dt;
+    }
+    for (let i = state.flashes.length - 1; i >= 0; i--) {
+      state.flashes[i].age += dt;
+      if (state.flashes[i].age >= state.flashes[i].life) state.flashes.splice(i, 1);
+    }
+    // 万花筒形状：自转 + 外漂 + 全局旋转（转速随低音）
+    state.busy = Math.max(0, state.busy - dt * 0.55);   // 节拍密度衰减（半衰约 1.3s）
+    state.kdRot += (0.1 + state.bassE * 0.9) * dt;
+    for (let i = state.shapes.length - 1; i >= 0; i--) {
+      const s = state.shapes[i];
+      s.age += dt;
+      if (s.age >= s.life) { state.shapes.splice(i, 1); continue; }
+      s.rot += s.rotV * dt;
+      s.rad += s.drift * (1 + state.busy * 0.9) * dt;   // 快节奏时外漂加速，中心更快清空
+    }
+    // 空闲呼吸：暂停/弱拍时缓慢补充图形，保持 V1 常转万花筒的生命感
+    if (state.mode === 'kd' && state.shapes.length < 5 && now - state.lastIdle > 1400) {
+      state.lastIdle = now;
+      kdSpawn(1, 0.55, (state.hueBase += 17) % 360, ['ring', 'petal', 'poly']);
+    }
+  }
+
+  function draw(now) {
+    ctx.globalCompositeOperation = 'source-over';
+    if (state.mode === 'kd') {
+      // 径向拖影衰减：'lighter' 叠加下中心会逐帧累积亮度（≈alpha/衰减率），
+      // 节奏越快（busy↑）中心衰减越强，直接压低加色累积上限，根治轴心过曝
+      const cf = 0.26 + 0.26 * state.busy;
+      const mid = 0.26 + (cf - 0.26) * 0.45;
+      const fade = ctx.createRadialGradient(CX, CYK, 0, CX, CYK, Math.max(W, H) * 0.55);
+      fade.addColorStop(0, `rgba(6,10,24,${cf})`);
+      fade.addColorStop(0.3, `rgba(6,10,24,${mid})`);
+      fade.addColorStop(1, 'rgba(6,10,24,0.26)');
+      ctx.fillStyle = fade;
+    } else {
+      ctx.fillStyle = 'rgba(6, 10, 24, 0.2)';
+    }
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.globalCompositeOperation = 'lighter';
+    // 星空（闪烁速率随高频能量）
+    for (const st of stars) {
+      const a = 0.25 + 0.45 * (0.5 + 0.5 * Math.sin(now / 1000 * st.sp + st.ph)) * (0.6 + state.trebE * 1.6);
+      ctx.fillStyle = `rgba(200,215,255,${a})`;
+      ctx.fillRect(st.x, st.y, st.r, st.r);
+    }
+
+    if (state.mode === 'fw') {
+      // 低音地平线辉光
+      const glow = ctx.createLinearGradient(0, H, 0, H * 0.82);
+      glow.addColorStop(0, `hsla(${(state.hueBase + 200) % 360}, 80%, 55%, ${0.06 + state.bassE * 0.22})`);
+      glow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, H * 0.8, W, H * 0.2);
+    } else {
+      // 万花筒中心核心辉光，随低音呼吸；节拍密集时收敛（防中心过曝）
+      const damp = 1 - 0.5 * state.busy;
+      const coreR = (36 + state.bassE * 150) * (1 - 0.35 * state.busy) + Math.sin(now / 900) * 6;
+      const cg = ctx.createRadialGradient(CX, CYK, 0, CX, CYK, coreR);
+      cg.addColorStop(0, `hsla(${state.hueBase}, 85%, ${72 - 6 * state.busy}%, ${Math.min(0.24, (0.13 + state.bassE * 0.28) * damp)})`);
+      cg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = cg;
+      ctx.fillRect(CX - coreR, CYK - coreR, coreR * 2, coreR * 2);
+    }
+
+    // 爆炸闪光（k：万花筒中心闪光在快节奏下的强度折扣）
+    for (const f of state.flashes) {
+      const t = f.age / f.life, a = (1 - t) * (1 - t) * 0.5 * (f.k ?? 1);
+      const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r);
+      g.addColorStop(0, `hsla(${f.hue}, 90%, 80%, ${a})`);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(f.x - f.r, f.y - f.r, f.r * 2, f.r * 2);
+    }
+    // 粒子
+    for (const p of state.particles) {
+      const t = p.age / p.life;
+      let a = Math.pow(1 - t, 1.5);
+      if (p.tw) a *= 0.45 + 0.55 * Math.abs(Math.sin(p.age * 22 + p.x));
+      if (a < 0.03) continue;
+      const sz = Math.max(0.4, p.size * (1 - t * 0.55));
+      ctx.fillStyle = `hsla(${p.hue}, ${p.sat}%, ${p.lum}%, ${a})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, sz, 0, TAU); ctx.fill();
+    }
+    // 上升的弹体
+    for (const s of state.shells) {
+      ctx.fillStyle = `hsla(${s.hue}, 90%, 75%, 0.95)`;
+      ctx.beginPath(); ctx.arc(s.x, s.y, 2.2, 0, TAU); ctx.fill();
+    }
+    // 万花筒图形：D_N 群复制（k 旋转 × m 镜像），双色（本 hue / hue+55）
+    if (state.mode === 'kd') {
+      const N = state.N;
+      const rMid = Math.min(W, H) * 0.22;            // 近心衰减半径：图形越靠中心越暗
+      for (const sh of state.shapes) {
+        const t = sh.age / sh.life;
+        const coreDim = 0.35 + 0.65 * Math.min(1, sh.rad / rMid);
+        const alpha = Math.pow(1 - t, 1.35) * 0.8 * coreDim * (1 - 0.2 * state.busy);
+        if (alpha < 0.02) continue;
+        const grow = 1 + 0.07 * Math.sin(sh.age * 5 + sh.ph);
+        const r = sh.r * (0.75 + 0.45 * Math.min(1, sh.age * 3)) * grow;   // 出生时展开
+        const mEnd = (sh.kind === 'dot' || sh.kind === 'ring') ? 1 : 2;    // 圆形自身对称，免镜像
+        for (let k = 0; k < N; k++) for (let m = 0; m < mEnd; m++) {
+          const a = (m ? -sh.ang : sh.ang) + k * TAU / N + sh.rot + state.kdRot;
+          const px = CX + Math.cos(a) * sh.rad, py = CYK + Math.sin(a) * sh.rad;
+          ctx.strokeStyle = `hsla(${m ? sh.hue : (sh.hue + 55) % 360}, 88%, ${sh.lum}%, ${alpha})`;
+          ctx.fillStyle = ctx.strokeStyle;
+          ctx.lineWidth = sh.lw * (1 + state.bassE * 0.7 * (1 - 0.45 * state.busy));
+          drawShapePath(sh.kind, px, py, r, a, sh, m);
+        }
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function drawMeter() {
+    const m = $('meter'), c = m.getContext('2d');
+    const w = m.clientWidth, h = 26;
+    c.clearRect(0, 0, w, h);
+    if (!player.freq) return;
+    const bars = Math.min(48, Math.floor(w / 7));
+    for (let i = 0; i < bars; i++) {
+      // 对数取频：低频细分、高频合并
+      const bin = Math.floor(Math.pow(i / bars, 1.7) * player.freq.length * 0.55) + 2;
+      const v = player.freq[bin] / 255;
+      const bh = Math.max(1.5, v * (h - 3));
+      c.fillStyle = `hsla(${258 - i * 4.5}, 85%, ${45 + v * 30}%, ${0.35 + v * 0.65})`;
+      c.fillRect((i + 0.15) * (w / bars), h - bh - 1, (w / bars) * 0.7, bh);
+    }
+  }
+
+  // ---------- HUD ----------
+  function fmt(s) {
+    if (!isFinite(s)) s = 0;
+    s = Math.floor(s);
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }
+  let hudNext = 0, seeking = false;
+  function updateHUD(now) {
+    drawMeter();
+    if (now < hudNext) return;
+    hudNext = now + 150;
+    $('statP').textContent = state.particles.length + state.shapes.length;
+    $('statBpm').textContent = state.bpm || '—';
+    if (player.el && !seeking) {
+      const d = player.el.duration;
+      $('time').textContent = fmt(player.el.currentTime) + ' / ' + fmt(d);
+      if (isFinite(d) && d > 0) $('seek').value = Math.round(player.el.currentTime / d * 1000);
+    }
+  }
+
+  function setPlayIcon() { $('btnPlay').textContent = player.playing() ? '⏸' : '▶'; }
+
+  function renderPlaylist() {
+    const ul = $('playlist');
+    if (player.tracks.length < 2) { ul.innerHTML = ''; ul.style.display = 'none'; return; }
+    ul.style.display = 'block';
+    ul.innerHTML = player.tracks.map((t, i) =>
+      `<li class="${i === player.idx ? 'cur' : ''}" data-i="${i}">${i + 1}. ${escapeHtml(t.name)}</li>`).join('');
+  }
+  $('playlist').addEventListener('click', e => {
+    const li = e.target.closest('li');
+    if (li) player.playIdx(+li.dataset.i);
+  });
+
+  // ---------- Toast ----------
+  let toastTimer = 0;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // ---------- 交互 ----------
+  canvas.addEventListener('pointerdown', e => {
+    player.ensureGraph();
+    if (document.body.classList.contains('fs') && $('hud').classList.contains('hid')) return;   // 首击仅唤回面板
+    const hue = (state.hueBase += 37) % 360;
+    if (state.mode === 'kd') {
+      kdSpawn(3, 1, hue, ['petal', 'star', 'poly']);
+      state.flashes.push({ x: CX, y: CYK, r: 130, age: 0, life: 0.4, hue });
+    } else {
+      launchShell(e.clientX, Math.min(e.clientY, H * 0.55), hue, 1);
+    }
+  });
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+  $('btnPlay').addEventListener('click', () => player.toggle());
+  $('btnPrev').addEventListener('click', () => player.prev());
+  $('btnNext').addEventListener('click', () => player.next());
+
+  $('btnFile').addEventListener('click', () => $('file').click());
+  $('file').addEventListener('change', e => {
+    const list = [...e.target.files].filter(f => f.type.startsWith('audio') || /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(f.name));
+    if (!list.length) { toast('未识别到音频文件'); return; }
+    player.ensureGraph();
+    player.addTracks(list.map(f => ({ name: f.name, url: URL.createObjectURL(f), kind: 'file' })));
+    e.target.value = '';
+  });
+
+  $('btnUrl').addEventListener('click', () => {
+    const u = $('url').value.trim();
+    if (!/^https?:\/\//i.test(u)) { toast('请粘贴 http(s) 直链，例如 https://…/song.mp3'); return; }
+    player.ensureGraph();
+    player.sim = false; player.lastNonZero = performance.now();
+    const name = decodeURIComponent(u.split('/').pop().split('?')[0]) || u;
+    player.addTracks([{ name, url: u, kind: 'url' }]);
+    toast('正在尝试加载链接…');
+  });
+  $('url').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnUrl').click(); });
+
+  $('btnSound').addEventListener('click', () => {
+    player.muted = !player.muted;
+    const v = player.muted ? 0 : player.volume;
+    if (player.master) player.master.gain.linearRampToValueAtTime(v, player.ctx.currentTime + 0.15);
+    if (player.el) player.el.volume = player.sim ? v : 1;   // 模拟模式直接控元素音量
+    $('btnSound').textContent = player.muted ? '🔇' : '🔊';
+    $('btnSound').classList.toggle('on', player.muted);
+  });
+  $('vol').addEventListener('input', e => {
+    player.volume = e.target.value / 100;
+    if (!player.muted) {
+      if (player.master) player.master.gain.value = player.volume;
+      if (player.el && player.sim) player.el.volume = player.volume;
+    }
+  });
+
+  const seek = $('seek');
+  seek.addEventListener('pointerdown', () => seeking = true);
+  seek.addEventListener('change', () => {
+    if (player.el && isFinite(player.el.duration)) player.el.currentTime = seek.value / 1000 * player.el.duration;
+    seeking = false;
+  });
+  window.addEventListener('pointerup', () => seeking = false);
+
+  function setMode(m) {
+    state.mode = m;
+    $('mFw').classList.toggle('on', m === 'fw');
+    $('mKd').classList.toggle('on', m === 'kd');
+    $('mFw2').classList.toggle('on', m === 'fw');
+    $('mKd2').classList.toggle('on', m === 'kd');
+  }
+  $('mFw').addEventListener('click', () => setMode('fw'));
+  $('mKd').addEventListener('click', () => setMode('kd'));
+  $('mFw2').addEventListener('click', () => setMode('fw'));
+  $('mKd2').addEventListener('click', () => setMode('kd'));
+
+  // ---------- 面板收起 / 拖动 ----------
+  const hud = $('hud'), grip = $('grip');
+  const hudOff = on => {
+    document.body.classList.toggle('hud-off', on);
+    if (on) toast('面板已收起 · 点底部按钮或按 H 展开');
+  };
+  $('btnHide').addEventListener('click', () => hudOff(true));
+  $('hudTab').addEventListener('click', () => hudOff(false));
+
+  const POS_KEY = 'fwHudPos';
+  function applyPos(x, y) {
+    hud.style.left = x + 'px'; hud.style.top = y + 'px';
+    hud.style.right = hud.style.bottom = 'auto'; hud.style.transform = 'none';
+  }
+  function clampPos(x, y) {
+    const r = hud.getBoundingClientRect();
+    return {
+      x: Math.min(Math.max(4, x), Math.max(4, innerWidth - r.width - 4)),
+      y: Math.min(Math.max(4, y), Math.max(4, innerHeight - r.height - 4)),
+    };
+  }
+  try {                                          // 恢复上次拖放的位置
+    const p = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
+    if (p && isFinite(p.x) && isFinite(p.y)) applyPos(...Object.values(clampPos(p.x, p.y)));
+  } catch (e) {}
+  let dragging = null;
+  grip.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    const r = hud.getBoundingClientRect();
+    dragging = { dx: e.clientX - r.x, dy: e.clientY - r.y };
+    grip.setPointerCapture?.(e.pointerId);
+  });
+  grip.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const p = clampPos(e.clientX - dragging.dx, e.clientY - dragging.dy);
+    applyPos(p.x, p.y);
+  });
+  const endDrag = () => {
+    if (!dragging) return;
+    dragging = null;
+    const r = hud.getBoundingClientRect();
+    try { localStorage.setItem(POS_KEY, JSON.stringify({ x: Math.round(r.x), y: Math.round(r.y) })); } catch (e) {}
+  };
+  grip.addEventListener('pointerup', endDrag);
+  grip.addEventListener('pointercancel', endDrag);
+  grip.addEventListener('dblclick', () => {      // 双击手柄：复位到默认位置
+    hud.style.left = hud.style.top = hud.style.right = hud.style.bottom = hud.style.transform = '';
+    try { localStorage.removeItem(POS_KEY); } catch (e) {}
+  });
+  window.addEventListener('resize', () => {      // 窗口变化后把面板拉回可视区
+    if (!hud.style.left) return;
+    const r = hud.getBoundingClientRect();
+    applyPos(...Object.values(clampPos(r.x, r.y)));
+  });
+
+  // ---------- 全屏 / 沉浸模式：面板空闲自动隐藏，右上角悬浮切换 ----------
+  const fsRoot = document.documentElement;
+  function setFs(on) {
+    if (on) {
+      // 无 Fullscreen API 的环境（如 iPhone Safari）退化为沉浸模式：只藏面板
+      if (fsRoot.requestFullscreen) fsRoot.requestFullscreen().catch?.(() => {});
+      document.body.classList.add('fs');
+      toast('全屏模式：动一动鼠标 / 点按画面可唤回面板 · 再按 ⛶ 或 Esc 退出');
+      armIdle();
+    } else {
+      if (document.fullscreenElement) document.exitFullscreen().catch?.(() => {});
+      document.body.classList.remove('fs');
+      $('hud').classList.remove('hid');
+    }
+  }
+  let idleT = 0;
+  function armIdle() {
+    clearTimeout(idleT);
+    if (!document.body.classList.contains('fs')) return;
+    idleT = setTimeout(() => $('hud').classList.add('hid'), 3000);
+  }
+  function wakeHud() {
+    if (!document.body.classList.contains('fs')) return;
+    $('hud').classList.remove('hid');
+    armIdle();
+  }
+  $('btnFs').addEventListener('click', () => setFs(!document.body.classList.contains('fs')));
+  document.addEventListener('fullscreenchange', () => {   // Esc 退出系统全屏时同步状态
+    if (!document.fullscreenElement) { document.body.classList.remove('fs'); $('hud').classList.remove('hid'); }
+  });
+  ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
+    document.addEventListener(ev, wakeHud, { passive: true }));
+
+  $('cellN').addEventListener('click', () => {
+    const opts = [6, 8, 10, 12, 14, 16, 18];
+    state.N = opts[(opts.indexOf(state.N) + 1) % opts.length] ?? 8;
+    $('statN').textContent = state.N;
+  });
+  $('btnClear').addEventListener('click', () => {
+    state.particles = []; state.shells = []; state.flashes = []; state.shapes = [];
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#060a18'; ctx.fillRect(0, 0, W, H);
+  });
+  $('btnShot').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = `fireworks-${Date.now()}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  // 拖放导入
+  let dragDepth = 0;
+  window.addEventListener('dragenter', e => { e.preventDefault(); if (++dragDepth === 1) $('drop').classList.add('show'); });
+  window.addEventListener('dragleave', e => { e.preventDefault(); if (--dragDepth <= 0) { dragDepth = 0; $('drop').classList.remove('show'); } });
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => {
+    e.preventDefault(); dragDepth = 0; $('drop').classList.remove('show');
+    const list = [...(e.dataTransfer?.files || [])].filter(f => f.type.startsWith('audio') || /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(f.name));
+    if (list.length) {
+      player.ensureGraph();
+      player.addTracks(list.map(f => ({ name: f.name, url: URL.createObjectURL(f), kind: 'file' })));
+    } else toast('拖入的不是音频文件');
+  });
+
+  window.addEventListener('keydown', e => {
+    if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName) && e.target.type !== 'range') return;
+    if (e.key === ' ') { e.preventDefault(); player.toggle(); }
+    else if (e.key === 'ArrowRight' && player.el) player.el.currentTime = Math.min(player.el.duration || 0, player.el.currentTime + 5);
+    else if (e.key === 'ArrowLeft' && player.el) player.el.currentTime = Math.max(0, player.el.currentTime - 5);
+    else if (e.key >= '4' && e.key <= '9') { state.N = +e.key * 2; $('statN').textContent = state.N; }
+    else if (e.key === 'm' || e.key === 'M') $('btnSound').click();
+    else if (e.key === 'f' || e.key === 'F') $('btnFs').click();
+    else if (e.key === 'h' || e.key === 'H') hudOff(!document.body.classList.contains('hud-off'));
+    else if (e.key === 'v' || e.key === 'V') setMode(state.mode === 'fw' ? 'kd' : 'fw');
+    else if (e.key === 's' || e.key === 'S') $('btnShot').click();
+    else if (e.key === 'c' || e.key === 'C') $('btnClear').click();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (!player.ctx) return;
+    if (document.hidden) player.ctx.suspend(); else player.ctx.resume();
+  });
+
+  // ---------- 内置示范曲：OfflineAudioContext 实时合成（旋律改编版，非原唱录音） ----------
+  // 音色：加法合成的钢琴感音色（1~4 次谐波 + 指数衰减）＋正弦下扫底鼓＋噪声军鼓/踩镲
+  function bufferToWav(buf) {
+    const n = buf.length, ch = buf.numberOfChannels;
+    const out = new DataView(new ArrayBuffer(44 + n * ch * 2));
+    const ws = (o, s) => { for (let i = 0; i < s.length; i++) out.setUint8(o + i, s.charCodeAt(i)); };
+    ws(0, 'RIFF'); out.setUint32(4, 36 + n * ch * 2, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+    out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, ch, true);
+    out.setUint32(24, buf.sampleRate, true); out.setUint32(28, buf.sampleRate * ch * 2, true);
+    out.setUint16(32, ch * 2, true); out.setUint16(34, 16, true);
+    ws(36, 'data'); out.setUint32(40, n * ch * 2, true);
+    let o = 44;
+    for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) {
+      const v = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]));
+      out.setInt16(o, v < 0 ? v * 32768 : v * 32767, true); o += 2;
+    }
+    return new Blob([out], { type: 'audio/wav' });
+  }
+
+  async function renderSong(s) {
+    const sr = 22050;
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const ac = new OAC(1, Math.ceil(sr * (s.len * s.unit + 1.6)), sr);
+    const bus = ac.createGain(); bus.gain.value = 0.9;
+    const comp = ac.createDynamicsCompressor();
+    bus.connect(comp); comp.connect(ac.destination);
+    const noiseBuf = ac.createBuffer(1, sr * 0.25 | 0, sr);
+    const nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+
+    const tone = (t, midi, d, vol, bright = 1) => {
+      const f = mtof(midi), g = ac.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.0006, t + Math.max(0.12, d));
+      g.connect(bus);
+      for (const [mul, a] of [[1, 1], [2, 0.42 * bright], [3, 0.2 * bright], [4, 0.09 * bright]]) {
+        const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = f * mul;
+        const og = ac.createGain(); og.gain.value = a;
+        o.connect(og); og.connect(g);
+        o.start(t); o.stop(t + d + 0.08);
+      }
+    };
+    const kick = (t, v = 0.85) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.setValueAtTime(150, t);
+      o.frequency.exponentialRampToValueAtTime(42, t + 0.11);
+      g.gain.setValueAtTime(v, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.25);
+    };
+    const hat = (t, v = 0.12, dd = 0.045) => {
+      const n = ac.createBufferSource(); n.buffer = noiseBuf;
+      const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 6500;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + dd);
+      n.connect(f); f.connect(g); g.connect(bus); n.start(t); n.stop(t + dd + 0.02);
+    };
+    const snare = (t, v = 0.34) => {
+      const n = ac.createBufferSource(); n.buffer = noiseBuf;
+      const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1700; f.Q.value = 0.8;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+      n.connect(f); f.connect(g); g.connect(bus); n.start(t); n.stop(t + 0.16);
+    };
+
+    for (const [m, t, d] of s.mel) tone(t * s.unit + 0.05, m, d * s.unit * 1.35, 0.3);
+    for (const [m, t, d] of s.bass) tone(t * s.unit + 0.02, m, d * s.unit * 1.5, 0.24, 0.35);
+    if (s.drums) for (let bar = 0; (bar + 1) * 8 <= s.len; bar++) {
+      const t0 = bar * 8 * s.unit, at = u => t0 + u * s.unit;
+      if (s.drums === 'ballad') {          // 抒情摇滚：底鼓 1/3 拍 · 军鼓 2/4 拍 · 八分踩镲
+        kick(at(0)); kick(at(4), 0.7); snare(at(2)); snare(at(6));
+        for (let u = 0; u < 8; u++) hat(at(u), u % 2 ? 0.07 : 0.13);
+      } else {                             // 律动流行：四踩底鼓 + 反拍踩镲
+        for (const u of [0, 2, 4, 6]) kick(at(u), 0.8);
+        snare(at(2), 0.3); snare(at(6), 0.3);
+        for (const u of [1, 3, 5, 7]) hat(at(u), 0.16, 0.06);
+      }
+    }
+    return bufferToWav(await ac.startRendering());
+  }
+
+  // —— 曲谱（简化的旋律改编；单位 = 八分音符）——
+  const SONGS = (() => {
+    // 致爱丽丝：主题段 ×3（A 小调，无鼓，钢琴独奏）
+    const fePass = [
+      [76,0,1],[75,1,1],[76,2,1],[75,3,1],[76,4,1],[71,5,1],[74,6,1],[72,7,1],
+      [69,8,1.6],[60,9,1],[64,10,1],[69,11,1],
+      [71,12,1.6],[64,13,1],[68,14,1],[71,15,1],
+      [72,16,1.6],[64,17,1],[76,18,1],[75,19,1],
+      [76,20,1],[75,21,1],[76,22,1],[75,23,1],[76,24,1],[71,25,1],[74,26,1],[72,27,1],
+      [69,28,1.6],[60,29,1],[64,30,1],[69,31,1],
+      [71,32,1.6],[64,33,1],[72,34,1],[71,35,1],
+      [69,36,2.6],
+    ];
+    const feBass = [
+      [45,8,1.2],[52,9,1.2],[57,10.5,1.5],   [40,12,1.2],[52,13,1.2],[56,14.5,1.5],
+      [45,16,1.2],[52,17,1.2],[57,18.5,1.5], [45,28,1.2],[52,29,1.2],[57,30.5,1.5],
+      [40,32,1.2],[52,33,1.2],[56,34.5,1.5], [45,36,1.2],[52,37,1.2],[57,38,2.6],
+    ];
+    const feMel = [], feLo = [];
+    for (let p = 0; p < 3; p++) {
+      for (const n of fePass) feMel.push([n[0], n[1] + p * 38, n[2]]);
+      for (const n of feBass) feLo.push([n[0], n[1] + p * 38, n[2]]);
+    }
+
+    // 海阔天空：副歌旋律改编（C 大调，抒情摇滚 72BPM，C-G-Am-Em-F-C-Dm-C）
+    const hktMel = [
+      [67,0,1],[69,1,1],[72,2,2],[72,4,1],[71,5,1],[69,6,2],
+      [67,8,2],[64,10,1],[67,11,1],[69,12,3],[64,15,1],
+      [64,16,1],[62,17,1],[60,18,2],[62,20,2],[64,22,2],
+      [67,24,4],[71,28,1],[72,29,3],
+      [72,32,1],[74,33,1],[76,34,2],[76,36,1],[74,37,1],[72,38,2],
+      [71,40,2],[69,42,1],[71,43,1],[72,44,4],
+      [69,48,1],[67,49,1],[64,50,2],[67,52,2],[69,54,2],
+      [60,56,6],
+    ];
+    const hktBass = [];
+    [48, 43, 45, 40, 41, 48, 50, 48].forEach((r, b) => {
+      const t0 = b * 8;
+      hktBass.push([r, t0, 2.5], [r + 7, t0 + 2, 1.5], [r, t0 + 4, 2.5], [r + 12, t0 + 6, 1.8]);
+    });
+
+    // 我的未来不是梦：副歌旋律改编（C-G-Am-F 循环，120BPM），副歌重复两遍
+    const wldlOnce = [
+      [67,0,1],[67,1,1],[69,2,1],[71,3,1],[72,4,2],[71,6,1],[69,7,1],
+      [67,8,2],[64,10,1],[62,11,1],[64,12,3],
+      [69,16,1],[69,17,1],[71,18,1],[72,19,1],[74,20,2],[72,22,2],
+      [65,24,1],[64,25,1],[62,26,2],[60,28,4],
+      [67,32,1],[67,33,1],[69,34,1],[71,35,1],[72,36,2],[74,38,1],[72,39,1],
+      [71,40,2],[69,41,1],[67,42,1],[69,43,1],[71,44,3],
+      [72,48,1],[74,49,1],[76,50,2],[74,52,1],[72,53,1],[71,54,2],
+      [69,56,1],[67,57,1],[64,58,2],[67,60,4],
+    ];
+    const wldlMel = wldlOnce.concat(wldlOnce.map(([m, t, d]) => [m, t + 64, d]));
+    const wldlBass = [];
+    for (let b = 0; b < 16; b++) {
+      const r = [48, 43, 45, 41][b % 4], t0 = b * 8;
+      wldlBass.push([r, t0, 2], [r, t0 + 3, 1], [r + 7, t0 + 4, 2], [r, t0 + 6, 2]);
+    }
+
+    return [
+      { name: '海阔天空 · 示范旋律',        unit: 60 / 72 / 2,  len: 64,  mel: hktMel,  bass: hktBass,  drums: 'ballad' },
+      { name: '我的未来不是梦 · 示范旋律',  unit: 60 / 120 / 2, len: 128, mel: wldlMel, bass: wldlBass, drums: 'pop' },
+      { name: '致爱丽丝 · 贝多芬（钢琴）',  unit: 0.21,          len: 114, mel: feMel,   bass: feLo,    drums: null },
+    ];
+  })();
+
+  async function initDemos() {
+    try {
+      const list = [];
+      for (const s of SONGS)
+        list.push({ name: s.name, url: URL.createObjectURL(await renderSong(s)), kind: 'demo' });
+      player.addTracks(list, false);           // 已就绪，等用户按 ▶ 再播（浏览器手势要求）
+      toast('已载入 3 首示范曲 —— 点 ▶ 播放');
+    } catch (e) {
+      toast('示范曲生成失败，可直接导入 MP3');
+    }
+  }
+  initDemos();
+
+  // ---------- 主循环 ----------
+  let last = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    analyse(now);
+    simulate(now);
+    update(dt, now);
+    draw(now);
+    updateHUD(now);
+  }
+  resize();
+  requestAnimationFrame(frame);
+
+  // 调试钩子（也用于自动化测试）
+  window.__fw = {
+    bands: () => ({ b: +state.bassE.toFixed(3), m: +state.midE.toFixed(3), t: +state.trebE.toFixed(3) }),
+    info: () => ({
+      playing: player.playing(), sim: player.sim, bpm: state.bpm,
+      mode: state.mode, busy: +state.busy.toFixed(3),
+      particles: state.particles.length, shapes: state.shapes.length,
+      tracks: player.tracks.length,
+      demoReady: player.tracks.some(t => t.kind === 'demo'),
+      titles: player.tracks.map(t => t.name),
+      idx: player.idx, time: player.el ? +player.el.currentTime.toFixed(2) : 0,
+      dur: player.el ? +((player.el.duration || 0).toFixed(2)) : 0,
+    }),
+  };
+})();
+</script>
+</body>
+</html>

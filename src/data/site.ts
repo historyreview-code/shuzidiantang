@@ -70,6 +70,16 @@ export const works = [
     status: '现场 + 画册',
   },
   {
+    id: 'fireworks-player',
+    title: '焰火播放器',
+    eyebrow: '音乐可视化',
+    href: '/fireworks/',
+    image: '/assets/img/fireworks.webp',
+    summary: '播放音乐，画面随节奏与频段实时绽放焰火与万花筒：内置三首合成示范曲，也能导入自己的歌。',
+    tags: ['音乐可视化', 'WebAudio', '实时'],
+    status: '在线可玩',
+  },
+  {
     id: 'cad',
     title: 'CAD→效果图流水线',
     eyebrow: '流程可视化',
