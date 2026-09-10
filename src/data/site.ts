@@ -78,6 +78,7 @@ export const works = [
     summary: '播放音乐，画面随节奏与频段实时绽放焰火与万花筒：内置三首合成示范曲，也能导入自己的歌。',
     tags: ['音乐可视化', 'WebAudio', '实时'],
     status: '在线可玩',
+    github: 'https://github.com/historyreview-code/fireworks-player',
   },
   {
     id: 'cad',
