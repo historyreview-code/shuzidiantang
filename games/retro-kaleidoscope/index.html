@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#08080a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>复古万花筒 · 万象镜</title>
+    <meta name="description" content="复古万花筒：点击重组光与对称，6–20 重镜像、转速可调、四套复古配色，可暂停与导出 PNG。" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./style.css?v=1.3" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand" aria-label="万象镜">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>万象镜</span>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button music-button" id="musicButton" type="button" aria-label="开启配乐" title="开启配乐">
+            <svg class="music-off-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12M9 10l10-2M6.5 19.5a2.5 2.5 0 1 1 0-5A2.5 2.5 0 0 1 6.5 19.5Zm10-2a2.5 2.5 0 1 1 0-5A2.5 2.5 0 0 1 16.5 17.5Z"></path></svg>
+            <svg class="music-on-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12M9 10l10-2M6.5 19.5a2.5 2.5 0 1 1 0-5A2.5 2.5 0 0 1 6.5 19.5Zm10-2a2.5 2.5 0 1 1 0-5A2.5 2.5 0 0 1 16.5 17.5Z"></path><path class="music-wave" d="M3 9v6m18-6v6"></path></svg>
+          </button>
+          <button class="icon-button" id="pauseButton" type="button" aria-label="暂停动画" title="暂停动画">
+            <svg class="pause-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>
+            <svg class="play-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m7 4 13 8-13 8Z"></path></svg>
+          </button>
+          <button class="icon-button" id="downloadButton" type="button" aria-label="导出图案" title="导出 PNG">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="stage" id="stage" aria-label="可交互万花筒画布">
+        <canvas id="kaleidoscope"></canvas>
+        <div class="vignette" aria-hidden="true"></div>
+        <div class="intro" id="intro">
+          <h1>每一次触碰，<br />都是新的秩序。</h1>
+          <p>点击画面，重新排列光与对称。</p>
+        </div>
+        <button class="generate-button" id="generateButton" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"></path></svg>
+          <span>生成新图案</span>
+        </button>
+      </section>
+
+      <aside class="control-panel" aria-label="万花筒控制面板">
+        <div class="control-group symmetry-group">
+          <div class="control-heading">
+            <label for="symmetry">对称</label>
+            <output id="symmetryValue">12</output>
+          </div>
+          <input id="symmetry" type="range" min="6" max="20" value="12" step="2" />
+        </div>
+
+        <div class="control-group">
+          <div class="control-heading">
+            <label for="speed">转速</label>
+            <output id="speedValue">0.18×</output>
+          </div>
+          <input id="speed" type="range" min="0" max="80" value="18" />
+        </div>
+
+        <fieldset class="palette-group">
+          <legend>色彩</legend>
+          <div class="palette-options" id="paletteOptions">
+            <button class="swatch is-active" type="button" data-palette="ember" aria-label="选择暮火色彩" aria-pressed="true"><span class="swatch-ember"></span></button>
+            <button class="swatch" type="button" data-palette="lagoon" aria-label="选择深海色彩" aria-pressed="false"><span class="swatch-lagoon"></span></button>
+            <button class="swatch" type="button" data-palette="orchid" aria-label="选择幽兰色彩" aria-pressed="false"><span class="swatch-orchid"></span></button>
+            <button class="swatch" type="button" data-palette="mono" aria-label="选择银白色彩" aria-pressed="false"><span class="swatch-mono"></span></button>
+          </div>
+        </fieldset>
+
+        <div class="pattern-meta" aria-live="polite">
+          <span id="patternName">暮火 · 001</span>
+          <span>点击画布重组</span>
+        </div>
+      </aside>
+    </main>
+    <script src="./app.js?v=1.3"></script>
+  </body>
+</html>
