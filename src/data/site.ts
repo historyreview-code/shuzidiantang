@@ -70,6 +70,16 @@ export const works = [
     status: '现场 + 画册',
   },
   {
+    id: 'seaside-delivery',
+    title: '海岸慢递',
+    eyebrow: 'WebGPU · 微缩世界',
+    href: '/seaside-delivery/',
+    image: '/assets/img/seaside-delivery.webp',
+    summary: '雨后的环岛路，一辆无人配送自行车沿海而行：穿过水坑，留下涟漪、水花与渐隐轮印。可调海风、曲率、灯光和像素质感。',
+    tags: ['Three.js', 'WebGPU', '交互场景'],
+    status: '站内新作',
+  },
+  {
     id: 'fireworks-player',
     title: '焰火播放器',
     eyebrow: '音乐可视化',
@@ -240,4 +250,3 @@ export const notes = [
     summary: '从作品散落各处，到 AI 协助下三天建成个人网站的全过程。',
   },
 ];
-

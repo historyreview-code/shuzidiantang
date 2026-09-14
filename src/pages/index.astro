@@ -6,7 +6,7 @@ import { cosmosSeries, notes, site, works } from '../data/site';
 
 const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
 
-// 右侧轮播：福利券置顶，其后地球、天文系列、陶土、时辰、时间地图、旅行实验室、CAD
+// 右侧轮播：福利券置顶，其后地球、新作、天文系列与其他代表作品
 const workCard = (w) => ({
   name: w.title,
   eyebrow: `${w.eyebrow} · ${w.status}`,
@@ -34,6 +34,7 @@ const perkCard = {
 const carousel = [
   perkCard,
   workCard(works[0]), // 数字地球
+  workCard(works.find((w) => w.id === 'seaside-delivery')!), // 海岸慢递
   {
     name: '天文馆 · 宇宙之旅',
     eyebrow: '系列 · 六集六主题',
@@ -41,11 +42,11 @@ const carousel = [
     img: cosmosSeries[0].img,
     href: '/cosmos/',
   },
-  workCard(works[1]), // 陶土动物园
-  workCard(works[2]), // dataism《时辰》
-  workCard(works[4]), // 上海时间地图
+  workCard(works.find((w) => w.id === 'clay')!), // 陶土动物园
+  workCard(works.find((w) => w.id === 'dataism')!), // dataism《时辰》
+  workCard(works.find((w) => w.id === 'shanghai-time-map')!), // 上海时间地图
   travelCard,
-  workCard(works[3]), // CAD→效果图流水线
+  workCard(works.find((w) => w.id === 'cad')!), // CAD→效果图流水线
 ];
 ---
 <BaseLayout current="home">
