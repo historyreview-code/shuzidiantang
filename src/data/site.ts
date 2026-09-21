@@ -70,6 +70,16 @@ export const works = [
     status: '现场 + 画册',
   },
   {
+    id: 'autumn-train',
+    title: '山河慢行 · 秋日列车',
+    eyebrow: '创意编程 · 山河声景',
+    href: '/autumn-train/',
+    image: '/assets/img/autumn-train.webp',
+    summary: '乘一列蒸汽小火车，穿行小兴安岭、松花江与黑龙江的五花山。五种视角、四座小站，日光与夕照交替，伴随刘飞解说、配乐与汽笛，循环漫游北境秋色。',
+    tags: ['Three.js', '秋日山河', '交互声景'],
+    status: '站内新作',
+  },
+  {
     id: 'seaside-delivery',
     title: '海岸慢递',
     eyebrow: 'WebGPU · 微缩世界',
