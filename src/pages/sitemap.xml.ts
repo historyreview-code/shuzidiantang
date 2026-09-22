@@ -1,8 +1,11 @@
 import type { APIRoute } from 'astro';
+import { research } from '../data/research';
 
 const urls = [
   ['/', 'weekly', '1.0'],
   ['/works/', 'weekly', '0.9'],
+  ['/research/', 'monthly', '0.8'],
+  ...research.map(report => [report.href, 'monthly', '0.8']),
   ['/notes/', 'weekly', '0.8'],
   ['/about/', 'yearly', '0.5'],
   ['/earth/', 'weekly', '0.9'],

@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResearchCard from '../../components/ResearchCard.astro';
+import { research } from '../../data/research';
+---
+<BaseLayout current="research" title="理论研究 · 劳伦斯实验室" description="围绕制度、经济与长期价值，整理有出处、可核验的专题研究。首篇：土地续期与补地价，以上海K11及REITs为案例。">
+  <main id="content" class="page">
+    <section class="page-title research-title">
+      <span class="kicker">理论研究 · Research</span>
+      <h1>理论研究</h1>
+      <p>从具体问题出发，把理论、政策与实践放在一起，形成有出处、可核验的判断。</p>
+    </section>
+    <section class="section research-archive" aria-label="研究报告">
+      {research.map(report => <ResearchCard report={report} />)}
+    </section>
+    <section class="section research-method">
+      <span class="kicker">研究方法</span>
+      <div><h2>先给结论，再展开依据。</h2><p>每份报告保留资料截止日期、适用地区与原始来源。事实、测算假设和研究判断分别交代，让结论可以复核，也能随新材料继续更新。</p></div>
+    </section>
+  </main>
+</BaseLayout>
+<style>
+.research-title{padding-bottom:16px}.research-archive{padding-top:16px}.research-method{display:grid;grid-template-columns:160px 1fr;gap:30px;border-top:1px solid var(--line);padding-top:35px;margin-bottom:30px}.research-method h2{font:500 26px/1.5 var(--serif);margin:0 0 15px}.research-method p{max-width:680px;font-size:14px;line-height:2;color:var(--ink-2)}@media(max-width:720px){.research-method{grid-template-columns:1fr;gap:15px}}
+</style>

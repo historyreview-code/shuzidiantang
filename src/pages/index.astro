@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CosmosSeries from '../components/CosmosSeries.astro';
 import TravelSeries from '../components/TravelSeries.astro';
+import ResearchCard from '../components/ResearchCard.astro';
 import { cosmosSeries, notes, site, works } from '../data/site';
 
 const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
@@ -106,6 +107,14 @@ const carousel = [
           </>
         ))}
       </div>
+    </section>
+
+    <section class="section" id="research">
+      <div class="section-head">
+        <div><span class="kicker">理论研究 · Research</span><h2>从问题出发，追溯依据</h2></div>
+        <div class="side"><p>理论、政策与实践相互参照。</p><a href="/research/">全部研究 →</a></div>
+      </div>
+      <ResearchCard />
     </section>
 
     <!-- ============ 旅行实验室系列（提前：作品流之后） ============ -->
