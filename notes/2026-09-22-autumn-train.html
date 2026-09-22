@@ -125,6 +125,7 @@
     frame.title = '小兴安岭金秋专列纪行 · 互动作品';
     frame.allow = 'autoplay; fullscreen';
     frame.allowFullscreen = true;
+    frame.addEventListener('load', () => frame.scrollIntoView({ block: 'center' }), { once: true });
     document.getElementById('journey-player').replaceChildren(frame);
   });
 </script>
