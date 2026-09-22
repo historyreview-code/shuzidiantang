@@ -1389,7 +1389,7 @@ a.social-row:hover { color: var(--amber); }
 .footer-kw .kw-zh { font-size: 0.74rem; }
 .footer-kw .kw-en { font-size: 0.62rem; }
 .site-footer p { margin: 4px 0 0; }
-.footer-beian { margin-top: 10px; font-size: 0.8rem; }
+.footer-beian { display: flex; flex-wrap: wrap; column-gap: 16px; margin-top: 10px; font-size: 0.8rem; }
 .footer-beian a {
   display: inline-block;
   padding: 8px 0;

@@ -32,7 +32,8 @@ export const site = {
   beian: {
     icp: '沪ICP备2026042531号',
     icpLink: 'https://beian.miit.gov.cn/',
-    // 公安备案通过后追加：gongan / gonganLink（https://beian.mps.gov.cn/）
+    gongan: '沪公网安备31011502407497号',
+    gonganLink: 'https://beian.mps.gov.cn/#/query/webSearch?code=31011502407497',
   },
 };
 
