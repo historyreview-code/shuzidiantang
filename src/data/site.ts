@@ -218,6 +218,13 @@ export const travelSeries = [
 
 export const notes = [
   {
+    title: '小兴安岭金秋专列纪行',
+    date: '2026-09-22',
+    category: '实践手记',
+    href: '/notes/2026-09-22-autumn-train.html',
+    summary: '给朋友们造一列穿行在东北五彩山林中的金秋专列。鹤岗、伊春、牡丹江、佳木斯，有空上车坐一会儿，不用担心错过末班车。',
+  },
+  {
     title: '我又用上了 Kimi',
     date: '2026-09-04',
     category: 'AI 手记',
