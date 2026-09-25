@@ -287,28 +287,62 @@ instances(unitRock,mat('#ffffff'),litter).castShadow=false;
 Object.assign(coverStats,{shrubCrowns:greenShrubs.length,grasses:lowGrass.length,ferns:ferns.length,reeds:reeds.length,leafLitter:litter.length});
 
 // One shared river field: no overlapping strips or seams at the confluence.
-const waterUniforms={uTime:{value:0},uSun:{value:new T.Vector3()},uEye:{value:new T.Vector3()},uReflection:{value:null},uTextureMatrix:{value:new T.Matrix4()},uWarm:{value:0},uReflectReady:{value:0}};
-const waterMaterial=new T.ShaderMaterial({uniforms:waterUniforms,side:T.DoubleSide,
+// Layered analytic waves and shallow light patterns inspired by Clearwater's
+// separation of surface, lighting and post effects. No FFT, extra textures or bloom.
+const waterPerformance={detail:1,frameMs:16.67,slowTime:0,fastTime:0,samples:0};
+function updateWaterPerformance(dt){
+ // Ignore tab resumes and long main-thread stalls; judge sustained rendering load.
+ if(paused||document.hidden||dt<=0||dt>.15)return;
+ const p=waterPerformance;p.samples++;
+ p.frameMs+=(dt*1000-p.frameMs)*(1-Math.exp(-dt/1.2));
+ p.slowTime=p.frameMs>26?p.slowTime+dt:0;
+ p.fastTime=p.frameMs<19?p.fastTime+dt:0;
+ if(p.slowTime>3){p.detail=0;p.slowTime=0;}
+ if(p.fastTime>8){p.detail=1;p.fastTime=0;}
+ waterUniforms.uDetail.value=T.MathUtils.damp(waterUniforms.uDetail.value,p.detail,2,dt);
+}
+const waterUniforms={uDetail:{value:1},uTime:{value:0},uSun:{value:new T.Vector3()},uEye:{value:new T.Vector3()},uReflection:{value:null},uTextureMatrix:{value:new T.Matrix4()},uWarm:{value:0},uReflectReady:{value:0}};
+const waterMaterial=new T.ShaderMaterial({uniforms:waterUniforms,side:T.DoubleSide,extensions:{derivatives:true},
  vertexShader:`varying vec3 vWorld; varying vec4 vMirror; uniform float uTime; uniform mat4 uTextureMatrix;
  void main(){vec3 p=position;p.y+=.075*sin(p.x*.32+p.z*.19-uTime*1.8)+.045*sin(p.z*.73-p.x*.11-uTime*2.4);vWorld=(modelMatrix*vec4(p,1.)).xyz;vMirror=uTextureMatrix*vec4(vWorld,1.);gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);}`,
- fragmentShader:`uniform float uTime,uWarm,uReflectReady;uniform vec3 uEye,uSun;uniform sampler2D uReflection;varying vec3 vWorld;varying vec4 vMirror;
+ fragmentShader:`uniform float uTime,uWarm,uReflectReady,uDetail;uniform vec3 uEye,uSun;uniform sampler2D uReflection;varying vec3 vWorld;varying vec4 vMirror;
  float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
  float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
  float riverX(float z){return 21.+48.*sin(z/182.)+18.*sin(z/83.);}
  float riverWidth(float z){return 28.+8.*sin(z/130.)+7.*smoothstep(50.,450.,-z);}
  float branchZ(float x){return 83.+.32*x+27.*sin(x/150.);}
  void main(){vec2 p=vWorld.xz;
+ // Evaluate derivatives before the shoreline discard to keep edge quads defined.
+ float footprint=max(length(dFdx(p)),length(dFdy(p)));
  float dm=abs(p.x-riverX(p.y))-riverWidth(p.y),db=p.x>15.?(abs(p.y-branchZ(p.x))-22.)/1.08:10000.;float d=min(dm,db);if(d>0.)discard;
  float branch=smoothstep(-9.,9.,dm-db);vec2 mainFlow=normalize(vec2(48./182.*cos(p.y/182.)+18./83.*cos(p.y/83.),1.));vec2 tribFlow=normalize(vec2(-1.,-.32-27./150.*cos(p.x/150.)));vec2 flow=normalize(mix(mainFlow,tribFlow,branch));vec2 across=vec2(-flow.y,flow.x);float along=dot(p,flow),crosswise=dot(p,across);
  vec2 q=p-flow*uTime*2.1;float n=noise(q*.095)+.45*noise(q*.25+17.);float ripple=sin(crosswise*.62+along*.22-uTime*2.3+2.*n);float ripple2=sin(along*.94+crosswise*.17-uTime*3.1+n*3.);
- vec3 normal=normalize(vec3(.09*cos(p.x*.32+p.y*.19-uTime*1.8),1.,.07*cos(p.y*.73-p.x*.11-uTime*2.4)));
- vec3 eye=normalize(uEye-vWorld);float fresnel=pow(1.-max(0.,dot(normal,eye)),3.);
+ // Exact derivatives of the two vertex waves, then smaller crossing ripples.
+ float a=p.x*.32+p.y*.19-uTime*1.8,b=p.y*.73-p.x*.11-uTime*2.4;
+ vec2 slope=vec2(.075*.32*cos(a)-.045*.11*cos(b),.075*.19*cos(a)+.045*.73*cos(b));
+ float detailFade=(1.-smoothstep(.7,3.5,footprint))*uDetail;
+ if(detailFade>.01){
+  float w1=dot(q,vec2(1.17,.74)),w2=dot(q,vec2(-.67,1.63))+uTime*.37;
+  slope+=detailFade*(vec2(1.17,.74)*.038*cos(w1)+vec2(-.67,1.63)*.021*cos(w2));
+ }
+ vec3 normal=normalize(vec3(-slope.x,1.,-slope.y));
+ vec3 eye=normalize(uEye-vWorld);float facing=max(0.,dot(normal,eye));float fresnel=.02+.98*pow(1.-facing,5.);
  float depth=smoothstep(0.,24.,-d);vec3 shallow=vec3(.15,.39,.32),deep=vec3(.018,.13,.125);vec3 col=mix(shallow,deep,depth);col+=vec3(.017,.035,.023)*(n-.65);
- vec2 uv=vMirror.xy/vMirror.w;uv+=vec2(ripple,ripple2)*.0018;vec3 reflection=texture2D(uReflection,clamp(uv,vec2(.001),vec2(.999))).rgb;
+ // An artistic shallow-water light hint, confined to banks rather than deep river.
+ float shallowLight=(1.-smoothstep(2.,16.,-d))*smoothstep(0.,1.5,-d)*detailFade;
+ if(shallowLight>.005){
+  vec2 ca=p*.62+vec2(uTime*.19,-uTime*.13);
+  float lattice=sin(ca.x+sin(ca.y*.81))+sin(ca.y+sin(ca.x*.73));
+  float lightWeb=pow(max(0.,1.-abs(lattice)*.85),5.);
+  col+=mix(vec3(.12,.17,.095),vec3(.20,.13,.055),uWarm)*lightWeb*shallowLight;
+ }
+ vec2 uv=vMirror.xy/vMirror.w;uv+=vec2(ripple,ripple2)*.0012+slope*.012;vec3 reflection=texture2D(uReflection,clamp(uv,vec2(.001),vec2(.999))).rgb;
  col=mix(col,reflection,(.14+fresnel*.30)*uReflectReady);
  float streak=pow(max(0.,sin(crosswise*1.55+n*5.)),20.)*pow(max(0.,sin(along*.32-uTime*2.2+n*4.)),8.);
  float flicker=smoothstep(.76,.97,noise(q*.65));col+=vec3(.56,.64,.46)*streak*(.08+.25*fresnel)*flicker;
- vec3 light=normalize(uSun),halfway=normalize(light+eye);float sun=pow(max(0.,dot(normal,halfway)),130.);col+=mix(vec3(.68,.72,.51),vec3(.92,.51,.20),uWarm)*sun*.65;
+ vec3 light=normalize(uSun),halfway=normalize(light+eye);// Broaden distant sun glints as subpixel waves disappear, limiting shimmer.
+ float exponent=mix(48.,160.,1.-smoothstep(.5,4.,footprint));
+ float sun=pow(max(0.,dot(normal,halfway)),exponent)*(exponent/160.);col+=mix(vec3(.68,.72,.51),vec3(.92,.51,.20),uWarm)*sun*.65;
  float edge=(1.-smoothstep(0.,3.,-d))*.32;float foam=smoothstep(.5,.8,noise(q*.7))*edge;col=mix(col,vec3(.65,.76,.59),foam);
  // Broken current lines become denser close to the banks.
  float current=pow(max(0.,sin(along*.9-uTime*2.5+n*4.)),18.)*smoothstep(.67,.91,noise(vec2(crosswise*.22,along*.025)));col+=vec3(.22,.29,.20)*current*.28;
@@ -318,10 +352,13 @@ const waterMaterial=new T.ShaderMaterial({uniforms:waterUniforms,side:T.DoubleSi
  }`});
 const wg=new T.PlaneGeometry(2400,2400,220,220);wg.rotateX(-Math.PI/2);wg.translate(0,.2,0);const water=new T.Mesh(wg,waterMaterial);water.frustumCulled=false;scene.add(water);
 const reflectionTarget=new T.WebGLRenderTarget(768,512,{minFilter:T.LinearFilter,magFilter:T.LinearFilter,format:T.RGBAFormat});reflectionTarget.texture.encoding=T.LinearEncoding;waterUniforms.uReflection.value=reflectionTarget.texture;
-const reflectionCamera=new T.PerspectiveCamera(),mirrorPlane=new T.Plane(),clip=new T.Vector4(),qclip=new T.Vector4(),reflectionLook=new T.Vector3(),normalWater=new T.Vector3(0,1,0);let reflectionFrame=0;
+const reflectionCamera=new T.PerspectiveCamera(),mirrorPlane=new T.Plane(),clip=new T.Vector4(),qclip=new T.Vector4(),reflectionLook=new T.Vector3(),normalWater=new T.Vector3(0,1,0);let reflectionFrame=0,reflectionUpdates=0;const reflectedEye=new T.Vector3(),reflectedDirection=new T.Vector3(),currentDirection=new T.Vector3();
 function renderWaterReflection(){
  waterUniforms.uTime.value=elapsed;waterUniforms.uEye.value.copy(camera.position);waterUniforms.uWarm.value=skyState.warm;waterUniforms.uSun.value.copy(sunDirection);
- if(reflectionFrame++%3!==0&&waterUniforms.uReflectReady.value)return;
+ camera.getWorldDirection(currentDirection);
+ const cameraCut=waterUniforms.uReflectReady.value&&(camera.position.distanceToSquared(reflectedEye)>2500||currentDirection.dot(reflectedDirection)<.94);
+ if(reflectionFrame++%(waterPerformance.detail?3:4)!==0&&waterUniforms.uReflectReady.value&&!cameraCut)return;
+ reflectedEye.copy(camera.position);reflectedDirection.copy(currentDirection);reflectionUpdates++;
  const y=.2;reflectionCamera.position.copy(camera.position);reflectionCamera.position.y=2*y-camera.position.y;camera.getWorldDirection(reflectionLook);reflectionLook.add(camera.position);reflectionLook.y=2*y-reflectionLook.y;
  reflectionCamera.up.copy(camera.up).reflect(normalWater);reflectionCamera.lookAt(reflectionLook);reflectionCamera.far=camera.far;reflectionCamera.near=camera.near;reflectionCamera.updateMatrixWorld();reflectionCamera.projectionMatrix.copy(camera.projectionMatrix);
  waterUniforms.uTextureMatrix.value.set(.5,0,0,.5,0,.5,0,.5,0,0,.5,.5,0,0,0,1).multiply(reflectionCamera.projectionMatrix).multiply(reflectionCamera.matrixWorldInverse);
@@ -630,11 +667,11 @@ renderer.domElement.addEventListener('wheel',e=>{e.preventDefault();zoom=clamp(z
 window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();paused=true;$('error').hidden=false;$('error').textContent='三维画面暂时中断，请重新打开本文件以继续旅程。';});
 let lastTime=performance.now(),hudTime=0;
-function frame(now){requestAnimationFrame(frame);let dt=clamp((now-lastTime)/1000,0,.05);lastTime=now;if(document.hidden)return;updateJourney(dt);updateTrain(dt);scene.updateMatrixWorld();cameraUpdate(dt);if(!paused){understoryWind.value=elapsed;birds.forEach((b,i)=>{let a=elapsed*.022+i*.05;b.position.set(Math.sin(a)*270+i*7,125+Math.sin(elapsed*.6+i)*3,Math.cos(a)*270+i*4);b.rotation.y=-a;b.scale.y=.6+Math.sin(elapsed*4+i)*.5;});}updateSound();hudTime+=dt;if(hudTime>.15){updateHUD();hudTime=0;}renderWaterReflection();renderer.render(scene,camera);}
+function frame(now){requestAnimationFrame(frame);const rawDt=(now-lastTime)/1000;let dt=clamp(rawDt,0,.05);lastTime=now;if(document.hidden)return;updateWaterPerformance(rawDt);updateJourney(dt);updateTrain(dt);scene.updateMatrixWorld();cameraUpdate(dt);if(!paused){understoryWind.value=elapsed;birds.forEach((b,i)=>{let a=elapsed*.022+i*.05;b.position.set(Math.sin(a)*270+i*7,125+Math.sin(elapsed*.6+i)*3,Math.cos(a)*270+i*4);b.rotation.y=-a;b.scale.y=.6+Math.sin(elapsed*4+i)*.5;});}updateSound();hudTime+=dt;if(hudTime>.15){updateHUD();hudTime=0;}renderWaterReflection();renderer.render(scene,camera);}
 updateTrain(0);scene.updateMatrixWorld();cameraUpdate(0);updateHUD();renderWaterReflection();renderer.render(scene,camera);requestAnimationFrame(frame);
 $('loading').style.opacity='0';setTimeout(()=>$('loading').remove(),900);
 // Read-only diagnostics plus an explicit simulation hook for full-loop verification.
-window.autumnTrain={getState:()=>({mobileMode,closingTime,stationName:dwell>0?stationDefs[nextStation].name:null,distance,total,odometer,lap,nextStation,dwell,stops,velocity,paused,view,activeView,trees:trunks.length,understory:{...coverStats},sky:{sunDirection:sunDirection.toArray(),warm:skyState.warm,nearPuffs:nearCloudData.length,farPuffs:farCloudData.length},crowns:crowns.length,audio:{voice:VOICE_META,enabled:soundOn,playing:voicePlaying,layers:{...soundLayers},context:audioCtx?.state,narrationTime:narrationAudio?.currentTime,...soundStats},bridges:bridgeEntries,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),advance:seconds=>{for(let t=0;t<seconds;t+=.05)updateJourney(Math.min(.05,seconds-t));updateTrain(0);scene.updateMatrixWorld();cameraUpdate(1);updateHUD();},setView:chooseView,getAudioStream:()=>captureDestination?.stream,whistle,stations:stationDefs.map(s=>({name:s.name,u:s.u,x:s.p.x,z:s.p.z,waterDistance:waterDistance(s.p.x,s.p.z)}))};
+window.autumnTrain={getState:()=>({mobileMode,closingTime,stationName:dwell>0?stationDefs[nextStation].name:null,distance,total,odometer,lap,nextStation,dwell,stops,velocity,paused,view,activeView,trees:trunks.length,understory:{...coverStats},sky:{sunDirection:sunDirection.toArray(),warm:skyState.warm,nearPuffs:nearCloudData.length,farPuffs:farCloudData.length},crowns:crowns.length,audio:{voice:VOICE_META,enabled:soundOn,playing:voicePlaying,layers:{...soundLayers},context:audioCtx?.state,narrationTime:narrationAudio?.currentTime,...soundStats},bridges:bridgeEntries,water:{version:'clearwater-inspired-v1',detail:waterUniforms.uDetail.value,targetDetail:waterPerformance.detail,frameMs:waterPerformance.frameMs,reflectionUpdates,reflectionSize:[reflectionTarget.width,reflectionTarget.height]},gpuResources:{...renderer.info.memory},drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),advance:seconds=>{for(let t=0;t<seconds;t+=.05)updateJourney(Math.min(.05,seconds-t));updateTrain(0);scene.updateMatrixWorld();cameraUpdate(1);updateHUD();},setView:chooseView,getAudioStream:()=>captureDestination?.stream,whistle,stations:stationDefs.map(s=>({name:s.name,u:s.u,x:s.p.x,z:s.p.z,waterDistance:waterDistance(s.p.x,s.p.z)}))};
 })();
 </script>
 </body></html>
