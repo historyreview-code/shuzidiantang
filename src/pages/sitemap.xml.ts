@@ -4,6 +4,7 @@ import { research } from '../data/research';
 const urls = [
   ['/', 'weekly', '1.0'],
   ['/works/', 'weekly', '0.9'],
+  ['/films/droplet/', 'monthly', '0.8'],
   ['/research/', 'monthly', '0.8'],
   ...research.map(report => [report.href, 'monthly', '0.8']),
   ['/notes/', 'weekly', '0.8'],

@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const film = '/films/droplet/droplet-1080p.mp4';
+const chapters = [
+  { time: 0, stamp: '00:00', title: '最后一场阅兵', note: '深空中，舰阵仍相信自己的力量。' },
+  { time: 18, stamp: '00:18', title: '不对……', note: '观测艇里，一位老科学家察觉了危险。' },
+  { time: 27, stamp: '00:27', title: '末日战役', note: '贯穿、转向，整片舰阵依次熄灭。' },
+  { time: 61, stamp: '01:01', title: '尚未熄灭的火种', note: '两艘提前离阵的战舰，驶向更远的星海。' },
+];
+---
+<BaseLayout current="works" title="水滴 · 末日战役 — 劳伦斯实验室" description="75 秒深空科幻动画：完美的水滴、老科学家的预警、猝不及防的连环撞击，以及驶向远方的两艘战舰。" image="/films/droplet/poster.webp">
+  <main id="content" class="page film-page">
+    <header class="page-title">
+      <span class="kicker">影像作品 · 科幻动画</span>
+      <h1>水滴 <span class="title-divider">/</span> 末日战役</h1>
+      <p>他们把整个时代的骄傲，驶向了星海。<br />直到那一滴完美的水，开始加速。</p>
+      <div class="film-meta"><span>2026.09.26</span><span>75 秒</span><span>1080p · 立体声</span></div>
+    </header>
+
+    <section class="screening" aria-label="水滴 · 末日战役放映厅">
+      <video id="droplet-player" controls playsinline preload="metadata" poster="/films/droplet/poster.webp" aria-label="播放水滴 · 末日战役，75 秒科幻动画" aria-describedby="film-caption">
+        <source src={film} type="video/mp4" />
+        你的浏览器暂不支持内嵌视频，请<a href={film}>打开 MP4 观看</a>。
+      </video>
+      <div class="screening-caption" id="film-caption"><span>建议开启声音，进入深空。</span><a href={film} download="水滴·末日战役.mp4">下载 MP4 ↓</a></div>
+      <p class="playback-error" id="playback-error" hidden>视频暂未加载成功，可以<a href={film}>直接打开 MP4</a>，或稍后重新播放。</p>
+    </section>
+
+    <section class="film-chapters" aria-labelledby="chapters-title">
+      <div class="section-head"><div><span class="kicker">四幕 · Chapters</span><h2 id="chapters-title">从骄傲，到星海里的余光</h2></div></div>
+      <div class="chapter-grid">
+        {chapters.map((chapter) => (
+          <button class="chapter" type="button" data-time={chapter.time} aria-label={`从 ${chapter.stamp} 播放：${chapter.title}`}>
+            <span class="chapter-time">{chapter.stamp} <span aria-hidden="true">↗</span></span>
+            <strong>{chapter.title}</strong>
+            <span class="chapter-note">{chapter.note}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <section class="film-note" aria-labelledby="film-note-title">
+      <h2 id="film-note-title">关于这部短片</h2>
+      <p>一次 AI 协作的科幻影像创作。以深蓝星海、漫画式光影和分层动画，重新想象水滴与地球联合舰队相遇的时刻；从老科学家的一个眼神，到爆炸后缓缓漂移的残骸，再给远去的两道航迹留下一点光。</p>
+      <p class="credit">灵感源自刘慈欣《三体Ⅱ：黑暗森林》。非官方致敬动画；片中字幕与短对白为本片创作，并非小说原文摘录。</p>
+      <a class="button" href="/works/">返回作品馆 →</a>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const player = document.querySelector<HTMLVideoElement>('#droplet-player');
+  const errorMessage = document.querySelector<HTMLElement>('#playback-error');
+  if (player) {
+    const seek = (time: number) => {
+      player.currentTime = time;
+      player.play().catch(() => player.focus());
+    };
+    let pendingSeek: number | null = null;
+    player.addEventListener('loadedmetadata', () => {
+      if (pendingSeek !== null) { seek(pendingSeek); pendingSeek = null; }
+    });
+    document.querySelectorAll<HTMLButtonElement>('.chapter').forEach((button) => {
+      button.addEventListener('click', () => {
+        const time = Number(button.dataset.time);
+        if (player.readyState >= 1) seek(time);
+        else { pendingSeek = time; player.load(); }
+        player.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+      });
+    });
+    const showError = () => { if (errorMessage) errorMessage.hidden = false; };
+    player.addEventListener('error', showError);
+    player.querySelector('source')?.addEventListener('error', showError);
+    player.addEventListener('playing', () => { if (errorMessage) errorMessage.hidden = true; });
+  }
+</script>
+
+<style>
+  .film-page { padding-bottom: 70px; }
+  .title-divider { font-weight: 400; color: var(--ink-3); margin: 0 .12em; }
+  .film-meta { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 24px; color: var(--ink-3); font-size: .8rem; letter-spacing: .04em; }
+  .screening { border: 1px solid var(--line); background: #060f20; box-shadow: var(--shadow); }
+  .screening video { width: 100%; aspect-ratio: 16 / 9; display: block; background: #060f20; }
+  .screening-caption { display: flex; justify-content: space-between; gap: 16px; padding: 17px 22px; color: #b8c9d5; font-size: .8rem; border-top: 1px solid #21334b; }
+  .screening-caption a, .playback-error a { color: #dceaf0; text-underline-offset: 4px; }
+  .playback-error { padding: 0 22px 16px; color: #e3ba93; }
+  .film-chapters { margin-top: 58px; }
+  .chapter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .chapter { appearance: none; text-align: left; color: var(--ink); font: inherit; border: 1px solid var(--line); background: var(--card); padding: 22px; cursor: pointer; }
+  .chapter:hover { border-color: var(--amber); }
+  .chapter:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+  .chapter-time { display: flex; justify-content: space-between; color: var(--ink-3); font-family: var(--mono); font-size: .75rem; margin-bottom: 22px; }
+  .chapter strong { display: block; font-family: var(--serif); font-size: 1.2rem; margin-bottom: 12px; }
+  .chapter-note { color: var(--ink-2); line-height: 1.85; font-size: .86rem; }
+  .film-note { max-width: 780px; margin-top: 56px; }
+  .film-note h2 { font-family: var(--serif); font-size: 1.35rem; }
+  .film-note p { line-height: 1.95; color: var(--ink-2); }
+  .film-note .credit { font-size: .84rem; color: var(--ink-3); margin: 20px 0 26px; }
+  @media (max-width: 800px) { .chapter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .chapter { padding: 16px; } .screening-caption { padding: 14px; font-size: .72rem; } .chapter strong { font-size: 1.03rem; } .film-chapters { margin-top: 38px; } }
+</style>

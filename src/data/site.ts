@@ -51,6 +51,16 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'droplet',
+    title: '水滴 · 末日战役',
+    eyebrow: '科幻动画 · 深空短片',
+    href: '/films/droplet/',
+    image: '/films/droplet/poster.webp',
+    summary: '一件完美的探测器，一场来不及回应的撞击。75 秒深空动画，从舰阵、预警与连环毁伤，到两艘战舰驶向远方。',
+    tags: ['科幻动画', '75 秒', '1080p'],
+    status: '影像新作',
+  },
+  {
     id: 'clay',
     title: '陶土动物园',
     eyebrow: 'Blender 手作',
