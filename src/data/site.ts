@@ -51,6 +51,16 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'single-bit-error',
+    title: '单比特错误',
+    eyebrow: '人文科幻 · 中文动态漫画',
+    href: '/films/single-bit-error/',
+    image: '/films/single-bit-error/poster.webp',
+    summary: '一次偶然改变了生活，他开始追问记忆、信仰与爱。根据刘宇昆英文小说非商业改编，八分钟中文配音短片。',
+    tags: ['刘宇昆', '中文配音', '1080p'],
+    status: '影像新作',
+  },
+  {
     id: 'droplet',
     title: '水滴 · 末日战役',
     eyebrow: '科幻动画 · 深空短片',

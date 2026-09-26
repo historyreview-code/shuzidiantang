@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const film = '/films/single-bit-error/hls/index.m3u8';
+const chapters = [
+  { time: 28.125, stamp: '00:28', title: '相遇', note: '一只纸箱，一顿临时拼起的午餐。' },
+  { time: 159, stamp: '02:39', title: '一个比特', note: '遥远的光，碰到生活的某个瞬间。' },
+  { time: 294.625, stamp: '04:54', title: '寻找', note: '他试图理解，她曾经看见的世界。' },
+  { time: 357.917, stamp: '05:57', title: '后来', note: '新的幸福，也给旧的爱留着位置。' },
+];
+---
+<BaseLayout current="works" title="单比特错误 — 劳伦斯实验室" description="根据刘宇昆英文小说改编的八分钟中文动态漫画。关于偶然、记忆，以及我们如何继续爱与生活。" image="/films/single-bit-error/poster.webp">
+  <main id="content" class="page film-page">
+    <header class="page-title">
+      <span class="kicker">影像作品 · 人文科幻</span>
+      <h1>单比特错误</h1>
+      <p>有些光，在我们出生以前就已经出发。<br />等它抵达，我们爱过的人，也许已经不在了。</p>
+      <div class="film-meta"><span>2026.09.26</span><span>8 分 02 秒</span><span>1080p · 中文配音与字幕</span></div>
+    </header>
+    <section class="screening" aria-label="单比特错误放映厅">
+      <video id="single-bit-player" controls playsinline preload="metadata" poster="/films/single-bit-error/poster.webp" data-source={film} aria-label="播放单比特错误，八分钟中文动态漫画" aria-describedby="film-caption"></video>
+      <noscript><p class="playback-error">请启用 JavaScript，或使用支持流媒体播放的浏览器<a href={film}>打开影片</a>。</p></noscript>
+      <div class="screening-caption" id="film-caption"><span>开启声音，留一点时间给这个故事。</span><a href="/films/single-bit-error/captions-zh.srt" download>下载中文字幕 ↓</a></div>
+      <p class="playback-error" id="playback-error" hidden>影片暂未加载成功，请刷新后重试。也可以<a href={film}>直接打开播放地址</a>。</p>
+    </section>
+    <section class="film-chapters" aria-labelledby="chapters-title">
+      <div class="section-head"><div><span class="kicker">四段旅程 · Chapters</span><h2 id="chapters-title">在光抵达之后</h2></div></div>
+      <div class="chapter-grid">
+        {chapters.map((chapter) => (
+          <button class="chapter" type="button" data-time={chapter.time} aria-label={`从 ${chapter.stamp} 播放：${chapter.title}`}>
+            <span class="chapter-time">{chapter.stamp} <span aria-hidden="true">↗</span></span>
+            <strong>{chapter.title}</strong><span class="chapter-note">{chapter.note}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+    <section class="film-note" aria-labelledby="film-note-title">
+      <h2 id="film-note-title">关于这部短片</h2>
+      <p>泰勒与莉迪娅相遇、相爱。一次微小的偶然改变了生活，他开始追问：记忆、信仰与爱，究竟靠什么变得真实？</p>
+      <p>本片从英文原作重新编写中文对白，以动态漫画、镜头运动和声音展开叙事。天使通过人物的主观光影呈现，让故事保留解释之外的余地。</p>
+      <p class="credit">原作：Ken Liu（刘宇昆），<a href="https://thoughtcrime.crummy.com/2009/Error.html" target="_blank" rel="noopener noreferrer">Single-Bit Error</a>，Thoughtcrime Experiments 2009。本片为非商业中文再创作，未使用出版中文译文；原画与中文配音由 AI 辅助生成。原作与本改编按 <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 2.5</a> 共享。分享及再创作须保留署名、来源、改编说明与许可。本片不表示原作者参与或背书。</p>
+      <div class="film-resources"><a href="/films/single-bit-error/script-zh.md" download>中文改编剧本 ↓</a><a href="/films/single-bit-error/credits-license.md" download>完整署名与许可 ↓</a></div>
+      <a class="button" href="/works/">返回作品馆 →</a>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  import Hls from 'hls.js';
+  const player = document.querySelector<HTMLVideoElement>('#single-bit-player');
+  const errorMessage = document.querySelector<HTMLElement>('#playback-error');
+  if (player) {
+    const source = player.dataset.source!;
+    const showError = () => { if (errorMessage) errorMessage.hidden = false; };
+    let hls: Hls | null = null;
+    if (player.canPlayType('application/vnd.apple.mpegurl')) {
+      player.src = source;
+    } else if (Hls.isSupported()) {
+      hls = new Hls({ maxBufferLength: 18, backBufferLength: 20 });
+      hls.loadSource(source);
+      hls.attachMedia(player);
+      let retries = 0;
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (!data.fatal) return;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && retries++ < 2) hls?.startLoad();
+        else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && retries++ < 2) hls?.recoverMediaError();
+        else showError();
+      });
+    } else showError();
+    const seek = (time: number) => {
+      player.currentTime = time;
+      player.play().catch(() => player.focus());
+    };
+    let pendingSeek: number | null = null;
+    player.addEventListener('loadedmetadata', () => {
+      if (pendingSeek !== null) { seek(pendingSeek); pendingSeek = null; }
+    });
+    document.querySelectorAll<HTMLButtonElement>('.chapter').forEach((button) => {
+      button.addEventListener('click', () => {
+        const time = Number(button.dataset.time);
+        if (player.readyState >= 1) seek(time);
+        else { pendingSeek = time; if (!hls) player.load(); }
+        player.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+      });
+    });
+    player.addEventListener('error', showError);
+    player.addEventListener('playing', () => { if (errorMessage) errorMessage.hidden = true; });
+    window.addEventListener('pagehide', () => hls?.destroy(), { once: true });
+  }
+</script>
+
+<style>
+  .film-page { padding-bottom: 70px; }
+  .film-resources { display:flex; flex-wrap:wrap; gap:14px 24px; margin: 22px 0 32px; font-size:.86rem; }
+  .film-note a { text-underline-offset: 4px; }
+  .title-divider { font-weight: 400; color: var(--ink-3); margin: 0 .12em; }
+  .film-meta { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 24px; color: var(--ink-3); font-size: .8rem; letter-spacing: .04em; }
+  .screening { border: 1px solid var(--line); background: #060f20; box-shadow: var(--shadow); }
+  .screening video { width: 100%; aspect-ratio: 16 / 9; display: block; background: #060f20; }
+  .screening-caption { display: flex; justify-content: space-between; gap: 16px; padding: 17px 22px; color: #b8c9d5; font-size: .8rem; border-top: 1px solid #21334b; }
+  .screening-caption a, .playback-error a { color: #dceaf0; text-underline-offset: 4px; }
+  .playback-error { padding: 0 22px 16px; color: #e3ba93; }
+  .film-chapters { margin-top: 58px; }
+  .chapter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .chapter { appearance: none; text-align: left; color: var(--ink); font: inherit; border: 1px solid var(--line); background: var(--card); padding: 22px; cursor: pointer; }
+  .chapter:hover { border-color: var(--amber); }
+  .chapter:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+  .chapter-time { display: flex; justify-content: space-between; color: var(--ink-3); font-family: var(--mono); font-size: .75rem; margin-bottom: 22px; }
+  .chapter strong { display: block; font-family: var(--serif); font-size: 1.2rem; margin-bottom: 12px; }
+  .chapter-note { color: var(--ink-2); line-height: 1.85; font-size: .86rem; }
+  .film-note { max-width: 780px; margin-top: 56px; }
+  .film-note h2 { font-family: var(--serif); font-size: 1.35rem; }
+  .film-note p { line-height: 1.95; color: var(--ink-2); }
+  .film-note .credit { font-size: .84rem; color: var(--ink-3); margin: 20px 0 26px; }
+  @media (max-width: 800px) { .chapter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .chapter { padding: 16px; } .screening-caption { padding: 14px; font-size: .72rem; } .chapter strong { font-size: 1.03rem; } .film-chapters { margin-top: 38px; } }
+</style>
