@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const film = '/films/single-bit-error/hls-minimax/index.m3u8';
+const film = '/films/single-bit-error/hls-minimax-volc/index.m3u8';
 const chapters = [
   { time: 29.875000, stamp: '00:29', title: '相遇', note: '一只纸箱，一顿临时拼起的午餐。' },
   { time: 155.250000, stamp: '02:35', title: '一个比特', note: '遥远的光，碰到生活的某个瞬间。' },
@@ -15,7 +15,7 @@ const chapters = [
       <span class="kicker">影像作品 · 人文科幻</span>
       <h1>单比特错误</h1>
       <p>有些光，在我们出生以前就已经出发。<br />等它抵达，我们爱过的人，也许已经不在了。</p>
-      <div class="film-meta"><span>2026.09.26</span><span>8 分 15 秒</span><span>1080p · MiniMax 配音重制版</span></div>
+      <div class="film-meta"><span>2026.09.26</span><span>8 分 15 秒</span><span>1080p · 配音与配乐重制版</span></div>
     </header>
     <section class="screening" aria-label="单比特错误放映厅">
       <video id="single-bit-player" controls playsinline preload="metadata" poster="/films/single-bit-error/poster.webp" data-source={film} aria-label="播放单比特错误，八分钟中文动态漫画" aria-describedby="film-caption"></video>
@@ -38,7 +38,7 @@ const chapters = [
       <h2 id="film-note-title">关于这部短片</h2>
       <p>泰勒与莉迪娅相遇、相爱。一次微小的偶然改变了生活，他开始追问：记忆、信仰与爱，究竟靠什么变得真实？</p>
       <p>本片从英文原作重新编写中文对白，以动态漫画、镜头运动和声音展开叙事。天使通过人物的主观光影呈现，让故事保留解释之外的余地。</p>
-      <p class="credit">原作：Ken Liu（刘宇昆），<a href="https://thoughtcrime.crummy.com/2009/Error.html" target="_blank" rel="noopener noreferrer">Single-Bit Error</a>，Thoughtcrime Experiments 2009。本片为非商业中文再创作，未使用出版中文译文；原画由 AI 辅助生成；全片中文配音使用 MiniMax 重新制作，按角色与剧情调整音色、情绪、语速和停顿。原作与本改编按 <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 2.5</a> 共享。分享及再创作须保留署名、来源、改编说明与许可。本片不表示原作者参与或背书。</p>
+      <p class="credit">原作：Ken Liu（刘宇昆），<a href="https://thoughtcrime.crummy.com/2009/Error.html" target="_blank" rel="noopener noreferrer">Single-Bit Error</a>，Thoughtcrime Experiments 2009。本片为非商业中文再创作，未使用出版中文译文；原画由 AI 辅助生成；全片中文配音使用 MiniMax 重新制作，按角色与剧情调整音色、情绪、语速和停顿；六段火山引擎原创生成配乐分别用于星空、相遇、事故前、沙漠、顿悟与片尾，告别和追问处保留声音留白。原作与本改编按 <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 2.5</a> 共享。分享及再创作须保留署名、来源、改编说明与许可。本片不表示原作者参与或背书。</p>
       <div class="film-resources"><a href="/films/single-bit-error/script-zh.md" download>中文改编剧本 ↓</a><a href="/films/single-bit-error/credits-license.md" download>完整署名与许可 ↓</a></div>
       <a class="button" href="/works/">返回作品馆 →</a>
     </section>
