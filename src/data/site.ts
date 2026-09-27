@@ -51,6 +51,16 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'babylon-tower',
+    title: '巴比伦塔',
+    eyebrow: '科幻绘画 · 动画短片',
+    href: '/films/babylon-tower/',
+    image: '/films/babylon-tower/poster.webp',
+    summary: '他们把道路修向天空，穿过云层、凿开石穹，直到旅途重新抵达大地。根据特德·姜小说改编的两分钟中文动画。',
+    tags: ['特德·姜', '中文配音', '2 分 01 秒'],
+    status: '影像新作',
+  },
+  {
     id: 'single-bit-error',
     title: '单比特错误',
     eyebrow: '人文科幻 · 中文动态漫画',
