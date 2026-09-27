@@ -103,11 +103,11 @@ export const works = [
   {
     id: 'autumn-train',
     title: '小兴安岭金秋专列纪行',
-    eyebrow: '创意编程 · 山河声景',
+    eyebrow: '创意编程 · 秋日纪行',
     href: '/autumn-train/',
-    image: '/assets/img/autumn-train-v2.webp',
-    summary: '乘坐金秋国际旅游专列，漫游鹤岗、伊春、牡丹江和佳木斯。手机自动切换视角，停站推荐周边景区，伴随刘飞配音、配乐与汽笛，收藏一程北国秋色。',
-    tags: ['Three.js', '秋日山河', '交互声景'],
+    image: '/assets/img/autumn-train-v3.webp',
+    summary: '一趟 150 秒的北国秋日旅程。自动电影运镜、沉稳的 MiniMax 旁白与全新器乐配乐，途经鹤岗、伊春、牡丹江和佳木斯；点击启程，安心看完一程秋色。',
+    tags: ['程序动画', '150 秒', '自动观影'],
     status: '站内新作',
   },
   {
