@@ -72,12 +72,12 @@ export const works = [
   },
   {
     id: 'droplet',
-    title: '水滴 · 末日战役',
+    title: '水滴 · 末日之战',
     eyebrow: '科幻动画 · 深空短片',
     href: '/films/droplet/',
-    image: '/films/droplet/poster.webp',
-    summary: '一件完美的探测器，一场来不及回应的撞击。75 秒深空动画，从舰阵、预警与连环毁伤，到两艘战舰驶向远方。',
-    tags: ['科幻动画', '75 秒', '1080p'],
+    image: '/films/droplet/poster-doc2.webp',
+    summary: '两千艘战舰，与一滴完美的水。92 秒程序化三维短片，以沉稳的纪录片旁白讲述相遇、贯穿、折返与逃离。',
+    tags: ['纪录片配音', '92 秒', '1080p · 30 帧'],
     status: '影像新作',
   },
   {
