@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const film = '/films/droplet/droplet-1080p.mp4?v=20260927-small';
+const film = '/films/droplet/droplet-1080p.mp4?v=20260928-sound3';
 const download = film;
 const chapters = [
   { time: 0, stamp: '00:00', title: '第一次接触', note: '一滴完美的水，面对两千艘战舰。' },
@@ -10,17 +10,17 @@ const chapters = [
   { time: 69, stamp: '01:09', title: '火海之外', note: '两艘舰船逃离，水滴依然没有留下痕迹。' },
 ];
 ---
-<BaseLayout current="works" title="水滴 · 末日之战 — 劳伦斯实验室" description="92 秒深空科幻动画：完美的水滴、两千艘战舰、直角转向与幸存者，配以沉稳的中文纪录片旁白。" image="/films/droplet/poster-doc2.webp">
+<BaseLayout current="works" title="水滴 · 末日之战 — 劳伦斯实验室" description="92 秒深空科幻动画：完美的水滴、两千艘战舰、直角转向与幸存者，配以分角色中文配音与全新管弦配乐。" image="/films/droplet/poster-doc2.webp">
   <main id="content" class="page film-page">
     <header class="page-title">
       <span class="kicker">影像作品 · 科幻动画</span>
       <h1>水滴 <span class="title-divider">/</span> 末日之战</h1>
       <p>他们把整个时代的骄傲，驶向了星海。<br />直到那一滴完美的水，开始加速。</p>
-      <div class="film-meta"><span>2026.09.27</span><span>92 秒</span><span>1080p · 30 帧 · 纪录片配音版</span></div>
+      <div class="film-meta"><span>2026.09.28</span><span>92 秒</span><span>1080p · 30 帧 · 声音重制版</span></div>
     </header>
 
     <section class="screening" aria-label="水滴 · 末日之战放映厅">
-      <video id="droplet-player" controls playsinline preload="metadata" poster="/films/droplet/poster-doc2.webp" src={film} aria-label="播放水滴 · 末日之战，92 秒纪录片配音版" aria-describedby="film-caption"></video>
+      <video id="droplet-player" controls playsinline preload="metadata" poster="/films/droplet/poster-doc2.webp" src={film} aria-label="播放水滴 · 末日之战，92 秒声音重制版" aria-describedby="film-caption"></video>
       <noscript><p class="playback-error">请启用 JavaScript，或<a href={download}>直接打开 MP4</a>。</p></noscript>
       <div class="screening-caption" id="film-caption"><span>建议开启声音，进入深空。</span><a href={download} download="水滴·末日之战.mp4">下载 MP4 · 约 12 MB ↓</a></div>
       <p class="playback-error" id="playback-error" hidden>视频暂未加载成功，可以<a href={download}>直接打开 MP4</a>，或稍后重新播放。</p>
@@ -42,7 +42,7 @@ const chapters = [
     <section class="film-note" aria-labelledby="film-note-title">
       <h2 id="film-note-title">关于这部短片</h2>
       <p>一滴完美的水，击穿了人类最庞大的阵列。本片先停留于镜面与秩序，再以穿透、折返和连环解体推进叙事，最后回到没有伤痕的表面。冷银与琥珀色之间，是一次文明尺度的落差。</p>
-      <p class="credit">根据刘慈欣《三体Ⅱ：黑暗森林》情节改编的非官方短片。对白为本片重写，画面采用程序化三维动画；中文旁白使用 MiniMax 纪录片声线，配乐由火山引擎生成并按剧情重新编排，音效与动作同步制作。</p>
+      <p class="credit">根据刘慈欣《三体Ⅱ：黑暗森林》情节改编的非官方短片。对白为本片重写，画面采用程序化三维动画；中文配音使用火山引擎 Seed TTS 2.0，旁白、丁仪与舰队通讯分别选角和表演；三段原创管弦配乐按接触、毁灭与余波编排，减少持续低频与噪声感，关键警告处留白，撞击音效与动作同步。</p>
       <a class="button" href="/works/">返回作品馆 →</a>
     </section>
   </main>
