@@ -110,19 +110,60 @@ h1, h2, h3, p { margin-top: 0; }
 p { margin-bottom: 0; }
 ::selection { background: var(--amber); color: var(--paper); }
 
-/* ---------- 纸感开机片头（纸上实验室：纸窗生长→速写蒙太奇→画门穿门→灯夜题字） ---------- */
+/* ---------- 一念成宇宙：AI 星球 → 穿越光环 → 纸上题字，5.8 秒 ---------- */
 .paper-intro {
   position: fixed;
   inset: 0;
   z-index: 90;
   overflow: hidden;
-  background: #05070c; /* 放映现场的暗，片头第一帧即纸窗光圈 */
+  background: #0e1113;
+  color: #e1c49a;
   opacity: 1;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.4s ease;
 }
-.paper-intro.lift { opacity: 0; }
-.paper-intro canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
-/* 开屏期间按住首屏入场并锁定滚动；灯夜题字落定、纸面升起时再放行逐项浮现 */
+.paper-intro[hidden] { display: none; }
+.paper-intro.lift { opacity: 0; pointer-events: none; }
+.paper-intro canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.intro-masthead, .intro-bottom { position: absolute; left: max(30px, env(safe-area-inset-left)); right: max(30px, env(safe-area-inset-right)); display: flex; align-items: center; justify-content: space-between; font: 10px/1.4 var(--mono); letter-spacing: .17em; }
+.intro-masthead { top: max(28px, env(safe-area-inset-top)); }
+.intro-edition { opacity: .55; font-size: 9px; }
+.intro-bottom { bottom: max(24px, env(safe-area-inset-bottom)); }
+.intro-phase { opacity: .7; letter-spacing: .12em; }
+.intro-skip { min-height: 44px; padding: 8px 2px 8px 18px; color: inherit; font: 12px/1.5 var(--sans); letter-spacing: .12em; border: 0; background: transparent; cursor: pointer; }
+.intro-skip span { margin-left: 12px; }
+.intro-skip:hover { opacity: .7; }
+.intro-skip:focus-visible { outline: 1px solid currentColor; outline-offset: 5px; }
+.intro-caption { position: absolute; top: 77%; width: 100%; text-align: center; opacity: 0; }
+.intro-caption > span { font: 9px var(--mono); letter-spacing: .22em; opacity: .65; }
+.intro-caption p { font: 22px/1.6 var(--serif); letter-spacing: .2em; margin-top: 14px; }
+.intro-title-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; color: var(--ink); padding-bottom: 2vh; pointer-events: none; }
+.intro-eyebrow { color: var(--amber); font: 11px var(--sans); letter-spacing: .26em; margin-bottom: 30px; }
+.intro-wordmark { display: flex; gap: .18em; font: clamp(48px, 7.5vw, 104px)/1.25 "MaShanZhengFilm", var(--title-font); letter-spacing: .025em; }
+.intro-wordmark span:last-child { color: var(--amber); }
+.intro-rule { width: 32px; height: 1px; background: var(--amber); margin: 28px 0 20px; }
+.intro-tagline { font: 14px var(--serif); letter-spacing: .42em; padding-left: .42em; }
+.intro-domain { font: 9px var(--mono); color: var(--ink-3); letter-spacing: .22em; margin-top: 26px; }
+.intro-progress { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: rgba(180,85,30,.1); }
+.intro-progress span { display: block; width: 100%; height: 100%; background: #c89154; transform: scaleX(0); transform-origin: left; }
+.paper-intro.on-paper { color: var(--ink-2); }
+@media (max-width: 600px) {
+  .intro-masthead, .intro-bottom { left: max(22px, env(safe-area-inset-left)); right: max(22px, env(safe-area-inset-right)); }
+  .intro-edition { display: none; }
+  .intro-caption { top: 70%; padding: 0 20px; }
+  .intro-caption > span { font-size: 8px; letter-spacing: .1em; }
+  .intro-caption p { font-size: 18px; }
+  .intro-wordmark { flex-direction: column; gap: 0; font-size: clamp(52px, 16vw, 86px); text-align: center; }
+  .intro-eyebrow { font-size: 10px; margin-bottom: 24px; }
+  .intro-rule { margin: 24px 0 18px; }
+}
+@media (max-height: 500px) and (min-width: 601px) {
+  .intro-eyebrow { margin-bottom: 14px; }
+  .intro-wordmark { font-size: 56px; }
+  .intro-rule { margin: 16px 0 12px; }
+  .intro-domain { margin-top: 14px; }
+  .intro-caption { top: 73%; }
+}
+/* 开屏期间暂停首页入场，交接时恢复。 */
 body.intro-hold { overflow: hidden; }
 body.intro-hold .hero-lead,
 body.intro-hold .hero-scroll,
@@ -475,6 +516,7 @@ body.intro-hold .hero-side { animation-play-state: paused; }
 }
 .exhibit-dots {
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
   margin: 10px 2px 0;
 }
@@ -1424,7 +1466,7 @@ a.social-row:hover { color: var(--amber); }
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 1040px) {
-  .hero { grid-template-columns: 1fr; gap: 40px; min-height: auto; }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 40px; min-height: auto; }
   .hero-side { max-width: 520px; }
   .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .section-head { display: block; }

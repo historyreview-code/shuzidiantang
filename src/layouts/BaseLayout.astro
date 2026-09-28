@@ -42,34 +42,56 @@ const nav = [
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='14' y='14' width='72' height='72' rx='12' fill='none' stroke='%23b4551e' stroke-width='6'/%3E%3Crect x='22' y='22' width='56' height='56' rx='8' fill='none' stroke='%23b4551e' stroke-width='2' opacity='.5'/%3E%3Ctext x='50' y='66' font-family='serif' font-size='42' font-weight='700' fill='%23b4551e' text-anchor='middle'%3E%E5%8A%B3%3C/text%3E%3C/svg%3E" />
   </head>
   <body>
-    <div id="paper-intro" class="paper-intro" aria-hidden="true">
-      <canvas id="intro-cv"></canvas>
+    <div id="paper-intro" class="paper-intro" hidden>
+      <canvas id="intro-cv" aria-hidden="true"></canvas>
+      <div class="intro-masthead" aria-hidden="true"><span>LAWRENCE LAB</span><span class="intro-edition">A FIELD OF POSSIBILITIES / 2026</span></div>
+      <div class="intro-caption" aria-hidden="true"><span>HUMAN CURIOSITY × ARTIFICIAL INTELLIGENCE</span><p>一念，连接万千可能。</p></div>
+      <div class="intro-title-card" aria-hidden="true">
+        <span class="intro-eyebrow">由好奇心驱动 · 与 AI 共创</span>
+        <p class="intro-wordmark"><span>劳伦斯</span><span>实验室</span></p>
+        <span class="intro-rule"></span>
+        <p class="intro-tagline">数字 · AI · 探索</p>
+        <span class="intro-domain">SHUZIDIANTANG.COM</span>
+      </div>
+      <div class="intro-bottom"><span class="intro-phase" aria-hidden="true">01 / 灵感点亮</span><button class="intro-skip" type="button">跳过片头 <span aria-hidden="true">↗</span></button></div>
+      <div class="intro-progress" aria-hidden="true"><span></span></div>
     </div>
     <script is:inline>
       (function () {
-        /* 片头门控：决定播不播；放映本体在 /intro.js（外置缓存，约 47KB 不再随每页下发）。
-           ?intro=1 强制重播；?freeze=秒 定帧质检（跳过超时兜底，长久定格）。 */
+        /* 5.8 秒片头；?intro=1 重播，?freeze=秒 定帧。无脚本时直接显示网站。 */
         var el = document.getElementById('paper-intro');
         if (!el) return;
         var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
         var qs = new URLSearchParams(location.search);
-        var FREEZE = qs.has('freeze') ? parseFloat(qs.get('freeze')) : null;
+        var rawFreeze = qs.has('freeze') ? Number(qs.get('freeze')) : NaN;
+        var FREEZE = Number.isFinite(rawFreeze) ? Math.max(0, Math.min(5.79, rawFreeze)) : null;
         var force = /(?:\?|&)intro=1(?:&|$)/.test(location.search) || FREEZE != null;
-        if (reduced || (!force && sessionStorage.getItem('paperIntroSeen'))) { el.remove(); return; }
+        var seen = false;
+        try { seen = sessionStorage.getItem('paperIntroSeen') === '1'; } catch (_) {}
+        if (reduced || (!force && seen)) { el.remove(); return; }
         var cv = document.getElementById('intro-cv');
         if (!(cv && cv.getContext('2d'))) { el.remove(); return; }
-        sessionStorage.setItem('paperIntroSeen', '1');
+        try { sessionStorage.setItem('paperIntroSeen', '1'); } catch (_) {}
+        el.hidden = false;
         document.body.classList.add('intro-hold');
         window.__INTRO_OPTS = { freeze: FREEZE };
-        function bail(lift) { // 加载失败硬揭页；超时优雅升起
+        var watchdog;
+        window.__INTRO_ENDED = false;
+        function bail(lift) {
+          if (window.__INTRO_ENDED) return;
+          window.__INTRO_ENDED = true;
+          clearTimeout(watchdog);
+          if (window.__INTRO_CLEANUP) window.__INTRO_CLEANUP();
           document.body.classList.remove('intro-hold');
           if (!el.parentNode) return;
-          if (lift) { el.classList.add('lift'); setTimeout(function () { if (el.parentNode) el.remove(); }, 950); }
+          if (el.contains(document.activeElement)) document.activeElement.blur();
+          if (lift) { el.classList.add('lift'); setTimeout(function () { if (el.parentNode) el.remove(); }, 450); }
           else el.remove();
         }
-        if (FREEZE == null) setTimeout(function () { if (!window.__INTRO_ENDED) bail(true); }, 14000);
+        window.__INTRO_FINISH = bail;
+        if (FREEZE == null) watchdog = setTimeout(function () { bail(true); }, 7500);
         var s = document.createElement('script');
-        s.src = '/intro.js';
+        s.src = '/intro.js?v=20260928';
         s.onerror = function () { bail(false); };
         document.head.appendChild(s);
       })();
