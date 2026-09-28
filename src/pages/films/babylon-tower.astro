@@ -1,26 +1,26 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const film = '/films/babylon-tower/hls-v08/index.m3u8';
+const film = '/films/babylon-tower/hls-v11/index.m3u8';
 const chapters = [
-  { time: 4, stamp: '00:04', title: '通天之塔', note: '矿工离开大地，向云上的世界出发。' },
-  { time: 50, stamp: '00:50', title: '石质天空', note: '塔顶等待他们的，是一层无边的岩石。' },
-  { time: 70, stamp: '01:10', title: '来水', note: '第一滴水落下，转眼间退路封闭。' },
-  { time: 97, stamp: '01:37', title: '归来', note: '向上走到尽头，眼前却出现熟悉的大地。' },
+  { time: 5, stamp: '00:05', title: '通天之塔', note: '沿着世代修筑的道路，越过夜影与太阳。' },
+  { time: 61, stamp: '01:01', title: '天的底面', note: '备好石门，在无边的岩石下开凿。' },
+  { time: 95, stamp: '01:35', title: '来水', note: '石层凿穿，洪水涌入，退路封闭。' },
+  { time: 160, stamp: '02:40', title: '天地相邻', note: '古老卷轴上的两端，揭示归来的秘密。' },
 ];
 ---
-<BaseLayout current="works" title="巴比伦塔 — 劳伦斯实验室" description="根据特德·姜《巴比伦塔》改编的两分钟科幻绘画动画。穿过云层、凿开石穹，一场向上却又归来的旅程。" image="/films/babylon-tower/poster.webp">
+<BaseLayout current="works" title="巴比伦塔 — 劳伦斯实验室" description="根据特德·姜《巴比伦塔》改编的三分十秒科幻绘画短片。穿过云层、凿开石穹，一场向上却又归来的旅程。" image="/films/babylon-tower/poster-v11.webp">
   <main id="content" class="page film-page">
     <header class="page-title">
       <span class="kicker">影像作品 · 科幻绘画动画</span>
       <h1>巴比伦塔</h1>
-      <p>他们把道路修向天空。<br />向上，直到归来。</p>
-      <div class="film-meta"><span>2026.09.27</span><span>2 分 01 秒</span><span>720p · 中文配音</span></div>
+      <p>他们把道路修向天空。<br />天与地之间，一段归来的传说。</p>
+      <div class="film-meta"><span>2026.09.28</span><span>3 分 10 秒</span><span>1080p · 中文配音 · v11</span></div>
     </header>
     <section class="screening" aria-label="巴比伦塔放映厅">
-      <video id="babylon-player" controls playsinline preload="metadata" poster="/films/babylon-tower/poster.webp" data-source={film} aria-label="播放巴比伦塔，两分钟科幻绘画动画" aria-describedby="film-caption"></video>
+      <video id="babylon-player" controls playsinline preload="metadata" poster="/films/babylon-tower/poster-v11.webp" data-source={film} aria-label="播放巴比伦塔，三分十秒科幻绘画短片" aria-describedby="film-caption"></video>
       <noscript><p class="playback-error">请启用 JavaScript，或使用支持流媒体播放的浏览器<a href={film}>打开影片</a>。</p></noscript>
-      <div class="screening-caption" id="film-caption"><span>开启声音，留一点时间给这个故事。</span><a href="/films/babylon-tower/captions-zh.srt" download>下载中文字幕 ↓</a></div>
+      <div class="screening-caption" id="film-caption"><span>开启声音，留一点时间给这个故事。</span><a href="/films/babylon-tower/captions-zh-v11.srt" download>下载中文字幕 ↓</a></div>
       <p class="playback-error" id="playback-error" hidden>影片暂未加载成功，请刷新后重试。也可以<a href={film}>直接打开播放地址</a>。</p>
     </section>
     <section class="film-chapters" aria-labelledby="chapters-title">
@@ -36,8 +36,8 @@ const chapters = [
     </section>
     <section class="film-note" aria-labelledby="film-note-title">
       <h2 id="film-note-title">关于这部短片</h2>
-      <p>巴比伦人建起通向天空的巨塔。一位矿工受雇登顶，穿过云层、越过太阳，去挖开天穹的石层。当洪水从石中涌出，他只能朝着亮处向上游。</p>
-      <p>本片以绘画风格、局部动画和人物内心独白展开叙事。反复出现的印章与道路，把攀登、开凿和归返连成一段关于世界边界的想象。</p>
+      <p>巴比伦人建起通向天空的巨塔。一位矿工受雇登顶，穿过云层、越过太阳，去挖开天穹的石层。当洪水从石中涌出，退路封闭，他在黑暗中失去了方向。</p>
+      <p>本片以古老传说的语气、劳动者的目光和拟古器乐展开叙事。砖石、亚麻与日常劳作构成塔上的生活；结尾借鉴阿拉伯手抄本的彩绘卷轴，让天地在古老的宇宙想象中重新相邻。</p>
       <p class="credit">原作：特德·姜《巴比伦塔》（Tower of Babylon）。本片为非官方改编动画练习，原作权利归原作者及相关权利人所有，不表示原作者参与或背书。画面由 AI 辅助生成并进行动画合成；中文配音使用 MiniMax，配乐使用火山引擎音乐生成并按剧情编排。</p>
       <div class="film-resources"><a href="/films/babylon-tower/credits.md" download>制作署名 ↓</a></div>
       <a class="button" href="/works/">返回作品馆 →</a>
