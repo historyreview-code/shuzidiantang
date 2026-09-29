@@ -65,9 +65,9 @@ export const works = [
     title: '单比特错误',
     eyebrow: '人文科幻 · 中文动态漫画',
     href: '/films/single-bit-error/',
-    image: '/films/single-bit-error/poster.webp',
-    summary: '一次偶然改变了生活，他开始追问记忆、信仰与爱。根据刘宇昆英文小说非商业改编，八分钟中文配音短片。',
-    tags: ['刘宇昆', '中文配音', '1080p'],
+    image: '/films/single-bit-error/poster-v5.webp',
+    summary: '记忆留下了，确信没有。根据刘宇昆英文小说非商业改编，重新追问偶然、记忆与信仰的五分半中文短片。',
+    tags: ['刘宇昆', '5 分 30 秒', '满幅 1080p'],
     status: '影像新作',
   },
   {

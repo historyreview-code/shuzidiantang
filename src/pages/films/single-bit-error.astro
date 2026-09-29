@@ -1,30 +1,30 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const film = '/films/single-bit-error/hls-minimax-volc/index.m3u8';
+const film = '/films/single-bit-error/hls-v5/index.m3u8';
 const chapters = [
-  { time: 29.875000, stamp: '00:29', title: '相遇', note: '一只纸箱，一顿临时拼起的午餐。' },
-  { time: 155.250000, stamp: '02:35', title: '一个比特', note: '遥远的光，碰到生活的某个瞬间。' },
-  { time: 298.291667, stamp: '04:58', title: '寻找', note: '他试图理解，她曾经看见的世界。' },
-  { time: 352.666667, stamp: '05:52', title: '后来', note: '新的幸福，也给旧的爱留着位置。' },
+  { time: 75.04, stamp: '01:15', title: '一比特', note: '物质中的微小偶然，能解释一个人的确信吗？' },
+  { time: 142.54, stamp: '02:22', title: '记忆的证据', note: '脑海里的厨房，与照片留下的厨房。' },
+  { time: 236, stamp: '03:56', title: '与光同行', note: '女儿仰望星空，等待与自己同时出发的光。' },
+  { time: 259.92, stamp: '04:20', title: '确信与缺席', note: '他记得那一刻，却再也无法回到那份确信。' },
 ];
 ---
-<BaseLayout current="works" title="单比特错误 — 劳伦斯实验室" description="根据刘宇昆英文小说改编的八分钟中文动态漫画。关于偶然、记忆，以及我们如何继续爱与生活。" image="/films/single-bit-error/poster.webp">
+<BaseLayout current="works" title="单比特错误 — 劳伦斯实验室" description="根据刘宇昆英文小说改编的中文科幻短片。记忆留下了，确信没有。5 分 30 秒满幅重制版。" image="/films/single-bit-error/poster-v5.webp">
   <main id="content" class="page film-page">
     <header class="page-title">
       <span class="kicker">影像作品 · 人文科幻</span>
       <h1>单比特错误</h1>
-      <p>有些光，在我们出生以前就已经出发。<br />等它抵达，我们爱过的人，也许已经不在了。</p>
-      <div class="film-meta"><span>2026.09.26</span><span>8 分 15 秒</span><span>1080p · 配音与配乐重制版</span></div>
+      <p>记忆留下了。<br />确信，没有。</p>
+      <div class="film-meta"><span>2026.09.29</span><span>5 分 30 秒</span><span>满幅 1080p · 重制版 v5</span></div>
     </header>
     <section class="screening" aria-label="单比特错误放映厅">
-      <video id="single-bit-player" controls playsinline preload="metadata" poster="/films/single-bit-error/poster.webp" data-source={film} aria-label="播放单比特错误，八分钟中文动态漫画" aria-describedby="film-caption"></video>
+      <video id="single-bit-player" controls playsinline preload="metadata" poster="/films/single-bit-error/poster-v5.webp" data-source={film} aria-label="播放单比特错误，五分半中文科幻短片" aria-describedby="film-caption"></video>
       <noscript><p class="playback-error">请启用 JavaScript，或使用支持流媒体播放的浏览器<a href={film}>打开影片</a>。</p></noscript>
-      <div class="screening-caption" id="film-caption"><span>开启声音，留一点时间给这个故事。</span><a href="/films/single-bit-error/captions-zh.srt" download>下载中文字幕 ↓</a></div>
+      <div class="screening-caption" id="film-caption"><span>开启声音，留一点时间给这个故事。</span><a href="/films/single-bit-error/captions-zh-v5.srt" download>下载中文字幕 ↓</a></div>
       <p class="playback-error" id="playback-error" hidden>影片暂未加载成功，请刷新后重试。也可以<a href={film}>直接打开播放地址</a>。</p>
     </section>
     <section class="film-chapters" aria-labelledby="chapters-title">
-      <div class="section-head"><div><span class="kicker">四段旅程 · Chapters</span><h2 id="chapters-title">在光抵达之后</h2></div></div>
+      <div class="section-head"><div><span class="kicker">四个时刻 · Chapters</span><h2 id="chapters-title">从记忆走向确信</h2></div></div>
       <div class="chapter-grid">
         {chapters.map((chapter) => (
           <button class="chapter" type="button" data-time={chapter.time} aria-label={`从 ${chapter.stamp} 播放：${chapter.title}`}>
@@ -36,10 +36,10 @@ const chapters = [
     </section>
     <section class="film-note" aria-labelledby="film-note-title">
       <h2 id="film-note-title">关于这部短片</h2>
-      <p>泰勒与莉迪娅相遇、相爱。一次微小的偶然改变了生活，他开始追问：记忆、信仰与爱，究竟靠什么变得真实？</p>
-      <p>本片从英文原作重新编写中文对白，以动态漫画、镜头运动和声音展开叙事。天使通过人物的主观光影呈现，让故事保留解释之外的余地。</p>
-      <p class="credit">原作：Ken Liu（刘宇昆），<a href="https://thoughtcrime.crummy.com/2009/Error.html" target="_blank" rel="noopener noreferrer">Single-Bit Error</a>，Thoughtcrime Experiments 2009。本片为非商业中文再创作，未使用出版中文译文；原画由 AI 辅助生成；全片中文配音使用 MiniMax 重新制作，按角色与剧情调整音色、情绪、语速和停顿；六段火山引擎原创生成配乐分别用于星空、相遇、事故前、沙漠、顿悟与片尾，告别和追问处保留声音留白。原作与本改编按 <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 2.5</a> 共享。分享及再创作须保留署名、来源、改编说明与许可。本片不表示原作者参与或背书。</p>
-      <div class="film-resources"><a href="/films/single-bit-error/script-zh.md" download>中文改编剧本 ↓</a><a href="/films/single-bit-error/credits-license.md" download>完整署名与许可 ↓</a></div>
+      <p>泰勒爱莉迪娅，却无法分享她的信仰。失去她以后，他试图从物质、记忆与偶然中寻找答案。多年后，一次短暂的领悟，又让他面对更难回答的问题：为什么记得，并不等于相信？</p>
+      <p>本片从英文原作重新编写中文对白，以绘画镜头、有限动作和程序动画展开叙事。脑内“一比特错误”是人物的推测与文学比喻；天使通过主观光影呈现，保留解释之外的余地。</p>
+      <p class="credit">原作：Ken Liu（刘宇昆），<a href="https://thoughtcrime.crummy.com/2009/Error.html" target="_blank" rel="noopener noreferrer">Single-Bit Error</a>，Thoughtcrime Experiments 2009。本片为非商业中文再创作，未使用出版中文译文；原画由 AI 辅助生成；47 段中文对白使用火山引擎 Seed TTS 2.0 分角色合成，女儿两句换声线重录；五段原创生成配乐依叙事剪辑，告别、追问和终场保留声音留白。原作与本改编按 <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 2.5</a> 共享。分享及再创作须保留署名、来源、改编说明与许可。本片不表示原作者参与或背书。</p>
+      <div class="film-resources"><a href="/films/single-bit-error/script-zh-v5.md" download>中文改编剧本 ↓</a><a href="/films/single-bit-error/credits-v5.md" download>完整署名与许可 ↓</a></div>
       <a class="button" href="/works/">返回作品馆 →</a>
     </section>
   </main>
