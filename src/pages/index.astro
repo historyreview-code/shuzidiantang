@@ -8,7 +8,7 @@ import { cosmosSeries, notes, site, works } from '../data/site';
 
 const categories = ['实践手记', 'AI 手记', '工具篇', '随笔'];
 
-// 右侧轮播：最新专题与影像优先，随后展示交互项目和代表作品。
+// 右侧轮播：最新作品优先，随后展示专题、影像、交互项目和代表作品。
 const workCard = (w, note = w.summary) => ({
   name: w.title,
   eyebrow: `${w.eyebrow} · ${w.status}`,
@@ -25,6 +25,7 @@ const travelCard = {
   href: '/travel/',
 };
 const carousel = [
+  workCard(works.find((w) => w.id === 'perspective-garden')!), // 折光庭
   workCard(works.find((w) => w.id === 'shamanism')!), // 萨满文化专题
   workCard(works.find((w) => w.id === 'babylon-tower')!), // 巴比伦塔
   workCard(works.find((w) => w.id === 'single-bit-error')!), // 单比特错误
