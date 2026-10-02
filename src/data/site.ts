@@ -51,6 +51,16 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'shamanism',
+    title: '萨满：人与万物之间',
+    eyebrow: '文化研究 · 科普影片',
+    href: '/research/shamanism/',
+    image: '/research/shamanism/v2-1/poster.webp',
+    summary: '从史前墓葬和鹿角头饰，到白令两岸的联系、东亚神歌与今天的社群传承。沿时间与空间认识萨满文化，影片附逐段文案与24条研究来源。',
+    tags: ['8 分 26 秒', '中文解说', '研究资料'],
+    status: '专题新作',
+  },
+  {
     id: 'babylon-tower',
     title: '巴比伦塔',
     eyebrow: '科幻绘画 · 动画短片',

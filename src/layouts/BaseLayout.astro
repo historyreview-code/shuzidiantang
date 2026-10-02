@@ -33,6 +33,8 @@ const nav = [
     <link rel="preload" href="/assets/fonts/mashanzheng-title.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, site.url).href} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, site.url).href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />

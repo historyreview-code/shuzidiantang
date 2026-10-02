@@ -1,0 +1,61 @@
+{
+  "archival_photo": {
+    "file": "assets/evenki-1907.jpg",
+    "title": "Evenki shaman family",
+    "date": 1907,
+    "photographer": "A. A. Makarenko",
+    "source": "Russian Ethnographic Museum; Wikimedia Commons",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Evenki_shaman_family_-_1907.jpg",
+    "license": "Public domain, Commons Public Domain Mark 1.0 declaration",
+    "treatment": "Scaled, full photograph; dated on screen"
+  },
+  "antler": {
+    "file": "assets/star-carr-scans.png",
+    "source": "Little et al., 2016, PLOS ONE, Figure 2",
+    "source_url": "https://doi.org/10.1371/journal.pone.0152136",
+    "license": "CC BY 4.0",
+    "status": "Virtual reconstruction from surface scans, not a field photograph",
+    "treatment": "Scaled to fit"
+  },
+  "map": {
+    "file": "assets/land-110m.json",
+    "source": "world-atlas/Natural Earth",
+    "url": "https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json",
+    "license": "Public domain",
+    "projection": "Equirectangular; selected regional windows; Pacific longitude unwrapped across 180°",
+    "latitude_domain": [
+      85,
+      -60
+    ],
+    "antimeridian_unwrapping": true
+  },
+  "schematics": {
+    "creator": "Original programmatic animation",
+    "status": "Labelled as schematics"
+  },
+  "narration": {
+    "provider": "MiniMax",
+    "model": "speech-2.8-hd",
+    "synthetic": true,
+    "voice": "Chinese (Mandarin)_Male_Announcer",
+    "speed": 0.93,
+    "pitch": -1,
+    "pronunciation_overrides": {
+      "朝祭": "zhāo jì"
+    }
+  },
+  "music": {
+    "creator": "Original procedural composition and arrangement",
+    "title": "Between the Living World",
+    "instruments": [
+      "piano",
+      "string ensemble",
+      "cello"
+    ],
+    "tempo": 60,
+    "score": "source/score.json",
+    "renderer": "source/score.swift",
+    "source": "macOS system General MIDI instrument bank; bank not redistributed",
+    "not_field_recording": true
+  }
+}

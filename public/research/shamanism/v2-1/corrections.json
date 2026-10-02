@@ -1,0 +1,42 @@
+{
+  "revision": "2.1",
+  "date": "2026-10-02",
+  "changes": [
+    "All map layers now share the same equirectangular latitude scale (85N to 60S).",
+    "Antimeridian polygon rings unwrapped before raster clipping.",
+    "Scene10 point labels updated to 大兴安岭林区、三江地区、东北平原、蒙古高原; graticule and leader lines added.",
+    "Scene11 narration regenerated with 朝祭/(zhao1)(ji4)."
+  ],
+  "evidence": [
+    {
+      "topic": "朝祭仪式时间",
+      "source": "沈阳故宫博物院：宫廷典制",
+      "url": "https://www.sypm.org.cn/shjy_4/4.html",
+      "use": "馆方文字记载祭祀之日清晨举行，与夕祭相对；本次核对官方索引文本。"
+    },
+    {
+      "topic": "朝字早晨义读音",
+      "source": "教育部《国语辞典简编本》朝",
+      "url": "https://dict.concised.moe.edu.tw/dictView.jsp?ID=29635&la=0&powerMode=0",
+      "use": "早晨，与夕相对：zhāo。结合具体祭祀语境判断朝祭读作zhāo jì。"
+    },
+    {
+      "topic": "东北平原地理",
+      "source": "中国科学院地理科学与资源研究所",
+      "url": "https://www.igsnrr.cas.cn/cbkx/kpyd/zgdl/cndm/202009/t20200910_5692361.html",
+      "use": "位于东北中部，118°40′—128°E，40°25′—48°40′N；图中125E、44N为内部参考点。"
+    },
+    {
+      "topic": "大兴安岭森林族群",
+      "source": "呼伦贝尔市人民政府：鄂温克族",
+      "url": "https://www.hlbe.gov.cn/News/show/172997.html",
+      "use": "东北亚山林地区、呼伦贝尔与大兴安岭的历史生活空间；图中121.5E、51N作为林区参考点。"
+    },
+    {
+      "topic": "三江地区与赫哲族",
+      "source": "佳木斯市人民政府：佳木斯概况",
+      "url": "https://www.jms.gov.cn/jms/c100002/202507/c04_38185.shtml",
+      "use": "三江地区及赫哲族聚居背景；图中134E、47.8N作为地区参考点。"
+    }
+  ]
+}

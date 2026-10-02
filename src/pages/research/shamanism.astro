@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import data from '../../data/shamanism.json';
+
+const assets = '/research/shamanism/v2-1';
+const film = `${assets}/hls/index.m3u8`;
+const stamp = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+const chapters = [
+  { time: data.scenes[1].start, title: '史前的线索', note: '墓葬、随葬物与鹿角头饰' },
+  { time: data.scenes[4].start, title: '人与万物的关系', note: '北亚世界观与仪式生活' },
+  { time: data.scenes[6].start, title: '从亚洲到美洲', note: '白令地区、迁徙与跨海交往' },
+  { time: data.scenes[9].start, title: '东亚的传承', note: '森林、江河、家族与宫廷' },
+  { time: data.scenes[13].start, title: '今天的形态', note: '活态仪式、艺术、博物馆与再创造' },
+];
+---
+<BaseLayout current="research" title="萨满：人与万物之间 — 劳伦斯实验室" description="沿时间与空间认识萨满文化：史前考古线索、亚洲与美洲的联系、东亚族群传承及当代形态。8分26秒中文科普影片，附逐段文案、24条研究来源与下载资料。" image={`${assets}/poster.webp`}>
+  <main id="content" class="page shaman-page" data-revision="2.1">
+    <header class="page-title">
+      <span class="kicker">文化研究 · 纪录片式科普</span>
+      <h1>萨满<span class="title-colon">：</span><span>人与万物之间</span></h1>
+      <p>从史前痕迹到今天的传承。<br />沿着时间与空间，认识人与山川、动物和祖先的关系。</p>
+      <div class="film-meta"><span>2026.10.02</span><span>8 分 26 秒</span><span>中文解说 · 1080p</span><span>修订版 2.1</span></div>
+    </header>
+
+    <section class="screening" id="screening" aria-label="萨满文化影片放映厅">
+      <video id="shaman-player" controls playsinline preload="metadata" poster={`${assets}/poster.webp`} data-source={film} aria-label="播放萨满：人与万物之间" aria-describedby="film-caption"></video>
+      <noscript><p class="playback-error">使用支持流媒体播放的浏览器<a href={film}>打开影片</a>，或启用 JavaScript 在本页观看。</p></noscript>
+      <div class="screening-caption" id="film-caption"><span>开启声音，听见鼓声背后的生活。</span><a href={`${assets}/captions-zh.srt`} download>下载中文字幕 ↓</a></div>
+      <p id="playback-error" class="playback-error" hidden>影片暂未加载成功，请刷新后重试。也可以<a href={film}>直接打开播放地址</a>。</p>
+    </section>
+
+    <nav class="reading-nav" aria-label="专题导航"><a href="#chapters">按章节观看</a><a href="#guide">阅读导览</a><a href="#script">逐段文案</a><a href="#sources">研究来源</a><a href="#downloads">下载资料</a></nav>
+
+    <section class="section film-chapters" id="chapters" aria-labelledby="chapters-title">
+      <div class="section-head"><div><span class="kicker">时间 × 空间</span><h2 id="chapters-title">五个入口，一条故事线</h2></div></div>
+      <div class="chapter-grid">
+        {chapters.map(chapter => <button class="chapter seek" type="button" data-time={chapter.time} aria-label={`从 ${stamp(chapter.time)} 播放：${chapter.title}`}><span class="chapter-time">{stamp(chapter.time)} <span aria-hidden="true">↗</span></span><strong>{chapter.title}</strong><span>{chapter.note}</span></button>)}
+      </div>
+    </section>
+
+    <section class="section guide" id="guide" aria-labelledby="guide-title">
+      <span class="kicker">阅读导览</span><h2 id="guide-title">把线索放回它的时代与地方</h2>
+      <p class="lead">“萨满”源于通古斯语族的相关称谓，后来成为跨文化研究用语。许多传统中，受到社群认可的仪式专家与祖灵、帮助灵沟通，回应疾病、狩猎、天气与家庭生活中的难题。认识这种文化，需要同时看它的世界观、仪式知识和共同体关系。<a href="#S1">[S1]</a> <a href="#S2">[S2]</a> <a href="#S3">[S3]</a></p>
+      <div class="guide-grid">
+        <article><span class="guide-no">01 / 时间深处</span><h3>考古共识与身份解释</h3><p>孙吉尔约3.4万年前的葬仪，见证史前象征活动的丰富程度。希拉宗约1.2万年前的特殊女性墓葬、斯塔卡尔约1.1万年前的鹿角头饰，则提供讨论仪式专家的具体案例；“萨满身份”属于研究者结合材料提出的解释。最早出现的年代仍有讨论空间。</p><div class="references"><a href="#S17">S17</a><a href="#S18">S18</a><a href="#S19">S19</a></div></article>
+        <article><span class="guide-no">02 / 跨越白令</span><h3>迁徙背景与文化交往</h3><p>末次冰期的白令地区连接东北亚与阿拉斯加，人群经过这里进入美洲。海水淹没陆桥后，狩猎、贸易和通婚继续联系两岸。人口迁徙有考古与遗传研究支持，具体仪式的传播路径则结合语言、口传和民族志比较讨论。</p><div class="references"><a href="#S20">S20</a><a href="#S21">S21</a><a href="#S22">S22</a><a href="#S23">S23</a></div></article>
+        <article><span class="guide-no">03 / 回到东亚</span><h3>在族群中看见差异</h3><p>鄂温克、鄂伦春、赫哲的传统联系森林与江河；满族、锡伯族的家祭保存神歌与祖先记忆；达斡尔、蒙古族留下丰富的仪式记录。朝鲜半岛的巫俗与济州岛海洋祭仪，则展现另一种地方传承。</p><div class="references"><a href="#S24">S24</a><a href="#S28">S28</a><a href="#S26">S26</a><a href="#S9">S9</a></div></article>
+        <article><span class="guide-no">04 / 延续至今</span><h3>仪式、声音与文化记忆</h3><p>今天的延续包括社群祭祀、口传与表演艺术、博物馆物件及当代再创造。蒙古圣地祭祀、赫哲族伊玛堪、阿鲁提克歌曲和萨米鼓的归还，各自呈现传统如何在新的生活条件下延续。</p><div class="references"><a href="#S29">S29</a><a href="#S25">S25</a><a href="#S27">S27</a><a href="#S10">S10</a></div></article>
+      </div>
+    </section>
+
+    <section class="section script" id="script" aria-labelledby="script-title">
+      <div class="section-head"><div><span class="kicker">十八段 · 文案与分镜</span><h2 id="script-title">沿着影片，继续阅读</h2></div><p>每段保留时间、地区与资料编号。</p></div>
+      {data.scenes.map(scene => <details class="scene"><summary><span class="scene-id">{scene.id}</span><span><strong>{scene.chapter}</strong><small>{stamp(scene.start)}—{stamp(scene.end)} · {scene.date} · {scene.place}</small></span><span class="expand" aria-hidden="true">+</span></summary><div class="scene-body"><img loading="lazy" width="1100" height="619" src={`${assets}/stills/${scene.id}.webp`} alt={`${scene.chapter}：影片分镜`} /><div><h3>{scene.title}</h3>{scene.text ? <p>{scene.text}</p> : <p>本段为影片资料与制作署名。完整研究来源及素材许可见下方。</p>}<p class="scene-refs">资料：{scene.refs.map(ref => <a href={`#${ref}`}>{ref}</a>)}</p><button class="seek inline-seek" type="button" data-time={scene.start} aria-label={`从 ${stamp(scene.start)} 播放：${scene.chapter}`}>从 {stamp(scene.start)} 播放 ↗</button></div></div></details>)}
+    </section>
+
+    <section class="section corrections" aria-labelledby="corrections-title">
+      <span class="kicker">2026.10.02 · 校订记录</span><h2 id="corrections-title">地图标注与朝祭读音</h2>
+      <p>第10段采用经纬网和引线，标出大兴安岭林区、三江地区、东北平原与蒙古高原的地区参考点。第11段“朝祭”读作 <b>zhāo jì</b>，与夕祭相对，解说已重新合成。研究参考与改动记录随资料一起提供。</p>
+      <details><summary>查看五条校订依据</summary><ol>{data.corrections.evidence.map(ref => <li><a href={ref.url} target="_blank" rel="noopener noreferrer">{ref.source} ↗</a><p>{ref.use}</p></li>)}</ol></details>
+    </section>
+
+    <section class="section sources" id="sources" aria-labelledby="sources-title">
+      <span class="kicker">研究档案 · {data.sources.length} 条来源</span><h2 id="sources-title">从发掘报告到社群叙述</h2>
+      <p class="sources-intro">资料核对日期：2026年10月2日。来源包括原始研究、博物馆档案、遗产记录与实践者口述；年代、研究解释和当代案例均保留具体出处。</p>
+      <ol class="source-list">{data.sources.map(source => <li id={source.id}><span class="source-id">{source.id} / {source.type}</span><h3><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a></h3><p>{source.author} · {source.year}</p><p class="source-use">{source.use}</p>{'extra' in source && <a class="extra-source" href={source.extra as string} target="_blank" rel="noopener noreferrer">补充阅读 ↗</a>}</li>)}</ol>
+    </section>
+
+    <section class="section credits" aria-labelledby="credits-title">
+      <span class="kicker">素材与制作</span><h2 id="credits-title">画面与声音的来源</h2>
+      <p>档案照片：A. A. Makarenko 摄于1907年的鄂温克家庭，俄罗斯民族志博物馆来源，使用 <a href="https://commons.wikimedia.org/wiki/File:Evenki_shaman_family_-_1907.jpg" target="_blank" rel="noopener noreferrer">Wikimedia Commons 公有领域文件</a>，保留照片全幅。鹿角头饰图像：Little 等，2016，<a href="https://doi.org/10.1371/journal.pone.0152136" target="_blank" rel="noopener noreferrer">PLOS ONE，Figure 2</a>，器物表面扫描的三维复原，采用 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>，画面作缩放处理。</p>
+      <p>地图使用 Natural Earth 公有领域底图，路线与标点为说明性示意。墓葬组合、建筑、鼓与环境画面采用原创程序动画。普通话解说使用 MiniMax AI 合成纪录片男声；背景音乐为原创钢琴、弦乐与大提琴编曲，采用系统乐器音源合成。</p>
+    </section>
+
+    <section class="section downloads" id="downloads" aria-labelledby="downloads-title"><span class="kicker">继续学习</span><h2 id="downloads-title">带走文案与研究资料</h2><div class="download-links"><a class="button" href={`${assets}/script-zh.txt`} download>完整解说文案 ↓</a><a href={`${assets}/captions-zh.srt`} download>中文字幕 SRT ↓</a><a href={`${assets}/research.json`} download>研究来源与时间线 ↓</a><a href={`${assets}/credits.json`} download>素材署名与许可 ↓</a><a href={`${assets}/corrections.json`} download>地图与读音校订 ↓</a></div><a class="back-link" href="/research/">返回理论研究 →</a></section>
+  </main>
+</BaseLayout>
+
+<script>
+  import Hls from 'hls.js';
+  const player = document.querySelector<HTMLVideoElement>('#shaman-player');
+  const error = document.querySelector<HTMLElement>('#playback-error');
+  if (player) {
+    const source = player.dataset.source!;
+    const showError = () => { if (error) error.hidden = false; };
+    let hls: Hls | null = null;
+    if (player.canPlayType('application/vnd.apple.mpegurl')) player.src = source;
+    else if (Hls.isSupported()) {
+      hls = new Hls({ maxBufferLength: 20, backBufferLength: 20 });
+      hls.loadSource(source);
+      hls.attachMedia(player);
+      let retries = 0;
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (!data.fatal) return;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && retries++ < 2) hls?.startLoad();
+        else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && retries++ < 2) hls?.recoverMediaError();
+        else showError();
+      });
+    } else showError();
+    let pendingSeek: number | null = null;
+    const seek = (time: number) => {
+      player.currentTime = time;
+      player.play().catch(() => player.focus());
+    };
+    player.addEventListener('loadedmetadata', () => {
+      if (pendingSeek !== null) { seek(pendingSeek); pendingSeek = null; }
+    });
+    document.querySelectorAll<HTMLButtonElement>('.seek').forEach(button => button.addEventListener('click', () => {
+      const time = Number(button.dataset.time);
+      if (player.readyState >= 1) seek(time);
+      else { pendingSeek = time; if (!hls) player.load(); }
+      player.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    }));
+    player.addEventListener('error', showError);
+    player.addEventListener('playing', () => { if (error) error.hidden = true; });
+    window.addEventListener('pagehide', () => hls?.destroy(), { once: true });
+  }
+</script>
+
+<style>
+  .shaman-page { padding-bottom: 70px; }
+  .page-title h1 { font-size: clamp(2rem, 4.7vw, 3.65rem); line-height: 1.4; }
+  .title-colon { color: var(--ink-3); font-weight: 400; }
+  .film-meta { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 23px; color: var(--ink-3); font-size: .8rem; }
+  .screening { border: 1px solid #294e43; background: #102b27; box-shadow: var(--shadow); }
+  .screening video { width: 100%; aspect-ratio: 16 / 9; display: block; background: #102b27; }
+  .screening-caption { display: flex; justify-content: space-between; gap: 16px; padding: 17px 22px; color: #b8c9bf; font-size: .8rem; border-top: 1px solid #294e43; }
+  .screening-caption a, .playback-error a { color: #f1e9d7; }
+  .playback-error { padding: 0 22px 16px; color: #e3ba93; }
+  .reading-nav { display: flex; flex-wrap: wrap; gap: 16px 30px; padding: 25px 0; border-bottom: 1px solid var(--line); font-size: .85rem; }
+  .shaman-page a { text-underline-offset: 4px; }
+  .shaman-page h2 { font-family: var(--serif); font-size: clamp(1.4rem, 2.6vw, 1.85rem); }
+  .shaman-page p { line-height: 1.95; color: var(--ink-2); }
+  .shaman-page section[id], .source-list li { scroll-margin-top: 24px; }
+  .chapter-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+  .chapter { appearance: none; text-align: left; color: var(--ink); font: inherit; border: 1px solid var(--line); background: var(--card); padding: 22px 18px; cursor: pointer; }
+  .chapter:hover { border-color: var(--amber); }
+  .seek:focus-visible, summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+  .chapter-time { display: flex; justify-content: space-between; color: var(--ink-3); font: .75rem var(--mono); margin-bottom: 22px; }
+  .chapter strong { display: block; font: 500 1.13rem/1.6 var(--serif); margin-bottom: 10px; }
+  .chapter > span:last-child { color: var(--ink-2); line-height: 1.85; font-size: .78rem; }
+  .guide .lead { max-width: 870px; margin-bottom: 30px; }
+  .guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .guide-grid article { padding: 26px; border: 1px solid var(--line); background: var(--card); }
+  .guide-no { color: var(--amber); font: .75rem var(--mono); }
+  .guide-grid h3 { font: 500 1.3rem var(--serif); }
+  .guide-grid p { font-size: .88rem; }
+  .references { display: flex; gap: 14px; font: .75rem var(--mono); }
+  .scene { border-top: 1px solid var(--line); }
+  .scene:last-child { border-bottom: 1px solid var(--line); }
+  .scene summary { display: flex; gap: 22px; align-items: center; padding: 22px 0; list-style: none; cursor: pointer; }
+  .scene summary::-webkit-details-marker { display: none; }
+  .scene-id { color: var(--amber); font: 1rem var(--mono); }
+  .scene summary strong { display: block; font: 500 1.1rem var(--serif); margin-bottom: 8px; }
+  .scene summary small { color: var(--ink-3); font-size: .74rem; line-height: 1.75; }
+  .expand { margin-left: auto; color: var(--ink-3); }
+  .scene[open] .expand { transform: rotate(45deg); }
+  .scene-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-bottom: 30px; }
+  .scene-body img { width: 100%; height: auto; display: block; }
+  .scene-body h3 { margin-top: 0; font: 500 1.1rem var(--serif); }
+  .scene-body p { font-size: .9rem; }
+  .scene-refs { display: flex; flex-wrap: wrap; gap: 10px; }
+  .inline-seek { font: inherit; font-size: .8rem; background: transparent; color: var(--ink); border: 1px solid var(--line); padding: 9px 14px; cursor: pointer; }
+  .corrections { max-width: 900px; padding: 26px; border: 1px solid var(--line); background: #e9eee5; }
+  .corrections p { font-size: .88rem; }
+  .corrections summary { cursor: pointer; font-size: .85rem; }
+  .corrections li { margin: 18px 0; font-size: .85rem; }
+  .sources-intro { max-width: 870px; }
+  .source-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 38px; }
+  .source-list li { border-top: 1px solid var(--line); padding-top: 19px; overflow-wrap: anywhere; }
+  .source-id { font-size: .7rem; color: var(--ink-3); }
+  .source-list h3 { font: 500 1rem/1.7 var(--serif); margin: 12px 0 8px; }
+  .source-list p { font-size: .78rem; margin: 8px 0; }
+  .source-list .source-use { color: var(--ink-3); }
+  .extra-source { font-size: .76rem; }
+  .credits { max-width: 900px; }
+  .credits p { font-size: .86rem; }
+  .download-links { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; font-size: .83rem; }
+  .back-link { display: inline-block; margin-top: 38px; font-size: .84rem; }
+  @media (max-width: 1000px) { .chapter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 700px) { .guide-grid, .scene-body, .source-list { grid-template-columns: 1fr; } .guide-grid article { padding: 22px; } .scene-body { gap: 20px; } .scene summary { gap: 15px; } .scene summary small { display: block; } .section-head > p { display: none; } }
+  @media (max-width: 480px) { .page-title h1 > span:last-child { display: block; } .title-colon { display: none; } .chapter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .chapter { padding: 18px 14px; } .screening-caption { padding: 14px; font-size: .7rem; } .reading-nav { gap: 14px 20px; font-size: .78rem; } .corrections { padding: 20px; } }
+</style>

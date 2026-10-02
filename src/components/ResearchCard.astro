@@ -3,26 +3,27 @@ import { research } from '../data/research';
 const { report = research[0] } = Astro.props;
 ---
 <article class="research-card">
-  <div class="research-cover" aria-hidden="true">
+  {report.coverImage ? <a class="research-image" href={report.href} aria-label={report.title}><img src={report.coverImage} alt={`${report.title}封面`} width="1280" height="720" loading="lazy" /></a> : <div class="research-cover" aria-hidden="true">
     <span class="cover-label">理论研究 / 001</span>
     <strong>土地续期<br /><em>与补地价</em></strong>
     <div class="cover-divider"></div>
     <span class="cover-caption">权利 · 年期 · 价值</span>
-  </div>
+  </div>}
   <div class="research-copy">
-    <span class="kicker">专题报告 · {report.date}</span>
+    <span class="kicker">{report.kind || '专题报告'} · {report.date}</span>
     <h3><a href={report.href}>{report.title}</a></h3>
     <p class="research-subtitle">{report.subtitle}</p>
     <p>{report.summary}</p>
     <div class="tag-list">{report.tags.map(tag => <span>{tag}</span>)}</div>
-    <p class="research-meta">资料截至 {report.evidenceDate} · {report.sources} 条来源 · {report.pages} 页 PDF</p>
+    <p class="research-meta">资料截至 {report.evidenceDate} · {report.sources} 条来源 · {report.format || `${report.pages} 页 PDF`}</p>
     <div class="research-actions">
-      <a class="button" href={report.href}>阅读报告 <span aria-hidden="true">→</span></a>
-      <a class="research-download" href={report.pdf} download>下载 PDF <span aria-hidden="true">↓</span></a>
+      <a class="button" href={report.href}>{report.actionLabel || '阅读报告'} <span aria-hidden="true">→</span></a>
+      {(report.download || report.pdf) && <a class="research-download" href={report.download || report.pdf} download>{report.downloadLabel || '下载 PDF'} <span aria-hidden="true">↓</span></a>}
     </div>
   </div>
 </article>
 <style>
+  .research-image{display:flex;align-items:center;background:#102b27;align-self:stretch}.research-image img{display:block;width:100%;height:auto}
   .research-card{display:grid;grid-template-columns:minmax(240px,.78fr) minmax(0,1.5fr);gap:40px;padding:30px;border:1px solid var(--line);background:var(--card);border-radius:5px}
   .research-cover{background:#e9eee5;color:#294e43;min-height:305px;padding:30px;display:flex;flex-direction:column;justify-content:center;position:relative;border:1px solid #cad7c8}
   .cover-label{font:11px var(--mono);letter-spacing:.1em;margin-bottom:26px;color:#62796c}
