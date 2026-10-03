@@ -13,6 +13,7 @@ const urls = [
   ['/about/', 'yearly', '0.5'],
   ['/earth/', 'weekly', '0.9'],
   ['/games/', 'monthly', '0.8'],
+  ['/games/mojian/', 'monthly', '0.7'],
   ['/games/perspective-garden/', 'monthly', '0.7'],
   ['/cosmos/', 'monthly', '0.7'],
   ['/maps/', 'monthly', '0.6'],

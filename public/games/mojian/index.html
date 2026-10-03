@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f3efe5">
+  <meta name="description" content="轻点水面，让荷灯随涟漪归入荷塘。在四时山水与唐宋诗词之间，给心情一点留白。">
+  <title>墨间 · 荷风入画 | 劳伦斯实验室</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='5' y='5' width='54' height='54' rx='3' fill='%23a94334'/%3E%3Cpath d='M18 22h28M21 30h22M18 40h28M32 17v30' stroke='%23f3efe5' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="canonical" href="https://shuzidiantang.com/games/mojian/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="墨间 · 荷风入画">
+  <meta property="og:description" content="轻点拨水、拖灯入塘，在四时山水与唐宋诗词间，给心情一点留白。">
+  <meta property="og:url" content="https://shuzidiantang.com/games/mojian/">
+  <link rel="stylesheet" href="style.css">
+  <script src="game.js" defer></script>
+</head>
+<body data-season="summer">
+  <main class="app">
+    <header class="header">
+      <a class="identity" href="./" aria-label="墨间，回到初夏画卷"><span class="seal" aria-hidden="true">墨<br>间</span><span class="wordmark">墨间<span class="roman">M O J I A N</span></span></a>
+      <div class="header-note">一池清水，片刻闲心。</div>
+      <nav class="tools" aria-label="游戏设置">
+        <button id="sound" class="tool" aria-pressed="false" aria-label="开启声音"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10h4l5-4v12l-5-4H5zM18 9c2 2 2 4 0 6"/></svg><span>听水</span></button>
+        <button id="help" class="tool" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M10 9a2 2 0 0 1 4 0c0 2-2 2-2 4M12 16h.01"/></svg><span>玩法</span></button>
+      </nav>
+    </header>
+
+    <section class="game-heading" aria-labelledby="game-title">
+      <div><p class="eyebrow"><span class="dash"></span> 水墨小游 · 四时有诗</p><h1 id="game-title">荷风入画</h1></div>
+      <div class="heading-right"><span class="chapter-label" id="chapter-label">第二卷 · 初夏</span><p id="chapter-note">把五盏荷灯，轻轻送入荷塘。</p></div>
+    </section>
+
+    <section class="scroll-frame" aria-label="互动山水画卷">
+      <div class="scroll-cap cap-left" aria-hidden="true"></div><div class="scroll-cap cap-right" aria-hidden="true"></div>
+      <div class="painting" id="painting">
+        <div class="season-wash" aria-hidden="true"></div>
+        <div class="painting-name" aria-hidden="true"><span id="vertical-title">荷风入画</span><small id="vertical-season">初夏</small><span class="mini-seal">闲</span></div>
+        <canvas id="lake" tabindex="0" role="application" aria-label="荷灯水面：轻点水面推动荷灯，或拖动荷灯进入标有归字的荷塘。键盘用方向键移动水面光标，空格拨水，数字一至五选灯，回车将选中的灯送入荷塘。">你的浏览器暂不支持画卷，请使用较新的浏览器。</canvas>
+        <div class="water-label" aria-hidden="true"><span class="tiny-line"></span> 荷灯归处</div>
+        <div class="first-hint" id="first-hint" aria-hidden="true"><span class="hint-ripple"></span><span>轻点水面，试着拨一拨</span></div>
+        <div class="in-painting-poem" aria-hidden="true"><span id="poem-line-1">泉眼无声惜细流</span><span id="poem-line-2">树阴照水爱晴柔</span></div>
+        <button class="restart" id="restart" aria-label="重新放出五盏荷灯"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10a7 7 0 1 1 1 7M5 4v6h6"/></svg><span>重新放灯</span></button>
+        <div class="completion" id="completion" hidden>
+          <div class="completion-card"><div class="completion-content"><div class="completion-seal" aria-hidden="true">圆满</div><p class="eyebrow">一池灯火，已入画中</p><h2 id="completion-title">心有荷香，便是清凉。</h2><p class="completion-poem" id="completion-poem">泉眼无声惜细流，树阴照水爱晴柔。</p><p class="poem-credit" id="poem-credit">宋 · 杨万里《小池》</p><p class="culture-note" id="culture-note">诗人把小小的泉眼与树阴写得有情。留心一池微光，也能在寻常里遇见温柔。</p></div><div class="completion-actions"><button id="next" class="primary">展开下一卷</button><button id="stay" class="text-button">留在此景</button></div><a id="poem-source" class="source-link" href="https://www.guwendao.net/mingju/juv_710e46b2e6d7.aspx" target="_blank" rel="noopener noreferrer">读原诗</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-footer" aria-label="游戏进度与模式">
+      <div class="instruction"><span class="instruction-mark" aria-hidden="true">～</span><div><p id="instruction">轻点拨水，也可拖动荷灯。</p><small>不用赶时间，慢慢来就好。</small></div></div>
+      <div class="progress" id="progress" aria-live="polite" aria-atomic="true"><span class="progress-label">荷灯入画</span><div class="progress-dots" id="progress-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><span class="progress-count" id="progress-count">0 / 5</span></div>
+      <button class="mode-button" id="mode" aria-pressed="false"><span class="mode-symbol" aria-hidden="true">∞</span><span id="mode-label">自在模式</span></button>
+    </section>
+
+    <footer class="bottom"><a class="bottom-note back-to-hall" href="/games/">返回游戏厅</a><div class="seasons" aria-label="选择画卷"><button data-chapter="0">春 <span>·</span> 水暖</button><button data-chapter="1" aria-current="true">夏 <span>·</span> 荷风</button><button data-chapter="2">秋 <span>·</span> 山静</button><button data-chapter="3">冬 <span>·</span> 江雪</button></div><span class="bottom-index" id="bottom-index">卷 二 / 四</span></footer>
+    <p class="sr-only" id="announcer" role="status" aria-live="polite"></p>
+  </main>
+  <dialog id="help-dialog" aria-labelledby="help-title"><button class="dialog-close" aria-label="关闭玩法说明" data-close>×</button><p class="eyebrow">不急，不争</p><h2 id="help-title">借一圈涟漪，送一盏荷灯。</h2><ol><li><b>轻点水面</b><span>涟漪会把附近的灯向外轻推。在灯的后方点一下，试着送它靠近「归」字荷塘。</span></li><li><b>也可以直接拖动</b><span>按住一盏荷灯，把它拖进荷塘。五盏灯全部入画，就能展开这一卷的诗意。</span></li><li><b>只想发会儿呆</b><span>打开「自在模式」，随手拨水、听水，不用完成任何目标。</span></li></ol><details><summary>键盘怎么玩</summary><p>先聚焦画卷，方向键移动水面光标，空格拨水。按数字 1–5 选灯，方向键移动它，回车送灯入塘。Esc 取消选灯。</p></details><p class="help-footnote">四时画卷是诗意想象。灯与花不受真实物候限制。</p><button class="primary" data-close>知道了，入画</button></dialog>
+  <noscript><p class="noscript">请开启 JavaScript，让荷灯随水流动。</p></noscript>
+</body>
+</html>

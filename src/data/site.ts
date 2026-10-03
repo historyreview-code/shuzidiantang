@@ -51,6 +51,17 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'mojian',
+    title: '墨间 · 荷风入画',
+    eyebrow: '中国水墨 · 轻互动解压',
+    href: '/games/mojian/',
+    image: '/games/mojian/assets/ink-landscape.webp',
+    summary: '轻点拨水、拖灯入塘，慢慢完成一幅画。春夏秋冬各有诗意，可听水声，也可自在看灯；无计时、无失败，让心情有一点留白。',
+    tags: ['四时诗词', '拨水引灯', '自在模式'],
+    status: '在线可玩',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/games/mojian',
+  },
+  {
     id: 'perspective-garden',
     title: '折光庭',
     eyebrow: '三维错视 · 建筑解谜',
