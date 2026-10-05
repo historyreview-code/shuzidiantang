@@ -5,7 +5,7 @@ import {miniature,glyph,mapArtwork} from './icons.js';
 import {summarize,optimize,sanitizeState,encodePlan,decodePlan,exportText,duration,timeRange} from './planner.js';
 
 const $=s=>document.querySelector(s);
-const {places,routes,kinds,seasons,sources:SOURCES,foods=[]}=city;
+const {places,routes,kinds,seasons,sources:SOURCES,foods=[],stories={}}=city;
 const foodById=Object.fromEntries(foods.map(f=>[f.id,f]));
 let foodFilter='all';
 const byId=Object.fromEntries(places.map(p=>[p.id,p]));
@@ -29,7 +29,10 @@ $('.intro h1').innerHTML=`${esc(city.name)}，<em>${esc(city.ui.hero)}</em>`;
 $('.intro-copy').textContent=city.intro;
 $('.picker-label').textContent=`你想遇见的${city.name}`;
 $('.discovery h2').innerHTML=`发现${esc(city.name)} <span id="place-count"></span>`;
-$('.discovery-foot span:last-child').textContent=city.ui.discovery;
+$('#stories-section').hidden=!Object.keys(stories).length;
+$('.discovery-foot span:last-child').textContent=Object.keys(stories).length?`${Object.keys(stories).length} 篇体验贴 · 打开景点即可阅读`:city.ui.discovery;
+$('#story-cards').innerHTML=places.filter(p=>stories[p.id]).filter(p=>(city.ui.featuredStories||places.slice(0,3).map(p=>p.id)).includes(p.id)).map(p=>`<button class="story-card" data-story="${p.id}">${miniature(p.icon)}<span><small>${esc(p.name)} · 约 2 分钟阅读</small><strong>${esc(stories[p.id].title)}</strong></span>${glyph('arrow')}</button>`).join('');
+$('#all-stories').textContent=`全部 ${Object.keys(stories).length} 篇体验贴 ${'↗'}`;
 $('.map-kicker').textContent=`${city.name}漫游图`;
 $('.map-subtitle').textContent=`${city.en} WANDER MAP`;
 $('.map-section').setAttribute('aria-label',`${city.name}抽象漫游地图`);
@@ -38,7 +41,7 @@ $('.wander-footer time').textContent=city.checkedAt.replaceAll('-','.');$('.wand
 world.style.width=`${city.map.width}px`;world.style.height=`${city.map.height}px`;
 $('#route-layer').setAttribute('viewBox',`0 0 ${city.map.width} ${city.map.height}`);
 $('#artwork').innerHTML=mapArtwork(city.map);
-$('#map-pins').innerHTML=places.map(p=>`<button class="map-pin" data-place="${p.id}" style="left:${p.x}px;top:${p.y}px" aria-label="${esc(p.name)}，查看介绍">${miniature(p.icon)}<span class="pin-name">${esc(p.name)}</span><span class="pin-number" hidden></span></button>`).join('')+city.map.anchors.map(a=>`<div class="map-pin map-anchor" style="left:${a.x}px;top:${a.y}px">${miniature(a.icon)}<span class="pin-name">${esc(a.label)}</span></div>`).join('');
+$('#map-pins').innerHTML=places.map(p=>`<button class="map-pin" data-place="${p.id}" style="left:${p.x}px;top:${p.y}px" aria-label="${esc(p.name)}，查看介绍">${miniature(p.icon)}<span class="pin-name"><span class="pin-full-name">${esc(p.mapName||p.name)}</span><span class="pin-overview-name">${esc(p.overviewName||p.mapName||p.name)}</span></span><span class="pin-number" hidden></span></button>`).join('')+city.map.anchors.map(a=>`<div class="map-pin map-anchor" style="left:${a.x}px;top:${a.y}px">${miniature(a.icon)}<span class="pin-name">${esc(a.label)}</span></div>`).join('');
 $('#route-cards').innerHTML=routes.map(r=>`<button class="route-card" data-route="${r.id}" aria-label="查看路线：${esc(r.title)}">${miniature(r.icon)}<span><strong>${esc(r.title)}</strong><small>${esc(r.mood)} · ${r.ids.length} 处停留</small></span>${glyph('arrow')}</button>`).join('');
 
 function persist() {try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{if(storageAvailable)toast('浏览器无法保存，本次行程仍可导出或分享。');storageAvailable=false;}}
@@ -68,6 +71,7 @@ function render(){
 
 function renderPlan(){
   const day=activeDay(),s=summarize(day.ids,day.budget,day.pause);
+  $('#plan-stops').classList.toggle('is-editing',editing);
   const route=routes.find(r=>JSON.stringify(r.ids)===JSON.stringify(day.ids));
   $('#day-tabs').innerHTML=state.days.map((d,i)=>`<button data-day="${i}" aria-pressed="${i===state.active}" aria-label="第 ${i+1} 天，${d.ids.length} 处停留">Day ${i+1}</button>`).join('');
   $('#budget').value=day.budget;$('#pause').value=day.pause;
@@ -75,7 +79,7 @@ function renderPlan(){
   renderDayFoods();
   $('#plan-caption').textContent=day.ids.length?`${day.ids.length} 处停留 · 一段属于你的${city.name}`:'从一处喜欢的风景开始吧';
   $('#mobile-count').textContent=state.days.reduce((sum,d)=>sum+d.ids.length,0);
-  $('#plan-stops').innerHTML=day.ids.map((id,i)=>{const p=byId[id],leg=s.legs[i];return `<div class="plan-stop"><span class="stop-index">${i+1}</span><button class="stop-open" data-place="${id}" aria-label="查看${esc(p.name)}">${miniature(p.icon)}<span><strong>${esc(p.name)}</strong><small>游览预留 ${p.minutes} 分钟</small></span></button><div class="stop-actions">${editing?`<button data-move="${id}" data-direction="-1" aria-label="上移${esc(p.name)}" ${i===0?'disabled':''}>${glyph('up')}</button><button data-move="${id}" data-direction="1" aria-label="下移${esc(p.name)}" ${i===day.ids.length-1?'disabled':''}>${glyph('down')}</button>`:''}<button data-remove="${id}" aria-label="从当天移除${esc(p.name)}">${glyph('close')}</button></div></div>${leg?`<div class="transfer-note">${leg.mode}预留 ${leg.min}–${leg.max} 分钟</div>`:''}`;}).join('')||`<div class="empty-plan">${miniature('path')}选几处风景，把这一天串起来。<br>也可以从下方的主题路线开始。</div>`;
+  $('#plan-stops').innerHTML=day.ids.map((id,i)=>{const p=byId[id],leg=s.legs[i];return `<div class="plan-stop"><span class="stop-index">${i+1}</span><button class="stop-open" data-place="${id}" aria-label="查看${esc(p.name)}">${miniature(p.icon)}<span><strong>${esc(p.name)}</strong><small>游览预留 ${p.minutes} 分钟</small></span></button><div class="stop-actions">${stories[id]?`<button data-story="${id}" aria-label="读${esc(p.name)}体验贴">${glyph('book')}</button>`:''}${editing?`<button data-move="${id}" data-direction="-1" aria-label="上移${esc(p.name)}" ${i===0?'disabled':''}>${glyph('up')}</button><button data-move="${id}" data-direction="1" aria-label="下移${esc(p.name)}" ${i===day.ids.length-1?'disabled':''}>${glyph('down')}</button>`:''}<button data-remove="${id}" aria-label="从当天移除${esc(p.name)}">${glyph('close')}</button></div></div>${leg?`<div class="transfer-note">${leg.mode}预留 ${leg.min}–${leg.max} 分钟</div>`:''}`;}).join('')||`<div class="empty-plan">${miniature('path')}选几处风景，把这一天串起来。<br>也可以从下方的主题路线开始。</div>`;
   $('#edit-order').textContent=editing?'完成编辑':'编辑顺序';
   $('#edit-order').disabled=!day.ids.length;$('#optimize').disabled=day.ids.length<3;$('#clear-day').disabled=!day.ids.length;
   $('#pause-copy').textContent=`${day.pause} 分钟，留给用餐、喝茶和临时发现。`;
@@ -118,13 +122,22 @@ function renderMap(){
 
 function renderDetail(id){
   const p=byId[id],added=activeDay().ids.includes(id),saved=state.saved.includes(id),inOther=state.days.flatMap((d,i)=>i!==state.active&&d.ids.includes(id)?[i+1]:[]);
-  $('#detail-content').innerHTML=`<div class="dialog-head"><p class="eyebrow" style="margin:0">A PLACE TO PAUSE</p><button class="dialog-close" data-close="detail" aria-label="关闭景点介绍">${glyph('close')}</button></div><div class="detail-hero"><span class="detail-area">${esc(p.area)}</span>${miniature(p.icon)}<button class="detail-heart" data-save="${id}" aria-pressed="${saved}" aria-label="${saved?'取消收藏':'收藏'}${esc(p.name)}">${glyph('heart')}</button></div><div class="detail-body"><div class="detail-title-row"><div><h2 id="detail-title">${esc(p.name)}</h2><span class="jp">${esc(p.localName)} / ${esc(p.en)}</span></div><div class="detail-tags">${p.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div><h3 class="detail-subtitle">${esc(p.subtitle)}</h3><p class="detail-description">${esc(p.description)}</p><div class="observation"><small>带着这个小问题，去看看</small><p>${esc(p.prompt)}</p></div><div class="detail-facts"><div><small>游览预留 · 编辑建议</small><strong>${duration(p.minutes)}</strong></div><div><small>步行与地形</small><strong>${p.effort===3?'有上坡 / 山路 / 台阶':p.effort===2?'含较多步行或台阶':'较轻松，具体路况另查'}</strong></div></div><p class="detail-tip">${esc(p.tip)}</p><p class="detail-source">${esc(p.access)}<br><a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.sourceLabel)} ↗</a>${p.manners?` · <a href="${p.manners}" target="_blank" rel="noopener noreferrer">当地礼仪 ↗</a>`:''} · 核验 ${city.checkedAt}${inOther.length?`<br>也在第 ${inOther.join('、')} 天；加入当前天会保留其他天安排。`:''}</p><div class="detail-actions"><button class="button primary" data-add="${id}" ${added?'disabled':''}>${glyph(added?'check':'plus')}${added?`已在 Day ${state.active+1}`:`加入 Day ${state.active+1}`}</button><a class="button" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.en} ${city.navigationQuery}`)}" target="_blank" rel="noopener noreferrer">${glyph('map')}实际地图 ↗</a></div></div>`;
+  $('#detail-content').innerHTML=`<div class="dialog-head"><p class="eyebrow" style="margin:0">A PLACE TO PAUSE</p><button class="dialog-close" data-close="detail" aria-label="关闭景点介绍">${glyph('close')}</button></div><div class="detail-hero"><span class="detail-area">${esc(p.area)}</span>${miniature(p.icon)}<button class="detail-heart" data-save="${id}" aria-pressed="${saved}" aria-label="${saved?'取消收藏':'收藏'}${esc(p.name)}">${glyph('heart')}</button></div><div class="detail-body"><div class="detail-title-row"><div><h2 id="detail-title">${esc(p.name)}</h2><span class="jp">${esc(p.localName)} / ${esc(p.en)}</span></div><div class="detail-tags">${p.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div><h3 class="detail-subtitle">${esc(p.subtitle)}</h3><p class="detail-description">${esc(p.description)}</p>${stories[id]?`<button class="story-invite" data-story="${id}">${glyph('book')}<span><small>第一人称情境体验 · 约 2 分钟</small><strong>${esc(stories[id].title)}</strong></span>${glyph('arrow')}</button>`:''}<div class="observation"><small>带着这个小问题，去看看</small><p>${esc(p.prompt)}</p></div><div class="detail-facts"><div><small>游览预留 · 编辑建议</small><strong>${duration(p.minutes)}</strong></div><div><small>步行与地形</small><strong>${p.effort===3?'有上坡 / 山路 / 台阶':p.effort===2?'含较多步行或台阶':'较轻松，具体路况另查'}</strong></div></div><p class="detail-tip">${esc(p.tip)}</p><p class="detail-source">${esc(p.access)}<br><a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.sourceLabel)} ↗</a>${p.manners?` · <a href="${p.manners}" target="_blank" rel="noopener noreferrer">当地礼仪 ↗</a>`:''} · 核验 ${city.checkedAt}${inOther.length?`<br>也在第 ${inOther.join('、')} 天；加入当前天会保留其他天安排。`:''}</p><div class="detail-actions"><button class="button primary" data-add="${id}" ${added?'disabled':''}>${glyph(added?'check':'plus')}${added?`已在 Day ${state.active+1}`:`加入 Day ${state.active+1}`}</button><a class="button" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.en} ${city.navigationQuery}`)}" target="_blank" rel="noopener noreferrer">${glyph('map')}实际地图 ↗</a></div></div>`;
 }
 function showDetail(id){detailId=id;renderDetail(id);$('#detail-dialog').showModal();}
 function showUtility(title,body){$('#utility-content').innerHTML=`<div class="dialog-head"><h2 id="utility-title">${esc(title)}</h2><button class="dialog-close" data-close="utility" aria-label="关闭窗口">${glyph('close')}</button></div>${body}`;$('#utility-dialog').showModal();}
 
-function showGuide(){showUtility(city.ui.guideTitle,`<div class="utility-body"><h3>先看方位，再选一段路</h3><p>河流和山地帮助你记住城市。地图保留主要分区与大致方向，景点位置为排版示意，图上的连线表达行程顺序；出行请在景点卡片中打开实际地图。</p><h3>把一天拆成三种时间</h3><p>游览、转场、留白。游览时长与转场范围是编辑性规划预留，未接入实时公交、步行路网或客流。留白包含用餐、休息和临时发现，住处到首站及末站返程需要另外安排。</p><h3>让计划保留一点弹性</h3><p>可建立最多五天的行程，在卡片中加入景点，用“编辑顺序”调整，或用“减少折返”比较转场预留。排序保留首站与全部已选景点；长途跨区并不会因此消失。</p><h3>好好旅行，也好好相处</h3><p>${esc(city.ui.etiquette)}</p><p><a href="${SOURCES.manners}" target="_blank" rel="noopener noreferrer">${esc(city.name)}官方旅行礼仪 ↗</a>　<a href="${SOURCES.crowd}" target="_blank" rel="noopener noreferrer">查看官方拥挤度预测 ↗</a></p><h3>收好计划，再出发</h3><p>行程自动保存在本浏览器。分享链接携带行程与季节选择，收藏不会被分享；导出文本可离线查看。开放、门票、预约及季节状态请出发前通过景点官方链接再确认。</p></div>`);}
-function showSources(){showUtility('来源与规划说明',`<div class="utility-body"><p>${esc(city.sourceNote)}资料核验日期：${city.checkedAt}。观察问题、季节灵感、游览时长和转场范围为本产品的编辑建议。</p><p>地图是一张方位示意插画。没有按图距计算真实公里数，没有把季节选择解释为实时花况，主题推荐也不等于实时客流保证。</p><div class="source-list">${[...places,...foods].map(p=>`<a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.name)} · ${esc(p.sourceLabel)} ↗</a>`).join('')}</div><h3>通用城市漫游方法</h3><p>空间骨架 → 游览片区 → 城市体验 → 缩微标识 → 时间预算 → 可解释路线。城市资料与地图坐标独立于规划引擎，下一座城市可以替换数据包、地图骨架与地标插画。</p></div>`);}
+function showStory(id){
+  const p=byId[id],story=stories[id];if(!p||!story)return;
+  const added=activeDay().ids.includes(id);
+  showUtility(story.title,`<article class="story-article"><button class="story-back" data-story-library="true">← 全部手记</button><div class="story-masthead">${miniature(p.icon)}<div><p class="eyebrow">${esc(city.brand)} · 漫游手记</p><strong>${esc(p.name)}</strong><small>${esc(p.area)} / 约 2 分钟阅读</small></div></div><p class="story-disclosure">第一人称情境体验 · 依据公开资料创作的模拟游览，供规划参考，并非真实游客亲历。</p><div class="story-prose">${story.paragraphs.map(t=>`<p>${esc(t)}</p>`).join('')}</div><aside class="story-planning"><h3>${glyph('clock')}如果把这里排进一天</h3><p>${esc(story.planning)}</p><small>时长为编辑性预留，交通、排队、临时开放与预约另查。</small></aside><p class="story-source">事实参考：<a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.sourceLabel)} ↗</a> · ${city.checkedAt}</p><div class="story-actions"><button class="button" data-close="utility">收起手记</button><button class="button primary" data-add="${id}" ${added?'disabled':''}>${glyph(added?'check':'plus')}${added?`已在 Day ${state.active+1}`:`加入 Day ${state.active+1}`}</button></div></article>`);
+  $('#utility-dialog').scrollTop=0;
+}
+function showStoryLibrary(){showUtility('在出发之前，先走一遍',`<div class="utility-body"><p class="story-disclosure">${Object.keys(stories).length} 篇第一人称情境体验。依据公开资料创作，并非真实游客亲历；每篇都附安排建议与事实来源。</p><div class="story-library">${places.filter(p=>stories[p.id]).map(p=>`<button class="story-card" data-story="${p.id}">${miniature(p.icon)}<span><small>${esc(p.name)}</small><strong>${esc(stories[p.id].title)}</strong></span>${glyph('arrow')}</button>`).join('')}</div></div>`);$('#utility-dialog').scrollTop=0;}
+$('#all-stories').onclick=showStoryLibrary;
+
+function showGuide(){showUtility(city.ui.guideTitle,`<div class="utility-body"><h3>先看方位，再选一段路</h3><p>河流、山地与主干道路帮助你记住城市。“全屏”展开到浏览器可用画面，“总览”显示全城；道路可切换显示。地图保留主要分区与大致方向，景点位置为排版示意，图上的连线表达行程顺序；出行请在景点卡片中打开实际地图。</p><h3>把一天拆成三种时间</h3><p>游览、转场、留白。游览时长与转场范围是编辑性规划预留，未接入实时公交、步行路网或客流。留白包含用餐、休息和临时发现，住处到首站及末站返程需要另外安排。</p><h3>让计划保留一点弹性</h3><p>可建立最多五天的行程，在卡片中加入景点，用“编辑顺序”调整，或用“减少折返”比较转场预留。排序保留首站与全部已选景点；长途跨区并不会因此消失。</p><h3>好好旅行，也好好相处</h3><p>${esc(city.ui.etiquette)}</p><p><a href="${SOURCES.manners}" target="_blank" rel="noopener noreferrer">${esc(city.name)}官方旅行礼仪 ↗</a>　<a href="${SOURCES.crowd}" target="_blank" rel="noopener noreferrer">查看官方拥挤度预测 ↗</a></p><h3>收好计划，再出发</h3><p>行程自动保存在本浏览器。分享链接携带行程与季节选择，收藏不会被分享；导出文本可离线查看。开放、门票、预约及季节状态请出发前通过景点官方链接再确认。</p></div>`);}
+function showSources(){showUtility('来源与规划说明',`<div class="utility-body"><p>${esc(city.sourceNote)}资料核验日期：${city.checkedAt}。观察问题、季节灵感、游览时长和转场范围为本产品的编辑建议。</p><p>地图是一张方位示意插画。没有按图距计算真实公里数，没有把季节选择解释为实时花况，主题推荐也不等于实时客流保证。</p><p>第一人称体验贴为依据资料创作的模拟游览，观察感受并非亲历证言。道路保留大致方位与街序，不能用于转弯导航。<a href="${SOURCES.roads}" target="_blank" rel="noopener noreferrer">京都市交通局官方地图 ↗</a></p><div class="source-list">${[...places,...foods].map(p=>`<a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.name)} · ${esc(p.sourceLabel)} ↗</a>`).join('')}</div><h3>通用城市漫游方法</h3><p>空间骨架 → 游览片区 → 城市体验 → 缩微标识 → 时间预算 → 可解释路线。城市资料与地图坐标独立于规划引擎，下一座城市可以替换数据包、地图骨架与地标插画。</p></div>`);}
 
 function showRoute(id){
   const r=routes.find(r=>r.id===id),s=summarize(r.ids,activeDay().budget,activeDay().pause);
@@ -137,8 +150,8 @@ function showShare(){
 }
 
 function clampCamera(){const w=viewport.clientWidth,h=viewport.clientHeight,ww=city.map.width*camera.scale,hh=city.map.height*camera.scale;camera.x=ww<w?(w-ww)/2:Math.max(w-ww,Math.min(0,camera.x));camera.y=hh<h?(h-hh)/2:Math.max(h-hh,Math.min(0,camera.y));}
-function paintCamera(){clampCamera();world.style.transform=`translate(${camera.x}px,${camera.y}px) scale(${camera.scale})`;}
-function fitMap(overview=false){const fit=Math.min(viewport.clientWidth/city.map.width,viewport.clientHeight/city.map.height);camera.scale=overview?fit:Math.max(fit,matchMedia('(max-width:760px)').matches?.55:fit);camera.x=(viewport.clientWidth-city.map.width*camera.scale)/2;camera.y=(viewport.clientHeight-city.map.height*camera.scale)/2;if(!overview&&matchMedia('(max-width:760px)').matches)camera.x=viewport.clientWidth-city.map.width*camera.scale;paintCamera();}
+function paintCamera(){clampCamera();world.style.setProperty('--map-scale',camera.scale);world.classList.toggle('map-overview',camera.scale<.5);world.style.transform=`translate(${camera.x}px,${camera.y}px) scale(${camera.scale})`;}
+function fitMap(overview=false){const fit=Math.min(viewport.clientWidth/city.map.width,viewport.clientHeight/city.map.height);camera.scale=overview?fit:Math.max(fit,matchMedia('(max-width:760px)').matches?.68:fit);camera.x=(viewport.clientWidth-city.map.width*camera.scale)/2;camera.y=(viewport.clientHeight-city.map.height*camera.scale)/2;if(!overview&&matchMedia('(max-width:760px)').matches)camera.x=viewport.clientWidth-city.map.width*camera.scale;paintCamera();}
 function zoom(factor){const w=viewport.clientWidth/2,h=viewport.clientHeight/2,old=camera.scale;camera.scale=Math.min(1.8,Math.max(.28,old*factor));camera.x=w-(w-camera.x)*(camera.scale/old);camera.y=h-(h-camera.y)*(camera.scale/old);paintCamera();}
 viewport.addEventListener('pointerdown',event=>{if(event.target.closest('.zoom-controls'))return;if(!event.isPrimary)return;drag={id:event.pointerId,x:event.clientX,y:event.clientY,startX:camera.x,startY:camera.y,moved:false};wasDragged=false;});
 viewport.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.id)return;const dx=event.clientX-drag.x,dy=event.clientY-drag.y;if(Math.hypot(dx,dy)>7){drag.moved=true;wasDragged=true;viewport.classList.add('dragging');viewport.setPointerCapture(event.pointerId);}if(drag.moved){camera.x=drag.startX+dx;camera.y=drag.startY+dy;paintCamera();}});
@@ -146,12 +159,34 @@ function endDrag(){drag=null;viewport.classList.remove('dragging');setTimeout(()
 viewport.addEventListener('pointerup',endDrag);viewport.addEventListener('pointercancel',endDrag);
 viewport.addEventListener('keydown',event=>{if(event.target!==viewport)return;const arrows={ArrowLeft:[45,0],ArrowRight:[-45,0],ArrowUp:[0,45],ArrowDown:[0,-45]};if(arrows[event.key]){event.preventDefault();camera.x+=arrows[event.key][0];camera.y+=arrows[event.key][1];paintCamera();}else if(event.key==='+'||event.key==='='){event.preventDefault();zoom(1.2);}else if(event.key==='-'){event.preventDefault();zoom(1/1.2);}});
 $('#zoom-in').onclick=()=>zoom(1.2);$('#zoom-out').onclick=()=>zoom(1/1.2);$('#zoom-fit').onclick=()=>fitMap(true);
-window.addEventListener('resize',()=>fitMap());
+const mapSection=$('#map-section'),mapDialog=$('#map-dialog'),mapHome=document.createComment('map home');
+mapSection.before(mapHome);
+let compactCamera=null,compactScroll=0;
+function setMapExpanded(expanded){
+  const b=$('#map-fullscreen');b.setAttribute('aria-expanded',String(expanded));
+  b.innerHTML=glyph(expanded?'close':'fit')+`<span>${expanded?'退出全屏':'全屏'}</span>`;
+}
+$('#map-fullscreen').onclick=()=>{
+  if(mapDialog.open){mapDialog.close();return;}
+  compactCamera={...camera};compactScroll=window.scrollY;
+  mapDialog.append(mapSection);document.body.classList.add('map-expanded');setMapExpanded(true);
+  mapDialog.showModal();fitMap();$('#map-fullscreen').focus({preventScroll:true});
+};
+mapDialog.addEventListener('close',()=>{
+  mapHome.after(mapSection);document.body.classList.remove('map-expanded');setMapExpanded(false);
+  if(compactCamera){camera={...compactCamera};compactCamera=null;}paintCamera();
+  window.scrollTo({top:compactScroll,behavior:'instant'});$('#map-fullscreen').focus({preventScroll:true});
+});
+$('#road-toggle').onclick=()=>{const b=$('#road-toggle'),visible=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(visible));world.classList.toggle('roads-hidden',!visible);};
+let lastWidth=viewport.clientWidth;
+window.addEventListener('resize',()=>{if(viewport.clientWidth!==lastWidth){lastWidth=viewport.clientWidth;fitMap();}else paintCamera();});
 
 document.addEventListener('click',async event=>{
   const button=event.target.closest('button');if(!button)return;
   const d=button.dataset;
-  if(d.food){showFood(d.food);}
+  if(d.storyLibrary){showStoryLibrary();}
+  else if(d.story){showStory(d.story);}
+  else if(d.food){showFood(d.food);}
   else if(d.foodFilter){foodFilter=d.foodFilter;renderFoods();}
   else if(d.foodToggle){const id=d.foodToggle;mutate(()=>{const ids=activeDay().foodIds||[];activeDay().foodIds=ids.includes(id)?ids.filter(x=>x!==id):[...ids,id];},'已更新当天餐食备选。');if($('#utility-dialog').open&&$('#utility-content [data-food-toggle]'))showFood(id);}
   else if(d.place){if(button.classList.contains('map-pin')&&wasDragged)return;showDetail(d.place);}
@@ -160,7 +195,7 @@ document.addEventListener('click',async event=>{
   else if(d.day){state.active=Number(d.day);editing=false;persist();render();}
   else if(d.close){$('#'+d.close+'-dialog').close();if(d.close==='detail')detailId=null;}
   else if(d.save){const id=d.save;mutate(()=>{state.saved=state.saved.includes(id)?state.saved.filter(p=>p!==id):[...state.saved,id];},state.saved.includes(id)?'已取消收藏':'已收藏这处风景');}
-  else if(d.add){mutate(()=>{if(!activeDay().ids.includes(d.add))activeDay().ids.push(d.add);},`已加入 Day ${state.active+1}`);}
+  else if(d.add){mutate(()=>{if(!activeDay().ids.includes(d.add))activeDay().ids.push(d.add);},`已加入 Day ${state.active+1}`);if(button.closest('.story-article')){button.disabled=true;button.innerHTML=glyph('check')+`已在 Day ${state.active+1}`;}}
   else if(d.remove){mutate(()=>activeDay().ids=activeDay().ids.filter(id=>id!==d.remove),'已从当天移除，随时可以撤销。');}
   else if(d.move){mutate(()=>{const ids=activeDay().ids,i=ids.indexOf(d.move),j=i+Number(d.direction);if(j>=0&&j<ids.length)[ids[i],ids[j]]=[ids[j],ids[i]];});}
   else if(d.route){showRoute(d.route);}
@@ -168,7 +203,7 @@ document.addEventListener('click',async event=>{
   else if(button.id==='copy-link'){
     const link=$('#share-link');try{await navigator.clipboard.writeText(link.value);toast('计划链接已复制。');}catch{link.focus();link.select();toast('已选中链接，请复制后分享。');}
   }else if(button.id==='export-text'){
-    const content=exportText(state),blob=new Blob([content],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${city.name}漫游计划.txt`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const content=exportText(state),blob=new Blob([content],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${city.brand}·${city.name}漫游计划.txt`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
     showUtility('行程文本',`<div class="utility-body"><p>已发起文本文件下载。浏览器不支持下载时，也可以选中并复制下面的计划。</p><textarea id="export-content" class="link-field" rows="16" aria-label="完整行程文本" readonly>${esc(content)}</textarea><div class="share-buttons"><button class="button primary" id="copy-text">${glyph('list')}复制全文</button></div></div>`);
   }else if(button.id==='copy-text'){
     const field=$('#export-content');try{await navigator.clipboard.writeText(field.value);toast('行程全文已复制。');}catch{field.focus();field.select();toast('已选中全文，请复制保存。');}
