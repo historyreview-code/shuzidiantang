@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5eb">
+  <meta name="description" content="京游：在手绘感的京都示意地图上发现景点，规划一段有留白的漫游。">
+  <title>京游 · 京都，不必赶路</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+<link rel="canonical" href="https://shuzidiantang.com/travel/kyoto/">
+<meta property="og:title" content="京游 · 京都，不必赶路">
+<meta property="og:description" content="18 处缩微风景，5 种京都滋味。伴着原创配乐，计划一段有留白的漫游。">
+<meta property="og:url" content="https://shuzidiantang.com/travel/kyoto/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://shuzidiantang.com/travel/kyoto/cover.svg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <a class="skip-link" href="#map-section">跳到漫游地图</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="京游首页"><span class="brand-stamp">京</span><span><strong>京游</strong><small>KYOTO, AT YOUR PACE</small></span></a>
+    <nav class="desktop-nav" aria-label="主导航"><a href="#map-section" class="active">漫游地图</a><a href="#plan-section">我的行程</a><button id="help-nav">漫游指南</button></nav>
+    <button class="button header-share" id="share-top" aria-label="分享我的计划"><span data-icon="share"></span><span>分享我的计划</span></button>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow"><span class="tiny-dot"></span> CITY WALK NOTES / 01</p><h1>京都，<em>不必赶路。</em></h1><p class="intro-copy">把想去的地方，串成一段刚刚好的漫游。</p></div>
+      <div class="season-picker"><span class="picker-label">你想遇见的京都</span><div id="seasons" role="group" aria-label="季节灵感"></div><p id="season-caption">季节灵感，不是实时花况</p></div>
+    </section>
+
+    <div class="ambience-bar"><button id="music-toggle" aria-pressed="false" aria-label="开启配乐"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span><span id="music-label">听一段漫游配乐</span></button><label class="volume-control" hidden>音量 <input id="music-volume" type="range" min="0" max="65" value="32" aria-label="配乐音量"></label><span class="music-caption">原创曲 · 雨后川畔</span><button id="motion-toggle" aria-pressed="true">动效开启</button></div>
+    <div class="workspace">
+      <aside class="discovery panel" id="discovery-section">
+        <div class="section-title"><div><p class="eyebrow">PLACES TO WANDER</p><h2>发现京都 <span id="place-count">18</span></h2></div><span data-icon="leaf"></span></div>
+        <label class="search-box"><span data-icon="search"></span><input id="search" type="search" placeholder="搜景点、竹林、庭园…" aria-label="搜索景点"></label>
+        <div id="filters" class="filters" role="group" aria-label="景点分类"></div>
+        <div class="discovery-label"><span id="results-caption">所有值得停留的地方</span><button id="saved-filter" aria-label="查看我的收藏"><span data-icon="heart"></span><span id="saved-count">0</span></button></div>
+        <div id="place-list" class="place-list"></div>
+        <div class="discovery-foot"><span data-icon="spark"></span><span>点一处风景，听它讲一个小故事。</span></div>
+      </aside>
+
+      <section class="map-section panel" id="map-section" aria-label="京都抽象漫游地图">
+        <div class="map-heading"><div><span class="map-kicker">京都漫游图</span><span class="map-subtitle">KYOTO WANDER MAP</span></div><button class="plain-button" id="map-help"><span data-icon="help"></span>示意地图</button></div>
+        <div class="map-viewport" id="map-viewport" tabindex="0" role="group" aria-label="可拖动地图，使用方向键平移，加减键缩放；景点也可从列表选择">
+          <div id="map-world" class="map-world"><div id="artwork"></div><svg id="route-layer" class="route-layer" viewBox="0 0 1040 960" aria-hidden="true"></svg><div id="map-pins"></div></div>
+          <div class="season-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="map-compass" aria-hidden="true"><span>N</span><svg viewBox="0 0 30 36"><path d="M15 2L7 29L15 24L23 29Z" fill="#778172"/><path d="M15 2V24L23 29Z" fill="#c2c7b2"/></svg><small>北</small></div>
+          <div class="map-tag"><span class="tiny-dot"></span><span id="map-tag-text">在屋檐与树影之间，遇见秋天</span></div>
+          <div class="zoom-controls" aria-label="地图控制"><button id="zoom-in" aria-label="放大地图"><span data-icon="plus"></span></button><button id="zoom-out" aria-label="缩小地图"><span data-icon="minus"></span></button><button id="zoom-fit" aria-label="显示整个城市"><span data-icon="fit"></span></button></div>
+          <div class="map-credit">方位示意 · 路线连线不代表实际道路</div>
+        </div>
+        <div class="map-footer"><span><i class="legend-dot temple"></i>寺社庭园</span><span><i class="legend-dot nature"></i>山水散步</span><span><i class="legend-dot street"></i>街巷滋味</span><span class="map-foot-hint">拖动探索 · 点击景点</span></div>
+      </section>
+
+      <aside class="planner panel" id="plan-section">
+        <div class="section-title"><div><p class="eyebrow">A DAY, WELL SPENT</p><h2>我的漫游</h2></div><button id="undo" class="icon-button" aria-label="撤销上一次行程修改" title="撤销"><span data-icon="undo"></span></button></div>
+        <div class="day-line"><div id="day-tabs" class="day-tabs" role="group" aria-label="行程天数"></div><button id="add-day" class="icon-button" aria-label="增加一天" title="最多五天"><span data-icon="plus"></span></button></div>
+        <div class="plan-title"><h3 id="plan-name">东山，慢慢走</h3><p id="plan-caption">4 处停留 · 一段属于你的京都</p></div>
+        <div class="plan-settings"><label>一天时长<select id="budget" aria-label="当天时间预算"><option value="240">4 小时</option><option value="360">6 小时</option><option value="480" selected>8 小时</option><option value="600">10 小时</option></select></label><label>留白时间<select id="pause" aria-label="用餐休息与自由探索留白"><option value="30">30 分钟</option><option value="60" selected>1 小时</option><option value="90">1.5 小时</option></select></label></div>
+        <div id="plan-stops" class="plan-stops"></div>
+        <div class="plan-tools"><button id="optimize"><span data-icon="spark"></span>减少折返</button><button id="edit-order">编辑顺序</button><button id="clear-day" class="clear-day" title="清空当天">清空</button></div>
+        <div class="breathing-room"><span class="tea-cup" aria-hidden="true">﹏<br>▱</span><div><strong>留一点时间，给偶然。</strong><p id="pause-copy">喝茶、用餐，或拐进一条喜欢的街。</p></div></div>
+        <div id="day-foods" class="day-foods"></div>
+        <div class="plan-total"><span>这一天，大约</span><strong id="plan-duration">6.5–7.0 <small>小时</small></strong><div id="time-bar" class="time-bar" aria-hidden="true"></div><div class="time-legend"><span><i class="visit"></i>游览</span><span><i class="travel"></i>转场</span><span><i class="pause"></i>留白</span></div><p id="plan-assessment" role="status"></p></div>
+        <button class="button primary full" id="share-plan"><span data-icon="share"></span>收好这份漫游计划<span data-icon="arrow"></span></button>
+        <p class="estimate-note">时间为规划预留 · 不含住处往返</p>
+      </aside>
+    </div>
+
+    <section id="food-section" class="food-section" aria-labelledby="food-heading"><div class="food-heading"><div><p class="eyebrow">A TASTE OF THE NEIGHBORHOOD</p><h2 id="food-heading">风景之外，还有一口京都。</h2><p id="food-caption">随当天行程，发现附近的滋味。</p></div><div class="food-filters" role="group" aria-label="美食筛选"><button data-food-filter="all" aria-pressed="true">全部滋味</button><button data-food-filter="near" aria-pressed="false">当天顺路</button></div></div><div id="food-cards" class="food-cards"></div><p class="food-note">“顺路”按邻近景点推荐，非实时距离。餐食为备选，用餐可安排在留白里，排队与绕行另留时间；菜单、营业和预约请查店铺官网。</p></section>
+    <section class="inspiration" aria-labelledby="inspiration-heading"><div class="inspiration-heading"><p class="eyebrow">FOLLOW A FEELING</p><h2 id="inspiration-heading">今天，想怎么走？</h2><p>先选一种心情，再去遇见一座城。</p></div><div id="route-cards" class="route-cards"></div></section>
+    <a class="site-return" href="/travel/">← 劳伦斯实验室 · 旅行</a><footer class="site-footer"><span>京游 · 一座城，慢慢走</span><span><span id="offline-status" role="status"></span> 景点资料核验 <time datetime="2026-10-05">2026.10.05</time> <button id="sources-button">来源与规划说明 ↗</button></span></footer>
+  </main>
+  <nav class="mobile-nav" aria-label="手机快捷导航"><a href="#map-section"><span data-icon="map"></span>地图</a><a href="#discovery-section"><span data-icon="search"></span>景点</a><a href="#food-section"><span data-icon="tea"></span>美食</a><a href="#plan-section"><span data-icon="list"></span>行程 <span id="mobile-count">4</span></a></nav>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><div id="detail-content"></div></dialog>
+  <dialog id="utility-dialog" aria-labelledby="utility-title"><div id="utility-content"></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="print-plan" class="print-plan"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

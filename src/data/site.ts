@@ -51,6 +51,17 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'kyoto-wander',
+    title: '京游 · 京都，不必赶路',
+    eyebrow: '城市漫游 · 交互旅行地图',
+    href: '/travel/kyoto/',
+    image: '/travel/kyoto/cover.svg',
+    summary: '18 处缩微卡通风景，5 种京都滋味。在四季示意地图上串起每天的行程，伴着原创配乐，给旅途留一点空白。支持手机、离线资料与计划分享。',
+    tags: ['抽象地图', '顺路美食', '原创配乐'],
+    status: '在线体验',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/kyoto',
+  },
+  {
     id: 'mojian',
     title: '墨间 · 荷风入画',
     eyebrow: '中国水墨 · 轻互动解压',
@@ -264,6 +275,7 @@ export const cosmosSeries = [
 // 旅行工具：会飞的路书 / 小红书卡片工具 / 旅行记录视频（占位后补）；
 // 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
+  { title: '京游 · 京都，不必赶路', sub: '18 处缩微风景 · 顺路美食 · 有留白的漫游计划', href: '/travel/kyoto/', img: '/travel/kyoto/cover.svg' },
   { title: '会飞的路书', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
   { title: '小红书卡片工具', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
   { title: '旅行记录视频', sub: '照片自动编排成片 · 打磨中后补', href: '', img: '', pending: true },
