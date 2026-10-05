@@ -1502,7 +1502,8 @@ a.social-row:hover { color: var(--amber); }
 }
 
 /* Keep the Edinburgh cover's title and miniature landmarks inside every card ratio. */
-img[src*="/travel/edinburgh/cover.svg"] {
+img[src*="/travel/edinburgh/cover.svg"],
+img[src*="/travel/harbin/cover.svg"] {
   object-fit: contain;
   background: #f5f2e5;
 }

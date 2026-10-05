@@ -61,6 +61,17 @@ export const works = [
     status: '研究新作',
   },
   {
+    id: 'harbin-wander',
+    title: '悠游 · 哈尔滨，心里有暖',
+    eyebrow: '城市漫游 · 交互旅行地图',
+    href: '/travel/harbin/',
+    image: '/travel/harbin/cover.svg?v=1',
+    summary: '20 个景点与专题点、20 篇漫游手记、6 种地方滋味。沿松花江认识冰雪、街巷与博物美术，7 条主题路线配合季节提示和冬季取暖建议。',
+    tags: ['冬夏漫游', '博物美术', '原创配乐'],
+    status: '在线体验',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/harbin',
+  },
+  {
     id: 'edinburgh-wander',
     title: '悠游 · 爱丁堡，慢一点看见',
     eyebrow: '城市漫游 · 交互旅行地图',
@@ -296,6 +307,7 @@ export const cosmosSeries = [
 // 旅行工具：会飞的路书 / 小红书卡片工具 / 旅行记录视频（占位后补）；
 // 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
+  { title: '悠游 · 哈尔滨，心里有暖', sub: '20 个漫游点 · 20 篇手记 · 冰雪、老街与江风', href: '/travel/harbin/', img: '/travel/harbin/cover.svg?v=1' },
   { title: '悠游 · 爱丁堡，慢一点看见', sub: '20 处缩微地标 · 20 篇漫游手记 · 石城与海风', href: '/travel/edinburgh/', img: '/travel/edinburgh/cover.svg?v=2' },
   { title: '悠游 · 京都，不必赶路', sub: '24 处缩微风景 · 24 篇体验手记 · 有留白的漫游计划', href: '/travel/kyoto/', img: '/travel/kyoto/cover.svg' },
   { title: '会飞的路书', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
