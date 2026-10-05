@@ -1500,3 +1500,9 @@ a.social-row:hover { color: var(--amber); }
   .page-title h1 { font-size: 2.4rem; }
   .site-header, .page, .site-footer { padding-inline: 16px; }
 }
+
+/* Keep the Edinburgh cover's title and miniature landmarks inside every card ratio. */
+img[src*="/travel/edinburgh/cover.svg"] {
+  object-fit: contain;
+  background: #f5f2e5;
+}
