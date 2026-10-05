@@ -61,6 +61,17 @@ export const works = [
     status: '研究新作',
   },
   {
+    id: 'edinburgh-wander',
+    title: '悠游 · 爱丁堡，慢一点看见',
+    eyebrow: '城市漫游 · 交互旅行地图',
+    href: '/travel/edinburgh/',
+    image: '/travel/edinburgh/cover.svg',
+    summary: '20 处缩微地标，20 篇有来源的漫游手记，5 家餐食备选。沿老城山脊、新城、利斯河谷与海滨安排旅程，按天气和体力选择 6 条主题路线。',
+    tags: ['城市漫游', '博物美术', '原创配乐'],
+    status: '在线体验',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/edinburgh',
+  },
+  {
     id: 'kyoto-wander',
     title: '悠游 · 京都，不必赶路',
     eyebrow: '城市漫游 · 交互旅行地图',
@@ -285,6 +296,7 @@ export const cosmosSeries = [
 // 旅行工具：会飞的路书 / 小红书卡片工具 / 旅行记录视频（占位后补）；
 // 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
+  { title: '悠游 · 爱丁堡，慢一点看见', sub: '20 处缩微地标 · 20 篇漫游手记 · 石城与海风', href: '/travel/edinburgh/', img: '/travel/edinburgh/cover.svg' },
   { title: '悠游 · 京都，不必赶路', sub: '24 处缩微风景 · 24 篇体验手记 · 有留白的漫游计划', href: '/travel/kyoto/', img: '/travel/kyoto/cover.svg' },
   { title: '会飞的路书', sub: '英国自驾环线 · 点击任意一天，地图飞到当天路段', href: '/travel/uk-roadbook/', img: '/assets/img/travel/uk-roadbook.webp', github: 'https://github.com/historyreview-code/uk-drive' },
   { title: '小红书卡片工具', sub: '基础数据自动生成 · 手机可查', href: '/travel/xhs-card/', img: '/assets/img/travel/lab.webp' },
