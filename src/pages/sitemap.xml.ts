@@ -17,6 +17,7 @@ const urls = [
   ['/games/perspective-garden/', 'monthly', '0.7'],
   ['/cosmos/', 'monthly', '0.7'],
   ['/maps/', 'monthly', '0.6'],
+  ['/maps/jilin-shipyards/', 'monthly', '0.8'],
   ['/maps/huanghe/', 'monthly', '0.7'],
   ['/mindverse/', 'monthly', '0.7'],
   ['/novels/', 'monthly', '0.6'],

@@ -1,0 +1,26 @@
+{
+  "title": "吉林明清船厂与黑龙江航行",
+  "date": "2026-10-05",
+  "rivers": {
+    "dataset": "Natural Earth 10m rivers and lake centerlines",
+    "version": "5.0.0",
+    "license": "public domain",
+    "url": "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_rivers_lake_centerlines.zip",
+    "sha256": "ded71b01870855ccfe19b51f2ec14c9bb48fae23c0e9f3c11974d426433b5c38"
+  },
+  "land": {
+    "dataset": "Natural Earth 50m land",
+    "license": "public domain",
+    "sha256": "e874b27a51d146452be360cafb3cc50c86001074a67d534113e6534682f9826b"
+  },
+  "projection": "Mercator",
+  "historical_geometry": "Modern river geometry locates literature-based corridors, not reconstructed individual voyages or historical jurisdiction boundaries. Local Jilin diagram is not to scale.",
+  "route_river_ids": [
+    129,
+    613,
+    719,
+    704,
+    703
+  ],
+  "reference_count": 19
+}

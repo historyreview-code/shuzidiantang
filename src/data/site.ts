@@ -51,6 +51,16 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'jilin-shipyards',
+    title: '吉林明清船厂与黑龙江航行',
+    eyebrow: '历史地理 · 文献与地图',
+    href: '/maps/jilin-shipyards/',
+    image: '/assets/img/jilin-shipyards.webp',
+    summary: '从阿什哈达造船、亦失哈远航，到吉林水师、雅克萨军运及下游贡赏。沿真实水系切换三个时期，参阅厂址示意、年代提要与文献考据。',
+    tags: ['分期地图', '明清东北', '史料考据'],
+    status: '研究新作',
+  },
+  {
     id: 'kyoto-wander',
     title: '悠游 · 京都，不必赶路',
     eyebrow: '城市漫游 · 交互旅行地图',
