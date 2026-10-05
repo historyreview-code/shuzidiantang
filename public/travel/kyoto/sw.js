@@ -1,4 +1,4 @@
-const CACHE='kyoto-wander-v7';
+const CACHE='kyoto-wander-v8';
 const FILES=['./','./index.html','./style.css','./app.js','./city-pack.js','./data.js','./planner.js','./icons.js','./food.js','./ambience.js','./favicon.svg','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('kyoto-wander-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
