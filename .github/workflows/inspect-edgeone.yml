@@ -1,0 +1,58 @@
+name: inspect-edgeone-production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read production deployment metadata
+        env:
+          EDGEONE_PAGES_API_TOKEN: ${{ secrets.EDGEONE_PAGES_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse
+          token = ''.join(os.environ['EDGEONE_PAGES_API_TOKEN'].split())
+          allowed = {'Name', 'ProjectId', 'Provider', 'Area', 'Status', 'Env', 'DeploymentId',
+                     'CreatedOn', 'UpdatedOn', 'Domain', 'DomainName', 'Domains', 'CustomDomains',
+                     'ProductionDeploymentId', 'LatestDeploymentId', 'Deployment', 'Production',
+                     'ProductionBranch', 'DefaultDomain', 'MainDomain', 'Type'}
+          def safe(value):
+              if isinstance(value, dict):
+                  return {k: safe(v) for k, v in value.items() if k in allowed}
+              if isinstance(value, list):
+                  return [safe(v) for v in value[:10]]
+              if isinstance(value, str) and '://' in value:
+                  u = urllib.parse.urlsplit(value)
+                  return urllib.parse.urlunsplit((u.scheme, u.netloc, u.path, '', ''))
+              return value
+          def query(base, action, **data):
+              req = urllib.request.Request(base, json.dumps({'Action': action, **data}).encode(),
+                  {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token})
+              with urllib.request.urlopen(req, timeout=25) as response:
+                  result = json.load(response)
+              if result.get('Code') not in (None, 0):
+                  print('API code:', result.get('Code'))
+                  return {}
+              return result.get('Data', {}).get('Response', result.get('Response', {}))
+          for base in ['https://pages-api.cloud.tencent.com/v1', 'https://pages-api.edgeone.ai/v1']:
+              try:
+                  data = query(base, 'DescribePagesProjects',
+                      Filters=[{'Name': 'Name', 'Values': ['makers-czlk3nk8h40q']}], Offset=0, Limit=10)
+                  projects = data.get('Projects', [])
+                  print('API:', urllib.parse.urlsplit(base).hostname, 'matched projects:', len(projects))
+                  for project in projects:
+                      print('Project fields:', sorted(project))
+                      print('Project:', json.dumps(safe(project), ensure_ascii=False))
+                      dep = query(base, 'DescribePagesDeployments', ProjectId=project['ProjectId'],
+                          Offset=0, Limit=5, OrderBy='CreatedOn', Order='Desc')
+                      for item in dep.get('Deployments', []):
+                          print('Deployment fields:', sorted(item))
+                          print('Deployment:', json.dumps(safe(item), ensure_ascii=False))
+              except Exception as error:
+                  print('Request failed:', type(error).__name__)
+          PY
