@@ -20,7 +20,8 @@ jobs:
           allowed = {'Name', 'ProjectId', 'Provider', 'Area', 'Status', 'Env', 'DeploymentId',
                      'CreatedOn', 'UpdatedOn', 'Domain', 'DomainName', 'Domains', 'CustomDomains',
                      'ProductionDeploymentId', 'LatestDeploymentId', 'Deployment', 'Production',
-                     'ProductionBranch', 'DefaultDomain', 'MainDomain', 'Type'}
+                     'ProductionBranch', 'DefaultDomain', 'MainDomain', 'Type', 'PresetDomain',
+                     'RepoName', 'RepoBranch', 'UsedInProd', 'RepoCommitHash', 'ModifiedOn'}
           def safe(value):
               if isinstance(value, dict):
                   return {k: safe(v) for k, v in value.items() if k in allowed}
@@ -41,9 +42,11 @@ jobs:
               return result.get('Data', {}).get('Response', result.get('Response', {}))
           for base in ['https://pages-api.cloud.tencent.com/v1', 'https://pages-api.edgeone.ai/v1']:
               try:
-                  data = query(base, 'DescribePagesProjects',
-                      Filters=[{'Name': 'Name', 'Values': ['makers-czlk3nk8h40q']}], Offset=0, Limit=10)
-                  projects = data.get('Projects', [])
+                  data = query(base, 'DescribePagesProjects', Offset=0, Limit=100)
+                  projects = [p for p in data.get('Projects', [])
+                      if p.get('Name') == 'makers-czlk3nk8h40q'
+                      or 'shuzidiantang' in json.dumps(p.get('CustomDomains', []))
+                      or 'shuzidiantang' in p.get('RepoName', '')]
                   print('API:', urllib.parse.urlsplit(base).hostname, 'matched projects:', len(projects))
                   for project in projects:
                       print('Project fields:', sorted(project))
