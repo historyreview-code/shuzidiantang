@@ -61,6 +61,27 @@ export const works = [
     status: '研究新作',
   },
   {
+    id: 'york-wander', title: '悠游 · 约克，把时间走慢', eyebrow: '城市漫游 · 交互旅行地图',
+    href: '/travel/york/', image: '/travel/york/cover.svg?v=1',
+    summary: '16 处缩微地标、16 篇有来源的编辑手记、5 个餐食备选、6 条主题路线。城墙与河流 · 博物与街巷 · 一口甜。支持手机全屏地图、离线资料与多日计划分享。',
+    tags: ['城市漫游', '博物美术', '原创配乐'], status: '在线体验',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/york',
+  },
+  {
+    id: 'cambridge-wander', title: '悠游 · 剑桥，沿河读世界', eyebrow: '城市漫游 · 交互旅行地图',
+    href: '/travel/cambridge/', image: '/travel/cambridge/cover.svg?v=1',
+    summary: '16 处缩微地标、16 篇有来源的编辑手记、5 个餐食备选、6 条主题路线。康河与学院 · 艺术与科学 · 好奇心。支持手机全屏地图、离线资料与多日计划分享。',
+    tags: ['城市漫游', '博物美术', '原创配乐'], status: '在线体验',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/cambridge',
+  },
+  {
+    id: 'glasgow-wander', title: '悠游 · 格拉斯哥，城里有回响', eyebrow: '城市漫游 · 交互旅行地图',
+    href: '/travel/glasgow/', image: '/travel/glasgow/cover.svg?v=1',
+    summary: '16 处缩微地标、16 篇有来源的编辑手记、5 个餐食备选、6 条主题路线。红砂岩与艺术 · 克莱德河 · 公园深处。支持手机全屏地图、离线资料与多日计划分享。',
+    tags: ['城市漫游', '博物美术', '原创配乐'], status: '在线体验',
+    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/glasgow',
+  },
+  {
     id: 'harbin-wander',
     title: '悠游 · 哈尔滨，心里有暖',
     eyebrow: '城市漫游 · 交互旅行地图',
@@ -307,6 +328,9 @@ export const cosmosSeries = [
 // 旅行工具：会飞的路书 / 小红书卡片工具 / 旅行记录视频（占位后补）；
 // 子栏目「手绘跨时空旅行系列」：目的地卡导流 B站（未来不止英伦）。
 export const travelSeries = [
+  { title: '悠游 · 约克，把时间走慢', sub: '16 处地标 · 16 篇手记 · 城墙与河流 · 博物与街巷 · 一口甜', href: '/travel/york/', img: '/travel/york/cover.svg?v=1' },
+  { title: '悠游 · 剑桥，沿河读世界', sub: '16 处地标 · 16 篇手记 · 康河与学院 · 艺术与科学 · 好奇心', href: '/travel/cambridge/', img: '/travel/cambridge/cover.svg?v=1' },
+  { title: '悠游 · 格拉斯哥，城里有回响', sub: '16 处地标 · 16 篇手记 · 红砂岩与艺术 · 克莱德河 · 公园深处', href: '/travel/glasgow/', img: '/travel/glasgow/cover.svg?v=1' },
   { title: '悠游 · 哈尔滨，心里有暖', sub: '20 个漫游点 · 20 篇手记 · 冰雪、老街与江风', href: '/travel/harbin/', img: '/travel/harbin/cover.svg?v=1' },
   { title: '悠游 · 爱丁堡，慢一点看见', sub: '20 处缩微地标 · 20 篇漫游手记 · 石城与海风', href: '/travel/edinburgh/', img: '/travel/edinburgh/cover.svg?v=2' },
   { title: '悠游 · 京都，不必赶路', sub: '24 处缩微风景 · 24 篇体验手记 · 有留白的漫游计划', href: '/travel/kyoto/', img: '/travel/kyoto/cover.svg' },

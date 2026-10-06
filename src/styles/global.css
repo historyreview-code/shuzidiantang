@@ -1507,3 +1507,6 @@ img[src*="/travel/harbin/cover.svg"] {
   object-fit: contain;
   background: #f5f2e5;
 }
+
+/* Youyou city covers */
+img[src*="/travel/york/cover.svg"],img[src*="/travel/cambridge/cover.svg"],img[src*="/travel/glasgow/cover.svg"]{object-fit:contain;background:#f5f2e5}

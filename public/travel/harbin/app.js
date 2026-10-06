@@ -1,3 +1,4 @@
+import {cityDirectoryHTML} from './city-directory.js';
 import {planAdvice} from './season-rules.js';
 import city from './city-pack.js';
 import {foodIllustration} from './food.js';
@@ -236,7 +237,7 @@ $('#clear-day').onclick=()=>mutate(()=>activeDay().ids=[],'已清空当天，可
 $('#edit-order').onclick=()=>{editing=!editing;renderPlan();};
 $('#optimize').onclick=()=>{const before=summarize(activeDay().ids,activeDay().budget,activeDay().pause),ids=optimize(activeDay().ids),after=summarize(ids,activeDay().budget,activeDay().pause);if(JSON.stringify(ids)===JSON.stringify(activeDay().ids)){toast('按当前转场预留，这个顺序已合适。');return;}mutate(()=>activeDay().ids=ids,`保留首站与全部景点，转场预留减少 ${before.maxTransfer-after.maxTransfer} 分钟。`);};
 $('#share-top').onclick=showShare;$('#share-plan').onclick=showShare;
-$('#city-switch').onclick=()=>showUtility('悠游 · 换一座城',`<div class="utility-body city-options"><p>同一种慢游方法，三种城市性格。每座城市单独保存行程。</p><a class="button" href="https://shuzidiantang.com/travel/kyoto/">01 京都 · 庭园、街巷与水声</a><a class="button" href="https://shuzidiantang.com/travel/edinburgh/">02 爱丁堡 · 山脊、石城与海风</a><a class="button primary" href="./" aria-current="page">03 哈尔滨 · 冰雪、老街与江风</a></div>`);$('#help-nav').onclick=showGuide;$('#map-help').onclick=showGuide;$('#sources-button').onclick=showSources;
+$('#city-switch').onclick=()=>showUtility('悠游 · 换一座城',cityDirectoryHTML(city.id));$('#help-nav').onclick=showGuide;$('#map-help').onclick=showGuide;$('#sources-button').onclick=showSources;
 for(const dialog of document.querySelectorAll('dialog')){dialog.addEventListener('click',e=>{if(e.target===dialog){const rect=dialog.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)dialog.close();}});dialog.addEventListener('close',()=>{if(dialog.id==='detail-dialog')detailId=null;});}
 
 render();requestAnimationFrame(()=>fitMap());

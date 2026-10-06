@@ -1,0 +1,18 @@
+{
+  "id": "/travel/glasgow/",
+  "name": "悠游 · 格拉斯哥",
+  "short_name": "悠游·格拉斯哥",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ec",
+  "theme_color": "#f7f4ec",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
