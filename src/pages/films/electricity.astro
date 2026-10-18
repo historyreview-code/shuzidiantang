@@ -17,14 +17,14 @@ const chapters = [
   { time: 91.15, stamp: '01:31', title: '尾声 · 回到琥珀', note: '一切从一块被摩擦过的琥珀开始。' },
 ];
 ---
-<BaseLayout current="works" title="电 · 从琥珀到星火 — 劳伦斯实验室" description="95 秒竖屏科学动画：从摩擦琥珀、富兰克林风筝、伏打电堆、奥斯特与法拉第，到高压电网与夜地球。用镜头解释电的科学原理，画面、配乐与音效全部由代码生成。" image={cover}>
+<BaseLayout current="works" title="电 · 从琥珀到星火 — 劳伦斯实验室" description="95 秒竖屏科学动画：从摩擦琥珀、富兰克林风筝、伏打电堆、奥斯特与法拉第，到高压电网与夜地球。用镜头解释电的科学原理，MiniMax doc_commentary 旁白，画面、配乐与音效由代码生成。" image={cover}>
   <main id="content" class="page film-page">
     <header class="page-title">
       <span class="kicker">影像作品 · 科学史动画</span>
       <h1>电</h1>
       <p class="film-en">FROM AMBER TO STARFIRE</p>
       <p>从一块被摩擦的琥珀，到一颗被点亮的行星。<br />95 秒，七章，一次关于电的认知史。</p>
-      <div class="film-meta"><span>2026.10.18</span><span>1 分 35 秒</span><span>源片 1080 × 1920 · 30 帧</span><span>中文旁白</span></div>
+      <div class="film-meta"><span>2026.10.18</span><span>1 分 35 秒</span><span>源片 1080 × 1920 · 30 帧</span><span>MiniMax 旁白</span></div>
     </header>
 
     <section class="vertical-stage" aria-label="电 · 从琥珀到星火放映厅">
@@ -50,7 +50,7 @@ const chapters = [
             </button>
           ))}
         </div>
-        <p class="stage-credit">画面、配乐、音效与剪辑全部由代码生成。<br /><strong>创作：DeepSeek Flash</strong></p>
+        <p class="stage-credit">画面、配乐、音效与剪辑全部由代码生成。<br />旁白：MiniMax speech-2.8-hd · doc_commentary<br /><strong>创作：DeepSeek Flash</strong></p>
       </aside>
     </section>
 
@@ -59,7 +59,7 @@ const chapters = [
       <p>人类先看见电，很久以后才理解电。公元前六百年，希腊人只知道摩擦过的琥珀能吸起羽毛；1752 年，富兰克林把风筝放进雷雨；1800 年，伏打让稳定的电流第一次持续流动；1820 年，奥斯特发现电流会转动磁针；十一年后，法拉第反过来发现，变化的磁场也能生出电流。此后，发电机、变压器与电网才真正把电变成可以传输的公共能量。</p>
       <p>短片把这条认知链拆成七个场景，并在每个场景里留一个可读的科学原理：摩擦起电与电子转移、云地之间的电势差与空气击穿、化学能到电能的转换、电压与电流的水泵类比、电流的磁效应与电磁感应、交流升压与线路损耗。历史负责提供情绪，原理负责解释“为什么”。</p>
       <p>镜头也参与叙事：雷光过曝时完成时空跳转，钥匙火花切进云地放电剖面，铜片的圆环收束成奥斯特的导线，法拉第的线圈变成进入发电机内部的隧道，城市的灯光网络匹配芯片走线，最后从地球上的一个琥珀色光点回到片头的琥珀。硬切、遮幅与匹配剪辑都服务于同一个目标——让抽象的原理有一个可以被看见的入口。</p>
-      <p class="credit">本片由 <strong>DeepSeek Flash</strong> 以编程方式创作。画面使用 Canvas 2D 场景、确定性时间轴与逐帧镜头变换；Puppeteer 驱动 Chromium 采集，ffmpeg 编码。配乐与音效由 numpy 合成；旁白使用系统中文语音。画面与声音均为原创程序化素材，没有使用外部影像或音乐采样。</p>
+      <p class="credit">本片由 <strong>DeepSeek Flash</strong> 以编程方式创作。画面使用 Canvas 2D 场景、确定性时间轴与逐帧镜头变换；Puppeteer 驱动 Chromium 采集，ffmpeg 编码。配乐与音效由 numpy 合成；旁白由 MiniMax speech-2.8-hd / doc_commentary 生成（语速 0.96）。画面与声音均为原创程序化素材，没有使用外部影像或音乐采样。</p>
       <figure class="storyboard">
         <img src={storyboard} alt="电 · 从琥珀到星火八个章节的画面总览" />
         <figcaption>从暴风雨到夜地球：八个章节的画面总览。</figcaption>
