@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const root = '/films/math-beauty-astra/';
+const chapters = [
+  ['00:00', '从一个圆开始', '让简单，长出无限。'],
+  ['00:06', '秩序，自然生长', '黄金角让光点铺展成向日葵般的叶序。'],
+  ['00:12', '万物，都在共振', '不同频率的波相遇，成为流动的和声。'],
+  ['00:18', '空间，向内折叠', '旋转的环面，让想象多一个维度。'],
+  ['00:24', '一条曲线，开成花', '极坐标中的玫瑰曲线，重复之中藏着惊喜。'],
+  ['00:30', '数学，是看见美', '也是看见世界的另一种方式。'],
+];
+---
+<BaseLayout current="works" title="数学之美 · astra作品 — 劳伦斯实验室" description="astra作品：36 秒竖屏数学艺术短片。1600 个光点在圆、黄金角叶序、波、环面与玫瑰曲线之间平滑变形，画面与原创合成配乐均由代码生成。" image={`${root}cover.webp`}>
+  <main id="content" class="page astra-film">
+    <header class="page-title">
+      <span class="kicker">创意编程 · 数学艺术短片</span>
+      <h1>数学之美</h1>
+      <p class="signature">astra作品</p>
+      <p>让简单，长出无限。<br />1600 个光点，六次关于美的凝视。</p>
+      <p class="metadata">36 秒 · 720 × 1280 · 30 帧 · 原创合成配乐</p>
+    </header>
+    <section class="screening" aria-label="数学之美 astra作品放映厅">
+      <div>
+        <video controls playsinline preload="metadata" poster={`${root}poster.jpg`} aria-label="播放数学之美，astra作品">
+          <source src={`${root}math-beauty-astra.mp4`} type="video/mp4" />
+          <a href={`${root}math-beauty-astra.mp4`}>下载视频播放</a>
+        </video>
+        <p class="hint">建议开启声音 · <a href={`${root}math-beauty-astra.mp4`} download="数学之美-astra作品.mp4">下载 MP4</a></p>
+      </div>
+      <aside>
+        <span class="kicker">MATHEMATICS IN MOTION</span>
+        <h2>从一个圆，<br />到一朵数学的花</h2>
+        <p>深蓝为底，金色与青色光点交织。同一组粒子连续聚合、展开，在几何秩序与流动节奏之间穿行。</p>
+        <ol>{chapters.map(([time,title,note]) => <li><span>{time}</span><div><strong>{title}</strong><p>{note}</p></div></li>)}</ol>
+        <p class="credit">画面、动画与配乐均由代码生成。<br /><strong>创作署名：astra作品</strong></p>
+      </aside>
+    </section>
+    <section class="making">
+      <h2>用代码，让数学显形</h2>
+      <p>使用 Python、NumPy 与 Pillow 逐帧计算粒子位置，以平滑插值连接六个场景，再经 FFmpeg 编码。配乐由正弦波、和弦与钟琴般的音色合成，与每六秒一次的场景变化呼应。没有使用外部影像或音乐采样。</p>
+      <p><a href={`${root}math_in_motion.py`} download>下载生成源码</a> · <a href="/works/">返回作品馆</a></p>
+    </section>
+  </main>
+</BaseLayout>
+<style>
+  .astra-film{max-width:1120px}.signature{color:var(--accent,#b4551e);font-weight:700;letter-spacing:.12em}.metadata,.hint{font-size:.85rem;opacity:.7}
+  .screening{display:grid;grid-template-columns:minmax(0,440px) 1fr;gap:clamp(28px,6vw,80px);align-items:start;margin:36px 0 64px}
+  video{width:100%;display:block;aspect-ratio:9/16;background:#060b17;border-radius:16px;box-shadow:0 24px 70px #06101e26}.hint{text-align:center}
+  aside h2{font-size:clamp(26px,3.5vw,40px);line-height:1.35;margin:16px 0}aside>p{line-height:1.9}ol{padding:0;list-style:none;margin:30px 0}li{display:flex;gap:20px;padding:15px 0;border-top:1px solid #b4551e24}li>span{font-family:monospace;color:#b4551e;padding-top:3px}li p{font-size:.88rem;line-height:1.6;opacity:.75;margin:5px 0 0}.credit{font-size:.9rem}.making{max-width:760px;padding-top:28px;border-top:1px solid #b4551e33;margin-bottom:64px}.making p{line-height:1.9}
+  @media(max-width:720px){.screening{grid-template-columns:1fr}.screening>div{max-width:440px;width:100%;margin:auto}.page-title h1{font-size:2.6rem}}
+</style>

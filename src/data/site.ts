@@ -177,6 +177,16 @@ export const works = [
     status: '影像新作',
   },
   {
+    id: 'math-beauty-astra',
+    title: '数学之美 · astra作品',
+    eyebrow: '创意编程 · 数学艺术',
+    href: '/films/math-beauty-astra/',
+    image: '/films/math-beauty-astra/cover.webp',
+    summary: '1600 个光点，在圆、黄金角叶序、波、环面与玫瑰曲线之间连续变形。36 秒竖屏短片，画面与原创合成配乐全部由代码生成。',
+    tags: ['astra作品', '36 秒', '生成艺术'],
+    status: '影像新作',
+  },
+  {
     id: 'math-beauty',
     title: '数学之美',
     eyebrow: '创意编程 · 数学短片',
