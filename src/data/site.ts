@@ -187,6 +187,16 @@ export const works = [
     status: '影像新作',
   },
   {
+    id: 'electricity',
+    title: '电 · 从琥珀到星火',
+    eyebrow: '科学史动画 · 创意编程',
+    href: '/films/electricity/',
+    image: '/films/electricity/cover.webp',
+    summary: '从摩擦琥珀、富兰克林风筝、伏打电堆，到法拉第的电磁感应与跨越山海的电网。95 秒竖屏科学动画，把电荷、电压、电流和电磁感应放进同一条镜头叙事。',
+    tags: ['95 秒', '科学史', '程序化动画'],
+    status: '影像新作',
+  },
+  {
     id: 'clay',
     title: '陶土动物园',
     eyebrow: 'Blender 手作',

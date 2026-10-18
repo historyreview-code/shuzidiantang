@@ -8,6 +8,7 @@ const urls = [
   ['/films/single-bit-error/', 'monthly', '0.8'],
   ['/films/droplet/', 'monthly', '0.8'],
   ['/films/math-beauty/', 'monthly', '0.8'],
+  ['/films/electricity/', 'monthly', '0.8'],
   ['/research/', 'monthly', '0.8'],
   ...research.map(report => [report.href, 'monthly', '0.8']),
   ['/notes/', 'weekly', '0.8'],
