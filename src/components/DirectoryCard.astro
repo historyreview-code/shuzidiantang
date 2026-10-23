@@ -1,0 +1,17 @@
+---
+import Icon from './DirectoryIcon.astro';
+import type { CatalogItem } from '../data/catalog';
+interface Props { item: CatalogItem; compact?: boolean; }
+const { item, compact = false } = Astro.props;
+---
+<article class:list={['directory-card', compact && 'directory-card--compact', !item.image && 'directory-card--text']} data-entry={item.id}>
+  <a class="directory-card-link" href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined}>
+    {item.image && <div class="directory-cover"><img src={item.image} alt="" loading="lazy" decoding="async" width="480" height="300" /><span class="cover-arrow"><Icon name={item.external ? 'northeast' : 'arrow'} size={17} /></span></div>}
+    <div class="directory-card-copy">
+      <div class="directory-card-meta"><span class="entry-icon"><Icon name={item.icon} size={16} /></span><span>{item.meta}</span>{item.external && <span class="external-label">站外 ↗</span>}</div>
+      <h3>{item.title}</h3><p>{item.summary}</p>
+      {!item.image && <span class="text-card-arrow"><Icon name="arrow" size={20} /></span>}
+    </div>
+  </a>
+  {item.github && !compact && <a class="directory-source" href={item.github} target="_blank" rel="noopener noreferrer" aria-label={`${item.title}的开源代码`} title="查看开源代码"><Icon name="code" size={16} /></a>}
+</article>

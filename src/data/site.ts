@@ -37,7 +37,7 @@ export const site = {
   },
 };
 
-// 首页作品卡片流：不再分厅，直接按卡片平铺。顺序 = 重要程度。
+// 作品内容源；分类与图标由 catalog.ts 统一组织。
 export const works = [
   {
     id: 'earth',
@@ -123,28 +123,6 @@ export const works = [
     tags: ['抽象地图', '顺路美食', '原创配乐'],
     status: '在线体验',
     github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/travel/kyoto',
-  },
-  {
-    id: 'mojian',
-    title: '墨间 · 荷风入画',
-    eyebrow: '中国水墨 · 轻互动解压',
-    href: '/games/mojian/',
-    image: '/games/mojian/assets/ink-landscape.webp',
-    summary: '轻点拨水、拖灯入塘，慢慢完成一幅画。春夏秋冬各有诗意，可听水声，也可自在看灯；无计时、无失败，让心情有一点留白。',
-    tags: ['四时诗词', '拨水引灯', '自在模式'],
-    status: '在线可玩',
-    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/games/mojian',
-  },
-  {
-    id: 'perspective-garden',
-    title: '折光庭',
-    eyebrow: '三维错视 · 建筑解谜',
-    href: '/games/perspective-garden/',
-    image: '/assets/img/games/perspective-garden.webp',
-    summary: '换个角度，路就在眼前。引导小小旅人穿过四座庭院，让分离的石路在透视中相遇，转动石桥、收集光种，伴着轻柔配乐走向拱门。',
-    tags: ['四章解谜', 'Three.js', '原创配乐'],
-    status: '在线可玩',
-    github: 'https://github.com/historyreview-code/shuzidiantang/tree/main/public/games/perspective-garden',
   },
   {
     id: 'shamanism',
@@ -346,9 +324,9 @@ export const works = [
     eyebrow: '网页游戏 · 精选',
     href: '/games/',
     image: '/assets/img/games/games-hall.webp',
-    summary: '折光庭、两支万花筒、数字扫雷与像素打砖块：把小规则做成可玩的网页作品。',
+    summary: '两支万花筒、数字扫雷与像素打砖块：把小规则做成可玩的网页作品。',
     tags: ['Canvas', 'Game Design', 'AI 协作'],
-    status: '5 款可玩',
+    status: '4 款可玩',
     github: 'https://github.com/historyreview-code/Numsweeper',
     footer: true,
   },

@@ -1,0 +1,72 @@
+---
+import Icon from './DirectoryIcon.astro';
+import DirectoryCard from './DirectoryCard.astro';
+import { catalog, catalogCount, featured } from '../data/catalog';
+import '../styles/directory.css';
+interface Props { worksPage?: boolean; }
+const { worksPage = false } = Astro.props;
+---
+<main id="content" class="directory-page-content">
+  <section class:list={['directory-hero', worksPage && 'directory-hero--small']} id="top">
+    <div class="directory-intro">
+      <p class="directory-eyebrow"><span></span> LAWRENCE LAB / COLLECTION</p>
+      <h1>{worksPage ? <>作品与探索<span>从兴趣出发。</span></> : <>好奇心，<span>有很多入口。</span></>}</h1>
+      <p class="directory-lead">{worksPage ? '影像、声音、城市与代码。所有作品按类别收在这里。' : '这里收藏数字作品、旅行见闻与研究手记。随意逛逛，找到下一件想探索的事。'}</p>
+      <div class="directory-intro-foot"><span>{String(catalog.length).padStart(2, '0')} 个分类<span class="intro-dot">·</span>{catalogCount} 个探索入口</span><a href="#directory">向下探索 <span aria-hidden="true">↓</span></a></div>
+    </div>
+    {!worksPage && <a class="directory-feature" href={featured.href}>
+      <div class="feature-image"><img src={featured.image} alt="堂吉诃德播客封面" width="720" height="405" fetchpriority="high" /><span class="feature-label"><Icon name="headphones" size={15} /> 最近收录</span><span class="feature-play"><Icon name="arrow" size={21} /></span></div>
+      <div class="feature-caption"><span>文学 × 舞台 · 对话播客</span><strong>从塞万提斯的小说，走向芭蕾舞台</strong><span>《堂吉诃德》 · 10 分钟</span></div>
+    </a>}
+  </section>
+  <nav class="directory-nav" id="directory" aria-label="内容分类">
+    {catalog.map((group, index) => <a href={`#${group.id}`} data-category={group.id} class:list={['category-link', `tone-${group.color}`, index === 0 && 'is-active']} aria-current={index === 0 ? 'location' : undefined}>
+      <span class="category-icon"><Icon name={group.icon} size={22} /></span><span class="category-name">{group.title}</span><span class="category-count">{String(group.items.length + (group.related?.length || 0)).padStart(2, '0')}</span>
+    </a>)}
+  </nav>
+  <div class="directory-sections">
+    {catalog.map((group, index) => <section class:list={['directory-section', `tone-${group.color}`]} id={group.id} aria-labelledby={`${group.id}-title`}>
+      <header class="directory-section-head">
+        <div class="section-heading"><span class="section-symbol"><Icon name={group.icon} size={25} /></span><div><span class="section-index">{String(index + 1).padStart(2, '0')} / {group.english}</span><h2 id={`${group.id}-title`}>{group.title}</h2></div></div>
+        <div class="section-description"><p>{group.description}</p>{group.more && <a href={group.more.href}>{group.more.label} <Icon name="arrow" size={15} /></a>}</div>
+      </header>
+      <div class:list={['directory-grid', group.id === 'notes' && 'directory-grid--notes']}>{group.items.map(item => <DirectoryCard item={item} />)}</div>
+      {group.related && <div class="directory-related"><h3 class="related-heading"><span>{group.relatedTitle}</span><span>{group.related.length} 部作品</span></h3><div class="directory-grid directory-grid--compact">{group.related.map(item => <DirectoryCard item={item} compact />)}</div></div>}
+    </section>)}
+  </div>
+  <div class="directory-end"><span>继续保持好奇。</span><a href="#top">回到顶部 <Icon name="up" size={17} /></a></div>
+</main>
+<script>
+  // 原生锚点负责定位；脚本只同步当前分类和固定导航的真实高度。
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const nav = document.querySelector<HTMLElement>('.directory-nav');
+  const sections = Array.from(document.querySelectorAll<HTMLElement>('.directory-section'));
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-category]'));
+  let queued = false;
+  function updateCurrent() {
+    queued = false;
+    if (!nav) return;
+    const offset = (header?.offsetHeight || 0) + nav.offsetHeight + 36;
+    let active = sections[0]?.id;
+    for (const section of sections) if (section.getBoundingClientRect().top <= offset) active = section.id;
+    for (const link of links) {
+      const current = link.dataset.category === active;
+      link.classList.toggle('is-active', current);
+      if (current) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
+  }
+  function scheduleUpdate() { if (!queued) { queued = true; requestAnimationFrame(updateCurrent); } }
+  function measure() {
+    document.documentElement.style.setProperty('--directory-header-height', `${header?.offsetHeight || 74}px`);
+    document.documentElement.style.setProperty('--directory-nav-height', `${nav?.offsetHeight || 78}px`);
+    scheduleUpdate();
+  }
+  if (header && nav && 'ResizeObserver' in window) {
+    const observer = new ResizeObserver(measure);
+    observer.observe(header); observer.observe(nav);
+  }
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', measure, { passive: true });
+  measure();
+</script>

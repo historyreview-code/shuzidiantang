@@ -1,0 +1,184 @@
+/* 分类目录：静态卡片、原生滚动、无自动轮换。 */
+:root { --directory-header-height: 74px; --directory-nav-height: 84px; }
+body.directory-page { background: #f7f5ef; }
+body.directory-page::before, body.directory-page::after { display: none; }
+.directory-page .site-header { position: sticky; top: 0; max-width: 1344px; padding: 20px 32px; background: rgba(247,245,239,.97); }
+.directory-page .site-footer { max-width: 1280px; margin: 0 auto; }
+.directory-page-content { max-width: 1344px; margin: 0 auto; padding: 0 32px; position: relative; }
+.directory-page-content a { text-decoration: none; }
+.directory-page-content a:focus-visible { outline: 2px solid var(--amber); outline-offset: 5px; border-radius: 3px; }
+.directory-hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 9%; padding: 56px 0 46px; align-items: center; }
+.directory-hero--small { grid-template-columns: 1fr; padding: 42px 0 32px; }
+.directory-eyebrow { font: 10px/1.6 var(--mono); letter-spacing: .17em; color: #716e61; display: flex; align-items: center; gap: 9px; margin-bottom: 24px; }
+.directory-eyebrow > span { width: 6px; height: 6px; border-radius: 50%; background: #6d806b; }
+.directory-intro h1 { font: 500 clamp(36px, 4.1vw, 58px)/1.25 var(--serif); letter-spacing: .02em; margin: 0 0 22px; }
+.directory-intro h1 > span { display: block; color: #946043; }
+.directory-lead { max-width: 370px; font-size: 14px; line-height: 1.9; color: #686659; }
+.directory-intro-foot { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; margin-top: 27px; font-size: 11px; color: #777365; }
+.intro-dot { margin: 0 9px; }
+.directory-intro-foot a { color: #393e34; font-size: 12px; }
+.directory-intro-foot a > span { margin-left: 8px; }
+.directory-feature { display: block; padding: 12px; border: 1px solid #deded2; border-radius: 12px; background: #fbfaf5; transition: border-color .2s; }
+.directory-feature:hover { border-color: #a2ac95; }
+.feature-image { position: relative; background: #e3e5d8; border-radius: 5px; overflow: hidden; }
+.feature-image > img { width: 100%; aspect-ratio: 2 / 1; height: auto; object-fit: cover; }
+.feature-label { position: absolute; left: 13px; top: 13px; background: #fcfaf1; border: 1px solid #e5e3d6; color: #4d5a46; border-radius: 5px; padding: 4px 9px; display: inline-flex; align-items: center; gap: 7px; font-size: 10px; }
+.feature-play { position: absolute; right: 16px; bottom: 15px; border-radius: 50%; width: 39px; height: 39px; background: #fffdf4; color: #41533c; display: grid; place-items: center; }
+.feature-caption { padding: 14px 5px 4px; display: flex; flex-direction: column; gap: 4px; }
+.feature-caption > span { font-size: 10px; color: #757464; }
+.feature-caption > strong { font: 600 17px/1.6 var(--serif); }
+.directory-nav { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); position: sticky; top: var(--directory-header-height); z-index: 15; background: #f7f5ef; padding: 12px 0; gap: 9px; border-top: 1px solid #dddcd1; border-bottom: 1px solid #dddcd1; scroll-margin-top: calc(var(--directory-header-height) + 12px); }
+.tone-green { --tone: #506a58; --tint: #e7ece3; }
+.tone-terracotta { --tone: #9a5944; --tint: #f1e4dd; }
+.tone-blue { --tone: #46697c; --tint: #e3ebee; }
+.tone-brown { --tone: #87623b; --tint: #eee7d9; }
+.tone-purple { --tone: #78658d; --tint: #ece6f0; }
+.tone-olive { --tone: #6b7046; --tint: #e9ebdd; }
+.category-link { display: flex; align-items: center; gap: 10px; padding: 9px 11px; min-height: 52px; border: 1px solid transparent; border-radius: 7px; transition: background .2s, border-color .2s; }
+.category-link:hover { background: #eeede5; }
+.category-link.is-active { border-color: #cecec0; background: #fffdf7; }
+.category-icon { display: flex; color: var(--tone); }
+.category-name { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.category-count { font: 10px var(--mono); color: #8b8a7c; margin-left: auto; }
+.directory-section { padding: 43px 0 46px; border-bottom: 1px solid #deded3; scroll-margin-top: calc(var(--directory-header-height) + var(--directory-nav-height) + 20px); }
+.directory-section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
+.section-heading { display: flex; gap: 15px; align-items: center; flex-shrink: 0; }
+.section-symbol { color: var(--tone); background: var(--tint); width: 49px; height: 49px; border-radius: 12px; display: grid; place-items: center; }
+.section-index { font: 9px/1.5 var(--mono); letter-spacing: .12em; color: #837d6f; }
+.section-heading h2 { font: 600 25px/1.4 var(--serif); margin: 4px 0 0; letter-spacing: .03em; }
+.section-description { display: flex; align-items: center; gap: 22px; padding-bottom: 4px; }
+.section-description p { font-size: 12px; color: #767367; }
+.section-description a { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--tone); white-space: nowrap; }
+.directory-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.directory-card { position: relative; min-width: 0; background: #fdfcf8; border: 1px solid #e1e0d6; border-radius: 9px; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.directory-card:hover { transform: translateY(-4px); border-color: #b9bbae; box-shadow: 0 8px 22px #262b2010; }
+.directory-card-link { display: block; height: 100%; border-radius: inherit; }
+.directory-cover { overflow: hidden; position: relative; margin: 6px 6px 0; border-radius: 5px; background: var(--tint); }
+.directory-cover > img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; transition: transform .4s; }
+.directory-card:hover .directory-cover > img { transform: scale(1.035); }
+.cover-arrow { position: absolute; right: 9px; bottom: 9px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #333e33; background: #fffdf2eb; }
+.directory-card-copy { padding: 15px 16px 20px; }
+.directory-card-meta { display: flex; align-items: center; gap: 6px; color: #79766a; font-size: 10px; line-height: 1.5; min-height: 19px; }
+.directory-card-meta > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-icon { display: flex; flex-shrink: 0; color: var(--tone); }
+.directory-card h3 { font-size: 15px; font-weight: 600; line-height: 1.6; margin: 9px 0 7px; letter-spacing: -.02em; }
+.directory-card-copy p { font-size: 12px; line-height: 1.8; color: #706e63; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.directory-source { position: absolute; right: 10px; top: 12px; width: 30px; height: 30px; display: grid; place-items: center; background: #fdfbf1ef; color: #515e4a; border-radius: 50%; border: 1px solid #f5f0df; }
+.directory-source:hover { background: white; color: var(--amber); }
+.external-label { flex-shrink: 0; margin-left: auto; font-size: 9px; }
+.directory-related { margin-top: 29px; }
+.related-heading { font-weight: 500; display: flex; align-items: center; gap: 12px; margin: 0 0 14px; font-size: 12px; color: #595d51; }
+.related-heading > span:last-child { font-size: 10px; font-weight: 400; color: #898679; }
+.directory-grid--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.directory-card--compact .directory-card-link { display: flex; align-items: center; gap: 12px; padding: 8px; }
+.directory-card--compact .directory-cover { margin: 0; width: 84px; flex-shrink: 0; }
+.directory-card--compact .directory-cover img { aspect-ratio: 4 / 3; }
+.directory-card--compact .cover-arrow { display: none; }
+.directory-card--compact .directory-card-copy { min-width: 0; padding: 0 5px 0 0; }
+.directory-card--compact h3 { font-size: 12px; margin: 2px 0 2px; }
+.directory-card--compact .directory-card-copy p { font-size: 10px; -webkit-line-clamp: 1; }
+.directory-card--compact .directory-card-meta { font-size: 9px; }
+.directory-card--compact .entry-icon { display: none; }
+.directory-card--text .directory-card-copy { padding: 22px 20px 48px; }
+.directory-card--text h3 { font: 600 18px/1.6 var(--serif); margin: 19px 0 12px; }
+.directory-card--text .directory-card-copy p { -webkit-line-clamp: 3; }
+.directory-card--text .entry-icon { width: 29px; height: 29px; background: var(--tint); border-radius: 6px; display: grid; place-items: center; }
+.text-card-arrow { display: flex; color: var(--tone); position: absolute; right: 20px; bottom: 17px; }
+.directory-grid--notes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.directory-grid--notes .directory-card--text h3 { font-size: 16px; margin-top: 14px; }
+.directory-end { display: flex; justify-content: space-between; align-items: center; padding: 35px 0 48px; color: #7d796a; font: 15px var(--serif); }
+.directory-end a { display: flex; align-items: center; gap: 8px; font: 11px var(--sans); color: #59644e; min-height: 44px; }
+.directory-hero--small h1 { font-size: 40px; }
+.directory-hero--small h1 > span { display: inline; margin-left: 20px; }
+.directory-hero--small .directory-lead { max-width: none; }
+@media (max-width: 1100px) {
+  .directory-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .directory-hero { gap: 6%; padding-top: 40px; }
+  .category-link { padding: 8px; gap: 7px; }
+  .category-count { display: none; }
+  .section-description { flex-direction: column; align-items: flex-end; gap: 5px; }
+  .directory-card--compact .directory-cover { width: 68px; }
+}
+@media (max-width: 760px) {
+  :root { --directory-header-height: 106px; --directory-nav-height: 109px; }
+  .directory-page .site-header { padding: 13px 20px 11px; flex-direction: column; align-items: flex-start; gap: 9px; }
+  .directory-page .brand-copy .kw-en { display: none; }
+  .directory-page .site-nav { width: 100%; justify-content: space-between; gap: 2px; }
+  .directory-page .site-nav a { padding: 5px 7px; font-size: 12px; }
+  .directory-page .site-nav a::after { left: 7px; right: 7px; }
+  .directory-page-content { padding: 0 20px; }
+  .directory-hero { gap: 22px; padding: 31px 0 27px; }
+  .directory-eyebrow { font-size: 8px; letter-spacing: .1em; margin-bottom: 17px; }
+  .directory-intro h1 { font-size: 37px; margin-bottom: 17px; }
+  .directory-lead { font-size: 12px; line-height: 1.8; }
+  .directory-intro-foot { margin-top: 18px; gap: 12px; font-size: 10px; }
+  .directory-intro-foot a { font-size: 11px; }
+  .directory-feature { padding: 7px; }
+  .feature-image > img { aspect-ratio: 1.2; }
+  .feature-caption { padding: 9px 4px 3px; }
+  .feature-caption > strong { font-size: 13px; }
+  .feature-caption > span { font-size: 9px; }
+  .feature-label { left: 7px; top: 7px; font-size: 9px; padding: 3px 6px; }
+  .feature-play { width: 30px; height: 30px; right: 9px; bottom: 9px; }
+  .directory-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 7px 0; }
+  .category-link { justify-content: center; padding: 8px 5px; min-height: 43px; gap: 8px; }
+  .category-icon svg { width: 19px; height: 19px; }
+  .category-name { font-size: 11px; }
+  .directory-section { padding: 29px 0 30px; }
+  .directory-section-head { gap: 12px; align-items: flex-start; margin-bottom: 18px; }
+  .section-heading { gap: 10px; }
+  .section-symbol { width: 37px; height: 37px; border-radius: 9px; }
+  .section-symbol svg { width: 21px; height: 21px; }
+  .section-index { font-size: 7px; letter-spacing: .06em; }
+  .section-heading h2 { font-size: 22px; margin-top: 2px; }
+  .section-description p { display: none; }
+  .section-description { align-self: end; padding-bottom: 3px; }
+  .section-description a { font-size: 10px; }
+  .directory-grid, .directory-grid--notes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .directory-card-copy { padding: 12px 11px 14px; }
+  .directory-card h3 { font-size: 14px; line-height: 1.6; margin: 7px 0 6px; }
+  .directory-card-copy p { font-size: 11px; }
+  .directory-card-meta { font-size: 9px; gap: 4px; }
+  .entry-icon svg { width: 14px; height: 14px; }
+  .directory-source { width: 27px; height: 27px; right: 10px; top: 10px; }
+  .directory-grid--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .directory-card--compact .directory-card-link { gap: 8px; }
+  .directory-card--compact .directory-cover { width: 51px; }
+  .directory-card--compact h3 { font-size: 11px; }
+  .directory-card--compact .directory-card-copy p { display: none; }
+  .directory-card--compact .external-label { display: none; }
+  .directory-card--text .directory-card-copy { padding: 16px 13px 42px; }
+  .directory-card--text h3, .directory-grid--notes .directory-card--text h3 { font-size: 14px; }
+  .directory-card--text .directory-card-meta > span:nth-child(2) { white-space: normal; }
+  .related-heading { font-size: 11px; gap: 8px; }
+  .related-heading > span:last-child { font-size: 9px; }
+  .directory-hero--small h1 { font-size: 32px; }
+  .directory-hero--small h1 > span { margin-left: 12px; }
+}
+@media (max-width: 480px) {
+  .directory-page-content { padding: 0 16px; }
+  .directory-page .site-header { padding-left: 16px; padding-right: 16px; }
+  .directory-hero { grid-template-columns: 1fr; gap: 23px; }
+  .directory-intro h1 { font-size: 38px; }
+  .directory-intro h1 > span { display: block; }
+  .directory-lead { max-width: 340px; }
+  .directory-feature { display: grid; grid-template-columns: 115px 1fr; gap: 9px; }
+  .feature-image > img { aspect-ratio: 1.1; }
+  .feature-label { display: none; }
+  .feature-caption { justify-content: center; padding: 6px; }
+  .feature-caption > strong { font-size: 14px; }
+  .feature-caption > span { font-size: 9px; }
+  .directory-grid { gap: 10px; }
+  .directory-cover { margin: 4px 4px 0; }
+  .directory-cover > img { aspect-ratio: 1.4; }
+  .directory-card-meta .entry-icon { display: none; }
+  .directory-card--text .directory-card-meta .entry-icon { display: grid; }
+  .directory-card--compact .directory-card-link { padding: 6px; gap: 6px; }
+  .directory-card--compact .directory-cover { width: 42px; }
+  .directory-card--compact .directory-cover > img { aspect-ratio: 1; }
+  .directory-hero--small h1 > span { display: block; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .directory-page-content *, .directory-page-content *::before, .directory-page-content *::after { transition: none !important; animation: none !important; }
+}
