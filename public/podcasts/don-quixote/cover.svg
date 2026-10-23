@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <title>堂吉诃德：从小说到芭蕾</title>
+  <rect width="1200" height="800" fill="#e9ddc4"/>
+  <circle cx="805" cy="380" r="240" fill="#f9f2df"/>
+  <path d="M0 0H265C258 190 191 331 0 420Z M1200 0H940C946 180 1022 335 1200 420Z" fill="#8d352d"/>
+  <path d="M40 0Q190 220 0 362M140 0Q230 190 74 324M1060 0Q982 185 1130 327M1160 0Q1012 222 1200 363" fill="none" stroke="#bb6550" stroke-width="3"/>
+  <path d="M0 642H1200V800H0Z" fill="#262d2b"/>
+  <path d="M0 670H1200M0 704H1200" stroke="#656253" stroke-width="2"/>
+  <g stroke="#343e39" stroke-linejoin="round" stroke-width="7">
+    <path d="M800 250L750 643H908L851 250Z" fill="#d5c7a9"/>
+    <path d="M777 275L829 212L881 275Z" fill="#343e39"/>
+    <path d="M810 643V563Q829 537 849 563V643Z" fill="#343e39"/>
+    <g transform="translate(829 330) rotate(-28)">
+      <path d="M-215 -22H215V22H-215Z M-22 -215H22V215H-22Z" fill="#f9f2df"/>
+      <path d="M-195 -22V22M-160 -22V22M-125 -22V22M-90 -22V22M90 -22V22M125 -22V22M160 -22V22M195 -22V22M-22 -195H22M-22 -160H22M-22 -125H22M-22 -90H22M-22 90H22M-22 125H22M-22 160H22M-22 195H22" stroke-width="3"/>
+      <circle r="18" fill="#8d352d"/>
+    </g>
+  </g>
+  <path d="M154 486Q289 446 443 522Q522 480 670 488L642 656Q537 641 443 687Q305 621 175 651Z" fill="#f9f2df" stroke="#343e39" stroke-width="6"/>
+  <path d="M443 522V687M195 514Q310 491 417 543M202 541Q315 518 417 570M209 568Q318 545 417 597M478 545Q546 517 625 519M478 572Q544 543 617 546M478 599Q542 570 609 573" fill="none" stroke="#c2ae8b" stroke-width="3"/>
+  <text x="78" y="105" fill="#f9f2df" font-family="Georgia,serif" font-size="24" letter-spacing="5">DON QUIXOTE</text>
+  <text x="76" y="749" fill="#e9ddc4" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="26" letter-spacing="4">作品对谈 · 小说与芭蕾</text>
+  <text x="1115" y="749" text-anchor="end" fill="#e9ddc4" font-family="Georgia,serif" font-size="25">10:00</text>
+</svg>

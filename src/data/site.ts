@@ -51,6 +51,16 @@ export const works = [
     github: 'https://github.com/historyreview-code/digital-earth-series',
   },
   {
+    id: 'don-quixote-podcast',
+    title: '《堂吉诃德》：从塞万提斯小说到莫大芭蕾',
+    eyebrow: '对话播客 · 文学与舞台',
+    href: '/podcasts/don-quixote/',
+    image: '/podcasts/don-quixote/cover.svg',
+    summary: '小说里的理想主义者，为什么在芭蕾舞台上成了年轻恋人的帮手？十分钟双人对谈，聊风车、梦境、婚礼，以及改编留下的温柔。',
+    tags: ['10 分钟', '双人对谈', '文稿与章节'],
+    status: '播客新作',
+  },
+  {
     id: 'jilin-shipyards',
     title: '吉林明清船厂与黑龙江航行',
     eyebrow: '历史地理 · 文献与地图',

@@ -1,0 +1,170 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import episode from '../../data/don-quixote.json';
+const stamp = (seconds: number) => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`;
+const structuredData = {
+  '@context': 'https://schema.org', '@type': 'PodcastEpisode',
+  name: episode.title, description: episode.description,
+  datePublished: episode.date, timeRequired: 'PT10M', inLanguage: 'zh-CN',
+  url: 'https://shuzidiantang.com/podcasts/don-quixote/',
+  associatedMedia: { '@type': 'AudioObject', contentUrl: `https://shuzidiantang.com${episode.audio}`, encodingFormat: 'audio/mpeg', duration: 'PT10M0.452S' },
+};
+---
+<BaseLayout current="works" title={`${episode.title} · 对话播客 · 劳伦斯实验室`} description={episode.description} image="/podcasts/don-quixote/cover.png">
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <main id="content" class="page podcast-page">
+    <a class="back" href="/works/">← 全部作品</a>
+    <header class="episode-header">
+      <div class="episode-copy">
+        <p class="eyebrow">作品对谈 / 文学 × 芭蕾</p>
+        <h1>《堂吉诃德》<span>从塞万提斯小说<br />到莫大芭蕾</span></h1>
+        <p class="subtitle">{episode.subtitle}</p>
+        <p class="description">{episode.description}</p>
+        <p class="metadata"><time datetime={episode.date}>2026.10.24</time><span>10 分钟</span><span>AI 合成双主持</span></p>
+      </div>
+      <img class="cover" src="/podcasts/don-quixote/cover.svg" width="1200" height="800" alt="书页、风车与红色舞台帷幕：堂吉诃德从小说走向芭蕾" />
+    </header>
+
+    <section class="listening" aria-labelledby="listen-title">
+      <div class="player-title"><h2 id="listen-title">听这一期</h2><span id="chapter-now">标题里的主角，舞台上的配角</span></div>
+      <audio id="podcast-audio" controls preload="metadata" aria-label={episode.title}>
+        <source src={episode.audio} type="audio/mpeg" />
+        浏览器暂不支持音频播放，可下载 MP3 收听。
+      </audio>
+      <div class="player-actions">
+        <label>播放速度 <select id="playback-rate" aria-label="播放速度"><option value="0.85">0.85×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select></label>
+        <a href={episode.audio} download="堂吉诃德：从塞万提斯小说到莫大芭蕾.mp3">下载 MP3 ↗</a>
+        <a href="/podcasts/don-quixote/transcript.txt" download>下载文稿 ↗</a>
+      </div>
+      <p id="playback-status" class="playback-status" role="status"></p>
+    </section>
+
+    <section class="chapter-section" aria-labelledby="chapters-title">
+      <div class="section-label"><h2 id="chapters-title">六个话题</h2><span>点击章节，从这里开始听</span></div>
+      <ol class="chapters">{episode.chapters.map((chapter) => (
+        <li><button type="button" data-seek={chapter.start_seconds} data-chapter={chapter.id}><time>{chapter.timestamp}</time><span>{chapter.title}</span><span aria-hidden="true">↗</span></button></li>
+      ))}</ol>
+    </section>
+
+    <section class="reading" aria-labelledby="reading-title">
+      <div class="section-label"><h2 id="reading-title">边听边读</h2><span>点击时间，跳到这句对话</span></div>
+      {episode.chapters.map((chapter) => (
+        <details class="transcript-chapter" open={chapter.id === 'c1'}>
+          <summary><span>{chapter.timestamp}</span>{chapter.title}</summary>
+          <div class="dialogue">{episode.segments.filter(s => s.chapter === chapter.id).map(segment => (
+            <article class:list={['turn', segment.role === 'B' && 'female-turn']}>
+              <div class="speaker"><span>{segment.role === 'A' ? '男声' : '女声'}</span><button type="button" data-seek={segment.start} aria-label={`从 ${stamp(segment.start)} 播放`}>{stamp(segment.start)} ▶</button></div>
+              <p>{segment.text}</p>
+            </article>
+          ))}</div>
+        </details>
+      ))}
+    </section>
+
+    <aside class="reading-notes">
+      <h2>本期谈到的版本</h2>
+      <p>莫斯科大剧院芭蕾舞团（The Bolshoi Ballet）《堂吉诃德》，沿彼季帕、戈尔斯基传统，由阿列克谢·法杰伊切夫整理重排。小说的理想与幻觉，舞剧中吉特利和巴西利奥的爱情，在这场对谈里相互映照。</p>
+      <details class="sources"><summary>参考阅读与剧目资料</summary><ol>{episode.sources.map(source => <li><a href={source.url} target="_blank" rel="noopener">{source.title} ↗</a><small>{source.caution || source.supports}{source.pages ? `（${source.pages}）` : ''}</small></li>)}</ol></details>
+      <p class="credits">劳伦斯实验室 · 作品对谈<br />男声：电台男主播；女声：温暖闺蜜。MiniMax 合成配音。</p>
+    </aside>
+  </main>
+</BaseLayout>
+
+<script>
+  const audio = document.querySelector<HTMLAudioElement>('#podcast-audio');
+  const status = document.querySelector<HTMLElement>('#playback-status');
+  const chapterNow = document.querySelector<HTMLElement>('#chapter-now');
+  const chapterButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('button[data-chapter]'));
+  if (audio) {
+    let pendingSeek: number | null = null;
+    audio.addEventListener('loadedmetadata', () => {
+      if (pendingSeek !== null) {
+        audio.currentTime = pendingSeek;
+        pendingSeek = null;
+      }
+    });
+    document.querySelectorAll<HTMLButtonElement>('button[data-seek]').forEach(button => {
+      button.addEventListener('click', async () => {
+        try {
+          const time = Number(button.dataset.seek);
+          if (audio.readyState >= 1) audio.currentTime = time;
+          else { pendingSeek = time; audio.load(); }
+          await audio.play();
+          if (status) status.textContent = '';
+        } catch {
+          if (status) status.textContent = '请点击播放器的播放按钮继续收听。';
+        }
+      });
+    });
+    document.querySelector<HTMLSelectElement>('#playback-rate')?.addEventListener('change', event => {
+      audio.playbackRate = Number((event.target as HTMLSelectElement).value);
+    });
+    audio.addEventListener('timeupdate', () => {
+      const active = chapterButtons.filter(button => Number(button.dataset.seek) <= audio.currentTime).pop();
+      chapterButtons.forEach(button => button.setAttribute('aria-current', button === active ? 'true' : 'false'));
+      if (chapterNow && active) chapterNow.textContent = active.querySelector('span')?.textContent ?? '';
+    });
+    audio.addEventListener('error', () => {
+      if (status) status.textContent = '音频暂时未能加载，请刷新页面，或使用下载链接收听。';
+    });
+    if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: '《堂吉诃德》：从塞万提斯小说到莫大芭蕾', artist: '劳伦斯实验室 · 作品对谈', artwork: [{src: '/podcasts/don-quixote/cover.png', sizes: '1200x800', type: 'image/png'}] });
+  }
+</script>
+
+<style>
+  .podcast-page { max-width: 1080px; padding-top: 32px; padding-bottom: 80px; }
+  .back { color: var(--ink-2); font-size: 13px; }
+  .episode-header { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 40px; margin: 38px 0; }
+  .eyebrow { color: var(--amber); font-size: 12px; letter-spacing: .15em; font-weight: 700; }
+  h1 { font: 500 clamp(32px, 4vw, 49px)/1.25 var(--serif); margin: 20px 0; }
+  h1 span { display: block; font-size: .67em; line-height: 1.5; margin-top: 16px; }
+  .subtitle { font: 20px var(--serif); color: var(--amber); }
+  .description { color: var(--ink-2); font-size: 15px; line-height: 1.9; max-width: 36em; }
+  .metadata { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-top: 24px; }
+  .cover { width: 100%; height: auto; border: 1px solid var(--line); box-shadow: var(--shadow); }
+  h2 { font: 600 22px var(--serif); margin: 0; }
+  .listening { padding: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 4px; }
+  .player-title, .section-label { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .player-title > span, .section-label > span { color: var(--ink-2); font-size: 12px; }
+  audio { display: block; width: 100%; margin: 22px 0 16px; }
+  .player-actions { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+  select { margin-left: 8px; font: inherit; padding: 5px; border: 1px solid var(--line-strong); color: var(--ink); background: var(--paper); border-radius: 4px; }
+  .player-actions a { color: var(--amber); text-decoration: underline; text-underline-offset: 4px; }
+  .playback-status { font-size: 13px; margin: 0; color: var(--amber); }
+  .playback-status:not(:empty) { margin-top: 14px; }
+  .chapter-section, .reading { margin-top: 44px; }
+  .chapters { list-style: none; padding: 0; margin: 20px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1px 24px; }
+  .chapters button { display: flex; align-items: center; width: 100%; padding: 17px 8px; gap: 14px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); font: 14px var(--sans); text-align: left; cursor: pointer; }
+  .chapters time { font: 12px var(--mono); color: var(--amber); }
+  .chapters button span:last-child { margin-left: auto; }
+  .chapters button:hover, .chapters button[aria-current="true"] { background: var(--amber-soft); }
+  button:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+  .reading > .section-label { margin-bottom: 20px; }
+  .transcript-chapter { border-top: 1px solid var(--line); }
+  summary { cursor: pointer; padding: 18px 0; font-size: 15px; }
+  .transcript-chapter summary > span { margin: 0 14px 0 4px; font: 12px var(--mono); color: var(--amber); }
+  .dialogue { padding: 4px 0 18px; }
+  .turn { display: grid; grid-template-columns: 70px 1fr; gap: 24px; padding: 16px 20px; }
+  .female-turn { background: var(--amber-faint); }
+  .speaker { font-size: 12px; color: var(--ink-2); }
+  .speaker span { display: block; }
+  .speaker button { background: none; border: 0; padding: 6px 0; color: var(--amber); cursor: pointer; font: 11px var(--mono); }
+  .turn p { margin: 0; max-width: 48em; font-size: 15px; line-height: 1.95; }
+  .reading-notes { border-top: 1px solid var(--line-strong); margin-top: 40px; padding-top: 30px; }
+  .reading-notes > p { color: var(--ink-2); font-size: 14px; line-height: 1.9; }
+  .sources li { margin-bottom: 12px; font-size: 14px; }
+  .sources a { color: var(--amber); }
+  .sources small { display: block; color: var(--ink-2); }
+  .credits { margin-top: 28px; }
+  @media(max-width: 700px) {
+    .episode-header { grid-template-columns: 1fr; gap: 24px; margin-top: 26px; }
+    .cover { max-width: 420px; }
+    .chapters { grid-template-columns: 1fr; }
+    .listening { padding: 20px 14px; }
+    .player-title, .section-label { align-items: flex-start; flex-direction: column; gap: 8px; }
+    .player-actions { gap: 16px; }
+    .turn { grid-template-columns: 52px 1fr; gap: 12px; padding: 16px 8px; }
+    .transcript-chapter summary { font-size: 14px; }
+    .transcript-chapter summary > span { margin-right: 8px; }
+  }
+</style>
