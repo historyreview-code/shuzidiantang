@@ -81,9 +81,13 @@
     return sections(hand,level,mode,[]).flatMap(s=>s.cards);
   }
   function insertCard(order,id,targetId,after,hand){
-    const result=normaliseOrder(order,hand);
-    if(id===targetId||!result.includes(id)||!result.includes(targetId))return result;
-    result.splice(result.indexOf(id),1);result.splice(result.indexOf(targetId)+(after?1:0),0,id);return result;
+    return insertCards(order,[id],targetId,after,hand);
   }
-  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split,normaliseOrder,orderedCards,insertCard};
+  function insertCards(order,ids,targetId,after,hand){
+    const current=normaliseOrder(order,hand),selected=new Set(ids),moving=current.filter(id=>selected.has(id));
+    if(!moving.length||selected.has(targetId)||!current.includes(targetId))return current;
+    const result=current.filter(id=>!selected.has(id));
+    result.splice(result.indexOf(targetId)+(after?1:0),0,...moving);return result;
+  }
+  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split,normaliseOrder,orderedCards,insertCard,insertCards};
 })(typeof globalThis!=='undefined'?globalThis:this);
