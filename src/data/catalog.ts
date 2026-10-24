@@ -45,7 +45,8 @@ const toItem = (work: (typeof works)[number]): CatalogItem => ({
   summary: work.summary, meta: work.eyebrow, icon: icons[work.id] || (categoryFor(work.id) === 'travel' ? 'compass' : categoryFor(work.id) === 'research' ? 'map' : 'play'),
   external: work.external, github: work.github,
 });
-const itemsFor = (category: string) => works.filter(work => categoryFor(work.id) === category).map(toItem);
+const retiredWorks = new Set(['math-beauty', 'clay', 'dataism']);
+const itemsFor = (category: string) => works.filter(work => !retiredWorks.has(work.id) && categoryFor(work.id) === category).map(toItem);
 const reportItems: CatalogItem[] = research.map(report => ({
   id: report.slug, title: report.title, href: report.href,
   image: report.coverImage, summary: report.subtitle,
@@ -60,7 +61,7 @@ const noteItems: CatalogItem[] = readdirSync(notesDirectory)
     const href = `/notes/${file}`;
     const saved = notes.find(note => note.href === href);
     const html = readFileSync(path.join(notesDirectory, file), 'utf8');
-    const title = saved?.title || html.match(/<title>([^<]+)<\/title>/i)?.[1].replace(/\s*·\s*(数字殿堂|劳伦斯在上海|劳伦斯实验室).*$/, '').trim() || file;
+    const title = saved?.title || html.match(/<title>([^<]+)<\/title>/i)?.[1].replace(/\s*·\s*(数字殿堂|劳伦斯实验室).*$/, '').trim() || file;
     const summary = saved?.summary || html.match(/<meta name="description" content="([^"]*)"/i)?.[1] || '阅读这篇创作手记。';
     const category = saved?.category || html.match(/分类[:：]\s*([^<]+)/)?.[1].replace(/\s*-->\s*$/, '').trim() || '手记';
     return { id: file.slice(0, -5), title, href, summary, meta: `${file.slice(0, 10)} · ${category}`, icon: 'pen' };
