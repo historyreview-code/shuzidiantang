@@ -51,9 +51,9 @@ const libertyItem: CatalogItem = {
   id: 'liberty',
   title: '自由女神像',
   href: '/liberty/',
-  image: '/liberty/cover.svg',
-  summary: '以轻量交互 3D 呈现冠冕、火炬、书板、铜绿长袍与石质底座，支持旋转和缩放。',
-  meta: '交互 3D · 轻量低多边形版',
+  image: 'https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F5f8a4c410665028677cf0e63b021a6923810a7a75bc758f04d979bc19da116c5?filename=cover.png&sig=cxAlmHIX4cwU3Onel9rdRdlIMD1tW0_EZo5wWATNns4=&t=o',
+  summary: '以原始高精度交互 3D 呈现冠冕、火炬、书板、铜绿长袍与石质底座，支持旋转、缩放和模型下载。',
+  meta: '交互 3D · 原始高精度版',
   icon: 'cube',
 };
 const reportItems: CatalogItem[] = research.map(report => ({
@@ -72,7 +72,7 @@ const noteItems: CatalogItem[] = readdirSync(notesDirectory)
     const html = readFileSync(path.join(notesDirectory, file), 'utf8');
     const title = saved?.title || html.match(/<title>([^<]+)<\/title>/i)?.[1].replace(/\s*·\s*(数字殿堂|劳伦斯在上海|劳伦斯实验室).*$/, '').trim() || file;
     const summary = saved?.summary || html.match(/<meta name="description" content="([^"]*)"/i)?.[1] || '阅读这篇创作手记。';
-    const category = saved?.category || html.match(/分类[:：]\s*([^<]+)/)?.[1].replace(/\s*-->\s*$/, '').trim() || '手记';
+    const category = saved?.category || html.match(/分类[:：]\s*([^<]+)<\/p>/i)?.[1] || html.match(/分类[:：]\s*([^<]+)/i)?.[1].replace(/\s*-->\s*$/, '').trim() || '手记';
     return { id: file.slice(0, -5), title, href, summary, meta: `${file.slice(0, 10)} · ${category}`, icon: 'pen' };
   });
 
@@ -92,7 +92,6 @@ export const catalog: CatalogGroup[] = [
     id: 'travel', title: '城市漫游', english: 'PLACES & JOURNEYS', icon: 'compass', color: 'blue',
     description: '沿街巷、河流与历史，认识一座城市。',
     items: [...itemsFor('travel'), ...travelSeries.filter(item => item.href && !item.external && !works.some(work => work.href === item.href)).map((item, index) => ({ id: `travel-tool-${index}`, title: item.title, href: item.href, image: item.img, summary: item.sub, meta: '旅行工具', icon: 'route' }))],
-    relatedTitle: '手绘跨时空旅行 · 英伦漫记',
     related: travelSeries.filter(item => item.external).map((item, index) => ({ id: `travel-film-${index}`, title: item.title, href: item.href, image: item.img, summary: item.sub, meta: 'B站短片', icon: 'play', external: true })),
     more: { label: '旅行实验室', href: '/travel/' },
   },
@@ -109,8 +108,7 @@ export const catalog: CatalogGroup[] = [
   },
   {
     id: 'notes', title: '创作手记', english: 'FIELD NOTES', icon: 'pen', color: 'olive',
-    description: '记下实践中的问题、选择，以及做成一件事的过程。',
-    items: noteItems,
+    description: '记录实践中的问题、选择，以及做成一件事的过程。', items: noteItems,
     more: { label: '全部手记', href: '/notes/' },
   },
 ];
