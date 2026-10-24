@@ -1,0 +1,283 @@
+(function (root) {
+  'use strict';
+  const VERSION = 'guandan-single-v1';
+  const SUITS = ['S', 'H', 'C', 'D'];
+  const SYMBOLS = {S:'♠',H:'♥',C:'♣',D:'♦',J:'★'};
+  const RANKS = {11:'J',12:'Q',13:'K',14:'A',16:'小王',17:'大王'};
+  const TYPES = {single:'单张',pair:'对子',triple:'三张',full:'三带二',straight:'顺子',pairs:'三连对',triples:'钢板',bomb:'炸弹',flush:'同花顺',kings:'四王炸'};
+  const clone = x => JSON.parse(JSON.stringify(x));
+  const rankName = r => RANKS[r] || String(r);
+  const name = c => c.r >= 16 ? rankName(c.r) : SYMBOLS[c.s]+rankName(c.r);
+  const wild = (c,l) => c.s==='H' && c.r===l;
+  const power = (r,l) => r>=16?r:r===l?15:r;
+  function deck() {
+    const d=[];
+    for(let copy=0;copy<2;copy++) {
+      for(const s of SUITS) for(let r=2;r<=14;r++) d.push({id:`${copy}${s}${r}`,r,s});
+      for(const r of [16,17]) d.push({id:`${copy}J${r}`,r,s:'J'});
+    }
+    return d;
+  }
+  const DECK = deck(), INDEX = Object.fromEntries(DECK.map(c=>[c.id,c]));
+  const sort = (cards,l) => [...cards].sort((a,b)=>power(b.r,l)-power(a.r,l)||SUITS.indexOf(a.s)-SUITS.indexOf(b.s)||a.id.localeCompare(b.id));
+  function random(seed) {
+    let x=2166136261;
+    for(const c of String(seed)) x=Math.imul(x^c.charCodeAt(0),16777619);
+    return () => {x+=0x6D2B79F5;let t=x;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;};
+  }
+  function deal(seed,level=2,lead=0) {
+    const d=deck(),rng=random(seed);
+    for(let i=d.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
+    return makeStart(Array.from({length:4},(_,p)=>sort(d.slice(p*27,p*27+27),level)),level,lead,seed,'full');
+  }
+  function makeStart(hands,level=2,lead=0,seed='scenario',kind='scenario') {
+    if(!['full','scenario'].includes(kind)) throw Error('未知牌局类型');
+    if(!Number.isInteger(level)||level<2||level>14) throw Error('级牌必须在 2 到 A 之间');
+    if(!Number.isInteger(lead)||lead<0||lead>3) throw Error('首发座位无效');
+    if(!Array.isArray(hands)||hands.length!==4||hands.some(h=>!Array.isArray(h)||h.length<1||h.length>27)) throw Error('四家起手牌需要各有 1～27 张');
+    const all=hands.flat();
+    if(new Set(all.map(c=>c.id)).size!==all.length) throw Error('存在重复牌张');
+    if(all.some(c=>!INDEX[c.id]||INDEX[c.id].r!==c.r||INDEX[c.id].s!==c.s)) throw Error('牌张编号或属性不合法');
+    if(kind==='full'&&(all.length!==108||hands.some(h=>h.length!==27))) throw Error('完整牌局必须每家 27 张');
+    return {rules:VERSION,kind,seed:String(seed).slice(0,80),level,lead,hands:clone(hands)};
+  }
+  function initial(start) {
+    const valid=makeStart(start.hands,start.level,start.lead,start.seed,start.kind);
+    return {level:valid.level,hands:valid.hands,turn:valid.lead,trick:null,passed:[],finish:[],over:false,result:null,step:0,played:[],lastActions:[null,null,null,null],leadReason:'练习首发'};
+  }
+  function sequences(length) {
+    const out=[[14,...Array.from({length:length-1},(_,i)=>i+2)]];
+    for(let r=2;r<=15-length;r++) out.push(Array.from({length},(_,i)=>r+i));
+    return out;
+  }
+  function move(type,cards,p,assign=[],main=null) {
+    const ids=cards.map(c=>c.id).sort();
+    return {type,ids,power:p,main,assign,key:`${type}:${p}:${ids.join(',')}`};
+  }
+  // Pattern matching uses card identities, not all 2^27 subsets. AI enumeration
+  // keeps one suit selection per pattern; classify() still accepts every valid selection.
+  function enumerate(hand,level,exact=false) {
+    const out=[],seen=new Set(),ws=hand.filter(c=>wild(c,level)),naturals=hand.filter(c=>!wild(c,level));
+    const add=m=>{if(exact&&(m.ids.length!==hand.length||m.ids.some(id=>!hand.some(c=>c.id===id))))return;if(!seen.has(m.key)){seen.add(m.key);out.push(m);}};
+    if(!exact||hand.length===1) for(const c of hand)add(move('single',[c],power(c.r,level),[],c.r));
+    function pattern(type,requirements,p,main) {
+      const total=requirements.reduce((s,g)=>s+g.n,0);
+      if(total>hand.length||(exact&&total!==hand.length))return;
+      function fill(i,chosen,usedWild,assign) {
+        if(i===requirements.length){add(move(type,chosen,p,assign,main));return;}
+        const g=requirements[i],pool=naturals.filter(c=>c.r===g.r&&(!g.s||c.s===g.s));
+        const min=Math.max(0,g.n-pool.length),max=g.r>=16?0:Math.min(g.n,ws.length-usedWild);
+        for(let use=min;use<=max;use++) {
+          const take=g.n-use;
+          if(pool.length<take)continue;
+          const chosenWild=ws.slice(usedWild,usedWild+use);
+          // Two wilds alone form the level pair in this practice ruleset.
+          if(type==='pair'&&take===0&&g.r!==level)continue;
+          fill(i+1,[...chosen,...pool.slice(0,take),...chosenWild],usedWild+use,[...assign,...chosenWild.map(c=>({id:c.id,r:g.r,s:g.s||c.s}))]);
+        }
+      }
+      fill(0,[],0,[]);
+    }
+    for(let r=2;r<=17;r++) {
+      if(r===15)continue;
+      pattern('pair',[{r,n:2}],power(r,level),r);
+      if(r<=14) {
+        pattern('triple',[{r,n:3}],power(r,level),r);
+        for(let n=4;n<=10;n++)pattern('bomb',[{r,n}],power(r,level),r);
+        if(!exact||hand.length===5)for(let q=2;q<=17;q++)if(q!==15&&q!==r)pattern('full',[{r,n:3},{r:q,n:2}],power(r,level),r);
+      }
+    }
+    for(const seq of sequences(5)) {
+      const p=seq[seq.length-1];
+      pattern('straight',seq.map(r=>({r,n:1})),p,p);
+      for(const s of SUITS)pattern('flush',seq.map(r=>({r,n:1,s})),p,p);
+    }
+    for(const seq of sequences(3))pattern('pairs',seq.map(r=>({r,n:2})),seq[2],seq[2]);
+    for(const seq of sequences(2))pattern('triples',seq.map(r=>({r,n:3})),seq[1],seq[1]);
+    const kings=hand.filter(c=>c.r>=16);
+    if(kings.length===4)add(move('kings',kings,99,[],17));
+    return out;
+  }
+  // One minimum-substitution selection per suit and five-rank window.
+  function findStraightFlushes(hand,level,table=null){
+    const result=[],ws=hand.filter(c=>wild(c,level)).sort((a,b)=>a.id.localeCompare(b.id));
+    for(const suit of SUITS)for(const ranks of sequences(5)){
+      const chosen=[],missing=[];
+      for(const r of ranks){const card=hand.filter(c=>c.s===suit&&c.r===r).sort((a,b)=>a.id.localeCompare(b.id))[0];if(card)chosen.push(card);else missing.push(r);}
+      const available=ws.filter(c=>!chosen.some(n=>n.id===c.id));
+      if(missing.length>available.length)continue;
+      chosen.push(...available.slice(0,missing.length));
+      const candidate=enumerate(chosen,level,true).find(m=>m.type==='flush'&&m.main===ranks.at(-1));
+      if(!candidate)continue;
+      const replacements=candidate.assign.filter(a=>a.r!==INDEX[a.id].r||a.s!==INDEX[a.id].s);
+      result.push({suit,ranks,move:candidate,replacements,natural:replacements.length===0,playable:beats(candidate,table)});
+    }
+    return result.sort((a,b)=>a.replacements.length-b.replacements.length||b.move.power-a.move.power||SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit));
+  }
+  const classify=(cards,level)=>enumerate(cards,level,true);
+  const bombTier=m=>m.type==='kings'?10000:m.type==='flush'?550:m.type==='bomb'?(m.ids.length>=6?600+m.ids.length*30:m.ids.length===5?500:400)+m.power:0;
+  function beats(a,b) {
+    if(!b)return true;
+    const ta=bombTier(a),tb=bombTier(b);
+    if(ta||tb)return ta>tb||(ta===tb&&a.type==='flush'&&b.type==='flush'&&a.power>b.power);
+    return a.type===b.type&&a.ids.length===b.ids.length&&a.power>b.power;
+  }
+  function describe(m) {
+    if(!m)return '过牌';
+    const label=TYPES[m.type];
+    if(m.type==='kings')return label;
+    if(m.type==='bomb')return `${m.ids.length} 张 ${rankName(m.main)} 炸弹`;
+    if(['straight','flush','pairs','triples'].includes(m.type))return `${label} · ${rankName(m.main)} 收尾`;
+    return `${label} · ${rankName(m.main)}`;
+  }
+  function nextActive(s,from) {for(let d=1;d<=4;d++){const p=(from+d)%4;if(s.hands[p].length)return p;}return -1;}
+  function apply(state,action) {
+    if(state.over)throw Error('本副已经结束');
+    const s=clone(state),p=s.turn;
+    if(action.seat!==undefined&&action.seat!==p)throw Error('行动顺序不正确');
+    s.step++;
+    if(action.kind==='pass') {
+      if(!s.trick)throw Error('领出时不能过牌');
+      s.passed.push(p);s.lastActions[p]={kind:'pass',step:s.step};
+      const pending=s.hands.map((h,i)=>h.length&&i!==s.trick.seat&&!s.passed.includes(i)).some(Boolean);
+      if(!pending) {
+        const owner=s.trick.seat,partner=(owner+2)%4;
+        s.turn=s.hands[owner].length?owner:s.hands[partner].length?partner:nextActive(s,owner);
+        s.leadReason=s.turn===owner?'上轮最大者领出':s.turn===partner?'搭档出完，本轮无人再压，借风领出':'转交仍在场玩家';
+        s.trick=null;s.passed=[];
+      } else s.turn=nextActive(s,p);
+      return s;
+    }
+    if(action.kind!=='play'||!action.move||!Array.isArray(action.move.ids))throw Error('无效动作');
+    const ids=action.move.ids;
+    if(new Set(ids).size!==ids.length)throw Error('同一张牌不能重复使用');
+    const cards=ids.map(id=>s.hands[p].find(c=>c.id===id));
+    if(cards.some(c=>!c))throw Error('所选牌不在当前手中');
+    const legal=classify(cards,s.level).find(m=>m.type===action.move.type&&m.power===action.move.power&&beats(m,s.trick?.move));
+    if(!legal)throw Error('牌型不合法，或不能压过桌面的牌');
+    s.hands[p]=s.hands[p].filter(c=>!ids.includes(c.id));
+    s.played.push(...cards);s.trick={seat:p,move:legal};s.passed=[];
+    s.lastActions[p]={kind:'play',move:legal,step:s.step};
+    if(!s.hands[p].length)s.finish.push(p);
+    if(s.finish.length>=2&&s.finish[0]%2===s.finish[1]%2) {
+      s.over=true;s.result={team:s.finish[0]%2,upgrade:3,doubleDown:true};
+    } else if(s.finish.length===3) {
+      s.finish.push(s.hands.findIndex(h=>h.length));s.over=true;
+      s.result={team:s.finish[0]%2,upgrade:s.finish.indexOf((s.finish[0]+2)%4)===2?2:1,doubleDown:false};
+    }
+    if(!s.over)s.turn=nextActive(s,p);
+    return s;
+  }
+  function observe(s,seat=s.turn) {
+    return {level:s.level,seat,hand:clone(s.hands[seat]),counts:s.hands.map(h=>h.length),trick:clone(s.trick),finish:[...s.finish],played:clone(s.played),step:s.step};
+  }
+  function structure(hand,level) {
+    const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
+    return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
+  }
+  const STRATEGY_VERSION='team-structure-v2';
+  function planner(hand,moves) {
+    const index=new Map(hand.map((c,i)=>[c.id,i])),full=(1<<hand.length)-1;
+    const masks=[...new Set(moves.map(m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0)))].sort((a,b)=>pop(b)-pop(a)||a-b);
+    const byCard=hand.map((_,i)=>masks.filter(m=>m&(1<<i))),memo=new Map([[0,0]]);let budget=550;
+    function pop(n){let count=0;while(n){n&=n-1;count++;}return count;}
+    function greedy(mask){let count=0;for(const m of masks)if((mask&m)===m){mask^=m;count++;if(!mask)return count;}return count+pop(mask);}
+    function turns(mask){if(memo.has(mask))return memo.get(mask);let best=greedy(mask);if(best<=1||budget--<=0)return best;
+      const bit=31-Math.clz32(mask&-mask),options=byCard[bit].filter(m=>(mask&m)===m);
+      for(const m of options){if(pop(m)===pop(mask)){best=1;break;}best=Math.min(best,1+turns(mask^m));if(best===2)break;}
+      memo.set(mask,best);return best;
+    }
+    return {full,mask:m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0),turns};
+  }
+  function analyse(o) {
+    // Two deterministic physical selections per pattern preserve more suit structures.
+    const pool=[...new Map([...enumerate(o.hand,o.level),...enumerate([...o.hand].reverse(),o.level)].map(m=>[m.key,m])).values()];
+    const moves=pool.filter(m=>beats(m,o.trick?.move));
+    const before=structure(o.hand,o.level),partner=(o.seat+2)%4,teamLead=!!o.trick&&o.trick.seat%2===o.seat%2;
+    const opponents=o.counts.map((count,seat)=>({count,seat})).filter(x=>x.seat%2!==o.seat%2&&x.count>0);
+    const singleDanger=opponents.some(x=>x.count===1),pairDanger=opponents.some(x=>x.count===2),danger=singleDanger||pairDanger;
+    const known=new Set([...o.hand,...o.played].map(c=>c.id)),unseen=DECK.filter(c=>!known.has(c.id));
+    const unseenCounts=structure(unseen,o.level),wildCount=unseenCounts.wilds;
+    const higherCount=m=>unseen.filter(c=>power(c.r,o.level)>m.power).length;
+    const sameTypeSafe=m=>m.type==='single'?higherCount(m)===0:m.type==='pair'?!Object.entries(unseenCounts.counts).some(([r,n])=>power(+r,o.level)>m.power&&n+(+r<16?wildCount:0)>=2):false;
+    const tableVulnerable=teamLead&&((o.trick.move.type==='single'&&singleDanger)||(o.trick.move.type==='pair'&&pairDanger))&&!sameTypeSafe(o.trick.move);
+    const plan=planner(o.hand,pool),beforeTurns=plan.turns(plan.full),flushes=pool.filter(m=>m.type==='flush');
+    const scored=moves.map(m=>{
+      const remaining=o.hand.filter(c=>!m.ids.includes(c.id)),after=structure(remaining,o.level),finish=!remaining.length;
+      const isBomb=bombTier(m)>0,usedWild=m.ids.filter(id=>wild(INDEX[id],o.level)).length;
+      let breakBomb=0,breakGroup=0;
+      for(const [r,n]of Object.entries(before.counts)){const left=after.counts[r]||0;if(n>=4&&left>0&&left<n)breakBomb++;if(n>=2&&left===1)breakGroup++;}
+      const remainingMask=plan.full^plan.mask(m),remainingTurns=plan.turns(remainingMask),safe=sameTypeSafe(m);
+      const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
+      let score=18*(beforeTurns-remainingTurns)+m.ids.length*1.5-m.power*.35-usedWild*3-breakBomb*15-breakGroup*4-(isBomb?19:0)-(breakFlush?16:0);
+      if(o.trick)score+=5;
+      if(teamLead)score-=90;
+      if(!o.trick&&safe)score-=8; // Save a control card until it can release a weak remainder.
+      if(remainingTurns===1&&safe)score+=38;
+      if(danger&&!teamLead&&o.trick)score+=28;
+      if(singleDanger){if(m.type==='single')score+=m.power*4;else if(!o.trick)score+=28;}
+      if(pairDanger&&m.type==='pair')score+=m.power*2;
+      if(tableVulnerable){score+=isBomb?95:145;if(m.type==='single'||m.type==='pair')score+=m.power*4;}
+      const feed=!o.trick&&!danger&&o.counts[partner]===m.ids.length&&['single','pair'].includes(m.type)&&m.power<=10;
+      if(feed)score+=30-m.power;
+      if(teamLead&&o.counts[partner]===0&&!finish)score-=40;
+      if(finish)score+=10000;
+      const facts=[`打出 ${m.ids.length} 张，剩 ${remaining.length} 张。`],reasons=[];
+      if(finish)reasons.push('这手可以立即出完自己的牌，优先兑现名次。');
+      if(tableVulnerable&&!finish)reasons.push('搭档虽暂时最大，但对手报单或报双，当前牌型可能被接走；接管大牌是在保护队伍。');
+      else if(teamLead&&!finish)reasons.push(o.counts[partner]===0?'搭档已走完，若全员过牌可借风给你；避免无谓接管。':'搭档正在控牌，通常让其继续领出，除非你能直接走完或有明确拦截需要。');
+      if(feed)reasons.push(`搭档只剩 ${o.counts[partner]} 张，低${m.type==='single'?'单张':'对子'}可试着交棒；其具体牌点${m.type==='pair'?'和是否成对':''}仍未知。`);
+      if(singleDanger&&m.type==='single'&&!finish)reasons.push('对手报单，单张跟牌优先提高拦截强度，避免继续放出小单。');
+      if(safe)reasons.push('按已见牌，未见牌中没有更大的同类单张或对子；仍可能被炸弹压制。');
+      if(!finish)reasons.push(`按当前候选组合估算，余牌约可分 ${remainingTurns} 手；这是有限结构搜索，不保证最少手数，也不保证能连续出完。`);
+      if(breakBomb||breakFlush)reasons.push(`会拆开${breakBomb?'同点炸弹':''}${breakBomb&&breakFlush?'或':''}${breakFlush?'同花顺':''}结构，需要用控牌或收尾收益补偿。`);
+      if(usedWild)reasons.push(`使用 ${usedWild} 张配牌，减少后续调整余地。`);
+      return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,usedWild,remainingTurns};
+    });
+    if(o.trick)scored.push({move:null,score:teamLead?(tableVulnerable?0:75):danger?-35:0,facts:['本次不出牌，保留全部手牌。'],reasons:[tableVulnerable?'搭档当前最大，但对手报单或报双，过牌可能让其接走；比较你是否有合适的拦截牌。':teamLead?(o.counts[partner]===0?'搭档已走完，让本轮自然结束可争取借风领出。':'搭档控牌时优先让牌，保留自己的高牌与组合。'):danger?'对手接近走完，放行可能失去最后的拦截机会。':'没有迫切拦截需要时，可保留控制牌；同时承担对手继续领出的风险。'],remaining:o.hand.length,finish:false,breakBomb:0,usedWild:0,remainingTurns:beforeTurns});
+    return scored.sort((a,b)=>b.score-a.score||(a.move?.key||'').localeCompare(b.move?.key||''));
+  }
+  function choose(s,seat=s.turn) {
+    const best=analyse(observe(s,seat))[0];
+    if(!best)throw Error('没有可用动作');
+    return best.move?{seat,kind:'play',move:best.move}:{seat,kind:'pass'};
+  }
+  function explainChoice(before,action) {
+    const o=observe(before,action.seat??before.turn),all=analyse(o);
+    const chosen=action.kind==='pass'?all.find(x=>!x.move):all.find(x=>x.move?.key===action.move.key);
+    let detail=chosen;
+    if(!detail&&action.kind==='play') {
+      const cs=action.move.ids.map(id=>o.hand.find(c=>c.id===id));
+      detail={facts:[`打出 ${cs.length} 张，剩 ${o.hand.length-cs.length} 张。`],reasons:['这是合法选择。当前教练仅枚举部分同点牌的花色组合，不将未枚举方案判为错误。']};
+    }
+    const missedFinish=all.some(x=>x.finish)&&!(action.kind==='play'&&action.move.ids.length===o.hand.length);
+    return {facts:detail?.facts||[],reasons:detail?.reasons||[],alternatives:all.slice(0,3),missedFinish,tag:missedFinish?'留意出完机会':before.trick?.seat%2===o.seat%2?'搭档配合':all.some(x=>x.breakBomb)?'结构与控制':'出牌结构'};
+  }
+  function replay(start,events) {
+    const states=[initial(start)];for(const action of events)states.push(apply(states[states.length-1],action));return states;
+  }
+  function importRecord(raw) {
+    if(!raw||raw.format!=='guandan-lab-record-v1'||raw.start?.rules!==VERSION)throw Error('不是本程序支持的牌谱版本');
+    if(!Array.isArray(raw.events)||raw.events.length>800)throw Error('动作记录不合法或过长');
+    const start=makeStart(raw.start.hands,raw.start.level,raw.start.lead,raw.start.seed,raw.start.kind);
+    const events=raw.events.map(a=>{
+      if(!a||!['play','pass'].includes(a.kind))throw Error('记录含未知动作');
+      if(!Number.isInteger(a.seat)||a.seat<0||a.seat>3)throw Error('记录缺少合法行动座位');
+      const action=a.kind==='pass'?{kind:'pass',seat:a.seat}:{kind:'play',seat:a.seat,move:{ids:a.move?.ids,type:a.move?.type,power:a.move?.power,key:a.move?.key}};
+      if(['human','bot','lesson'].includes(a.origin))action.origin=a.origin;
+      if(a.assisted===true&&a.origin==='human')action.assisted=true;
+      return action;
+    });
+    const states=replay(start,events);
+    // Rebuild declared move details from the rules engine; never trust imported prose.
+    for(let i=0;i<events.length;i++)if(events[i].kind==='play')events[i].move=states[i+1].lastActions[events[i].seat].move;
+    const notes={};
+    if(raw.notes&&typeof raw.notes==='object')for(const [key,value] of Object.entries(raw.notes)){
+      if(/^\d+$/.test(key)&&+key<events.length&&typeof value==='string')notes[key]=value.slice(0,1000);
+    }
+    return {id:typeof raw.id==='string'?raw.id.slice(0,100):`import-${Date.now()}`,created:typeof raw.created==='string'?raw.created.slice(0,50):new Date().toISOString(),format:'guandan-lab-record-v1',start,events,title:typeof raw.title==='string'?raw.title.slice(0,80):'导入牌局',branchOf:typeof raw.branchOf==='string'?raw.branchOf.slice(0,100):null,lessonId:typeof raw.lessonId==='string'?raw.lessonId.slice(0,60):null,notes};
+  }
+  const API={VERSION,STRATEGY_VERSION,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,clone};
+  if(typeof module!=='undefined'&&module.exports)module.exports=API;
+  root.Guandan=API;
+})(typeof globalThis!=='undefined'?globalThis:this);

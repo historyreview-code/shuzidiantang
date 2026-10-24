@@ -32,12 +32,12 @@ const groups: Record<string, string[]> = {
   media: ['don-quixote-podcast', 'math-beauty-astra', 'babylon-tower', 'single-bit-error', 'droplet', 'math-beauty', 'electricity', 'autumn-train'],
   travel: ['york-wander', 'cambridge-wander', 'glasgow-wander', 'harbin-wander', 'edinburgh-wander', 'kyoto-wander'],
   research: ['jilin-shipyards', 'shamanism', 'huanghe', 'shanghai-time-map'],
-  tools: ['cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games'],
+  tools: ['guandan', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games'],
 };
 const icons: Record<string, string> = {
   earth: 'globe', liberty: 'cube', clay: 'cube', dataism: 'spark', 'seaside-delivery': 'route', 'fireworks-player': 'wave', mindverse: 'book',
   'don-quixote-podcast': 'headphones', 'math-beauty-astra': 'spark', electricity: 'bolt', 'autumn-train': 'route',
-  cad: 'layers', naoliceshi: 'grid', 'mini-games': 'game', 'fireworks-kaleidoscope': 'spark', 'retro-kaleidoscope': 'spark',
+  guandan: 'game', cad: 'layers', naoliceshi: 'grid', 'mini-games': 'game', 'fireworks-kaleidoscope': 'spark', 'retro-kaleidoscope': 'spark',
 };
 const categoryFor = (id: string) => Object.entries(groups).find(([, ids]) => ids.includes(id))?.[0] || 'explore';
 const toItem = (work: (typeof works)[number]): CatalogItem => ({

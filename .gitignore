@@ -7,3 +7,6 @@ dist/
 share/
 __pycache__/
 *.pyc
+
+.edgeone/
+.env*
