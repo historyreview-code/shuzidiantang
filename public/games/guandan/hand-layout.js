@@ -68,5 +68,22 @@
     result.splice(to<0?result.length:to,0,item);return result;
   }
   function split(groups,key,hand){return normalise(groups,hand).flatMap(g=>g.key===key?g.ids.map(id=>({key:g.key+'-'+id,ids:[id]})):g);}
-  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split};
+  function normaliseOrder(order,hand){
+    const available=new Set(hand.map(c=>c.id)),seen=new Set();
+    return [...(Array.isArray(order)?order:[]),...hand.map(c=>c.id)].filter(id=>available.has(id)&&!seen.has(id)&&(seen.add(id),true));
+  }
+  function orderedCards(hand,level,mode,order,legacyGroups){
+    const G=root.Guandan,sorted=G.sort(hand,level);
+    if(mode==='groups'){
+      const saved=Array.isArray(order)?order:materialise(hand,level,'groups',legacyGroups).flatMap(g=>g.ids);
+      return normaliseOrder(saved,sorted).map(id=>hand.find(c=>c.id===id));
+    }
+    return sections(hand,level,mode,[]).flatMap(s=>s.cards);
+  }
+  function insertCard(order,id,targetId,after,hand){
+    const result=normaliseOrder(order,hand);
+    if(id===targetId||!result.includes(id)||!result.includes(targetId))return result;
+    result.splice(result.indexOf(id),1);result.splice(result.indexOf(targetId)+(after?1:0),0,id);return result;
+  }
+  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split,normaliseOrder,orderedCards,insertCard};
 })(typeof globalThis!=='undefined'?globalThis:this);
