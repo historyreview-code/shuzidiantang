@@ -5,20 +5,20 @@
  function createRemote(options={}){
   const env=options.env||root,later=options.setTimeout||setTimeout,clear=options.clearTimeout||clearTimeout;
   const supported=!!(env.Audio&&env.fetch),player=supported?new env.Audio():null;
-  let enabled=false,busy=false,text='',status=supported?'MiniMax 稳重男声已就绪。':'当前浏览器不支持音频播放。',rate=1,serial=0,request=null,watchdog=null,unlocked=false,paused=false;
+  let enabled=false,busy=false,text='',status=supported?'稳重男声已就绪。':'当前浏览器不支持音频播放。',rate=1,serial=0,request=null,watchdog=null,unlocked=false,paused=false;
   const snapshot=()=>({supported,enabled,busy,text,status,rate});
   const emit=()=>options.onChange?.(snapshot());
   if(player){player.preload='auto';player.playsInline=true;}
   function unlock(){if(!supported||unlocked||busy)return;unlocked=true;player.src=SILENCE;player.play().catch(()=>{unlocked=false;});}
   function cancel(quiet=false){serial++;request?.abort();request=null;clear(watchdog);watchdog=null;busy=false;paused=false;if(player){player.onplaying=null;player.onended=null;player.onerror=null;player.pause();player.removeAttribute('src');player.load();}if(!quiet){status=enabled?'播报已停止。':'语音已关闭。';emit();}}
-  function enable(value){enabled=!!value&&supported;if(!enabled)cancel(true);status=enabled?'MiniMax 稳重男声已就绪。':supported?'语音已关闭。':'当前浏览器不支持音频播放。';emit();return enabled;}
+  function enable(value){enabled=!!value&&supported;if(!enabled)cancel(true);status=enabled?'稳重男声已就绪。':supported?'语音已关闭。':'当前浏览器不支持音频播放。';emit();return enabled;}
   function setRate(value){rate=[0.85,1,1.2,1.4].includes(+value)?+value:1;if(player)player.playbackRate=rate;emit();}
   function say(value,context={}){
    cancel(true);text=String(value||'');if(!enabled||!text){emit();return false;}
-   const ticket=serial;busy=true;status='正在准备 MiniMax 配音…';emit();request=new AbortController();
+   const ticket=serial;busy=true;status='正在准备语音…';emit();request=new AbortController();
    const payload=context.kind==='review'?{kind:'review',reference:context.reference}:{kind:'table',text};
    const key=JSON.stringify(payload);
-   function finish(error){if(ticket!==serial)return;serial++;clear(watchdog);watchdog=null;busy=false;paused=false;player.onplaying=null;player.onended=null;player.onerror=null;if(error){player.pause();enabled=false;status=error;}else status='播报完成。';emit();options.onIdle?.();}
+   function finish(error){if(ticket!==serial)return;serial++;clear(watchdog);watchdog=null;busy=false;paused=false;player.onplaying=null;player.onended=null;player.onerror=null;if(error){player.pause();enabled=false;status=String(error).replace(/minimax(?:[-\s]+M\d+(?:\.\d+)*(?:[-\s]+Flash)?)?/gi,'AI分析');}else status='播报完成。';emit();options.onIdle?.();}
    watchdog=later(()=>{request?.abort();finish('语音准备超时，下次点击会自动重试。');},65000);
    (async()=>{
     try{
@@ -32,7 +32,7 @@
      try{await player.play();}catch(e){release();throw e;}
      // Loaded audio remains valid after its object URL is revoked.
      release();
-    }catch(e){if(ticket!==serial)return;finish(e.name==='NotAllowedError'?'浏览器等待一次点击，点击页面后自动恢复声音。':e.message||'MiniMax 语音暂不可用，请重试。');}
+    }catch(e){if(ticket!==serial)return;finish(e.name==='NotAllowedError'?'浏览器等待一次点击，点击页面后自动恢复声音。':e.message||'语音暂不可用，请重试。');}
    })();return true;
   }
   function pause(){if(!busy)return;paused=true;player.pause();clear(watchdog);status='解读已暂停。';emit();}
