@@ -72,7 +72,7 @@ const noteItems: CatalogItem[] = readdirSync(notesDirectory)
     const html = readFileSync(path.join(notesDirectory, file), 'utf8');
     const title = saved?.title || html.match(/<title>([^<]+)<\/title>/i)?.[1].replace(/\s*·\s*(数字殿堂|劳伦斯在上海|劳伦斯实验室).*$/, '').trim() || file;
     const summary = saved?.summary || html.match(/<meta name="description" content="([^"]*)"/i)?.[1] || '阅读这篇创作手记。';
-    const category = saved?.category || html.match(/分类[:：]\s*([^<]+)<\/p>/i)?.[1] || html.match(/分类[:：]\s*([^<]+)/i)?.[1].replace(/\s*-->\s*$/, '').trim() || '手记';
+    const category = saved?.category || html.match(/分类[:：]\s*([^<]+)/i)?.[1].replace(/\s*-->\s*$/, '').trim() || '手记';
     return { id: file.slice(0, -5), title, href, summary, meta: `${file.slice(0, 10)} · ${category}`, icon: 'pen' };
   });
 
@@ -92,6 +92,7 @@ export const catalog: CatalogGroup[] = [
     id: 'travel', title: '城市漫游', english: 'PLACES & JOURNEYS', icon: 'compass', color: 'blue',
     description: '沿街巷、河流与历史，认识一座城市。',
     items: [...itemsFor('travel'), ...travelSeries.filter(item => item.href && !item.external && !works.some(work => work.href === item.href)).map((item, index) => ({ id: `travel-tool-${index}`, title: item.title, href: item.href, image: item.img, summary: item.sub, meta: '旅行工具', icon: 'route' }))],
+    relatedTitle: '手绘跨时空旅行 · 英伦漫记',
     related: travelSeries.filter(item => item.external).map((item, index) => ({ id: `travel-film-${index}`, title: item.title, href: item.href, image: item.img, summary: item.sub, meta: 'B站短片', icon: 'play', external: true })),
     more: { label: '旅行实验室', href: '/travel/' },
   },
