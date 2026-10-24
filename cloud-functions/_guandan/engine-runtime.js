@@ -323,9 +323,32 @@
     if(raw.notes&&typeof raw.notes==='object')for(const [key,value] of Object.entries(raw.notes)){
       if(/^\d+$/.test(key)&&+key<events.length&&typeof value==='string')notes[key]=value.slice(0,1000);
     }
-    return {id:typeof raw.id==='string'?raw.id.slice(0,100):`import-${Date.now()}`,created:typeof raw.created==='string'?raw.created.slice(0,50):new Date().toISOString(),format:'guandan-lab-record-v1',start,events,title:typeof raw.title==='string'?raw.title.slice(0,80):'导入牌局',branchOf:typeof raw.branchOf==='string'?raw.branchOf.slice(0,100):null,lessonId:typeof raw.lessonId==='string'?raw.lessonId.slice(0,60):null,notes};
+    const record={id:typeof raw.id==='string'?raw.id.slice(0,100):`import-${Date.now()}`,created:typeof raw.created==='string'?raw.created.slice(0,50):new Date().toISOString(),format:'guandan-lab-record-v1',start,events,title:typeof raw.title==='string'?raw.title.slice(0,80):'导入牌局',branchOf:typeof raw.branchOf==='string'?raw.branchOf.slice(0,100):null,lessonId:typeof raw.lessonId==='string'?raw.lessonId.slice(0,60):null,notes};
+    if(raw.perspective!==undefined){
+      const p=raw.perspective;
+      if(!p||!record.branchOf||typeof p.rootId!=='string'||!p.rootId||![0,1,2,3].includes(p.offset)||!Number.isInteger(p.atStep)||p.atStep<0||p.atStep>events.length)throw Error('换座记录的来源或接手步骤不合法');
+      record.perspective={rootId:p.rootId.slice(0,100),offset:p.offset,atStep:p.atStep};
+    }
+    return record;
   }
-  const API={VERSION,STRATEGY_VERSION,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone};
+  // Rotate coordinates, never swap individual cards or change action order.
+  function rotateStart(start,seat){return makeStart([0,1,2,3].map(p=>start.hands[(p+seat)%4]),start.level,(start.lead-seat+4)%4,start.seed,start.kind);}
+  function sourceStart(record){return rotateStart(record.start,(4-(record.perspective?.offset||0))%4);}
+  function rotateRecord(raw,seat,step,id){
+    const parent=importRecord(raw);
+    if(![0,1,2,3].includes(seat)||!Number.isInteger(step)||step<0||step>parent.events.length||typeof id!=='string'||!id||id===parent.id)throw Error('请选择有效座位和复盘步骤');
+    const state=replay(parent.start,parent.events.slice(0,step)).at(-1);
+    if(state.over||!state.hands[seat].length)throw Error('这个位置已结束，请改为从头重打');
+    const events=clone(parent.events.slice(0,step));
+    for(const action of events){
+      action.seat=(action.seat-seat+4)%4;
+      // Old model prose uses the old coordinates; the original remains in its archive.
+      if(seat&&action.decision){delete action.decision.teamwork;delete action.decision.nextPlan;action.decision.reason='沿用原局动作；原方位的说明请返回原局查看。';}
+    }
+    return importRecord({...parent,id,created:new Date().toISOString(),start:rotateStart(parent.start,seat),events,notes:{},branchOf:parent.id,
+      perspective:{rootId:parent.perspective?.rootId||parent.id,offset:((parent.perspective?.offset||0)+seat)%4,atStep:step}});
+  }
+  const API={VERSION,STRATEGY_VERSION,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
   root.Guandan=API;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -24,7 +24,8 @@
   const save=()=>{try{storage.setItem(KEY,JSON.stringify(data));return true;}catch{return false;}};
   function ingest(result,source){if(result.version!=='guandan-review-v7'||!source.gameId)return 0;let added=0;
    for(const x of result.experiences||[]){if(!Object.hasOwn(principles,x?.principle)||!validScenario(x.scenario)||!Number.isInteger(x.step)||x.step<1||![0,1,2,3].includes(x.seat))continue;
-    const id=[source.gameId,x.seat,x.step,x.principle].join(':');if(data.entries.some(e=>e.id===id))continue;
+    const sourceSeat=(x.seat+([0,1,2,3].includes(source.seatOffset)?source.seatOffset:0))%4;
+    const id=[source.gameId,sourceSeat,x.step,x.principle].join(':');if(data.entries.some(e=>e.id===id))continue;
     data.entries.push({...x,id,gameId:source.gameId,recordId:source.recordId,reference:result.reference,createdAt:result.createdAt});added++;
    }data.entries=data.entries.slice(-200);save();return added;
   }
