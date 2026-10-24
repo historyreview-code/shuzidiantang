@@ -29,7 +29,7 @@ export interface CatalogGroup {
 
 // 新作品默认进入数字探索，避免更新内容时因漏填分类而消失。
 const groups: Record<string, string[]> = {
-  media: ['don-quixote-podcast', 'math-beauty-astra', 'babylon-tower', 'single-bit-error', 'droplet', 'math-beauty', 'electricity', 'autumn-train'],
+  media: ['don-quixote-podcast', 'math-beauty-astra', 'babylon-tower', 'single-bit-error', 'droplet', 'electricity', 'autumn-train'],
   travel: ['york-wander', 'cambridge-wander', 'glasgow-wander', 'harbin-wander', 'edinburgh-wander', 'kyoto-wander'],
   research: ['jilin-shipyards', 'shamanism', 'huanghe', 'shanghai-time-map'],
   tools: ['guandan', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games'],
@@ -45,7 +45,7 @@ const toItem = (work: (typeof works)[number]): CatalogItem => ({
   summary: work.summary, meta: work.eyebrow, icon: icons[work.id] || (categoryFor(work.id) === 'travel' ? 'compass' : categoryFor(work.id) === 'research' ? 'map' : 'play'),
   external: work.external, github: work.github,
 });
-const retiredWorks = new Set(['math-beauty', 'clay', 'dataism']);
+const retiredWorks = new Set(['clay', 'dataism']);
 const itemsFor = (category: string) => works.filter(work => !retiredWorks.has(work.id) && categoryFor(work.id) === category).map(toItem);
 const libertyItem: CatalogItem = {
   id: 'liberty',

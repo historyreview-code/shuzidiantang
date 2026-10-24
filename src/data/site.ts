@@ -181,16 +181,6 @@ export const works = [
     status: '影像新作',
   },
   {
-    id: 'math-beauty',
-    title: '数学之美',
-    eyebrow: '创意编程 · 数学短片',
-    href: '/films/math-beauty/',
-    image: '/films/math-beauty/cover.webp',
-    summary: '从一个点出发，走过比例、素数、傅里叶、分形与欧拉恒等式。48 秒竖屏短片，画面与配乐全部由代码生成。',
-    tags: ['48 秒', '生成艺术', 'DeepSeek Flash 1017'],
-    status: '影像新作',
-  },
-  {
     id: 'electricity',
     title: '电 · 从琥珀到星火',
     eyebrow: '科学史动画 · 创意编程',

@@ -1,1 +1,18 @@
-{"cloudFunctions":{"maxDuration":120,"mainlandRegions":["ap-shanghai"],"overseasRegions":["ap-hongkong"]}}
+{
+  "cloudFunctions": {
+    "maxDuration": 120,
+    "mainlandRegions": [
+      "ap-shanghai"
+    ],
+    "overseasRegions": [
+      "ap-hongkong"
+    ]
+  },
+  "redirects": [
+    {
+      "source": "/podcasts/2026-10-19-news/morning-brief.wav",
+      "destination": "/podcasts/2026-10-19-news/morning-brief.mp3",
+      "statusCode": 301
+    }
+  ]
+}
