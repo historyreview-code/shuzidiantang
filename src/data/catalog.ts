@@ -35,7 +35,7 @@ const groups: Record<string, string[]> = {
   tools: ['cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games'],
 };
 const icons: Record<string, string> = {
-  earth: 'globe', clay: 'cube', dataism: 'spark', 'seaside-delivery': 'route', 'fireworks-player': 'wave', mindverse: 'book',
+  earth: 'globe', liberty: 'cube', clay: 'cube', dataism: 'spark', 'seaside-delivery': 'route', 'fireworks-player': 'wave', mindverse: 'book',
   'don-quixote-podcast': 'headphones', 'math-beauty-astra': 'spark', electricity: 'bolt', 'autumn-train': 'route',
   cad: 'layers', naoliceshi: 'grid', 'mini-games': 'game', 'fireworks-kaleidoscope': 'spark', 'retro-kaleidoscope': 'spark',
 };
@@ -47,6 +47,15 @@ const toItem = (work: (typeof works)[number]): CatalogItem => ({
 });
 const retiredWorks = new Set(['math-beauty', 'clay', 'dataism']);
 const itemsFor = (category: string) => works.filter(work => !retiredWorks.has(work.id) && categoryFor(work.id) === category).map(toItem);
+const libertyItem: CatalogItem = {
+  id: 'liberty',
+  title: '自由女神像',
+  href: '/liberty/',
+  image: '/liberty/cover.svg',
+  summary: '以轻量交互 3D 呈现冠冕、火炬、书板、铜绿长袍与石质底座，支持旋转和缩放。',
+  meta: '交互 3D · 轻量低多边形版',
+  icon: 'cube',
+};
 const reportItems: CatalogItem[] = research.map(report => ({
   id: report.slug, title: report.title, href: report.href,
   image: report.coverImage, summary: report.subtitle,
@@ -61,7 +70,7 @@ const noteItems: CatalogItem[] = readdirSync(notesDirectory)
     const href = `/notes/${file}`;
     const saved = notes.find(note => note.href === href);
     const html = readFileSync(path.join(notesDirectory, file), 'utf8');
-    const title = saved?.title || html.match(/<title>([^<]+)<\/title>/i)?.[1].replace(/\s*·\s*(数字殿堂|劳伦斯实验室).*$/, '').trim() || file;
+    const title = saved?.title || html.match(/<title>([^<]+)<\/title>/i)?.[1].replace(/\s*·\s*(数字殿堂|劳伦斯在上海|劳伦斯实验室).*$/, '').trim() || file;
     const summary = saved?.summary || html.match(/<meta name="description" content="([^"]*)"/i)?.[1] || '阅读这篇创作手记。';
     const category = saved?.category || html.match(/分类[:：]\s*([^<]+)/)?.[1].replace(/\s*-->\s*$/, '').trim() || '手记';
     return { id: file.slice(0, -5), title, href, summary, meta: `${file.slice(0, 10)} · ${category}`, icon: 'pen' };
@@ -70,7 +79,7 @@ const noteItems: CatalogItem[] = readdirSync(notesDirectory)
 export const catalog: CatalogGroup[] = [
   {
     id: 'explore', title: '数字探索', english: 'DIGITAL EXPLORATIONS', icon: 'globe', color: 'green',
-    description: '转动地球、走进微缩世界，看看代码还能变成什么。', items: itemsFor('explore'),
+    description: '转动地球、走进微缩世界，看看代码还能变成什么。', items: [libertyItem, ...itemsFor('explore')],
   },
   {
     id: 'media', title: '影像与播客', english: 'FILM & SOUND', icon: 'headphones', color: 'terracotta',
