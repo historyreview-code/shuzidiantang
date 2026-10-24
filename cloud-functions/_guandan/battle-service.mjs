@@ -1,6 +1,6 @@
 import G from './engine.mjs';
 import {ReviewError} from './review-context.mjs';
-import {sha,readBody} from './review-service.mjs';
+import {sha,readBody,sameOrigin,randomId} from './review-service.mjs';
 export const BATTLE_VERSION='guandan-battle-v3';
 export const BATTLE_MODEL='MiniMax-M3.1-Flash',BATTLE_ENDPOINT='https://api.minimaxi.com/v1/chat/completions';
 const names=['你','下家','搭档','上家'];
@@ -14,7 +14,7 @@ export function prepareBattle(input){
  all.filter(x=>x.finish).forEach(add);add(all.find(x=>!x.move));all.slice(0,6).forEach(add);
  for(const type of Object.keys(G.TYPES)){
   const options=all.filter(x=>x.move?.type===type);add(options[0]);
-  if(['single','pair','bomb','flush'].includes(type)){add(options.toSorted((a,b)=>a.move.power-b.move.power)[0]);add(options.toSorted((a,b)=>b.move.power-a.move.power)[0]);}
+  if(['single','pair','bomb','flush'].includes(type)){add(options.slice().sort((a,b)=>a.move.power-b.move.power)[0]);add(options.slice().sort((a,b)=>b.move.power-a.move.power)[0]);}
  }
  const candidates=chosen.slice(0,20),partner=(o.seat+2)%4;
  const context={version:BATTLE_VERSION,seat:o.seat,seatName:names[o.seat],partner,partnerName:names[partner],counts:o.counts,countsOrder:names,teamSignal:{partnerCount:o.counts[partner],opponentSeats:[(o.seat+1)%4,(o.seat+3)%4],objective:'与真实对家合作争头游和双下，控牌要考虑搭档能否接手'},level:G.rankName(o.level),hand:o.hand.map(G.name),table:o.trick?{seat:o.trick.seat,...describe(o.trick.move)}:null,finish:o.finish,
@@ -46,15 +46,15 @@ export async function handleBattle(request,env,{repository,fetcher=fetch}={}){
  try{
   if(request.method==='GET')return json({configured:!!env.MINIMAX_API_KEY&&!!repository,model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL,version:BATTLE_VERSION});
   if(request.method!=='POST')return json({error:'不支持此方法。'},405);
-  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin||request.headers.get('sec-fetch-site')==='cross-site')throw new ReviewError('请从本站开始对战。',403);
+  if(!sameOrigin(request,env))throw new ReviewError('请从本站开始对战。',403);
   if(!env.MINIMAX_API_KEY||!repository)throw new ReviewError('AI 对战尚未就绪。',503);
   const prepared=prepareBattle(await readBody(request)),key='battle:'+await sha(JSON.stringify({model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL,effort:env.MINIMAX_BATTLE_EFFORT||'medium',context:prepared.context}));
   const existing=await repository.get(key);if(existing?.status==='done')return json({...JSON.parse(existing.payload),cached:true});
-  const nonce=crypto.randomUUID(),now=Date.now(),day=new Date(now+8*3600000).toISOString().slice(0,10);
+  const nonce=randomId(),now=Date.now(),day=new Date(now+8*3600000).toISOString().slice(0,10);
   const claim=await repository.reserve({key,nonce,now,day,visitor:'battle',cap:null});
   if(claim==='cached'){const saved=await repository.get(key);return json({...JSON.parse(saved.payload),cached:true});}
   if(claim!=='reserved')throw new ReviewError('这个局面的 AI 决策仍在生成。',409);
   try{const result={...await callBattle(prepared,env,fetcher),version:BATTLE_VERSION,step:prepared.state.step,createdAt:new Date().toISOString()};await repository.complete(key,nonce,result);return json({...result,cached:false});}
   catch(error){await repository.fail(key,nonce);throw error;}
- }catch(error){return json({error:error instanceof ReviewError?error.message:'AI 对战暂不可用。'},error instanceof ReviewError?error.status:503);}
+ }catch(error){return json({error:error instanceof ReviewError?error.message:'AI 对战暂不可用。',code:error instanceof ReviewError?'BATTLE_REQUEST':`BATTLE_${['ReferenceError','TypeError','PagesBlobError','MissingEnvironmentError'].includes(error?.name)?error.name:'SERVICE'}`},error instanceof ReviewError?error.status:503);}
 }

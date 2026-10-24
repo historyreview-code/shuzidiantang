@@ -1,10 +1,20 @@
+import {webcrypto,randomUUID} from 'node:crypto';
 import {prepareReview,parseReview,SYSTEM_PROMPT,ReviewError,REVIEW_VERSION} from './review-context.mjs';
+export const runtimeCrypto=globalThis.crypto||webcrypto;
+export const randomId=randomUUID;
 export const ENDPOINT='https://api.minimax.cn/v1/chat/completions';
 export const MODEL='MiniMax-M2.5';
 export const MAX_BODY=350000,MAX_COMPLETION_TOKENS=8192;
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
-export const sha=async s=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))),x=>x.toString(16).padStart(2,'0')).join('');
+export const sha=async s=>Array.from(new Uint8Array(await runtimeCrypto.subtle.digest('SHA-256',new TextEncoder().encode(s))),x=>x.toString(16).padStart(2,'0')).join('');
 export function limits(env){if(env.AI_UNLIMITED==='true')return null;const n=(v,d,max)=>Math.min(max,Math.max(1,Math.floor(Number(v)||d)));return {daily:n(env.AI_DAILY_LIMIT,50,100),visitor:n(env.AI_VISITOR_DAILY_LIMIT,15,20)};}
+export function sameOrigin(request,env={}){
+  const origin=request.headers.get('origin');
+  if(request.headers.get('sec-fetch-site')==='cross-site')return false;
+  if(!origin||origin===new URL(request.url).origin)return true;
+  // Some reverse proxies expose an internal origin in request.url. Only server-configured public origins are trusted.
+  return String(env.PUBLIC_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean).includes(origin);
+}
 export async function readBody(request){
   if(!request.headers.get('content-type')?.startsWith('application/json'))throw new ReviewError('需要 JSON 格式的牌谱。',415);
   if(Number(request.headers.get('content-length'))>MAX_BODY)throw new ReviewError('牌谱超过请求上限。',413);
@@ -43,8 +53,7 @@ export async function handleReview(request,env,{repository,fetcher=fetch}={}){
     const cap=limits(env);
     if(request.method==='GET')return json({configured:!!env.MINIMAX_API_KEY&&!!repository,model:env.MINIMAX_MODEL||MODEL,limits:cap,unlimited:cap===null});
     if(request.method!=='POST')return json({error:'不支持此方法。'},405);
-    const origin=request.headers.get('origin'),url=new URL(request.url);
-    if((origin&&origin!==url.origin)||request.headers.get('sec-fetch-site')==='cross-site')throw new ReviewError('请从本站发起点评。',403);
+    if(!sameOrigin(request,env))throw new ReviewError('请从本站发起点评。',403);
     if(!env.MINIMAX_API_KEY||!repository)throw new ReviewError('AI 点评尚未配置完成，当前仍可使用本地规则复盘。',503);
     const input=await readBody(request),context=prepareReview(input),model=env.MINIMAX_MODEL||MODEL;
     const key=await sha(JSON.stringify({model,context}));
@@ -52,7 +61,7 @@ export async function handleReview(request,env,{repository,fetcher=fetch}={}){
     if(existing?.status==='done')return json({...JSON.parse(existing.payload),cached:true});
     const now=Date.now(),day=new Date(now+8*3600000).toISOString().slice(0,10);
     const visitor=await sha(`${env.MINIMAX_API_KEY}:${day}:${request.headers.get('cf-connecting-ip')||'unknown'}`);
-    const nonce=crypto.randomUUID();
+    const nonce=randomId();
     const reservation=await repository.reserve({key,day,visitor,nonce,now,cap});
     if(reservation==='cached'){const done=await repository.get(key);return json({...JSON.parse(done.payload),cached:true});}
     if(reservation==='pending')throw new ReviewError('这份点评正在生成，请稍后再点击；重复请求不会再次调用模型。',409);

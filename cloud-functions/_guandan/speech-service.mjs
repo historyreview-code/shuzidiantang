@@ -1,5 +1,5 @@
 import './speech-runtime.js';
-import {sha,limits} from './review-service.mjs';
+import {sha,limits,sameOrigin,randomId} from './review-service.mjs';
 import {ReviewError} from './review-context.mjs';
 const S=globalThis.GuandanSpeech;
 export const VOICE='Chinese (Mandarin)_Reliable_Executive',VOICE_NAME='沉稳高管',SPEECH_MODEL='speech-2.8-hd';
@@ -35,7 +35,7 @@ export async function handleSpeech(request,env,{repository,bucket=env.BUCKET,fet
  try{
   if(request.method==='GET')return json({configured:!!env.MINIMAX_API_KEY&&!!bucket&&!!repository,voice:VOICE_NAME,model:SPEECH_MODEL});
   if(request.method!=='POST')return json({error:'不支持此方法。'},405);
-  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin||request.headers.get('sec-fetch-site')==='cross-site')throw new ReviewError('请从本站播放语音。',403);
+  if(!sameOrigin(request,env))throw new ReviewError('请从本站播放语音。',403);
   if(!request.headers.get('content-type')?.startsWith('application/json'))throw new ReviewError('需要 JSON 请求。',415);
   if(!env.MINIMAX_API_KEY||!bucket||!repository)throw new ReviewError('MiniMax 语音尚未就绪。',503);
   if(Number(request.headers.get('content-length'))>4096)throw new ReviewError('播报请求过长。',413);
@@ -51,7 +51,7 @@ export async function handleSpeech(request,env,{repository,bucket=env.BUCKET,fet
   }else if(input.kind==='table')text=tableText(input.text);else throw new ReviewError('未知播报类型。');
   const key=await sha(`voice-v1:${SPEECH_MODEL}:${VOICE}:${text}`),objectKey='voice/'+key+'.mp3';
   const cached=await bucket.get(objectKey);if(cached)return audio(cached.body,true);
-  const now=Date.now(),day=new Date(now+8*3600000).toISOString().slice(0,10),nonce=crypto.randomUUID();
+  const now=Date.now(),day=new Date(now+8*3600000).toISOString().slice(0,10),nonce=randomId();
   const visitor=await sha(`${env.MINIMAX_API_KEY}:speech:${day}:${request.headers.get('cf-connecting-ip')||'unknown'}`);
   const isReview=input.kind==='review',cost=isReview?1:text.length,cap=env.AI_UNLIMITED==='true'?null:isReview?limits(env):{daily:20000,visitor:5000};
   const claim=await repository.reserve({key:'voice:'+key,day,visitor,nonce,now,cap,cost,scope:isReview?'voice-review':'voice-table'});

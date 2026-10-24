@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      skip_prebuild:
+        description: 'Use EdgeOne Git build directly for a source-only fix'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -16,6 +21,7 @@ concurrency:
 
 jobs:
   assemble:
+    if: github.event.inputs.skip_prebuild != 'true'
     name: 组装全站
     runs-on: ubuntu-latest
     steps:
@@ -60,6 +66,7 @@ jobs:
           retention-days: 7
 
   deploy:
+    if: always() && (needs.assemble.result == 'success' || needs.assemble.result == 'skipped')
     name: 部署 EdgeOne Pages
     needs: assemble
     runs-on: ubuntu-latest
