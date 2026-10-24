@@ -1,5 +1,5 @@
 import './speech-runtime.js';
-import {sha,limits,sameOrigin,randomId} from './review-service.mjs';
+import {sha,limits,sameOrigin,randomId,readBody} from './review-service.mjs';
 import {ReviewError} from './review-context.mjs';
 const S=globalThis.GuandanSpeech;
 export const VOICE='Chinese (Mandarin)_Reliable_Executive',VOICE_NAME='沉稳高管',SPEECH_MODEL='speech-2.8-hd';
@@ -38,11 +38,7 @@ export async function handleSpeech(request,env,{repository,bucket=env.BUCKET,fet
   if(!sameOrigin(request,env))throw new ReviewError('请从本站播放语音。',403);
   if(!request.headers.get('content-type')?.startsWith('application/json'))throw new ReviewError('需要 JSON 请求。',415);
   if(!env.MINIMAX_API_KEY||!bucket||!repository)throw new ReviewError('MiniMax 语音尚未就绪。',503);
-  if(Number(request.headers.get('content-length'))>4096)throw new ReviewError('播报请求过长。',413);
-  const reader=request.body?.getReader();if(!reader)throw new ReviewError('缺少播报内容。');let size=0;const chunks=[];
-  while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();throw new ReviewError('播报请求过长。',413);}chunks.push(value);}
-  const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
-  let input;try{input=JSON.parse(new TextDecoder().decode(bytes));}catch{throw new ReviewError('播报请求格式不正确。');}
+  const input=await readBody(request,4096);
   let text;
   if(input.kind==='review'){
    if(!/^[a-f0-9]{64}$/.test(input.reference||''))throw new ReviewError('点评编号无效。');

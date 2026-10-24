@@ -15,14 +15,20 @@ export function sameOrigin(request,env={}){
   // Some reverse proxies expose an internal origin in request.url. Only server-configured public origins are trusted.
   return String(env.PUBLIC_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean).includes(origin);
 }
-export async function readBody(request){
-  if(!request.headers.get('content-type')?.startsWith('application/json'))throw new ReviewError('需要 JSON 格式的牌谱。',415);
-  if(Number(request.headers.get('content-length'))>MAX_BODY)throw new ReviewError('牌谱超过请求上限。',413);
-  const reader=request.body?.getReader();if(!reader)throw new ReviewError('缺少牌谱。');
-  const chunks=[];let length=0;
-  while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>MAX_BODY){await reader.cancel();throw new ReviewError('牌谱超过请求上限。',413);}chunks.push(value);}
-  const all=new Uint8Array(length);let pos=0;for(const b of chunks){all.set(b,pos);pos+=b.length;}
-  try{return JSON.parse(new TextDecoder().decode(all));}catch{throw new ReviewError('牌谱 JSON 无法解析。');}
+export async function readBody(request,max=MAX_BODY){
+  if(!request.headers.get('content-type')?.startsWith('application/json'))throw new ReviewError('需要 JSON 格式的请求。',415);
+  if(Number(request.headers.get('content-length'))>max)throw new ReviewError('请求超过大小上限。',413);
+  async function* chunks(){
+    if(typeof request.body?.getReader==='function'){
+      const reader=request.body.getReader();try{while(true){const part=await reader.read();if(part.done)break;yield part.value;}}finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
+    }else if(request.body?.[Symbol.asyncIterator]){yield* request.body;}
+    else if(typeof request.arrayBuffer==='function'){yield new Uint8Array(await request.arrayBuffer());}
+    else throw new ReviewError('缺少请求内容。');
+  }
+  const parts=[];let length=0;
+  for await(const chunk of chunks()){const value=typeof chunk==='string'?new TextEncoder().encode(chunk):new Uint8Array(chunk);length+=value.length;if(length>max)throw new ReviewError('请求超过大小上限。',413);parts.push(value);}
+  const all=new Uint8Array(length);let pos=0;for(const value of parts){all.set(value,pos);pos+=value.length;}
+  try{return JSON.parse(new TextDecoder().decode(all));}catch{throw new ReviewError('请求 JSON 无法解析。');}
 }
 export async function callMiniMax(context,env,fetcher=fetch){
   const usage={inputTokens:0,outputTokens:0};
