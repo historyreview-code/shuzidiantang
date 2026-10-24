@@ -40,9 +40,9 @@ export const site = {
 // 作品内容源；分类与图标由 catalog.ts 统一组织。
 export const works = [
   {
-    id: 'guandan', title: '掼蛋研习室', eyebrow: '实战训练 · 逐步复盘',
+    id: 'guandan', title: '阿尔法掼蛋狗', eyebrow: '实战训练 · 逐步复盘',
     href: '/games/guandan/', image: '/games/guandan/cover.svg',
-    summary: '先理好一手牌，再练结构取舍与搭档配合。支持自定分组、同花顺发现、真实牌局回放、MiniMax 点评与稳重男声解读。',
+    summary: '在清爽牌桌上练整手规划与搭档配合。自由理牌、快速出牌、可选智能对战，结合真实牌谱的 AI 分析与语音解读。',
     tags: ['理牌练习', '分支复盘', '语音教练'], status: '在线体验',
   },
   {

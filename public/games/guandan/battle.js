@@ -1,6 +1,6 @@
 (function(root){
  'use strict';
- function create({fetcher=(...args)=>fetch(...args),onChange=()=>{},timeout=55000}={}){
+ function create({fetcher=(...args)=>fetch(...args),onChange=()=>{},experiences=()=>[],timeout=26000}={}){
   let active=null,serial=0;
   function cancel(){serial++;active?.controller.abort();active=null;}
   function ready(key){return active?.key===key&&active.result?active.result:null;}
@@ -13,7 +13,7 @@
    try{
     const base=root.document?.querySelector('meta[name="guandan-api-base"]')?.content||'/api';
     const clean={format:record.format,start:record.start,events:record.events.map(a=>a.kind==='pass'?{seat:a.seat,kind:a.kind}:{seat:a.seat,kind:a.kind,move:a.move})};
-    const response=await fetcher(base+'/battle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({record:clean}),signal:controller.signal});
+    const response=await fetcher(base+'/battle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({record:clean,experiences:experiences()}),signal:controller.signal});
     const data=await response.json();
     if(!response.ok||!data.action||!['minimax','rules'].includes(data.source))throw Error(data.error||'AI 决策暂不可用。');
     result=data;
@@ -24,5 +24,12 @@
   }
   return {cancel,ready,pending,request};
  }
- const api={create};root.GuandanBattle=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+ function createTurnClock({now=Date.now,limit=30000}={}){
+  let active=null;
+  function sync(key,enabled){if(!enabled){active=null;return;}if(active?.key!==key)active={key,deadline:now()+limit,fired:false};}
+  function remaining(){return active?Math.max(0,Math.ceil((active.deadline-now())/1000)):null;}
+  function tick(onTimeout){if(active&&!active.fired&&now()>=active.deadline){active.fired=true;onTimeout();}}
+  return {sync,remaining,tick};
+ }
+ const api={create,createTurnClock};root.GuandanBattle=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -175,7 +175,7 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-structure-v2';
+  const STRATEGY_VERSION='team-plan-v4';
   function planner(hand,moves) {
     const index=new Map(hand.map((c,i)=>[c.id,i])),full=(1<<hand.length)-1;
     const masks=[...new Set(moves.map(m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0)))].sort((a,b)=>pop(b)-pop(a)||a-b);
@@ -200,16 +200,49 @@
     const unseenCounts=structure(unseen,o.level),wildCount=unseenCounts.wilds;
     const higherCount=m=>unseen.filter(c=>power(c.r,o.level)>m.power).length;
     const sameTypeSafe=m=>m.type==='single'?higherCount(m)===0:m.type==='pair'?!Object.entries(unseenCounts.counts).some(([r,n])=>power(+r,o.level)>m.power&&n+(+r<16?wildCount:0)>=2):false;
+    const canAssemble=req=>req.reduce((missing,[r,n,suit])=>missing+Math.max(0,n-(suit?unseen.filter(c=>!wild(c,o.level)&&c.r===r&&c.s===suit).length:(unseenCounts.counts[r]||0))),0)<=wildCount&&req.every(([r,n])=>r<16||(unseenCounts.counts[r]||0)>=n);
+    const ordinarySafe=m=>{
+      if(['single','pair'].includes(m.type))return sameTypeSafe(m);
+      if(['triple','full'].includes(m.type))return !Array.from({length:13},(_,i)=>i+2).some(r=>power(r,o.level)>m.power&&(m.type==='triple'?canAssemble([[r,3]]):Array.from({length:16},(_,i)=>i+2).filter(q=>q!==15&&q!==r).some(q=>canAssemble([[r,3],[q,2]]))));
+      const seq=m.type==='straight'?[5,1]:m.type==='pairs'?[3,2]:m.type==='triples'?[2,3]:null;
+      return seq?!sequences(seq[0]).some(rs=>rs.at(-1)>m.power&&canAssemble(rs.map(r=>[r,seq[1]]))):false;
+    };
+    const enemyCapacity=Math.max(0,...opponents.map(x=>x.count));let unseenBombTier=0,unseenFlushPower=0;
+    if(enemyCapacity>=4){
+      for(let r=2;r<=14;r++){const n=Math.min(enemyCapacity,(unseenCounts.counts[r]||0)+wildCount);if(n>=4)unseenBombTier=Math.max(unseenBombTier,bombTier({type:'bomb',ids:Array(n),power:power(r,o.level)}));}
+      if(enemyCapacity>=5)for(const suit of SUITS)for(const rs of sequences(5))if(canAssemble(rs.map(r=>[r,1,suit]))){unseenBombTier=Math.max(unseenBombTier,550);unseenFlushPower=Math.max(unseenFlushPower,rs.at(-1));}
+      if(unseen.filter(c=>c.r>=16).length===4)unseenBombTier=10000;
+    }
+    const phase=opponents.some(x=>x.count<=5)||o.hand.length<=8||o.counts[partner]<=5?'残局':'中前盘';
+    const teamObjective=!o.finish.length?'争取头游并兼顾搭档':o.finish[0]%2===o.seat%2?'己方已获头游，争双下或三游':'对方已获头游，争二三游，避免被双下';
+    const support=o.counts[partner]>0&&o.counts[partner]<=5&&o.hand.length>o.counts[partner]+3;
     const tableVulnerable=teamLead&&((o.trick.move.type==='single'&&singleDanger)||(o.trick.move.type==='pair'&&pairDanger))&&!sameTypeSafe(o.trick.move);
     const plan=planner(o.hand,pool),beforeTurns=plan.turns(plan.full),flushes=pool.filter(m=>m.type==='flush');
+    const bombOptions=pool.filter(m=>bombTier(m)>0).map(m=>({move:m,mask:plan.mask(m),wilds:m.ids.filter(id=>wild(INDEX[id],o.level)).length})).sort((a,b)=>a.wilds-b.wilds||bombTier(b.move)-bombTier(a.move));
+    const reserves=new Map();
+    const reserve=mask=>{if(reserves.has(mask))return reserves.get(mask);let left=mask;const chosen=[];let strongest=0;
+      for(const x of bombOptions)if((mask&x.mask)===x.mask)strongest=Math.max(strongest,bombTier(x.move));
+      for(const x of bombOptions)if((left&x.mask)===x.mask){chosen.push(x.move);left^=x.mask;}
+      const result={count:chosen.length,strongest,combinations:chosen.slice(0,3).map(describe)};reserves.set(mask,result);return result;
+    };
+    const beforeReserve=reserve(plan.full);
     const scored=moves.map(m=>{
       const remaining=o.hand.filter(c=>!m.ids.includes(c.id)),after=structure(remaining,o.level),finish=!remaining.length;
       const isBomb=bombTier(m)>0,usedWild=m.ids.filter(id=>wild(INDEX[id],o.level)).length;
       let breakBomb=0,breakGroup=0;
       for(const [r,n]of Object.entries(before.counts)){const left=after.counts[r]||0;if(n>=4&&left>0&&left<n)breakBomb++;if(n>=2&&left===1)breakGroup++;}
-      const remainingMask=plan.full^plan.mask(m),remainingTurns=plan.turns(remainingMask),safe=sameTypeSafe(m);
+      const remainingMask=plan.full^plan.mask(m),remainingTurns=plan.turns(remainingMask),safe=ordinarySafe(m),afterReserve=reserve(remainingMask);
+      const provenControl=isBomb?bombTier(m)>=unseenBombTier&&(m.type!=='flush'||m.power>=unseenFlushPower):safe&&unseenBombTier===0;
+      const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
       let score=18*(beforeTurns-remainingTurns)+m.ids.length*1.5-m.power*.35-usedWild*3-breakBomb*15-breakGroup*4-(isBomb?19:0)-(breakFlush?16:0);
+      score-=lostReserve*20;
+      if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=14;
+      if(controlExit)score+=75;
+      if(!finish&&isBomb&&!danger&&!controlExit)score-=support?18:8;
+      if(support&&!teamLead&&o.trick&&isBomb&&danger)score+=24;
+      if(!o.trick&&singleDanger&&m.type==='single'&&!controlExit&&!finish)score-=38;
+      if(!o.trick&&pairDanger&&m.type==='pair'&&!controlExit&&!finish)score-=22;
       if(o.trick)score+=5;
       if(teamLead)score-=90;
       if(!o.trick&&safe)score-=8; // Save a control card until it can release a weak remainder.
@@ -219,7 +252,7 @@
       if(pairDanger&&m.type==='pair')score+=m.power*2;
       if(tableVulnerable){score+=isBomb?95:145;if(m.type==='single'||m.type==='pair')score+=m.power*4;}
       const feed=!o.trick&&!danger&&o.counts[partner]===m.ids.length&&['single','pair'].includes(m.type)&&m.power<=10;
-      if(feed)score+=30-m.power;
+      if(feed)score+=50-m.power*2;
       if(teamLead&&o.counts[partner]===0&&!finish)score-=40;
       if(finish)score+=10000;
       const facts=[`打出 ${m.ids.length} 张，剩 ${remaining.length} 张。`],reasons=[];
@@ -228,13 +261,21 @@
       else if(teamLead&&!finish)reasons.push(o.counts[partner]===0?'搭档已走完，若全员过牌可借风给你；避免无谓接管。':'搭档正在控牌，通常让其继续领出，除非你能直接走完或有明确拦截需要。');
       if(feed)reasons.push(`搭档只剩 ${o.counts[partner]} 张，低${m.type==='single'?'单张':'对子'}可试着交棒；其具体牌点${m.type==='pair'?'和是否成对':''}仍未知。`);
       if(singleDanger&&m.type==='single'&&!finish)reasons.push('对手报单，单张跟牌优先提高拦截强度，避免继续放出小单。');
-      if(safe)reasons.push('按已见牌，未见牌中没有更大的同类单张或对子；仍可能被炸弹压制。');
+      if(safe)reasons.push('按已见牌，未见牌中没有更大的同型组合；仍可能被炸弹压制。');
       if(!finish)reasons.push(`按当前候选组合估算，余牌约可分 ${remainingTurns} 手；这是有限结构搜索，不保证最少手数，也不保证能连续出完。`);
       if(breakBomb||breakFlush)reasons.push(`会拆开${breakBomb?'同点炸弹':''}${breakBomb&&breakFlush?'或':''}${breakFlush?'同花顺':''}结构，需要用控牌或收尾收益补偿。`);
+      if(lostReserve&&!breakBomb&&!breakFlush)reasons.push('这手会占用组炸弹所需的配牌或牌张，降低后续控牌储备。');
+      if(controlExit)reasons.push('按已知牌保守检查，对手无法压过本手，且余牌有一手出完的组合；优先比较这条收尾路线。');
+      if(!finish&&isBomb&&!danger&&!controlExit)reasons.push('当前没有紧急拦截或明确收尾收益，交出炸弹会损失一次跨牌型夺权机会。');
       if(usedWild)reasons.push(`使用 ${usedWild} 张配牌，减少后续调整余地。`);
-      return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,usedWild,remainingTurns};
+      const lastMove=remainingTurns===1?pool.find(x=>plan.mask(x)===remainingMask):null;
+      const strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:remainingTurns,turnsSaved:beforeTurns-remainingTurns,bombsBefore:beforeReserve.count,bombsAfter:afterReserve.count,bombPlan:afterReserve.combinations,strongestBombBefore:beforeReserve.strongest,strongestBombAfter:afterReserve.strongest,lostBombReserve:lostReserve,breakBomb,breakFlush,usedWild,provenControl,controlExit,finishMove:lastMove?describe(lastMove):null,
+        opponentThreat:opponents.filter(x=>x.count<=5),teamPlan:teamLead?'搭档控牌时让牌；只有收尾或明确拦截风险才接管。':feed?'先以低点同型牌试着交棒，搭档的具体牌型和点数仍未知。':support?'自己保留拦截牌，优先保护搭档先走。':'比较自己收尾路线与队友接手机会，不只看本手出牌张数。',
+        nextPlan:lastMove?`余牌可出${describe(lastMove)}；${provenControl?'本手对对手有保守控牌依据。':'须先重新取得出牌权，不能假定连续领出。'}`:`余牌约 ${remainingTurns} 手，保留 ${afterReserve.count} 组互不占牌的炸弹类组合，按公开行动重新评估。`};
+      return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,breakFlush,usedWild,remainingTurns,strategy};
     });
     if(o.trick)scored.push({move:null,score:teamLead?(tableVulnerable?0:75):danger?-35:0,facts:['本次不出牌，保留全部手牌。'],reasons:[tableVulnerable?'搭档当前最大，但对手报单或报双，过牌可能让其接走；比较你是否有合适的拦截牌。':teamLead?(o.counts[partner]===0?'搭档已走完，让本轮自然结束可争取借风领出。':'搭档控牌时优先让牌，保留自己的高牌与组合。'):danger?'对手接近走完，放行可能失去最后的拦截机会。':'没有迫切拦截需要时，可保留控制牌；同时承担对手继续领出的风险。'],remaining:o.hand.length,finish:false,breakBomb:0,usedWild:0,remainingTurns:beforeTurns});
+    const pass=scored.find(x=>!x.move);if(pass)pass.strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:beforeTurns,turnsSaved:0,bombsBefore:beforeReserve.count,bombsAfter:beforeReserve.count,bombPlan:beforeReserve.combinations,lostBombReserve:0,opponentThreat:opponents.filter(x=>x.count<=5),teamPlan:teamLead?'保留组合，等待搭档继续领出或借风。':'保留控制牌，但承担对手继续领出的风险。',nextPlan:'过牌不保证之后拿回牌权；继续根据公开行动和对手张数调整。'};
     return scored.sort((a,b)=>b.score-a.score||(a.move?.key||'').localeCompare(b.move?.key||''));
   }
   function choose(s,seat=s.turn) {
@@ -251,7 +292,7 @@
       detail={facts:[`打出 ${cs.length} 张，剩 ${o.hand.length-cs.length} 张。`],reasons:['这是合法选择。当前教练仅枚举部分同点牌的花色组合，不将未枚举方案判为错误。']};
     }
     const missedFinish=all.some(x=>x.finish)&&!(action.kind==='play'&&action.move.ids.length===o.hand.length);
-    return {facts:detail?.facts||[],reasons:detail?.reasons||[],alternatives:all.slice(0,3),missedFinish,tag:missedFinish?'留意出完机会':before.trick?.seat%2===o.seat%2?'搭档配合':all.some(x=>x.breakBomb)?'结构与控制':'出牌结构'};
+    return {facts:detail?.facts||[],reasons:detail?.reasons||[],alternatives:all.slice(0,5),strategy:detail?.strategy||null,missedFinish,tag:missedFinish?'留意出完机会':before.trick?.seat%2===o.seat%2?'搭档配合':all.some(x=>x.breakBomb)?'结构与控制':'出牌结构'};
   }
   function replay(start,events) {
     const states=[initial(start)];for(const action of events)states.push(apply(states[states.length-1],action));return states;

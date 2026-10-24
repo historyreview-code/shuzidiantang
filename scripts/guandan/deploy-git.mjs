@@ -12,7 +12,12 @@ const project=projects.Projects?.find(p=>p.ProjectId===projectId);
 if(project?.Name!=='shuzidiantang'||project.Provider!=='Github')throw Error('Unexpected formal project identity');
 console.log(JSON.stringify({project:project.Name,provider:project.Provider,build:project.BuildCmd,output:project.OutputDir}));
 const Env=process.env.GITHUB_REF_NAME==='main'?'Production':'Preview';
-const created=await call('CreatePagesDeployment',{ProjectId:projectId,ViaMeta:'Api',Provider:'Github',Env,RepoBranch:process.env.GITHUB_REF_NAME,RepoCommitHash:process.env.GITHUB_SHA});
+const recent=await call('DescribePagesDeployments',{ProjectId:projectId,Limit:30,Offset:0});
+console.log(JSON.stringify({recentDeployments:recent.Deployments?.map(d=>({id:d.DeploymentId,status:d.Status,env:d.Env,production:d.UsedInProd,commit:d.RepoCommitHash,created:d.CreatedOn}))}));
+// Source-only manual verification reuses the automatic Git deployment; scheduled rebuilds stay fresh.
+const existing=process.env.REUSE_COMMIT_DEPLOYMENT==='true'&&recent.Deployments?.find(d=>d.RepoCommitHash===process.env.GITHUB_SHA&&d.Env===Env&&['Success','Pending','Process','Failed'].includes(d.Status));
+const created=existing||await call('CreatePagesDeployment',{ProjectId:projectId,ViaMeta:'Api',Provider:'Github',Env,RepoBranch:process.env.GITHUB_REF_NAME,RepoCommitHash:process.env.GITHUB_SHA});
+if(existing)console.log('Verifying existing Git deployment instead of creating a duplicate.');
 if(!created.DeploymentId)throw Error('No deployment ID returned');
 console.log(JSON.stringify({deployment:created.DeploymentId,env:Env,commit:process.env.GITHUB_SHA}));
 for(let i=0;i<120;i++){

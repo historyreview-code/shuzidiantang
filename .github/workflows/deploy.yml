@@ -77,5 +77,6 @@ jobs:
           node-version: 22
       - name: 发布正式项目的 Git 版本
         env:
+          REUSE_COMMIT_DEPLOYMENT: ${{ github.event.inputs.skip_prebuild }}
           MAKERS_API_TOKEN: ${{ secrets.EDGEONE_PAGES_API_TOKEN }}
         run: node scripts/guandan/deploy-git.mjs
