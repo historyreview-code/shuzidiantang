@@ -256,6 +256,12 @@
   function replay(start,events) {
     const states=[initial(start)];for(const action of events)states.push(apply(states[states.length-1],action));return states;
   }
+  function decisionTrace(raw){
+    if(!raw||!['minimax','local','rules'].includes(raw.source))return null;
+    const trace={source:raw.source,cached:raw.cached===true};
+    for(const key of ['model','reason','teamwork','nextPlan','failure','version'])if(typeof raw[key]==='string')trace[key]=raw[key].slice(0,key==='model'||key==='version'?80:200);
+    return trace;
+  }
   function importRecord(raw) {
     if(!raw||raw.format!=='guandan-lab-record-v1'||raw.start?.rules!==VERSION)throw Error('不是本程序支持的牌谱版本');
     if(!Array.isArray(raw.events)||raw.events.length>800)throw Error('动作记录不合法或过长');
@@ -266,6 +272,7 @@
       const action=a.kind==='pass'?{kind:'pass',seat:a.seat}:{kind:'play',seat:a.seat,move:{ids:a.move?.ids,type:a.move?.type,power:a.move?.power,key:a.move?.key}};
       if(['human','bot','lesson'].includes(a.origin))action.origin=a.origin;
       if(a.assisted===true&&a.origin==='human')action.assisted=true;
+      if(a.origin==='bot'&&decisionTrace(a.decision))action.decision=decisionTrace(a.decision);
       return action;
     });
     const states=replay(start,events);
@@ -277,7 +284,7 @@
     }
     return {id:typeof raw.id==='string'?raw.id.slice(0,100):`import-${Date.now()}`,created:typeof raw.created==='string'?raw.created.slice(0,50):new Date().toISOString(),format:'guandan-lab-record-v1',start,events,title:typeof raw.title==='string'?raw.title.slice(0,80):'导入牌局',branchOf:typeof raw.branchOf==='string'?raw.branchOf.slice(0,100):null,lessonId:typeof raw.lessonId==='string'?raw.lessonId.slice(0,60):null,notes};
   }
-  const API={VERSION,STRATEGY_VERSION,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,clone};
+  const API={VERSION,STRATEGY_VERSION,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone};
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
   root.Guandan=API;
 })(typeof globalThis!=='undefined'?globalThis:this);

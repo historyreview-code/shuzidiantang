@@ -5,7 +5,7 @@ export const MAX_BODY=350000,MAX_COMPLETION_TOKENS=8192;
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export const sha=async s=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))),x=>x.toString(16).padStart(2,'0')).join('');
 export function limits(env){if(env.AI_UNLIMITED==='true')return null;const n=(v,d,max)=>Math.min(max,Math.max(1,Math.floor(Number(v)||d)));return {daily:n(env.AI_DAILY_LIMIT,50,100),visitor:n(env.AI_VISITOR_DAILY_LIMIT,15,20)};}
-async function readBody(request){
+export async function readBody(request){
   if(!request.headers.get('content-type')?.startsWith('application/json'))throw new ReviewError('需要 JSON 格式的牌谱。',415);
   if(Number(request.headers.get('content-length'))>MAX_BODY)throw new ReviewError('牌谱超过请求上限。',413);
   const reader=request.body?.getReader();if(!reader)throw new ReviewError('缺少牌谱。');

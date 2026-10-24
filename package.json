@@ -5,7 +5,7 @@
   "description": "数字殿堂 · 一座收藏数字作品的殿堂（总站门户）",
   "scripts": {
     "dev": "astro dev",
-    "build:site": "astro build && node scripts/guandan/package-runtime.mjs",
+    "build:site": "astro build",
     "assemble": "node scripts/assemble.mjs",
     "preview": "astro preview --host 127.0.0.1"
   },
