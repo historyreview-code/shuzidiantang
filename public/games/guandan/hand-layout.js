@@ -50,5 +50,23 @@
     }
     return result;
   }
-  root.GuandanLayout={modes,normalise,collect,move,sections};
+  function materialise(hand,level,mode,groups){return normalise(sections(hand,level,mode,groups).map(s=>({key:s.key,ids:s.cards.map(c=>c.id)})),hand);}
+  function transfer(groups,ids,targetKey,beforeId,hand){
+    const result=normalise(groups,hand),moving=[...new Set(ids)].filter(id=>hand.some(c=>c.id===id));
+    if(!moving.length)return result;
+    if(moving.includes(beforeId))return result;
+    let target=result.find(g=>g.key===targetKey);
+    if(!target){target={key:targetKey,ids:[]};result.push(target);}
+    for(const group of result)group.ids=group.ids.filter(id=>!moving.includes(id));
+    let index=beforeId?target.ids.indexOf(beforeId):-1;if(index<0)index=target.ids.length;
+    target.ids.splice(index,0,...moving);return normalise(result,hand);
+  }
+  function reorder(groups,key,targetKey,hand){
+    const result=normalise(groups,hand),from=result.findIndex(g=>g.key===key);
+    if(from<0||key===targetKey)return result;
+    const [item]=result.splice(from,1),to=result.findIndex(g=>g.key===targetKey);
+    result.splice(to<0?result.length:to,0,item);return result;
+  }
+  function split(groups,key,hand){return normalise(groups,hand).flatMap(g=>g.key===key?g.ids.map(id=>({key:g.key+'-'+id,ids:[id]})):g);}
+  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split};
 })(typeof globalThis!=='undefined'?globalThis:this);

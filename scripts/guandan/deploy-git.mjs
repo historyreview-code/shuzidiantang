@@ -16,7 +16,7 @@ const created=await call('CreatePagesDeployment',{ProjectId:projectId,ViaMeta:'A
 if(!created.DeploymentId)throw Error('No deployment ID returned');
 console.log(JSON.stringify({deployment:created.DeploymentId,env:Env,commit:process.env.GITHUB_SHA}));
 for(let i=0;i<120;i++){
- const listed=await call('DescribePagesDeployments',{ProjectId:projectId,DeploymentIds:[created.DeploymentId],Limit:10,Offset:0});
+ let listed;try{listed=await call('DescribePagesDeployments',{ProjectId:projectId,DeploymentIds:[created.DeploymentId],Limit:10,Offset:0});}catch{console.log('Deployment status temporarily unavailable; retrying.');await delay(10000);continue;}
  const d=listed.Deployments?.[0];if(i%6===0)console.log('Deployment status:',d?.Status);
  if(d?.Status==='Success'){console.log(JSON.stringify({deployment:d.DeploymentId,status:d.Status,url:d.PreviewUrl,commit:d.RepoCommitHash}));process.exit(0);}
  if(['Failed','Invalid','Timeout','Cancelled'].includes(d?.Status)){
