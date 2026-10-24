@@ -1,6 +1,6 @@
 (function(root){
  'use strict';
- function create({fetcher=(...args)=>fetch(...args),onChange=()=>{},timeout=35000}={}){
+ function create({fetcher=(...args)=>fetch(...args),onChange=()=>{},timeout=55000}={}){
   let active=null,serial=0;
   function cancel(){serial++;active?.controller.abort();active=null;}
   function ready(key){return active?.key===key&&active.result?active.result:null;}

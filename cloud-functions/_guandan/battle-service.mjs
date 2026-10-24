@@ -1,10 +1,11 @@
 import G from './engine.mjs';
 import {ReviewError} from './review-context.mjs';
-import {ENDPOINT,MODEL,sha,readBody} from './review-service.mjs';
-export const BATTLE_VERSION='guandan-battle-v1';
+import {sha,readBody} from './review-service.mjs';
+export const BATTLE_VERSION='guandan-battle-v3';
+export const BATTLE_MODEL='MiniMax-M3.1-Flash',BATTLE_ENDPOINT='https://api.minimaxi.com/v1/chat/completions';
 const names=['你','下家','搭档','上家'];
 const describe=m=>m?{type:G.describe(m),cards:m.ids.map(id=>G.name(G.INDEX[id])),assignments:m.assign.map(a=>`${G.name(G.INDEX[a.id])}作为${G.SYMBOLS[a.s]}${G.rankName(a.r)}`)}:{type:'过牌',cards:[],assignments:[]};
-export const BATTLE_PROMPT=`你是四人两副牌掼蛋的一个独立玩家，目标是与对家合作争取更好的团队名次。只使用给定的自己的手牌、公开行动和各家剩余张数；严禁假定或编造任何其他人的隐藏手牌。partner是你的真实搭档，与界面座位名称是否叫“搭档”无关。先权衡能否自己收尾、搭档是否需要保留控牌、对手是否接近走完，再选择合法候选。你可以让牌保搭档，也可以在对手报单报双时接管拦截。搭档剩1张不代表已知点数；剩2张不代表一定是对子。过牌不代表没有大牌。不要无谓用炸弹压自己搭档；也不要机械地永远让牌。领出要比较出完后剩余组合和控制牌，而不是单纯多出张数。已给出候选的本地评分理由只供参考，不是标准答案；可以选排序靠后的合法候选。只从candidates选择一个id，不能另造牌型或牌张。红桃级牌为配牌；序列按自然点；同花顺高于五炸低于六炸；四王最大。只返回JSON，不要思维链或额外文本：{"candidate":0,"reason":"一个关键取舍，60字以内","teamwork":"如何兼顾真实搭档，50字以内","nextPlan":"后续计划及不确定条件，50字以内"}。这些简短说明用于事后复盘。`;
+export const BATTLE_PROMPT=`你是四人两副牌掼蛋的一个独立玩家，目标是与对家合作争取更好的团队名次。只使用给定的自己的手牌、公开行动和各家剩余张数；严禁假定或编造任何其他人的隐藏手牌。partner是你的真实搭档，与界面座位名称是否叫“搭档”无关。先权衡能否自己收尾、搭档是否需要保留控牌、对手是否接近走完，再选择合法候选。你可以让牌保搭档，也可以在对手报单报双时接管拦截。搭档剩1张不代表已知点数；剩2张不代表一定是对子。过牌不代表没有大牌。搭档报单且对手没有立即走完威胁时，优先比较领出最小单张给搭档接走的机会，并保留大单张拦截；中张会缩小搭档可接牌的范围，若选择中张必须给出具体公开依据。低点小牌通常不是控制牌，不能计划用小牌压过更大的同型牌。后续计划只能使用出牌后仍在自己手里的牌。不要无谓用炸弹压自己搭档；也不要机械地永远让牌。领出要比较出完后剩余组合和控制牌，而不是单纯多出张数。已给出候选的本地评分理由只供参考，不是标准答案；可以选排序靠后的合法候选。只从candidates选择一个id，不能另造牌型或牌张。红桃级牌为配牌；序列按自然点；同花顺高于五炸低于六炸；四王最大。只返回JSON，不要思维链或额外文本：{"candidate":0,"reason":"一个关键取舍，60字以内","teamwork":"如何兼顾真实搭档，50字以内","nextPlan":"后续计划及不确定条件，50字以内"}。这些简短说明用于事后复盘。`;
 export function prepareBattle(input){
  let record;try{record=G.importRecord(input?.record);}catch{throw new ReviewError('对战牌谱未通过规则校验。');}
  const states=G.replay(record.start,record.events),state=states.at(-1);if(state.over)throw new ReviewError('本副已结束。');
@@ -16,9 +17,9 @@ export function prepareBattle(input){
   if(['single','pair','bomb','flush'].includes(type)){add(options.toSorted((a,b)=>a.move.power-b.move.power)[0]);add(options.toSorted((a,b)=>b.move.power-a.move.power)[0]);}
  }
  const candidates=chosen.slice(0,20),partner=(o.seat+2)%4;
- const context={version:BATTLE_VERSION,seat:o.seat,seatName:names[o.seat],partner,partnerName:names[partner],counts:o.counts,countsOrder:names,level:G.rankName(o.level),hand:o.hand.map(G.name),table:o.trick?{seat:o.trick.seat,...describe(o.trick.move)}:null,finish:o.finish,
+ const context={version:BATTLE_VERSION,seat:o.seat,seatName:names[o.seat],partner,partnerName:names[partner],counts:o.counts,countsOrder:names,teamSignal:{partnerCount:o.counts[partner],opponentSeats:[(o.seat+1)%4,(o.seat+3)%4],objective:'与真实对家合作争头游和双下，控牌要考虑搭档能否接手'},level:G.rankName(o.level),hand:o.hand.map(G.name),table:o.trick?{seat:o.trick.seat,...describe(o.trick.move)}:null,finish:o.finish,
   history:record.events.map((a,i)=>({step:i+1,seat:a.seat,...describe(a.move)})),
-  candidates:candidates.map((x,id)=>({id,...describe(x.move),remainingHand:o.hand.filter(c=>!x.move?.ids.includes(c.id)).map(G.name),finish:x.finish,estimatedTurns:x.remainingTurns,localNotes:x.reasons})),
+  candidates:candidates.map((x,id)=>({id,...describe(x.move),sameTypeStrength:x.move?.power,remainingHand:o.hand.filter(c=>!x.move?.ids.includes(c.id)).map(G.name),finish:x.finish,estimatedTurns:x.remainingTurns,localNotes:x.reasons})),
   uncertainty:'其他人的牌点、花色与组合均未知；候选为有限枚举，不保证全局最优。'};
  if(JSON.stringify(context).length>65000)throw new ReviewError('本局信息过长，请使用快速策略继续。');
  return {state,candidates,context};
@@ -35,19 +36,19 @@ export function parseBattle(text,prepared){
 export async function callBattle(prepared,env,fetcher=fetch){
  const forced=prepared.candidates.find(x=>x.finish)||(prepared.candidates.length===1?prepared.candidates[0]:null);
  if(forced){const action=forced.move?{seat:prepared.state.turn,kind:'play',move:forced.move}:{seat:prepared.state.turn,kind:'pass'};return {action,source:'rules',model:'规则确定',reason:forced.finish?'已有可直接出完的合法牌型，兑现当前名次。':'当前只有这一项合法选择。',teamwork:'团队结果按实际走完顺序计算。',nextPlan:'继续根据公开行动与搭档张数调整。'};}
- let response;try{response=await fetcher(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.MINIMAX_API_KEY}`},body:JSON.stringify({model:env.MINIMAX_MODEL||MODEL,messages:[{role:'system',content:BATTLE_PROMPT},{role:'user',content:JSON.stringify(prepared.context)}],max_completion_tokens:4096,reasoning_split:true,temperature:0.5,stream:false}),signal:AbortSignal.timeout(30000)});}catch{throw new ReviewError('AI 思考超时。',502);}
+ let response;try{response=await fetcher(BATTLE_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.MINIMAX_API_KEY}`},body:JSON.stringify({model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL,messages:[{role:'system',content:BATTLE_PROMPT},{role:'user',content:JSON.stringify(prepared.context)}],max_completion_tokens:4096,reasoning_split:true,reasoning_effort:env.MINIMAX_BATTLE_EFFORT||'medium',temperature:0.5,stream:false}),signal:AbortSignal.timeout(45000)});}catch{throw new ReviewError('AI 思考超时。',502);}
  if(!response.ok)throw new ReviewError('AI 对战接口暂不可用。',502);
  const data=await response.json();if(data.error||data.base_resp&&data.base_resp.status_code!==0||data.choices?.[0]?.finish_reason==='length')throw new ReviewError('AI 决策没有完整生成。',502);
- return {...parseBattle(data.choices?.[0]?.message?.content,prepared),source:'minimax',model:env.MINIMAX_MODEL||MODEL};
+ return {...parseBattle(data.choices?.[0]?.message?.content,prepared),source:'minimax',model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL};
 }
 export async function handleBattle(request,env,{repository,fetcher=fetch}={}){
  const json=(value,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store'}});
  try{
-  if(request.method==='GET')return json({configured:!!env.MINIMAX_API_KEY&&!!repository,model:env.MINIMAX_MODEL||MODEL,version:BATTLE_VERSION});
+  if(request.method==='GET')return json({configured:!!env.MINIMAX_API_KEY&&!!repository,model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL,version:BATTLE_VERSION});
   if(request.method!=='POST')return json({error:'不支持此方法。'},405);
   if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin||request.headers.get('sec-fetch-site')==='cross-site')throw new ReviewError('请从本站开始对战。',403);
   if(!env.MINIMAX_API_KEY||!repository)throw new ReviewError('AI 对战尚未就绪。',503);
-  const prepared=prepareBattle(await readBody(request)),key='battle:'+await sha(JSON.stringify({model:env.MINIMAX_MODEL||MODEL,context:prepared.context}));
+  const prepared=prepareBattle(await readBody(request)),key='battle:'+await sha(JSON.stringify({model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL,effort:env.MINIMAX_BATTLE_EFFORT||'medium',context:prepared.context}));
   const existing=await repository.get(key);if(existing?.status==='done')return json({...JSON.parse(existing.payload),cached:true});
   const nonce=crypto.randomUUID(),now=Date.now(),day=new Date(now+8*3600000).toISOString().slice(0,10);
   const claim=await repository.reserve({key,nonce,now,day,visitor:'battle',cap:null});
