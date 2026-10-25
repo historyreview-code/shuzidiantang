@@ -4,7 +4,7 @@ import {modelGate} from './model-gate.mjs';
 import {ReviewError} from './review-context.mjs';
 import {sha,readBody,sameOrigin,randomId} from './review-service.mjs';
 import {STRATEGY_POLICY,STRATEGY_POLICY_VERSION} from './strategy-policy.mjs';
-export const BATTLE_VERSION='guandan-battle-v5';
+export const BATTLE_VERSION='guandan-battle-v7-local';
 export const BATTLE_MODEL='MiniMax-M3.1-Flash',BATTLE_ENDPOINT='https://api.minimaxi.com/v1/chat/completions';
 const names=['你','下家','搭档','上家'];
 const describe=m=>m?{type:G.describe(m),cards:m.ids.map(id=>G.name(G.INDEX[id])),assignments:m.assign.map(a=>`${G.name(G.INDEX[a.id])}作为${G.SYMBOLS[a.s]}${G.rankName(a.r)}`)}:{type:'过牌',cards:[],assignments:[]};
@@ -36,16 +36,21 @@ export function parseBattle(text,prepared){
  G.apply(prepared.state,action);
  return {action,...explanation};
 }
+// Local-first: the tuned one-ply policy decides the move. The model no longer chooses
+// among candidates (measured counterfactual: model re-choices were 5 worse / 1 better / 4 tie
+// on 18 sampled decisions, mean -0.72 team points). Commentary stays in the review flow.
+export function decideLocally(prepared){
+ const top=G.analyse(G.observe(prepared.state,prepared.state.turn))[0];
+ const action=top&&top.move?{seat:prepared.state.turn,kind:'play',move:top.move}:{seat:prepared.state.turn,kind:'pass'};
+ return {action,source:'rules',model:'本地策略 '+G.STRATEGY_VERSION,
+  reason:(top&&top.reasons?top.reasons.slice(0,2).join(''):'按本地策略选择最优合法动作。').slice(0,150),
+  teamwork:(top&&top.strategy&&top.strategy.teamPlan)||'依据搭档张数、控牌位置和公开行动配合。',
+  nextPlan:(top&&top.strategy&&top.strategy.nextPlan)||'根据下一轮公开行动调整。'};
+}
 export async function callBattle(prepared,env,fetcher=fetch){
  const forced=prepared.candidates.find(x=>x.finish)||(prepared.candidates.length===1?prepared.candidates[0]:null);
  if(forced){const action=forced.move?{seat:prepared.state.turn,kind:'play',move:forced.move}:{seat:prepared.state.turn,kind:'pass'};return {action,source:'rules',model:'规则确定',reason:forced.finish?'已有可直接出完的合法牌型，兑现当前名次。':'当前只有这一项合法选择。',teamwork:'团队结果按实际走完顺序计算。',nextPlan:'继续根据公开行动与搭档张数调整。'};}
- return modelGate.run('battle',async()=>{
- let response;try{response=await fetcher(BATTLE_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${env.MINIMAX_API_KEY}`},body:JSON.stringify({model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL,messages:[{role:'system',content:BATTLE_PROMPT},{role:'user',content:JSON.stringify(prepared.context)}],max_completion_tokens:4096,reasoning_split:true,reasoning_effort:env.MINIMAX_BATTLE_EFFORT||'medium',temperature:0.5,stream:false}),signal:AbortSignal.timeout(24000)});}catch{throw new ReviewError('AI 思考超时。',502);}
- if(response.status===429)modelGate.limited();
- if(!response.ok)throw new ReviewError('AI 对战接口暂不可用。',502);
- const data=await response.json();if([1002,1041].includes(data.base_resp?.status_code))modelGate.limited();if(data.error||data.base_resp&&data.base_resp.status_code!==0||data.choices?.[0]?.finish_reason==='length')throw new ReviewError('AI 决策没有完整生成。',502);
- return {...parseBattle(data.choices?.[0]?.message?.content,prepared),source:'minimax',model:env.MINIMAX_BATTLE_MODEL||BATTLE_MODEL};
- });
+ return decideLocally(prepared);
 }
 export async function handleBattle(request,env,{repository,fetcher=fetch}={}){
  const json=(value,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store'}});
