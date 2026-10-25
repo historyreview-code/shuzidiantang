@@ -10,7 +10,7 @@
   let handMode=H.modes.includes(db.handMode)?db.handMode:'rank';
   db.handOrders=db.handOrders&&typeof db.handOrders==='object'&&!Array.isArray(db.handOrders)?db.handOrders:{};
   db.handLayouts=db.handLayouts&&typeof db.handLayouts==='object'&&!Array.isArray(db.handLayouts)?db.handLayouts:{};
-  let record,states,view='practice',cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,timer=null,lastToastTimer;
+  let record,states,view='practice',cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,playDelay=2000,timer=null,lastToastTimer;
   const freshSeed=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0].toString(36).toUpperCase();};
   const newId=()=>`g-${Date.now().toString(36)}-${freshSeed()}`;
   function createRecord(start,events=[],lessonId=null){return {format:'guandan-lab-record-v1',id:newId(),created:new Date().toISOString(),title:`实战 · 打 ${G.rankName(start.level)}`,start,events:events.map(a=>a.origin?a:{...a,origin:'lesson'}),lessonId,branchOf:null,notes:{}};}
@@ -94,12 +94,14 @@
   function localDecision(manual=false){const x=G.analyse(G.observe(current()))[0];return {action:x.move?{seat:current().turn,kind:'play',move:x.move}:{seat:current().turn,kind:'pass'},source:'local',model:'本地策略',version:G.STRATEGY_VERSION,reason:(manual==='timeout'?'等待达到30秒，自动本地接替。':manual?'手动催促。':'')+x.reasons.slice(0,2).join('').slice(0,150),teamwork:x.strategy?.teamPlan||'依据搭档张数、控牌位置和公开行动配合。',nextPlan:x.strategy?.nextPlan||'根据下一轮公开行动调整。'};}
   function hurry(reason=true){if(!canHurry())return;stop();battle.cancel();narrator.cancel();paused=false;const result=localDecision(reason);takeAction(result.action,false,result);}
   function syncTurnClock(){turnClock.sync(battleKey(),canHurry()&&!document.hidden&&!$('#modal-root').children.length);turnClock.tick(()=>{hurry('timeout');toast('等待已满30秒，本步已由本地策略出牌。');});}
+  // 出牌节奏：每张出牌至少停留 2 秒方便看清牌面；过牌即时确认。
+  function paceAction(a,run){const wait=a.kind==='play'?Math.max(0,playDelay-delay):0;if(wait>0){timer=setTimeout(run,wait);}else run();}
   function schedule(){stop();syncTurnClock();if(!canAdvance())return;const key=battleKey();if(botMode==='minimax'&&battle.pending(key))return;timer=setTimeout(()=>{
     if(!canAdvance()||key!==battleKey())return;
     try{
-      if(botMode==='local'){const result=localDecision();takeAction(result.action,false,result);return;}
+      if(botMode==='local'){const result=localDecision();paceAction(result.action,()=>takeAction(result.action,false,result));return;}
       const result=battle.ready(key);
-      if(result){let action=result.action;try{G.apply(current(),action);}catch{action=G.choose(current());Object.assign(result,{source:'local',model:'本地策略',reason:'AI 返回动作未通过规则校验，本步由本地策略接替。',teamwork:'按本地队友配合规则选择。',nextPlan:'下一步继续尝试 AI 对战。',failure:'AI 动作已被规则引擎拦截。'});}if(result.failure)toast(result.failure+' 本步由本地策略接替。');takeAction(action,false,result);}
+      if(result){let action=result.action;try{G.apply(current(),action);}catch{action=G.choose(current());Object.assign(result,{source:'local',model:'本地策略',reason:'AI 返回动作未通过规则校验，本步由本地策略接替。',teamwork:'按本地队友配合规则选择。',nextPlan:'下一步继续尝试 AI 对战。',failure:'AI 动作已被规则引擎拦截。'});}if(result.failure)toast(result.failure+' 本步由本地策略接替。');paceAction(action,()=>takeAction(action,false,result));}
       else {const snapshot=G.clone(current());battle.request(key,record,()=>G.choose(snapshot));}
     }catch(e){paused=true;toast(e.message);render();}
   },delay);}
