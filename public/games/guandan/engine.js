@@ -175,9 +175,13 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-plan-v5';
+  const STRATEGY_VERSION='team-plan-v6';
   // Hand-set weights, exposed so tuning can be measured instead of guessed.
   // Every value equals the pre-tuning constant; `analyse()` without arguments is unchanged.
+  // team-plan-v6: adds 大牌经济学 (control singles are currency, not ordinary cards) and keeps
+  // the v5 weights. Evidence: dev search +0.275, dev[20,40) +0.275, heldout 120 swap +0.079 /
+  // duel +0.163, confirm 120 swap +0.046 / duel +0.133 - positive in six independent holds,
+  // but confirm CIs cross zero, so this is "no worse + fixes a visible flaw", not a proven gain.
   // team-plan-v5 weights. Eight values were tuned with lab-js/search-weights.mjs on
   // gb-bench-v3 dev[0,20) and accepted only after reproducing on dev[20,40), heldout 120
   // and confirm 120 (swap +0.28, duel +0.40 team points per deal, both CIs above zero).
@@ -188,14 +192,17 @@
     vulnerablePower:4,feed:100,feedPower:2,partnerDoneSteal:40,finish:10000,passTeamLead:75,passDanger:-35,
     plannerBudget:1100,
     // team-plan-v6 candidate: 口诀-inspired, opponent-remaining-count preferences (defaults off).
-    threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0});
+    threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0,
+    // team-plan-v6 candidate: control-card (大牌) economics, defaults off.
+    ctrlLeadPenalty:160,ctrlFollowPenalty:20,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
   const LEGACY_WEIGHTS_V4=Object.freeze({turns:18,cards:1.5,power:.35,wild:3,breakBomb:15,breakGroup:4,bombUse:19,breakFlush:16,
     lostReserve:20,strongestDrop:14,controlExit:75,bombSupport:18,bombQuiet:8,bombSupportDanger:24,
     leadSingleDanger:38,leadPairDanger:22,follow:5,teamLead:90,saveControl:8,oneTurn:38,followDanger:28,
     singleDangerPower:4,leadSingleDangerBonus:28,pairDangerPower:2,vulnerableBomb:95,vulnerablePlay:145,
     vulnerablePower:4,feed:50,feedPower:2,partnerDoneSteal:40,finish:10000,passTeamLead:75,passDanger:-35,
-    plannerBudget:550,threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0});
+    plannerBudget:550,threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0,
+    ctrlLeadPenalty:0,ctrlFollowPenalty:0,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5});
   function planner(hand,moves,budget=WEIGHTS.plannerBudget) {
     const index=new Map(hand.map((c,i)=>[c.id,i])),full=(1<<hand.length)-1;
     const masks=[...new Set(moves.map(m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0)))].sort((a,b)=>pop(b)-pop(a)||a-b);
@@ -246,12 +253,21 @@
       const result={count:chosen.length,strongest,combinations:chosen.slice(0,3).map(describe)};reserves.set(mask,result);return result;
     };
     const beforeReserve=reserve(plan.full);
+    // Control singles (大牌) are currency for regaining the lead, not ordinary cards.
+    const ctrlSingles=o.hand.filter(c=>!wild(c,o.level)&&power(c.r,o.level)>=14);
+    const ctrlCount=ctrlSingles.length;
+    const ctrlIsControl=m=>{
+      if(!m||m.type!=='single')return false;
+      const c=INDEX[m.ids[0]];
+      return !wild(c,o.level)&&power(c.r,o.level)>=14;
+    };
     const scored=moves.map(m=>{
       const remaining=o.hand.filter(c=>!m.ids.includes(c.id)),after=structure(remaining,o.level),finish=!remaining.length;
       const isBomb=bombTier(m)>0,usedWild=m.ids.filter(id=>wild(INDEX[id],o.level)).length;
       let breakBomb=0,breakGroup=0;
       for(const [r,n]of Object.entries(before.counts)){const left=after.counts[r]||0;if(n>=4&&left>0&&left<n)breakBomb++;if(n>=2&&left===1)breakGroup++;}
       const remainingMask=plan.full^plan.mask(m),remainingTurns=plan.turns(remainingMask),safe=ordinarySafe(m),afterReserve=reserve(remainingMask);
+      const threat=opponents.length?Math.min(...opponents.map(x=>x.count)):27;
       const provenControl=isBomb?bombTier(m)>=unseenBombTier&&(m.type!=='flush'||m.power>=unseenFlushPower):safe&&unseenBombTier===0;
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
@@ -275,10 +291,25 @@
       if(feed)score+=W.feed-m.power*W.feedPower;
       if(teamLead&&o.counts[partner]===0&&!finish)score-=W.partnerDoneSteal;
       if(finish)score+=W.finish;
+      // 大牌经济学：领出用单张大牌是"付款"。只有收尾、护栏（对手报单报双）、
+      // 手牌已短、或手里还有冗余大牌时才允许；跟牌时只在拦截/收尾时才该用。
+      if(ctrlIsControl(m)&&!finish&&W.ctrlLeadPenalty){
+        let f=1;
+        if(ctrlCount>=2)f*=W.ctrlRedundantFactor;
+        if(threat<=2)f=0;
+        if(remainingTurns<=1)f=0;
+        if(o.hand.length<=W.ctrlShortHand)f*=W.ctrlShortFactor;
+        if(!o.trick)score-=W.ctrlLeadPenalty*f;
+        else if(W.ctrlFollowPenalty){
+          let g=1;
+          if(threat<=2)g=0;
+          if(teamLead)g*=0.5;
+          score-=W.ctrlFollowPenalty*g;
+        }
+      }
       // Opponent-remaining-count preferences. These encode folk mnemonics (五要炸/六必治/
       // 七炸八不炸/九张出单/十张出对/枪不打四) as learnable weights; all default to 0,
       // so the shipped policy is unchanged until the benchmark proves a value.
-      const threat=opponents.length?Math.min(...opponents.map(x=>x.count)):27;
       if(!o.trick){
         if(threat===5){score+=m.type==='pair'?W.threatPair5:(m.type==='single'?-W.threatPair5*.5:0);}
         else if(threat===6){score+=['triple','full'].includes(m.type)?W.threatTriple6:(['single','pair'].includes(m.type)?-W.threatTriple6*.5:0);}
