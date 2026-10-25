@@ -43,8 +43,22 @@
   }
   function initial(start) {
     const valid=makeStart(start.hands,start.level,start.lead,start.seed,start.kind);
-    return {level:valid.level,hands:valid.hands,turn:valid.lead,trick:null,passed:[],finish:[],over:false,result:null,step:0,played:[],lastActions:[null,null,null,null],leadReason:'练习首发'};
+    return {level:valid.level,hands:valid.hands,turn:valid.lead,trick:null,passed:[],finish:[],over:false,result:null,step:0,played:[],lastActions:[null,null,null,null],history:[],leadReason:'练习首发'};
   }
+  // 可选：带进贡/还贡的开局。旧口径 initial(start) 保持不变。
+  // prevFinish 为上局名次 [头游,二游,三游,末游]；backPick 可注入还贡策略。
+  function initialWithTribute(start, prevFinish, backPick) {
+    const T = root.GuandanTribute;
+    if (!T) throw Error('缺少贡还模块');
+    const base = initial(start);
+    const res = T.resolve(base.hands.map(h => h.map(c => ({...c}))), base.level, prevFinish, backPick);
+    base.hands = res.hands.map(h => h.map(c => G_copy(c)));
+    base.turn = res.lead;
+    base.tribute = res.anti ? [{kind: 'anti', seats: res.anti}] : [...(res.gives || []), ...res.records];
+    base.leadReason = res.anti ? '抗贡成功，头游先出' : '进贡还贡完成';
+    return base;
+  }
+  function G_copy(c) { return {id: c.id, r: c.r, s: c.s}; }
   function sequences(length) {
     const out=[[14,...Array.from({length:length-1},(_,i)=>i+2)]];
     for(let r=2;r<=15-length;r++) out.push(Array.from({length},(_,i)=>r+i));
@@ -138,7 +152,7 @@
     s.step++;
     if(action.kind==='pass') {
       if(!s.trick)throw Error('领出时不能过牌');
-      s.passed.push(p);s.lastActions[p]={kind:'pass',step:s.step};
+      s.passed.push(p);s.lastActions[p]={kind:'pass',step:s.step};(s.history=s.history||[]).push({seat:p,kind:'pass'});
       const pending=s.hands.map((h,i)=>h.length&&i!==s.trick.seat&&!s.passed.includes(i)).some(Boolean);
       if(!pending) {
         const owner=s.trick.seat,partner=(owner+2)%4;
@@ -157,7 +171,7 @@
     if(!legal)throw Error('牌型不合法，或不能压过桌面的牌');
     s.hands[p]=s.hands[p].filter(c=>!ids.includes(c.id));
     s.played.push(...cards);s.trick={seat:p,move:legal};s.passed=[];
-    s.lastActions[p]={kind:'play',move:legal,step:s.step};
+    s.lastActions[p]={kind:'play',move:legal,step:s.step};(s.history=s.history||[]).push({seat:p,kind:'play',type:legal.type,size:legal.ids.length});
     if(!s.hands[p].length)s.finish.push(p);
     if(s.finish.length>=2&&s.finish[0]%2===s.finish[1]%2) {
       s.over=true;s.result={team:s.finish[0]%2,upgrade:3,doubleDown:true};
@@ -169,7 +183,7 @@
     return s;
   }
   function observe(s,seat=s.turn) {
-    return {level:s.level,seat,hand:clone(s.hands[seat]),counts:s.hands.map(h=>h.length),trick:clone(s.trick),finish:[...s.finish],played:clone(s.played),step:s.step};
+    return {level:s.level,seat,hand:clone(s.hands[seat]),counts:s.hands.map(h=>h.length),trick:clone(s.trick),finish:[...s.finish],played:clone(s.played),history:(s.history||[]).slice(-120),step:s.step};
   }
   function structure(hand,level) {
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
@@ -202,7 +216,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -216,7 +230,7 @@
     takeLead:0,interceptBonus:0,shedLead:0,partnerTakeover:0,handoffToMe:0,probeNext:0,shedAlong:0,
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   function planner(hand,moves,budget=WEIGHTS.plannerBudget) {
@@ -239,6 +253,34 @@
     const before=structure(o.hand,o.level),partner=(o.seat+2)%4,teamLead=!!o.trick&&o.trick.seat%2===o.seat%2;
     const opponents=o.counts.map((count,seat)=>({count,seat})).filter(x=>x.seat%2!==o.seat%2&&x.count>0);
     const lowestOpp=opponents.length?Math.min(...opponents.map(x=>x.count)):27;
+    const oppBoth=opponents.length?Math.max(...opponents.map(x=>x.count)):27;
+    // 防双上风险（公开信息）：对手两家都接近走完时风险陡升
+    const duRisk=1-Math.exp(-Math.max(0,12-oppBoth)/6);
+    const ourSomeoneOut=o.finish.some(s=>s%2===o.seat%2);
+    // 双上危机时的“放强阻弱”：允许最接近走完的对手先走，把资源压在最难挡的那一家身上，
+    // 目标是不让对方包揽前二（我方争二游）。仅公开信息，默认关闭。
+    let allowedSeat=-1, blockSeat=-1;
+    if(opponents.length===2&&W.duTarget){
+      const sorted=[...opponents].sort((a,b)=>a.count-b.count);
+      allowedSeat=sorted[0].seat; blockSeat=sorted[1].seat;
+    }
+    // 读人（公开历史）：每个对手出过哪些牌型、我方领出某型后他压过/放过多少
+    const profile={0:{types:{},beat:0,pass:0},1:{types:{},beat:0,pass:0},2:{types:{},beat:0,pass:0},3:{types:{},beat:0,pass:0}};
+    for(let i=0;i<o.history.length;i++){
+      const ev=o.history[i];
+      if(ev.kind!=='play')continue;
+      profile[ev.seat].types[ev.type]=(profile[ev.seat].types[ev.type]||0)+1;
+      const prev=o.history[i-1];
+      if(prev&&prev.seat%2!==ev.seat%2&&prev.kind==='play')profile[ev.seat].beat++;
+    }
+    for(const ev of o.history)if(ev.kind==='pass'&&ev.seat%2!==o.seat%2)profile[ev.seat].pass++;
+    // 能压概率的粗估：未见池里该型原料占比 × 对手余牌容量
+    const beatProb=m=>{
+      if(!m||!o.trick)return 0;
+      const need=m.ids.length,cap=Math.max(...opponents.map(x=>x.count),0);
+      const raw=(unseenCounts.counts[m.main]||0)+wildCount;
+      return Math.min(1,Math.max(0,raw/6)*Math.min(1,cap/need));
+    };
     const objNow=objectiveOf(o);
     const singleDanger=opponents.some(x=>x.count===1),pairDanger=opponents.some(x=>x.count===2),danger=singleDanger||pairDanger;
     const known=new Set([...o.hand,...o.played].map(c=>c.id)),unseen=DECK.filter(c=>!known.has(c.id));
@@ -274,6 +316,9 @@
     const support=o.counts[partner]>0&&o.counts[partner]<=5&&o.hand.length>o.counts[partner]+3;
     const tableVulnerable=teamLead&&((o.trick.move.type==='single'&&singleDanger)||(o.trick.move.type==='pair'&&pairDanger))&&!sameTypeSafe(o.trick.move);
     const plan=planner(o.hand,pool,W.plannerBudget),beforeTurns=plan.turns(plan.full),flushes=pool.filter(m=>m.type==='flush');
+    // Top-K 战略结构：快速出完型 vs 保控型（不作炸弹/同花顺拆用）的余手数差
+    const poolKeep=pool.filter(m=>bombTier(m)===0);
+    const planKeep=planner(o.hand,poolKeep,W.plannerBudget);
     const bombOptions=pool.filter(m=>bombTier(m)>0).map(m=>({move:m,mask:plan.mask(m),wilds:m.ids.filter(id=>wild(INDEX[id],o.level)).length})).sort((a,b)=>a.wilds-b.wilds||bombTier(b.move)-bombTier(a.move));
     const reserves=new Map();
     const reserve=mask=>{if(reserves.has(mask))return reserves.get(mask);let left=mask;const chosen=[];let strongest=0;
@@ -301,7 +346,13 @@
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
       const effBombUse=W.bombUse*(1+W.bombRiskK*(provenControl?0:bombRisk));
-      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*W.cards-m.power*W.power-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
+      const early = phase === '中前盘';
+      const cardsW = W.cards * (early ? W.cardsEarlyMul : 1);
+      // 概率化控制牌风险（v8 同款机制）：单张牌力成本随“外面有更大单张”的可能性上浮
+      const biggerUnseen = m.type === 'single' ? unseen.filter(c => power(c.r, o.level) > m.power).length : 0;
+      const controlRisk = m.type === 'single' ? Math.min(1, biggerUnseen / Math.max(1, unseen.length) * 6) : 0;
+      const powerW = W.power * (early ? W.powerEarlyMul : 1) * (1 + W.controlRiskK * controlRisk);
+      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
       score-=lostReserve*W.lostReserve;
       if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
       if(controlExit)score+=W.controlExit;
@@ -371,6 +422,24 @@
         if(W.bombProvenBonus&&provenControl)score+=W.bombProvenBonus;
       }
       if(W.kingLeadRisk&&!o.trick&&m.type==='single'&&INDEX[m.ids[0]].r===16&&unseenBig>0)score-=W.kingLeadRisk;
+      // 读人动作项（默认 0）：①避开对手历史少压的牌型；②主动送对手爱压的牌型消耗其大牌。
+      if(!o.trick&&W.markAvoidType&&opponents.length){
+        const worst=opponents.reduce((a,b)=>((profile[b.seat].beat||0)>(profile[a.seat].beat||0)?b:a));
+        if(m.type==='single'||m.type==='pair')score+=W.markAvoidType*((profile[worst.seat].beat||0)<=2?1:-.5);
+      }
+      if(o.trick&&W.markBaitType&&o.trick.seat%2!==o.seat%2){
+        const owner=profile[o.trick.seat];
+        if((owner.beat||0)>=4)score+=W.markBaitType*.5;
+      }
+      // 放强阻弱：桌面被“目标对手”控制时重罚不够、要抢；被“允许先走”的一家控制时不浪费资源。
+      if(W.duTarget&&o.trick&&o.trick.seat%2!==o.seat%2&&oppBoth<=5){
+        if(o.trick.seat===blockSeat)score+=W.duTarget*duRisk*(isBomb?1.6:1);
+        else if(o.trick.seat===allowedSeat)score-=W.duTarget*.6;
+      }
+      // 防双上次目标（v9）：威胁加权抢权/炸开/护送搭档/按住不抢。
+      if(W.duBlock&&o.trick&&o.trick.seat%2!==o.seat%2&&lowestOpp<=5&&!isBomb)score+=W.duBlock*duRisk;
+      if(W.duBreak&&o.trick&&o.trick.seat%2!==o.seat%2&&lowestOpp<=5&&isBomb)score+=W.duBreak*duRisk;
+      if(W.duEscort&&ourSomeoneOut&&o.counts[partner]>0&&o.counts[partner]<=3&&!o.trick&&['single','pair'].includes(m.type))score+=W.duEscort;
       // 角色动作项（v8）：争双上=护送搭档先走；免双下=抢先走/必须拦。默认 0。
       if(objNow==='afterHead'){
         if(W.objHeadEscortBomb&&isBomb&&o.counts[partner]>0&&o.counts[partner]<=2)score+=W.objHeadEscortBomb;
@@ -409,11 +478,12 @@
       const strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:remainingTurns,turnsSaved:beforeTurns-remainingTurns,bombsBefore:beforeReserve.count,bombsAfter:afterReserve.count,bombPlan:afterReserve.combinations,strongestBombBefore:beforeReserve.strongest,strongestBombAfter:afterReserve.strongest,lostBombReserve:lostReserve,breakBomb,breakFlush,usedWild,provenControl,controlExit,finishMove:lastMove?describe(lastMove):null,
         opponentThreat:opponents.filter(x=>x.count<=5),opponentBombRanks:bombRanks,unseenJokers,unseenBig,teamPlan:teamLead?'搭档控牌时让牌；只有收尾或明确拦截风险才接管。':feed?'先以低点同型牌试着交棒，搭档的具体牌型和点数仍未知。':support?'自己保留拦截牌，优先保护搭档先走。':'比较自己收尾路线与队友接手机会，不只看本手出牌张数。',
         nextPlan:lastMove?`余牌可出${describe(lastMove)}；${provenControl?'本手对对手有保守控牌依据。':'须先重新取得出牌权，不能假定连续领出。'}`:`余牌约 ${remainingTurns} 手，保留 ${afterReserve.count} 组互不占牌的炸弹类组合，按公开行动重新评估。`};
-      return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,breakFlush,usedWild,remainingTurns,strategy};
+      return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,breakFlush,usedWild,remainingTurns,turnsKeep:(typeof turnsKeep!=='undefined'?turnsKeep:remainingTurns),strategy};
     });
     if(o.trick)scored.push({move:null,score:teamLead?(tableVulnerable?0:W.passTeamLead):danger?W.passDanger:0,facts:['本次不出牌，保留全部手牌。'],reasons:[tableVulnerable?'搭档当前最大，但对手报单或报双，过牌可能让其接走；比较你是否有合适的拦截牌。':teamLead?(o.counts[partner]===0?'搭档已走完，让本轮自然结束可争取借风领出。':'搭档控牌时优先让牌，保留自己的高牌与组合。'):danger?'对手接近走完，放行可能失去最后的拦截机会。':'没有迫切拦截需要时，可保留控制牌；同时承担对手继续领出的风险。'],remaining:o.hand.length,finish:false,breakBomb:0,usedWild:0,remainingTurns:beforeTurns});
     const pass=scored.find(x=>!x.move);
     if(pass){
+      if(W.duHold&&ourSomeoneOut&&o.counts[partner]>0)pass.score+=W.duHold;
       if(objNow==='afterHead'&&W.objHeadYield&&o.counts[partner]>0&&o.counts[partner]<=o.hand.length)pass.score+=W.objHeadYield;
       if(objNow==='afterTheirHead'&&W.objLossBlock&&lowestOpp<=5)pass.score-=W.objLossBlock;
     }
@@ -437,7 +507,15 @@
     return W;
   }
   function choose(s,seat=s.turn,W=WEIGHTS) {
-    const o=observe(s,seat),best=analyse(o,weightsFor(o,W))[0];
+    const o=observe(s,seat);
+    let rows=analyse(o,weightsFor(o,W));
+    // 硬规则：整局第一手（空桌面）不允许单出王。除非手里只有王这一种合法出牌。
+    if(o.step===0&&!o.trick&&rows.length){
+      const isJoker=m=>m&&m.type==='single'&&INDEX[m.ids[0]].r>=16;
+      const filtered=rows.filter(r=>!isJoker(r.move));
+      if(filtered.length) rows=filtered;
+    }
+    const best=rows[0];
     if(!best)throw Error('没有可用动作');
     return best.move?{seat,kind:'play',move:best.move}:{seat,kind:'pass'};
   }
@@ -506,7 +584,7 @@
     return importRecord({...parent,id,created:new Date().toISOString(),start:rotateStart(parent.start,seat),events,notes:{},branchOf:parent.id,
       perspective:{rootId:parent.perspective?.rootId||parent.id,offset:((parent.perspective?.offset||0)+seat)%4,atStep:step}});
   }
-  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,objectiveOf,weightsFor,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
+  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,objectiveOf,weightsFor,initialWithTribute,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
   root.Guandan=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
