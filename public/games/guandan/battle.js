@@ -1,6 +1,6 @@
 (function(root){
  'use strict';
- function create({fetcher=(...args)=>fetch(...args),onChange=()=>{},experiences=()=>[],timeout=26000}={}){
+ function create({fetcher=(...args)=>fetch(...args),onChange=()=>{},experiences=()=>[],timeout=10000}={}){
   let active=null,serial=0;
   function cancel(){serial++;active?.controller.abort();active=null;}
   function ready(key){return active?.key===key&&active.result?active.result:null;}
@@ -24,7 +24,7 @@
   }
   return {cancel,ready,pending,request};
  }
- function createTurnClock({now=Date.now,limit=30000}={}){
+ function createTurnClock({now=Date.now,limit=10000}={}){
   let active=null;
   function sync(key,enabled){if(!enabled){active=null;return;}if(active?.key!==key)active={key,deadline:now()+limit,fired:false};}
   function remaining(){return active?Math.max(0,Math.ceil((active.deadline-now())/1000)):null;}
