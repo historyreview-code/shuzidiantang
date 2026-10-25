@@ -175,21 +175,41 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-plan-v4';
-  function planner(hand,moves) {
+  const STRATEGY_VERSION='team-plan-v5';
+  // Hand-set weights, exposed so tuning can be measured instead of guessed.
+  // Every value equals the pre-tuning constant; `analyse()` without arguments is unchanged.
+  // team-plan-v5 weights. Eight values were tuned with lab-js/search-weights.mjs on
+  // gb-bench-v3 dev[0,20) and accepted only after reproducing on dev[20,40), heldout 120
+  // and confirm 120 (swap +0.28, duel +0.40 team points per deal, both CIs above zero).
+  const WEIGHTS=Object.freeze({turns:36,cards:1.5,power:.35,wild:3,breakBomb:10.5,breakGroup:4,bombUse:9.5,breakFlush:16,
+    lostReserve:14,strongestDrop:14,controlExit:75,bombSupport:18,bombQuiet:8,bombSupportDanger:24,
+    leadSingleDanger:19,leadPairDanger:22,follow:5,teamLead:90,saveControl:8,oneTurn:38,followDanger:14,
+    singleDangerPower:4,leadSingleDangerBonus:28,pairDangerPower:2,vulnerableBomb:95,vulnerablePlay:145,
+    vulnerablePower:4,feed:100,feedPower:2,partnerDoneSteal:40,finish:10000,passTeamLead:75,passDanger:-35,
+    plannerBudget:1100,
+    // team-plan-v6 candidate: 口诀-inspired, opponent-remaining-count preferences (defaults off).
+    threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0});
+  // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
+  const LEGACY_WEIGHTS_V4=Object.freeze({turns:18,cards:1.5,power:.35,wild:3,breakBomb:15,breakGroup:4,bombUse:19,breakFlush:16,
+    lostReserve:20,strongestDrop:14,controlExit:75,bombSupport:18,bombQuiet:8,bombSupportDanger:24,
+    leadSingleDanger:38,leadPairDanger:22,follow:5,teamLead:90,saveControl:8,oneTurn:38,followDanger:28,
+    singleDangerPower:4,leadSingleDangerBonus:28,pairDangerPower:2,vulnerableBomb:95,vulnerablePlay:145,
+    vulnerablePower:4,feed:50,feedPower:2,partnerDoneSteal:40,finish:10000,passTeamLead:75,passDanger:-35,
+    plannerBudget:550,threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0});
+  function planner(hand,moves,budget=WEIGHTS.plannerBudget) {
     const index=new Map(hand.map((c,i)=>[c.id,i])),full=(1<<hand.length)-1;
     const masks=[...new Set(moves.map(m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0)))].sort((a,b)=>pop(b)-pop(a)||a-b);
-    const byCard=hand.map((_,i)=>masks.filter(m=>m&(1<<i))),memo=new Map([[0,0]]);let budget=550;
+    const byCard=hand.map((_,i)=>masks.filter(m=>m&(1<<i))),memo=new Map([[0,0]]);let left=budget;
     function pop(n){let count=0;while(n){n&=n-1;count++;}return count;}
     function greedy(mask){let count=0;for(const m of masks)if((mask&m)===m){mask^=m;count++;if(!mask)return count;}return count+pop(mask);}
-    function turns(mask){if(memo.has(mask))return memo.get(mask);let best=greedy(mask);if(best<=1||budget--<=0)return best;
+    function turns(mask){if(memo.has(mask))return memo.get(mask);let best=greedy(mask);if(best<=1||left--<=0)return best;
       const bit=31-Math.clz32(mask&-mask),options=byCard[bit].filter(m=>(mask&m)===m);
       for(const m of options){if(pop(m)===pop(mask)){best=1;break;}best=Math.min(best,1+turns(mask^m));if(best===2)break;}
       memo.set(mask,best);return best;
     }
     return {full,mask:m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0),turns};
   }
-  function analyse(o) {
+  function analyse(o,W=WEIGHTS) {
     // Two deterministic physical selections per pattern preserve more suit structures.
     const pool=[...new Map([...enumerate(o.hand,o.level),...enumerate([...o.hand].reverse(),o.level)].map(m=>[m.key,m])).values()];
     const moves=pool.filter(m=>beats(m,o.trick?.move));
@@ -217,7 +237,7 @@
     const teamObjective=!o.finish.length?'争取头游并兼顾搭档':o.finish[0]%2===o.seat%2?'己方已获头游，争双下或三游':'对方已获头游，争二三游，避免被双下';
     const support=o.counts[partner]>0&&o.counts[partner]<=5&&o.hand.length>o.counts[partner]+3;
     const tableVulnerable=teamLead&&((o.trick.move.type==='single'&&singleDanger)||(o.trick.move.type==='pair'&&pairDanger))&&!sameTypeSafe(o.trick.move);
-    const plan=planner(o.hand,pool),beforeTurns=plan.turns(plan.full),flushes=pool.filter(m=>m.type==='flush');
+    const plan=planner(o.hand,pool,W.plannerBudget),beforeTurns=plan.turns(plan.full),flushes=pool.filter(m=>m.type==='flush');
     const bombOptions=pool.filter(m=>bombTier(m)>0).map(m=>({move:m,mask:plan.mask(m),wilds:m.ids.filter(id=>wild(INDEX[id],o.level)).length})).sort((a,b)=>a.wilds-b.wilds||bombTier(b.move)-bombTier(a.move));
     const reserves=new Map();
     const reserve=mask=>{if(reserves.has(mask))return reserves.get(mask);let left=mask;const chosen=[];let strongest=0;
@@ -235,26 +255,40 @@
       const provenControl=isBomb?bombTier(m)>=unseenBombTier&&(m.type!=='flush'||m.power>=unseenFlushPower):safe&&unseenBombTier===0;
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
-      let score=18*(beforeTurns-remainingTurns)+m.ids.length*1.5-m.power*.35-usedWild*3-breakBomb*15-breakGroup*4-(isBomb?19:0)-(breakFlush?16:0);
-      score-=lostReserve*20;
-      if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=14;
-      if(controlExit)score+=75;
-      if(!finish&&isBomb&&!danger&&!controlExit)score-=support?18:8;
-      if(support&&!teamLead&&o.trick&&isBomb&&danger)score+=24;
-      if(!o.trick&&singleDanger&&m.type==='single'&&!controlExit&&!finish)score-=38;
-      if(!o.trick&&pairDanger&&m.type==='pair'&&!controlExit&&!finish)score-=22;
-      if(o.trick)score+=5;
-      if(teamLead)score-=90;
-      if(!o.trick&&safe)score-=8; // Save a control card until it can release a weak remainder.
-      if(remainingTurns===1&&safe)score+=38;
-      if(danger&&!teamLead&&o.trick)score+=28;
-      if(singleDanger){if(m.type==='single')score+=m.power*4;else if(!o.trick)score+=28;}
-      if(pairDanger&&m.type==='pair')score+=m.power*2;
-      if(tableVulnerable){score+=isBomb?95:145;if(m.type==='single'||m.type==='pair')score+=m.power*4;}
+      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*W.cards-m.power*W.power-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?W.bombUse:0)-(breakFlush?W.breakFlush:0);
+      score-=lostReserve*W.lostReserve;
+      if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
+      if(controlExit)score+=W.controlExit;
+      if(!finish&&isBomb&&!danger&&!controlExit)score-=support?W.bombSupport:W.bombQuiet;
+      if(support&&!teamLead&&o.trick&&isBomb&&danger)score+=W.bombSupportDanger;
+      if(!o.trick&&singleDanger&&m.type==='single'&&!controlExit&&!finish)score-=W.leadSingleDanger;
+      if(!o.trick&&pairDanger&&m.type==='pair'&&!controlExit&&!finish)score-=W.leadPairDanger;
+      if(o.trick)score+=W.follow;
+      if(teamLead)score-=W.teamLead;
+      if(!o.trick&&safe)score-=W.saveControl; // Save a control card until it can release a weak remainder.
+      if(remainingTurns===1&&safe)score+=W.oneTurn;
+      if(danger&&!teamLead&&o.trick)score+=W.followDanger;
+      if(singleDanger){if(m.type==='single')score+=m.power*W.singleDangerPower;else if(!o.trick)score+=W.leadSingleDangerBonus;}
+      if(pairDanger&&m.type==='pair')score+=m.power*W.pairDangerPower;
+      if(tableVulnerable){score+=isBomb?W.vulnerableBomb:W.vulnerablePlay;if(m.type==='single'||m.type==='pair')score+=m.power*W.vulnerablePower;}
       const feed=!o.trick&&!danger&&o.counts[partner]===m.ids.length&&['single','pair'].includes(m.type)&&m.power<=10;
-      if(feed)score+=50-m.power*2;
-      if(teamLead&&o.counts[partner]===0&&!finish)score-=40;
-      if(finish)score+=10000;
+      if(feed)score+=W.feed-m.power*W.feedPower;
+      if(teamLead&&o.counts[partner]===0&&!finish)score-=W.partnerDoneSteal;
+      if(finish)score+=W.finish;
+      // Opponent-remaining-count preferences. These encode folk mnemonics (五要炸/六必治/
+      // 七炸八不炸/九张出单/十张出对/枪不打四) as learnable weights; all default to 0,
+      // so the shipped policy is unchanged until the benchmark proves a value.
+      const threat=opponents.length?Math.min(...opponents.map(x=>x.count)):27;
+      if(!o.trick){
+        if(threat===5){score+=m.type==='pair'?W.threatPair5:(m.type==='single'?-W.threatPair5*.5:0);}
+        else if(threat===6){score+=['triple','full'].includes(m.type)?W.threatTriple6:(['single','pair'].includes(m.type)?-W.threatTriple6*.5:0);}
+        else if(threat===9&&m.type==='single')score+=W.threatSingle9;
+        else if(threat===10){score+=m.type==='pair'?W.threatPair10:(m.type==='full'?-W.threatPair10:0);}
+      }
+      if(isBomb){
+        if(threat===5||threat===6||threat===7)score+=W.threatBomb567;
+        if(threat===4||threat===8)score-=W.threatNoBomb48;
+      }
       const facts=[`打出 ${m.ids.length} 张，剩 ${remaining.length} 张。`],reasons=[];
       if(finish)reasons.push('这手可以立即出完自己的牌，优先兑现名次。');
       if(tableVulnerable&&!finish)reasons.push('搭档虽暂时最大，但对手报单或报双，当前牌型可能被接走；接管大牌是在保护队伍。');
@@ -274,12 +308,12 @@
         nextPlan:lastMove?`余牌可出${describe(lastMove)}；${provenControl?'本手对对手有保守控牌依据。':'须先重新取得出牌权，不能假定连续领出。'}`:`余牌约 ${remainingTurns} 手，保留 ${afterReserve.count} 组互不占牌的炸弹类组合，按公开行动重新评估。`};
       return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,breakFlush,usedWild,remainingTurns,strategy};
     });
-    if(o.trick)scored.push({move:null,score:teamLead?(tableVulnerable?0:75):danger?-35:0,facts:['本次不出牌，保留全部手牌。'],reasons:[tableVulnerable?'搭档当前最大，但对手报单或报双，过牌可能让其接走；比较你是否有合适的拦截牌。':teamLead?(o.counts[partner]===0?'搭档已走完，让本轮自然结束可争取借风领出。':'搭档控牌时优先让牌，保留自己的高牌与组合。'):danger?'对手接近走完，放行可能失去最后的拦截机会。':'没有迫切拦截需要时，可保留控制牌；同时承担对手继续领出的风险。'],remaining:o.hand.length,finish:false,breakBomb:0,usedWild:0,remainingTurns:beforeTurns});
+    if(o.trick)scored.push({move:null,score:teamLead?(tableVulnerable?0:W.passTeamLead):danger?W.passDanger:0,facts:['本次不出牌，保留全部手牌。'],reasons:[tableVulnerable?'搭档当前最大，但对手报单或报双，过牌可能让其接走；比较你是否有合适的拦截牌。':teamLead?(o.counts[partner]===0?'搭档已走完，让本轮自然结束可争取借风领出。':'搭档控牌时优先让牌，保留自己的高牌与组合。'):danger?'对手接近走完，放行可能失去最后的拦截机会。':'没有迫切拦截需要时，可保留控制牌；同时承担对手继续领出的风险。'],remaining:o.hand.length,finish:false,breakBomb:0,usedWild:0,remainingTurns:beforeTurns});
     const pass=scored.find(x=>!x.move);if(pass)pass.strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:beforeTurns,turnsSaved:0,bombsBefore:beforeReserve.count,bombsAfter:beforeReserve.count,bombPlan:beforeReserve.combinations,lostBombReserve:0,opponentThreat:opponents.filter(x=>x.count<=5),teamPlan:teamLead?'保留组合，等待搭档继续领出或借风。':'保留控制牌，但承担对手继续领出的风险。',nextPlan:'过牌不保证之后拿回牌权；继续根据公开行动和对手张数调整。'};
     return scored.sort((a,b)=>b.score-a.score||(a.move?.key||'').localeCompare(b.move?.key||''));
   }
-  function choose(s,seat=s.turn) {
-    const best=analyse(observe(s,seat))[0];
+  function choose(s,seat=s.turn,W=WEIGHTS) {
+    const best=analyse(observe(s,seat),W)[0];
     if(!best)throw Error('没有可用动作');
     return best.move?{seat,kind:'play',move:best.move}:{seat,kind:'pass'};
   }
@@ -348,7 +382,7 @@
     return importRecord({...parent,id,created:new Date().toISOString(),start:rotateStart(parent.start,seat),events,notes:{},branchOf:parent.id,
       perspective:{rootId:parent.perspective?.rootId||parent.id,offset:((parent.perspective?.offset||0)+seat)%4,atStep:step}});
   }
-  const API={VERSION,STRATEGY_VERSION,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
+  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
   root.Guandan=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
