@@ -175,9 +175,12 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-plan-v6';
+  const STRATEGY_VERSION='team-plan-v7';
   // Hand-set weights, exposed so tuning can be measured instead of guessed.
   // Every value equals the pre-tuning constant; `analyse()` without arguments is unchanged.
+  // team-plan-v7: adds 牌权/顺牌经济学 (takeLead=50, shedLead=50): following a trick to shed and
+  // leading weak/mid cards early are goals; verified dev validation +0.375, heldout swap +0.163,
+  // confirm swap +0.175 (CI [+0.004,+0.331]), duel +0.254.
   // team-plan-v6: adds 大牌经济学 (control singles are currency, not ordinary cards) and keeps
   // the v5 weights. Evidence: dev search +0.275, dev[20,40) +0.275, heldout 120 swap +0.079 /
   // duel +0.163, confirm 120 swap +0.046 / duel +0.133 - positive in six independent holds,
@@ -194,7 +197,8 @@
     // team-plan-v6 candidate: 口诀-inspired, opponent-remaining-count preferences (defaults off).
     threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0,
     // team-plan-v6 candidate: control-card (大牌) economics, defaults off.
-    ctrlLeadPenalty:160,ctrlFollowPenalty:20,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5});
+    ctrlLeadPenalty:160,ctrlFollowPenalty:20,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5,
+    takeLead:50,interceptBonus:0,shedLead:50});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
   const LEGACY_WEIGHTS_V4=Object.freeze({turns:18,cards:1.5,power:.35,wild:3,breakBomb:15,breakGroup:4,bombUse:19,breakFlush:16,
     lostReserve:20,strongestDrop:14,controlExit:75,bombSupport:18,bombQuiet:8,bombSupportDanger:24,
@@ -202,7 +206,8 @@
     singleDangerPower:4,leadSingleDangerBonus:28,pairDangerPower:2,vulnerableBomb:95,vulnerablePlay:145,
     vulnerablePower:4,feed:50,feedPower:2,partnerDoneSteal:40,finish:10000,passTeamLead:75,passDanger:-35,
     plannerBudget:550,threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0,
-    ctrlLeadPenalty:0,ctrlFollowPenalty:0,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5});
+    ctrlLeadPenalty:0,ctrlFollowPenalty:0,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5,
+    takeLead:0,interceptBonus:0,shedLead:0});
   function planner(hand,moves,budget=WEIGHTS.plannerBudget) {
     const index=new Map(hand.map((c,i)=>[c.id,i])),full=(1<<hand.length)-1;
     const masks=[...new Set(moves.map(m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0)))].sort((a,b)=>pop(b)-pop(a)||a-b);
@@ -306,6 +311,15 @@
           if(teamLead)g*=0.5;
           score-=W.ctrlFollowPenalty*g;
         }
+      }
+      // 牌权与顺牌经济学（v7）：跟牌把牌顺走本身有价值；用大牌抢回牌权是策略；
+      // 没有出过牌时，先把弱牌/中档牌走掉也是目标。全部默认 0，可关。
+      if(o.trick&&o.trick.seat%2!==o.seat%2){
+        score+=W.takeLead;
+        if(ctrlIsControl(m))score+=W.interceptBonus;
+      }
+      if(!o.trick&&!isBomb&&m.power<=10){
+        score+=W.shedLead*(m.ids.length>=2?1.5:1);
       }
       // Opponent-remaining-count preferences. These encode folk mnemonics (五要炸/六必治/
       // 七炸八不炸/九张出单/十张出对/枪不打四) as learnable weights; all default to 0,
