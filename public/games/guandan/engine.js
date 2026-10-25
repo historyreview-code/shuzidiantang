@@ -175,7 +175,7 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-plan-v7';
+  const STRATEGY_VERSION='team-plan-v8';
   // Hand-set weights, exposed so tuning can be measured instead of guessed.
   // Every value equals the pre-tuning constant; `analyse()` without arguments is unchanged.
   // team-plan-v7: adds 牌权/顺牌经济学 (takeLead=50, shedLead=50): following a trick to shed and
@@ -198,7 +198,13 @@
     threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0,
     // team-plan-v6 candidate: control-card (大牌) economics, defaults off.
     ctrlLeadPenalty:160,ctrlFollowPenalty:20,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5,
-    takeLead:50,interceptBonus:0,shedLead:50});
+    takeLead:50,interceptBonus:0,shedLead:50,partnerTakeover:0,handoffToMe:0,probeNext:0,shedAlong:0,
+    // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
+    objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
+    // v8 role action items (default 0 = off)
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,
+    // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
+    bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
   const LEGACY_WEIGHTS_V4=Object.freeze({turns:18,cards:1.5,power:.35,wild:3,breakBomb:15,breakGroup:4,bombUse:19,breakFlush:16,
     lostReserve:20,strongestDrop:14,controlExit:75,bombSupport:18,bombQuiet:8,bombSupportDanger:24,
@@ -207,7 +213,12 @@
     vulnerablePower:4,feed:50,feedPower:2,partnerDoneSteal:40,finish:10000,passTeamLead:75,passDanger:-35,
     plannerBudget:550,threatPair5:0,threatTriple6:0,threatBomb567:0,threatNoBomb48:0,threatSingle9:0,threatPair10:0,
     ctrlLeadPenalty:0,ctrlFollowPenalty:0,ctrlRedundantFactor:.4,ctrlShortHand:8,ctrlShortFactor:.5,
-    takeLead:0,interceptBonus:0,shedLead:0});
+    takeLead:0,interceptBonus:0,shedLead:0,partnerTakeover:0,handoffToMe:0,probeNext:0,shedAlong:0,
+    objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
+    // v8 role action items (default 0 = off)
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,
+    // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
+    bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   function planner(hand,moves,budget=WEIGHTS.plannerBudget) {
     const index=new Map(hand.map((c,i)=>[c.id,i])),full=(1<<hand.length)-1;
     const masks=[...new Set(moves.map(m=>m.ids.reduce((bits,id)=>bits|(1<<index.get(id)),0)))].sort((a,b)=>pop(b)-pop(a)||a-b);
@@ -227,6 +238,8 @@
     const moves=pool.filter(m=>beats(m,o.trick?.move));
     const before=structure(o.hand,o.level),partner=(o.seat+2)%4,teamLead=!!o.trick&&o.trick.seat%2===o.seat%2;
     const opponents=o.counts.map((count,seat)=>({count,seat})).filter(x=>x.seat%2!==o.seat%2&&x.count>0);
+    const lowestOpp=opponents.length?Math.min(...opponents.map(x=>x.count)):27;
+    const objNow=objectiveOf(o);
     const singleDanger=opponents.some(x=>x.count===1),pairDanger=opponents.some(x=>x.count===2),danger=singleDanger||pairDanger;
     const known=new Set([...o.hand,...o.played].map(c=>c.id)),unseen=DECK.filter(c=>!known.has(c.id));
     const unseenCounts=structure(unseen,o.level),wildCount=unseenCounts.wilds;
@@ -245,6 +258,17 @@
       if(enemyCapacity>=5)for(const suit of SUITS)for(const rs of sequences(5))if(canAssemble(rs.map(r=>[r,1,suit]))){unseenBombTier=Math.max(unseenBombTier,550);unseenFlushPower=Math.max(unseenFlushPower,rs.at(-1));}
       if(unseen.filter(c=>c.r>=16).length===4)unseenBombTier=10000;
     }
+    // 对手炸弹/大王威胁估计（只用公开未见牌池，不做手牌推断）：
+    //   bombRanks = 未见牌里能凑成 4 张以上炸弹的点数个数
+    //   unseenJokers = 未见的大小王张数；unseenBig = 未见大王张数
+    let bombRanks=0;
+    for(let r=2;r<=14;r++){if((unseenCounts.counts[r]||0)+wildCount>=4)bombRanks++;}
+    const unseenJokers=(unseenCounts.counts[16]||0)+(unseenCounts.counts[17]||0),unseenBig=(unseenCounts.counts[17]||0);
+    // 概率化炸弹风险：未见池里能拼成 4 张以上的同点牌越多，对手有炸弹的可能性越高。
+    // 指数映射到 [0,1)，仅用公开信息；不是严格超几何概率，但单调可比。
+    let bombMaterial=0;
+    for(let r=2;r<=14;r++){const n=(unseenCounts.counts[r]||0)+wildCount;if(n>=4)bombMaterial+=n-3;}
+    const bombRisk=1-Math.exp(-bombMaterial/30);
     const phase=opponents.some(x=>x.count<=5)||o.hand.length<=8||o.counts[partner]<=5?'残局':'中前盘';
     const teamObjective=!o.finish.length?'争取头游并兼顾搭档':o.finish[0]%2===o.seat%2?'己方已获头游，争双下或三游':'对方已获头游，争二三游，避免被双下';
     const support=o.counts[partner]>0&&o.counts[partner]<=5&&o.hand.length>o.counts[partner]+3;
@@ -276,7 +300,8 @@
       const provenControl=isBomb?bombTier(m)>=unseenBombTier&&(m.type!=='flush'||m.power>=unseenFlushPower):safe&&unseenBombTier===0;
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
-      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*W.cards-m.power*W.power-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?W.bombUse:0)-(breakFlush?W.breakFlush:0);
+      const effBombUse=W.bombUse*(1+W.bombRiskK*(provenControl?0:bombRisk));
+      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*W.cards-m.power*W.power-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
       score-=lostReserve*W.lostReserve;
       if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
       if(controlExit)score+=W.controlExit;
@@ -285,7 +310,25 @@
       if(!o.trick&&singleDanger&&m.type==='single'&&!controlExit&&!finish)score-=W.leadSingleDanger;
       if(!o.trick&&pairDanger&&m.type==='pair'&&!controlExit&&!finish)score-=W.leadPairDanger;
       if(o.trick)score+=W.follow;
-      if(teamLead)score-=W.teamLead;
+      if(teamLead){
+        // 搭档控牌时的四种情形（默认全部 0＝维持“让牌”，不改变上线行为）：
+        // ① 交给队友：搭档出的牌很小（像是有意放小牌）且我打完能立刻收尾/只剩一手
+        //    → 用大牌上位拿回领出权，好让我领自己的优势牌型；
+        // ② 考验下家：我手里是顶级单张（power>=14），接过来逼下家（唯一的对手）用大牌，
+        //    等于把对方的控制牌“钓”出来；
+        // ③ 顺牌跑牌：用廉价中档牌顺一手跑掉，交给下家去顶；
+        // ④ 其余情况继续让牌（原 −90）。
+        let take=0;
+        if(W.partnerTakeover){
+          if(provenControl&&(remainingTurns<=2||o.hand.length<=W.ctrlShortHand))take=W.partnerTakeover;
+          else if(threat<=2&&provenControl)take=W.partnerTakeover*.5;
+        }
+        const partnerCardLow=o.trick&&o.trick.move&&o.trick.move.power<=10;
+        if(W.handoffToMe&&partnerCardLow&&(remainingTurns<=2||finish))take+=W.handoffToMe;
+        if(W.probeNext&&ctrlIsControl(m)&&o.counts[(o.seat+1)%4]>0)take+=W.probeNext;
+        if(W.shedAlong&&!isBomb&&m.power<=10)take+=W.shedAlong;
+        score-=Math.max(0,W.teamLead-take);
+      }
       if(!o.trick&&safe)score-=W.saveControl; // Save a control card until it can release a weak remainder.
       if(remainingTurns===1&&safe)score+=W.oneTurn;
       if(danger&&!teamLead&&o.trick)score+=W.followDanger;
@@ -321,6 +364,21 @@
       if(!o.trick&&!isBomb&&m.power<=10){
         score+=W.shedLead*(m.ids.length>=2?1.5:1);
       }
+      // 炸弹时机 × 对手威胁（v9）：对手可能还有更大的炸弹时，非绝对大的炸弹更贵；
+      // 自己握着"外面压不过"的炸弹时，开炸更安全。单张小王领出而大王未见时更危险。
+      if(isBomb){
+        if(W.bombRiskPenalty&&!provenControl&&(bombRanks>0||unseenJokers>0))score-=W.bombRiskPenalty;
+        if(W.bombProvenBonus&&provenControl)score+=W.bombProvenBonus;
+      }
+      if(W.kingLeadRisk&&!o.trick&&m.type==='single'&&INDEX[m.ids[0]].r===16&&unseenBig>0)score-=W.kingLeadRisk;
+      // 角色动作项（v8）：争双上=护送搭档先走；免双下=抢先走/必须拦。默认 0。
+      if(objNow==='afterHead'){
+        if(W.objHeadEscortBomb&&isBomb&&o.counts[partner]>0&&o.counts[partner]<=2)score+=W.objHeadEscortBomb;
+        if(W.objHeadYield&&!o.trick&&o.counts[partner]>0&&o.counts[partner]<o.hand.length-remaining.length)score-=W.objHeadYield*.5;
+      }else if(objNow==='afterTheirHead'){
+        if(W.objLossRush&&remainingTurns<=1)score+=W.objLossRush;
+        if(W.objLossBlock&&lowestOpp<=5&&o.trick)score+=W.objLossBlock;
+      }
       // Opponent-remaining-count preferences. These encode folk mnemonics (五要炸/六必治/
       // 七炸八不炸/九张出单/十张出对/枪不打四) as learnable weights; all default to 0,
       // so the shipped policy is unchanged until the benchmark proves a value.
@@ -349,16 +407,37 @@
       if(usedWild)reasons.push(`使用 ${usedWild} 张配牌，减少后续调整余地。`);
       const lastMove=remainingTurns===1?pool.find(x=>plan.mask(x)===remainingMask):null;
       const strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:remainingTurns,turnsSaved:beforeTurns-remainingTurns,bombsBefore:beforeReserve.count,bombsAfter:afterReserve.count,bombPlan:afterReserve.combinations,strongestBombBefore:beforeReserve.strongest,strongestBombAfter:afterReserve.strongest,lostBombReserve:lostReserve,breakBomb,breakFlush,usedWild,provenControl,controlExit,finishMove:lastMove?describe(lastMove):null,
-        opponentThreat:opponents.filter(x=>x.count<=5),teamPlan:teamLead?'搭档控牌时让牌；只有收尾或明确拦截风险才接管。':feed?'先以低点同型牌试着交棒，搭档的具体牌型和点数仍未知。':support?'自己保留拦截牌，优先保护搭档先走。':'比较自己收尾路线与队友接手机会，不只看本手出牌张数。',
+        opponentThreat:opponents.filter(x=>x.count<=5),opponentBombRanks:bombRanks,unseenJokers,unseenBig,teamPlan:teamLead?'搭档控牌时让牌；只有收尾或明确拦截风险才接管。':feed?'先以低点同型牌试着交棒，搭档的具体牌型和点数仍未知。':support?'自己保留拦截牌，优先保护搭档先走。':'比较自己收尾路线与队友接手机会，不只看本手出牌张数。',
         nextPlan:lastMove?`余牌可出${describe(lastMove)}；${provenControl?'本手对对手有保守控牌依据。':'须先重新取得出牌权，不能假定连续领出。'}`:`余牌约 ${remainingTurns} 手，保留 ${afterReserve.count} 组互不占牌的炸弹类组合，按公开行动重新评估。`};
       return {move:m,score,facts,reasons,remaining:remaining.length,finish,breakBomb,breakFlush,usedWild,remainingTurns,strategy};
     });
     if(o.trick)scored.push({move:null,score:teamLead?(tableVulnerable?0:W.passTeamLead):danger?W.passDanger:0,facts:['本次不出牌，保留全部手牌。'],reasons:[tableVulnerable?'搭档当前最大，但对手报单或报双，过牌可能让其接走；比较你是否有合适的拦截牌。':teamLead?(o.counts[partner]===0?'搭档已走完，让本轮自然结束可争取借风领出。':'搭档控牌时优先让牌，保留自己的高牌与组合。'):danger?'对手接近走完，放行可能失去最后的拦截机会。':'没有迫切拦截需要时，可保留控制牌；同时承担对手继续领出的风险。'],remaining:o.hand.length,finish:false,breakBomb:0,usedWild:0,remainingTurns:beforeTurns});
-    const pass=scored.find(x=>!x.move);if(pass)pass.strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:beforeTurns,turnsSaved:0,bombsBefore:beforeReserve.count,bombsAfter:beforeReserve.count,bombPlan:beforeReserve.combinations,lostBombReserve:0,opponentThreat:opponents.filter(x=>x.count<=5),teamPlan:teamLead?'保留组合，等待搭档继续领出或借风。':'保留控制牌，但承担对手继续领出的风险。',nextPlan:'过牌不保证之后拿回牌权；继续根据公开行动和对手张数调整。'};
+    const pass=scored.find(x=>!x.move);
+    if(pass){
+      if(objNow==='afterHead'&&W.objHeadYield&&o.counts[partner]>0&&o.counts[partner]<=o.hand.length)pass.score+=W.objHeadYield;
+      if(objNow==='afterTheirHead'&&W.objLossBlock&&lowestOpp<=5)pass.score-=W.objLossBlock;
+    }
+    if(pass)pass.strategy={phase,role:teamObjective+(support?'；优先护送搭档':''),turnsBefore:beforeTurns,turnsAfter:beforeTurns,turnsSaved:0,bombsBefore:beforeReserve.count,bombsAfter:beforeReserve.count,bombPlan:beforeReserve.combinations,lostBombReserve:0,opponentThreat:opponents.filter(x=>x.count<=5),teamPlan:teamLead?'保留组合，等待搭档继续领出或借风。':'保留控制牌，但承担对手继续领出的风险。',nextPlan:'过牌不保证之后拿回牌权；继续根据公开行动和对手张数调整。'};
     return scored.sort((a,b)=>b.score-a.score||(a.move?.key||'').localeCompare(b.move?.key||''));
   }
+  // 局面目标（只用公开信息）：
+  //   head             无人走完      → 争头游
+  //   afterHead        己方已头游    → 争双上（把搭档送到二游，自己甘当三游）
+  //   afterTheirHead   对方已头游    → 免双下（争二游，其次三游）
+  function objectiveOf(o){
+    if(!o.finish.length)return 'head';
+    return o.finish[0]%2===o.seat%2?'afterHead':'afterTheirHead';
+  }
+  function weightsFor(o,W=WEIGHTS){
+    const obj=objectiveOf(o);
+    if(obj==='afterHead'&&W.objHeadTurns===1&&W.objHeadFeed===0&&W.objHeadSteal===0)return W;
+    if(obj==='afterTheirHead'&&W.objLossTurns===1&&W.objLossBomb===1)return W;
+    if(obj==='afterHead')return {...W,turns:W.turns*W.objHeadTurns,feed:W.feed+W.objHeadFeed,partnerDoneSteal:W.partnerDoneSteal+W.objHeadSteal};
+    if(obj==='afterTheirHead')return {...W,turns:W.turns*W.objLossTurns,bombUse:W.bombUse*W.objLossBomb};
+    return W;
+  }
   function choose(s,seat=s.turn,W=WEIGHTS) {
-    const best=analyse(observe(s,seat),W)[0];
+    const o=observe(s,seat),best=analyse(o,weightsFor(o,W))[0];
     if(!best)throw Error('没有可用动作');
     return best.move?{seat,kind:'play',move:best.move}:{seat,kind:'pass'};
   }
@@ -427,7 +506,7 @@
     return importRecord({...parent,id,created:new Date().toISOString(),start:rotateStart(parent.start,seat),events,notes:{},branchOf:parent.id,
       perspective:{rootId:parent.perspective?.rootId||parent.id,offset:((parent.perspective?.offset||0)+seat)%4,atStep:step}});
   }
-  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
+  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,objectiveOf,weightsFor,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
   root.Guandan=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
