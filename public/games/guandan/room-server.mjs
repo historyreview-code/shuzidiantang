@@ -3,8 +3,8 @@
 import http from 'node:http';
 import {randomUUID} from 'node:crypto';
 import require from 'node:module';
-const G = require.createRequire(import.meta.url)('../server/engine.cjs');
-const {GuandanTribute} = require.createRequire(import.meta.url)('../server/tribute.cjs');
+const G = require.createRequire(import.meta.url)('./engine.cjs');
+const {GuandanTribute} = require.createRequire(import.meta.url)('./tribute.cjs');
 
 const PORT = Number(process.env.ROOM_PORT || 8890);
 const rooms = new Map();   // code -> room
