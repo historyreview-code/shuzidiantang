@@ -216,7 +216,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -230,7 +230,7 @@
     takeLead:0,interceptBonus:0,shedLead:0,partnerTakeover:0,handoffToMe:0,probeNext:0,shedAlong:0,
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   function planner(hand,moves,budget=WEIGHTS.plannerBudget) {
@@ -514,6 +514,23 @@
       const isJoker=m=>m&&m.type==='single'&&INDEX[m.ids[0]].r>=16;
       const filtered=rows.filter(r=>!isJoker(r.move));
       if(filtered.length) rows=filtered;
+    }
+    // 合作规则：桌面由搭档控制时，通常不压搭档的牌；但对手快走完（≤1 张）时必须抢回牌权拦截。
+    if(W.partnerHold&&o.trick&&o.trick.seat%2===o.seat%2){
+      const oppMin=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
+      if(oppMin>1){
+        const keep=rows.filter(r=>!r.move||r.finish);
+        if(keep.length)rows=keep;
+      }
+    }
+    // 防跑牌：领出时若对手只剩 1 张，避免送出单张（除非只剩单张可选）。
+    if(W.antiRunout&&!o.trick&&rows.length){
+      const oppCounts=o.counts.filter((c,i)=>i%2!==o.seat%2);
+      const minOpp=Math.min(...oppCounts);
+      if(minOpp<=1){
+        const nonSingle=rows.filter(r=>r.move&&r.move.type!=='single');
+        if(nonSingle.length)rows=nonSingle;
+      }
     }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
