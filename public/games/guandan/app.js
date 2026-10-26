@@ -92,7 +92,11 @@ let difficulty=(()=>{try{const D=window.GuandanDifficulty;return D?D.resolveTier
   function updateBattleStatus(){const el=$('[data-battle-status]');if(el)el.textContent=battleStatus();}
   function canAdvance(){return view==='practice'&&!review&&!paused&&!dealWaiting&&!dragState&&!document.hidden&&!$('#modal-root').children.length&&!narrator.snapshot().busy&&!current().over&&cursor===record.events.length&&(current().turn!==0||autoHero);}
   function canHurry(){return view==='practice'&&!review&&!dealWaiting&&!current().over&&atLive()&&(current().turn!==0||autoHero);}
-  function localDecision(manual=false){const D=window.GuandanDifficulty;const pack=D&&D.analyseTop?D.analyseTop(G,current(),difficulty):{top:G.analyse(G.observe(current()))[0],tier:{name:'高手'}};const x=pack.top;return {action:x.move?{seat:current().turn,kind:'play',move:x.move}:{seat:current().turn,kind:'pass'},source:'local',model:'本地策略·'+pack.tier.name,version:G.STRATEGY_VERSION,reason:(manual==='timeout'?'等待达到30秒，自动本地接替。':manual?'手动催促。':'')+x.reasons.slice(0,2).join('').slice(0,150),teamwork:x.strategy?.teamPlan||'依据搭档张数、控牌位置和公开行动配合。',nextPlan:x.strategy?.nextPlan||'根据下一轮公开行动调整。'};}
+  function localDecision(manual=false){const D=window.GuandanDifficulty;const pack=D&&D.analyseTop?D.analyseTop(G,current(),difficulty):{top:G.analyse(G.observe(current()))[0],tier:{name:'高手'}};
+  // 与联机版一致：用 choose（含搭档保护/防跑牌/留王等硬规则）出决策，再用 analyse 结果做解释
+  let chosenAction=null;
+  try{chosenAction=G.choose(current(),current().turn,pack.W);}catch(e){chosenAction=null;}
+  const x=(chosenAction&&chosenAction.move?(pack.rows||[]).find(r=>r.move&&r.move.key===chosenAction.move.key):null)||pack.top;return {action:(chosenAction&&chosenAction.move)?{seat:current().turn,kind:'play',move:chosenAction.move}:{seat:current().turn,kind:'pass'},source:'local',model:'本地策略·'+pack.tier.name,version:G.STRATEGY_VERSION,reason:(manual==='timeout'?'等待达到30秒，自动本地接替。':manual?'手动催促。':'')+x.reasons.slice(0,2).join('').slice(0,150),teamwork:x.strategy?.teamPlan||'依据搭档张数、控牌位置和公开行动配合。',nextPlan:x.strategy?.nextPlan||'根据下一轮公开行动调整。'};}
   function hurry(reason=true){if(!canHurry())return;stop();battle.cancel();narrator.cancel();paused=false;const result=localDecision(reason);takeAction(result.action,false,result);}
   function syncTurnClock(){turnClock.sync(battleKey(),canHurry()&&!document.hidden&&!$('#modal-root').children.length);turnClock.tick(()=>{hurry('timeout');toast('等待已满30秒，本步已由本地策略出牌。');});}
   // 出牌节奏：每张出牌至少停留 2 秒方便看清牌面；过牌即时确认。
