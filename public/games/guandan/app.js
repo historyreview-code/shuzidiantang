@@ -10,7 +10,7 @@
   let handMode=H.modes.includes(db.handMode)?db.handMode:'rank';
   db.handOrders=db.handOrders&&typeof db.handOrders==='object'&&!Array.isArray(db.handOrders)?db.handOrders:{};
   db.handLayouts=db.handLayouts&&typeof db.handLayouts==='object'&&!Array.isArray(db.handLayouts)?db.handLayouts:{};
-  let record,states,view='practice',cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,playDelay=2000,timer=null,lastToastTimer;
+  let record,states,view='practice',cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,playDelay=1000,timer=null,lastToastTimer;
   const freshSeed=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0].toString(36).toUpperCase();};
   const newId=()=>`g-${Date.now().toString(36)}-${freshSeed()}`;
   function createRecord(start,events=[],lessonId=null){return {format:'guandan-lab-record-v1',id:newId(),created:new Date().toISOString(),title:`实战 · 打 ${G.rankName(start.level)}`,start,events:events.map(a=>a.origin?a:{...a,origin:'lesson'}),lessonId,branchOf:null,notes:{}};}
