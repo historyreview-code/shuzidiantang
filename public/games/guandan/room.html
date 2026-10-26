@@ -1,0 +1,96 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>好友联机 · 阿尔法掼蛋狗</title>
+<style>
+:root{--bg:#0b1020;--card:#182238;--line:#2b3a55;--gold:#e8c66a;--text:#e9eefb}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,"PingFang SC",sans-serif;background:var(--bg);color:var(--text)}
+.wrap{max-width:820px;margin:0 auto;padding:16px}
+h1{font-size:18px;margin:6px 0 12px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+input,button{font:inherit;border-radius:10px;border:1px solid var(--line);background:#0f1728;color:var(--text);padding:10px}
+button{cursor:pointer}button.primary{background:var(--gold);color:#231a05;border-color:var(--gold);font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.seat{background:#0f1728;border:1px solid var(--line);border-radius:10px;padding:8px;font-size:13px}
+.seat.active{border-color:var(--gold)}
+.hand{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.c{min-width:34px;text-align:center;padding:6px 4px;border-radius:8px;background:#fff;color:#111;font-weight:700;border:1px solid #ccc;cursor:pointer;user-select:none}
+.c.red{color:#c62828}.c.sel{outline:3px solid var(--gold)}
+.trick{display:flex;gap:4px;margin:8px 0}.log{font-size:13px;color:#9fb0cf;max-height:120px;overflow:auto}
+.code{font:700 20px monospace;letter-spacing:2px;color:var(--gold)}
+</style></head><body><div class="wrap">
+<h1>好友联机 · 掼蛋</h1>
+<div id="lobby" class="panel">
+  <div class="row"><input id="name" placeholder="你的昵称" value="玩家"><button class="primary" id="create">创建房间</button></div>
+  <div class="row" style="margin-top:8px"><input id="code" placeholder="6 位房间码"><button id="join">加入房间</button></div>
+  <p id="hint" style="color:#9fb0cf;font-size:13px"></p>
+</div>
+<div id="table" class="panel" hidden>
+  <div class="row" style="justify-content:space-between"><div>房间 <span class="code" id="roomcode"></span></div><div id="status" style="font-size:13px;color:#9fb0cf"></div></div>
+  <div class="seats" id="seats" style="margin-top:10px"></div>
+  <div class="trick" id="trick"></div>
+  <div class="hand" id="hand"></div>
+  <div class="row" style="margin-top:10px">
+    <button class="primary" id="play">出牌</button><button id="pass">过牌</button>
+    <button id="start">开始对局</button><span id="msg" style="font-size:13px;color:#9fb0cf"></span>
+  </div>
+  <div class="log" id="log"></div>
+</div>
+<script src="engine.js"></script>
+<script>
+const API = new URLSearchParams(location.search).get('api') || localStorage.getItem('roomApi') || (location.protocol === 'file:' ? 'http://127.0.0.1:8890' : location.origin);
+const $ = s => document.querySelector(s);
+let room = null, view = null, sel = new Set(), timer = null;
+const store = () => JSON.parse(localStorage.getItem('gdRoom') || 'null');
+const save = v => localStorage.setItem('gdRoom', JSON.stringify(v));
+function cardEl(id) {
+  const c = Guandan.INDEX[id]; const red = c.s === 'H' || c.s === 'D' || c.r === 17;
+  const label = c.r >= 16 ? (c.r === 17 ? '大王' : '小王') : c.s + Guandan.rankName(c.r);
+  const el = document.createElement('div'); el.className = 'c' + (red ? ' red' : '') + (sel.has(id) ? ' sel' : '');
+  el.textContent = label; el.onclick = () => { sel.has(id) ? sel.delete(id) : sel.add(id); render(); }; return el;
+}
+function render() {
+  if (!view) return;
+  $('#roomcode').textContent = view.code; $('#status').textContent = view.over ? '本局结束' : (view.turn === room.seat ? '轮到你出牌' : `等待 ${view.seats[view.turn].name} 出牌`);
+  $('#seats').innerHTML = view.seats.map((s, i) => `<div class="seat ${view.turn === i ? 'active' : ''}">${i === room.seat ? '我 · ' : ''}${s.name}${s.ai ? '（电脑）' : ''}<br>余 ${view.counts[i]} 张</div>`).join('');
+  $('#trick').innerHTML = view.trick ? `<div style="font-size:13px;color:#9fb0cf">${view.seats[view.trick.seat].name} 出牌</div>` : '';
+  if (view.trick) for (const id of view.trick.ids) $('#trick').appendChild(cardEl(id));
+  $('#hand').innerHTML = ''; (view.hand || []).forEach(id => $('#hand').appendChild(cardEl(id)));
+  $('#start').hidden = view.started; $('#play').disabled = view.turn !== room.seat; $('#pass').disabled = view.turn !== room.seat;
+  $('#msg').textContent = view.over ? (view.result && view.result.team === room.seat % 2 ? '你方获胜' : '对方获胜') : '';
+}
+async function sync() {
+  if (!room) return;
+  try {
+    const r = await fetch(`${API}/api/room/state?code=${room.code}&token=${room.token}&v=${view ? view.version : -1}`);
+    if (r.ok) { const v = await r.json(); if (!view || v.version !== view.version || v.over !== view.over) { view = v; render(); } }
+  } catch (e) {}
+  clearTimeout(timer); timer = setTimeout(sync, 400);
+}
+async function post(path, body) {
+  const r = await fetch(API + path, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(body)});
+  return {ok: r.ok, data: await r.json()};
+}
+$('#create').onclick = async () => {
+  const {ok, data} = await post('/api/room/create', {name: $('#name').value || '房主'});
+  if (!ok) return $('#hint').textContent = data.error;
+  room = {code: data.code, seat: data.seat, token: data.token}; save(room); $('#hint').textContent = '房间码 ' + room.code + '，发给好友加入'; $('#table').hidden = false; sync();
+};
+$('#join').onclick = async () => {
+  const {ok, data} = await post('/api/room/join', {code: $('#code').value, name: $('#name').value || '玩家'});
+  if (!ok) return $('#hint').textContent = data.error;
+  room = {code: data.code, seat: data.seat, token: data.token}; save(room); $('#table').hidden = false; sync();
+};
+$('#start').onclick = async () => { const {ok, data} = await post('/api/room/start', {code: room.code, token: room.token}); if (!ok) $('#msg').textContent = data.error; };
+$('#play').onclick = async () => {
+  if (!sel.size) return $('#msg').textContent = '请先选牌';
+  const {ok, data} = await post('/api/room/action', {code: room.code, token: room.token, version: view.version, action: {kind: 'play', ids: [...sel]}});
+  if (!ok) return $('#msg').textContent = data.error;
+  sel.clear();
+};
+$('#pass').onclick = async () => {
+  const {ok, data} = await post('/api/room/action', {code: room.code, token: room.token, version: view.version, action: {kind: 'pass'}});
+  if (!ok) $('#msg').textContent = data.error;
+};
+(function boot() { const saved = store(); if (saved) { room = saved; $('#table').hidden = false; sync(); } })();
+</script></body></html>
