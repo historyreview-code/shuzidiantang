@@ -532,6 +532,18 @@
         if(nonSingle.length)rows=nonSingle;
       }
     }
+    // 尾牌阻击二：下家对手只剩 1 张时，跟单张要尽量出大牌盖住桌面，
+    // 让下家无法用他最后一张单牌抢走牌权（必要时压搭档的单张也算合理）。
+    if(W.antiRunout&&o.trick&&o.trick.move.type==='single'){
+      const nextOpp=o.counts[(o.seat+1)%4];
+      if(nextOpp===1){
+        const singles=rows.filter(r=>r.move&&r.move.type==='single');
+        if(singles.length){
+          singles.sort((a,b)=>b.move.power-a.move.power);
+          rows=[singles[0]];
+        }
+      }
+    }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
     return best.move?{seat,kind:'play',move:best.move}:{seat,kind:'pass'};
