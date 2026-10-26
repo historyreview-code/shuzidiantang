@@ -106,3 +106,5 @@ body:before{opacity:.14}.topbar{border:0}.brandmark{background:linear-gradient(1
 .flush-card{border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:10px 12px}
 .flush-card strong{display:block;margin-bottom:4px}
 .flush-actions{display:flex;gap:8px;margin-top:8px}
+.seat-cards{display:inline-flex;gap:2px;flex-wrap:wrap;align-items:center}
+.seat-cards .card.mini{transform:scale(.72);transform-origin:left center;margin-right:-10px}
