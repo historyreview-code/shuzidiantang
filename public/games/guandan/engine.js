@@ -567,7 +567,17 @@
       // 搭档“送牌”：他出小牌、我手里只剩少量牌且能同型接走 → 应该接过来自己冲
       const canTakeFeed=o.hand.length<=8&&partnerPlay&&partnerPlay.power<=8&&bombTier(partnerPlay)===0
         &&rows.some(r=>r.move&&r.move.type===partnerPlay.type&&r.move.power>partnerPlay.power&&bombTier(r.move)===0&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
-      const letPartner=!canTakeFeed&&(oppMin>1||partnerStrong);   // 对手只剩 1 张时，只有搭档出的牌足够大才让牌
+      // 搭档出小牌时，用中档牌“顺走一轮”也划算：敌人压不起我们就接管，压得起就消耗对手
+      const partnerLeft2=o.counts[(o.seat+2)%4];
+      const allowShed=o.hand.length<=12&&partnerLeft2>=3&&partnerPlay&&partnerPlay.power<=10
+        &&rows.some(r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.power>=9&&r.move.power<=13&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
+      const letPartner=!canTakeFeed&&!allowShed&&(oppMin>1||partnerStrong);   // 对手只剩 1 张时，只有搭档出的牌足够大才让牌
+      if(allowShed){
+        // 顺走一轮：优先出中档牌（9~13），不拆炸弹/同花顺、不烧配牌
+        const shedRows=rows.filter(r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.power>=9&&r.move.power<=13
+          &&!(r.breakBomb>0)&&!(r.breakFlush)&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
+        if(shedRows.length)rows=shedRows;
+      }
       if(canTakeFeed){
         // 接搭档的送牌：直接选同型更大的牌（不再考虑过牌）
         const beatRows=rows.filter(r=>r.move&&r.move.type===partnerPlay.type&&r.move.power>partnerPlay.power&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
