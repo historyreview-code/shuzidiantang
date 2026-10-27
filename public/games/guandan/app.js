@@ -223,7 +223,7 @@ function progDelta(){const st2=states.at(-1);if(!st2.over||!st2.result)return 0;
     case 'speechTest':narrator.enable(true);announce('语音试听。你在下方，搭档在对面，下家在右侧，上家在左侧。'+S.turnText(current()));render();break;
     case 'speechRepeat':announce(announcement());render();break;
     case 'new':newModal();break;
-    case 'confirmNew':{const level=+$('#new-level').value,lead=+$('#new-lead').value,seed=$('#new-seed').value.trim()||freshSeed();archive();closeModal();setRecord(createRecord(G.deal(seed,level,lead)));}break;
+    case 'confirmNew':{const level=+$('#new-level').value,lead=+$('#new-lead').value,seed=(($('#new-seed')&&$('#new-seed').value.trim())||freshSeed());archive();closeModal();setRecord(createRecord(G.deal(seed,level,lead)));}break;
     case 'closeModal':closeModal();break;
     case 'export':exportRecord(record);break;
     case 'exportRecord':{const r=db.records.find(x=>x.id===b.dataset.id);if(r)exportRecord(r);}break;
