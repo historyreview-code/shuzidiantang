@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,urgentBeat:1,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,urgentBeat:1,followPowerMul:2.5,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -385,7 +385,13 @@
       // 概率化控制牌风险（v8 同款机制）：单张牌力成本随“外面有更大单张”的可能性上浮
       const biggerUnseen = m.type === 'single' ? unseen.filter(c => power(c.r, o.level) > m.power).length : 0;
       const controlRisk = m.type === 'single' ? Math.min(1, biggerUnseen / Math.max(1, unseen.length) * 6) : 0;
-      const powerW = W.power * (early ? W.powerEarlyMul : 1) * (1 + W.controlRiskK * controlRisk);
+      let powerW = W.power * (early ? W.powerEarlyMul : 1) * (1 + W.controlRiskK * controlRisk);
+      // 顺牌原则：从小的开始出；只有需要阻击下一家（对手≤2）时才动用大牌
+      if(W.followPowerMul && o.trick && bombTier(o.trick.move)===0){
+        const nextOppC=o.counts[(o.seat+1)%4];
+        const urgent=nextOppC<=2;
+        if(!urgent) powerW *= W.followPowerMul;
+      }
       let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-carryPen
       // 级牌分级代价：顺子/同花顺用级牌划算，钢板最亏，三带二/三连对居中
       if(W.reserveLevel && m.type!=='bomb' && m.type!=='flush' && m.type!=='kings'){
