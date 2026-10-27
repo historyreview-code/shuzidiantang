@@ -627,14 +627,12 @@
     }
     // 拆炸弹去压小牌：不划算（除非对手快走完、自己能走完、或这一手本身就是炸弹/同花顺）
     if(W.reserveBomb && o.trick && bombTier(o.trick.move)===0 && o.trick.move.power<=8 && rows.length>1){
-      const oppMinB=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
-      if(oppMinB>2){
-        const rc={}; for(const c of o.hand) rc[c.r]=(rc[c.r]||0)+1;
-        const bombRanks=new Set(Object.keys(rc).filter(r=>rc[r]>=4&&+r<16).map(Number));
-        const splits=r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.ids.some(id=>bombRanks.has(INDEX[id].r));
-        const keep=rows.filter(r=>!splits(r));
-        if(keep.length)rows=keep;
-      }
+      // 无论对手剩几张，都不拆炸弹去凑别的牌型；要拦就直接把炸弹当炸弹打
+      const rc={}; for(const c of o.hand) rc[c.r]=(rc[c.r]||0)+1;
+      const bombRanks=new Set(Object.keys(rc).filter(r=>rc[r]>=4&&+r<16).map(Number));
+      const splits=r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.ids.some(id=>bombRanks.has(INDEX[id].r));
+      const keep=rows.filter(r=>!splits(r));
+      if(keep.length)rows=keep;
     }
     // 用配牌去压对方小牌：浪费（除非能走完、对手快走完、或组成炸弹/同花顺）
     if(W.reserveWild && o.trick && bombTier(o.trick.move)===0 && o.trick.move.power<=8 && rows.length>1){
