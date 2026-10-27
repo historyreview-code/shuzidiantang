@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,flushUpgrade:9,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -387,6 +387,12 @@
       const controlRisk = m.type === 'single' ? Math.min(1, biggerUnseen / Math.max(1, unseen.length) * 6) : 0;
       const powerW = W.power * (early ? W.powerEarlyMul : 1) * (1 + W.controlRiskK * controlRisk);
       let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-carryPen
+      // 级牌分级代价：顺子/同花顺用级牌划算，钢板最亏，三带二/三连对居中
+      if(W.reserveLevel && m.type!=='bomb' && m.type!=='flush' && m.type!=='kings'){
+        const usedLv=m.ids.filter(id=>INDEX[id].r===o.level).length;
+        const factor=m.type==='triples'?2.2:m.type==='full'?1.4:m.type==='pairs'?0.9:m.type==='straight'?0.35:0.6;
+        score-=usedLv*W.levelCost*factor;
+      }
       // 拆炸弹组同花顺去压对手的炸弹/同花顺：值得，额外加分
       if(o.trick && bombTier(o.trick.move)>0 && m.type==='flush' && bombTier(m)>bombTier(o.trick.move)) score+=W.flushUpgrade;-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
       score-=lostReserve*W.lostReserve;
@@ -642,16 +648,6 @@
       if(oppMinW>2){
         const burnsWild=r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.ids.some(id=>wild(INDEX[id],o.level));
         const keep=rows.filter(r=>!burnsWild(r));
-        if(keep.length)rows=keep;
-      }
-    }
-    // 级牌（打几的点数）很值钱：不为普通牌型（钢板/三连对/三带二等）烧掉多张级牌
-    if(W.reserveLevel && rows.length>1){
-      const isBombRow=r=>r.move&&bombTier(r.move)>0;
-      const levelUsed=r=>r.move?r.move.ids.filter(id=>INDEX[id].r===o.level).length:0;
-      const urgent=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2))<=2;
-      if(!urgent){
-        const keep=rows.filter(r=>isBombRow(r)||r.finish||levelUsed(r)<=1);
         if(keep.length)rows=keep;
       }
     }
