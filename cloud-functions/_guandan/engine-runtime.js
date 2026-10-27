@@ -591,10 +591,12 @@
       if(nextOpp===1){
         const singles=rows.filter(r=>r.move&&r.move.type==='single');
         if(singles.length){
-          singles.sort((a,b)=>b.move.power-a.move.power);
-          // 优先用“最大的非王单张”去堵，王留着做控制/收尾
-          const noJoker=singles.filter(r=>r.move.ids.every(id=>INDEX[id].r<16));
-          rows=[ (noJoker.length?noJoker:singles)[0] ];
+          // 提高阻击成功率：按“点数 - 王的额外成本”排序；王仍可用，只是不鼓励
+          const key=r=>{
+            const isJoker=r.move.ids.some(id=>INDEX[id].r>=16);
+            return r.move.power-(isJoker?6:0)-(isJoker?0.5:0);
+          };
+          rows=singles.slice().sort((a,b)=>key(b)-key(a));
         }
       }
     }
