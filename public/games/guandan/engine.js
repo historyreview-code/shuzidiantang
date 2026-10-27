@@ -576,7 +576,8 @@
         // 顺走一轮：优先出中档牌（9~13），不拆炸弹/同花顺、不烧配牌
         const shedRows=rows.filter(r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.power>=9&&r.move.power<=13
           &&!(r.breakBomb>0)&&!(r.breakFlush)&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
-        if(shedRows.length)rows=shedRows;
+        // 顺走时出“刚好能压住”的最小中档牌，保留更大的牌
+        if(shedRows.length)rows=shedRows.slice().sort((a,b)=>a.move.power-b.move.power);
       }
       if(canTakeFeed){
         // 接搭档的送牌：直接选同型更大的牌（不再考虑过牌）
