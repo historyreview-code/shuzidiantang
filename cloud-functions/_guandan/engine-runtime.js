@@ -216,7 +216,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -346,13 +346,26 @@
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
       const effBombUse=W.bombUse*(1+W.bombRiskK*(provenControl?0:bombRisk));
+      // 三带二：带的“二”应尽量小；带王/大牌额外扣分（保留战力）
+      let carryPen = 0;
+      if(m.type === 'full'){
+        const ranks = m.ids.map(id => INDEX[id].r);
+        const cnt = {}; for(const r of ranks) cnt[r] = (cnt[r] || 0) + 1;
+        let pairIds = m.ids.filter(id => cnt[INDEX[id].r] === 2);
+        if(!pairIds.length) pairIds = m.ids.filter(id => INDEX[id].r !== m.main);
+        for(const id of pairIds){
+          const r = INDEX[id].r;
+          carryPen += Math.max(0, (r >= 16 ? r + 4 : power(r, o.level)) - 8);
+        }
+        carryPen *= W.carryCost;
+      }
       const early = phase === '中前盘';
       const cardsW = W.cards * (early ? W.cardsEarlyMul : 1);
       // 概率化控制牌风险（v8 同款机制）：单张牌力成本随“外面有更大单张”的可能性上浮
       const biggerUnseen = m.type === 'single' ? unseen.filter(c => power(c.r, o.level) > m.power).length : 0;
       const controlRisk = m.type === 'single' ? Math.min(1, biggerUnseen / Math.max(1, unseen.length) * 6) : 0;
       const powerW = W.power * (early ? W.powerEarlyMul : 1) * (1 + W.controlRiskK * controlRisk);
-      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
+      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-carryPen-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
       score-=lostReserve*W.lostReserve;
       if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
       if(controlExit)score+=W.controlExit;
@@ -549,6 +562,26 @@
       const isBigJoker=r=>r.move&&r.move.type==='single'&&INDEX[r.move.ids[0]].r>=16;
       const keep=rows.filter(r=>!isBigJoker(r)||r.finish);
       if(keep.length)rows=keep;
+    }
+    // 三带二带王：有替代解释时不出（除非能直接走完）
+    if(rows.length>1){
+      const carryJoker=r=>{
+        if(!r.move||r.move.type!=='full'||r.finish)return false;
+        const cnt={}; for(const id of r.move.ids){const k=INDEX[id].r;cnt[k]=(cnt[k]||0)+1;}
+        return r.move.ids.some(id=>{const rk=INDEX[id].r;return rk>=16 && cnt[rk]===2;});
+      };
+      const keep=rows.filter(r=>!carryJoker(r));
+      if(keep.length)rows=keep;
+    }
+    // 3) 搭档快走完时：领出优先小单张/小对子喂牌
+    if(W.escortLead && !o.trick && rows.length>1){
+      const partner=o.counts[(o.seat+2)%4];
+      // 搭档剩几张就喂什么型：1 张喂单张、2 张喂对子、3 张喂三张/三带二
+      const want=partner===1?['single']:partner===2?['pair']:partner===3?['triple','full']:[];
+      if(want.length){
+        const feedRows=rows.filter(r=>r.move&&want.includes(r.move.type)&&r.move.power<=8);
+        if(feedRows.length)rows=feedRows.concat(rows.filter(r=>!feedRows.includes(r)));
+      }
     }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
