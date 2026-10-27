@@ -610,6 +610,16 @@
         if(feedRows.length)rows=feedRows.concat(rows.filter(r=>!feedRows.includes(r)));
       }
     }
+    // 规则：红心级牌（配牌）不单出（浪费且违规）。只有它是最后一张时才允许出掉。
+    if(o.hand.length>1 && rows.length){
+      const isWildSingle=r=>r.move&&r.move.type==='single'&&wild(INDEX[r.move.ids[0]],o.level);
+      const keep=rows.filter(r=>!isWildSingle(r));
+      if(keep.length)rows=keep;
+    }
+    // 兜底：手里只剩一张配牌且没有其它可出时，允许单出
+    if(!rows.length && o.hand.length===1 && wild(o.hand[0], o.level)){
+      rows=[{move:move('single',[o.hand[0]],power(o.hand[0].r,o.level),[],o.hand[0].r),score:0,facts:[],reasons:[],strategy:{}}];
+    }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
     return best.move?{seat,kind:'play',move:best.move}:{seat,kind:'pass'};
