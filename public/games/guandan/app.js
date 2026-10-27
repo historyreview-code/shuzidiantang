@@ -112,7 +112,10 @@ let difficulty=(()=>{try{const D=window.GuandanDifficulty;return D?D.resolveTier
   },delay);}
   function takeAction(a,human=true,decision=null){if(human)window.GuandanMetrics.track('started',record);const before=states.at(-1),next=G.apply(before,a);const stored=a.kind==='play'?{seat:before.turn,kind:'play',move:next.lastActions[before.turn].move}:{seat:before.turn,kind:'pass'};stored.origin=human?'human':'bot';if(!human&&decision)stored.decision=G.decisionTrace(decision);battle.cancel();if(human&&hintSeen)stored.assisted=true;hintSeen=false;record.events.push(stored);states.push(next);cursor=record.events.length;selected=[];declarationKey='';showHint=false;
     if(next.over){autoHero=false;archive();window.GuandanMetrics.track('finished',record);}save();announce(S.actionText(stored,next));render();if(window.GuandanEffects.shouldCelebrate(before,next,!review))window.GuandanEffects.celebrate();}
-  function doPlay(){if(!myTurn())return;const m=selectedMoves().find(x=>x.key===declarationKey);if(!m){toast('请选择合法牌型后再出牌。');return;}takeAction({seat:0,kind:'play',move:m});}
+  function doPlay(){if(!myTurn())return;const m=selectedMoves().find(x=>x.key===declarationKey);if(!m){toast('请选择合法牌型后再出牌。');return;}
+  // 红心级牌不能单出（手里还有其它牌时）
+  if(m.type==='single'&&current().hands[0].length>1){const c=G.INDEX[m.ids[0]];if(c.s==='H'&&c.r===current().level){toast('红心级牌不能单出：它可以当任意牌配成对子/顺子/炸弹');return;}}
+  takeAction({seat:0,kind:'play',move:m});}
   function goto(step){view='practice';toolsOpen=true;stop();battle.cancel();arrangeMode=false;arrangeSelected=[];review=true;cursor=Math.max(0,Math.min(record.events.length,step));selected=[];showHint=false;autoHero=false;if(record.events.length&&!db.reviewed.includes(record.id)){db.reviewed.push(record.id);save();}announce(announcement());render();}
   function perspectiveHTML(){
     const p=record.perspective;if(!p)return '';
