@@ -85,8 +85,6 @@
           const take=g.n-use;
           if(pool.length<take)continue;
           const chosenWild=ws.slice(usedWild,usedWild+use);
-          // Two wilds alone form the level pair in this practice ruleset.
-          if(type==='pair'&&take===0&&g.r!==level)continue;
           fill(i+1,[...chosen,...pool.slice(0,take),...chosenWild],usedWild+use,[...assign,...chosenWild.map(c=>({id:c.id,r:g.r,s:g.s||c.s}))]);
         }
       }
@@ -127,6 +125,29 @@
       result.push({suit,ranks,move:candidate,replacements,natural:replacements.length===0,playable:beats(candidate,table)});
     }
     return result.sort((a,b)=>a.replacements.length-b.replacements.length||b.move.power-a.move.power||SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit));
+  }
+  // 桌面展示顺序：按牌型分组（顺子按顺序、三带二三张在前、对子成对、配牌放到替代位置）
+  function displayIds(m,level) {
+    if(!m||!Array.isArray(m.ids))return [];
+    const eff=id=>{
+      const a=(m.assign||[]).find(x=>x.id===id);
+      const c=INDEX[id];
+      return a?{r:a.r,s:a.s||c.s,id}:{r:c.r,s:c.s,id};
+    };
+    const cards=m.ids.map(eff);
+    const byRankSuit=(a,b)=>a.r-b.r||SUITS.indexOf(a.s)-SUITS.indexOf(b.s);
+    if(m.type==='straight'||m.type==='flush')return cards.sort(byRankSuit).map(c=>c.id);
+    if(m.type==='full'){
+      const tripleRank=m.main;
+      const tri=cards.filter(c=>c.r===tripleRank),pair=cards.filter(c=>c.r!==tripleRank);
+      return [...tri.sort(byRankSuit),...pair.sort(byRankSuit)].map(c=>c.id);
+    }
+    if(m.type==='pairs'||m.type==='triples'){
+      const groups={};
+      for(const c of cards)(groups[c.r]=groups[c.r]||[]).push(c);
+      return Object.keys(groups).map(Number).sort((a,b)=>a-b).flatMap(r=>groups[r].sort(byRankSuit)).map(c=>c.id);
+    }
+    return cards.sort(byRankSuit).map(c=>c.id);
   }
   const classify=(cards,level)=>enumerate(cards,level,true);
   const bombTier=m=>m.type==='kings'?10000:m.type==='flush'?550:m.type==='bomb'?(m.ids.length>=6?600+m.ids.length*30:m.ids.length===5?500:400)+m.power:0;
@@ -658,7 +679,7 @@
     return importRecord({...parent,id,created:new Date().toISOString(),start:rotateStart(parent.start,seat),events,notes:{},branchOf:parent.id,
       perspective:{rootId:parent.perspective?.rootId||parent.id,offset:((parent.perspective?.offset||0)+seat)%4,atStep:step}});
   }
-  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,objectiveOf,weightsFor,initialWithTribute,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
+  const API={VERSION,STRATEGY_VERSION,WEIGHTS,LEGACY_WEIGHTS_V4,objectiveOf,weightsFor,initialWithTribute,displayIds,SUITS,SYMBOLS,RANKS,TYPES,INDEX,deck,random,deal,makeStart,initial,sort,wild,power,name,rankName,enumerate,findStraightFlushes,classify,beats,bombTier,describe,apply,observe,structure,analyse,choose,explainChoice,replay,importRecord,decisionTrace,clone,rotateRecord,sourceStart};
   if(typeof module!=='undefined'&&module.exports)module.exports=API;
   root.Guandan=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
