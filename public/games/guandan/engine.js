@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,urgentBeat:1,followPowerMul:2.5,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -698,6 +698,14 @@
     if(W.urgentBeat && o.trick && o.trick.seat%2!==o.seat%2 && o.counts[o.trick.seat]<=2){
       const canBeat=rows.filter(r=>r.move);
       if(canBeat.length)rows=canBeat;
+    }
+    // 顺牌从小的开始：非紧急时不用 A 及以上/王/级牌去压小牌（留着阻击）
+    if(W.controlSave && o.trick && bombTier(o.trick.move)===0 && rows.length>1){
+      const nextOppC2=o.counts[(o.seat+1)%4];
+      if(nextOppC2>2){
+        const safeRows=rows.filter(r=>r.move&&!r.finish&&bombTier(r.move)===0&&r.move.ids.every(id=>power(INDEX[id].r,o.level)<14));
+        if(safeRows.length&&safeRows.length<rows.length)rows=safeRows.concat(rows.filter(r=>!safeRows.includes(r)));
+      }
     }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
