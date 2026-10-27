@@ -592,14 +592,17 @@
         const singles=rows.filter(r=>r.move&&r.move.type==='single');
         if(singles.length){
           singles.sort((a,b)=>b.move.power-a.move.power);
-          rows=[singles[0]];
+          // 优先用“最大的非王单张”去堵，王留着做控制/收尾
+          const noJoker=singles.filter(r=>r.move.ids.every(id=>INDEX[id].r<16));
+          rows=[ (noJoker.length?noJoker:singles)[0] ];
         }
       }
     }
     // 大牌经济：开局/中盘不为了赢一手小牌甩王（能走完或对手快走完时除外）。
-    if(W.jokerHold&&rows.length>1&&o.counts.filter((c,i)=>i%2!==o.seat%2).every(c=>c>2)&&o.hand.length>6){
-      const isBigJoker=r=>r.move&&r.move.type==='single'&&INDEX[r.move.ids[0]].r>=16;
-      const keep=rows.filter(r=>!isBigJoker(r)||r.finish);
+    if(W.jokerHold&&rows.length>1&&o.trick&&bombTier(o.trick.move)===0&&o.trick.move.power<=8&&o.hand.length>3){
+      // 对方出小牌（≤8）时，不用王去压；留着王做控制/收尾
+      const isJoker=r=>r.move&&r.move.type==='single'&&INDEX[r.move.ids[0]].r>=16;
+      const keep=rows.filter(r=>!isJoker(r)||r.finish);
       if(keep.length)rows=keep;
     }
     // 三带二带王：有替代解释时不出（除非能直接走完）
