@@ -560,7 +560,12 @@
     // 合作规则：桌面由搭档控制时，通常不压搭档的牌；但对手快走完（≤1 张）时必须抢回牌权拦截。
     if(W.partnerHold&&o.trick&&o.trick.seat%2===o.seat%2){
       const oppMin=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
-      if(oppMin>1){
+      const partnerLeft=o.counts[(o.seat+2)%4];
+      const partnerPlay=o.trick.move;
+      // 让牌给搭档：搭档的牌够大（A 及以上）或搭档快走完时，不抢他的牌权
+      const partnerStrong=partnerPlay&&(partnerPlay.power>=14||bombTier(partnerPlay)>0);
+      const letPartner=oppMin>1||partnerStrong;   // 对手只剩 1 张时，只有搭档出的牌足够大才让牌
+      if(letPartner){
         const keep=rows.filter(r=>!r.move||r.finish);
         if(keep.length)rows=keep;
       }
