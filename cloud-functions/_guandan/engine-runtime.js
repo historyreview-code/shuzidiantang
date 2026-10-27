@@ -564,7 +564,15 @@
       const partnerPlay=o.trick.move;
       // 让牌给搭档：搭档的牌够大（A 及以上）或搭档快走完时，不抢他的牌权
       const partnerStrong=partnerPlay&&(partnerPlay.power>=14||bombTier(partnerPlay)>0);
-      const letPartner=oppMin>1||partnerStrong;   // 对手只剩 1 张时，只有搭档出的牌足够大才让牌
+      // 搭档“送牌”：他出小牌、我手里只剩少量牌且能同型接走 → 应该接过来自己冲
+      const canTakeFeed=o.hand.length<=8&&partnerPlay&&partnerPlay.power<=8&&bombTier(partnerPlay)===0
+        &&rows.some(r=>r.move&&r.move.type===partnerPlay.type&&r.move.power>partnerPlay.power&&bombTier(r.move)===0&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
+      const letPartner=!canTakeFeed&&(oppMin>1||partnerStrong);   // 对手只剩 1 张时，只有搭档出的牌足够大才让牌
+      if(canTakeFeed){
+        // 接搭档的送牌：直接选同型更大的牌（不再考虑过牌）
+        const beatRows=rows.filter(r=>r.move&&r.move.type===partnerPlay.type&&r.move.power>partnerPlay.power&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
+        if(beatRows.length)rows=beatRows;
+      }
       if(letPartner){
         const keep=rows.filter(r=>!r.move||r.finish);
         if(keep.length)rows=keep;
