@@ -576,8 +576,14 @@
     // 3) 搭档快走完时：领出优先小单张/小对子喂牌
     if(W.escortLead && !o.trick && rows.length>1){
       const partner=o.counts[(o.seat+2)%4];
-      // 搭档剩几张就喂什么型：1 张喂单张、2 张喂对子、3 张喂三张/三带二
-      const want=partner===1?['single']:partner===2?['pair']:partner===3?['triple','full']:[];
+      const partnerSeat=(o.seat+2)%4;
+      // 搭档出过对子，说明他手里可能有对子结构
+      const partnerPlayedPair=(o.history||[]).some(h=>h.kind==='play'&&h.seat===partnerSeat&&h.type==='pair');
+      // 喂牌规则：剩 1 张喂单张；剩 2 张喂对子；剩 3 张以单张为主（他接不了三张/三带二），有对子迹象时可喂小对子
+      let want=[];
+      if(partner===1) want=['single'];
+      else if(partner===2) want=['pair'];
+      else if(partner===3) want=partnerPlayedPair?['pair','single']:['single'];
       if(want.length){
         const feedRows=rows.filter(r=>r.move&&want.includes(r.move.type)&&r.move.power<=8);
         if(feedRows.length)rows=feedRows.concat(rows.filter(r=>!feedRows.includes(r)));
