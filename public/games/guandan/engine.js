@@ -564,6 +564,11 @@
       if(minOpp<=1){
         const nonSingle=rows.filter(r=>r.move&&r.move.type!=='single');
         if(nonSingle.length)rows=nonSingle;
+        else {
+          // 只剩单张可领时：对手只剩 1 张，必须领最大的单张去堵
+          const singles=rows.filter(r=>r.move&&r.move.type==='single');
+          if(singles.length===rows.length)rows=singles.sort((a,b)=>b.move.power-a.move.power);
+        }
       }
     }
     // 尾牌阻击二：下家对手只剩 1 张时，跟单张要尽量出大牌盖住桌面，
