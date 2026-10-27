@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -624,6 +624,26 @@
     // 兜底：手里只剩一张配牌且没有其它可出时，允许单出
     if(!rows.length && o.hand.length===1 && wild(o.hand[0], o.level)){
       rows=[{move:move('single',[o.hand[0]],power(o.hand[0].r,o.level),[],o.hand[0].r),score:0,facts:[],reasons:[],strategy:{}}];
+    }
+    // 拆炸弹去压小牌：不划算（除非对手快走完、自己能走完、或这一手本身就是炸弹/同花顺）
+    if(W.reserveBomb && o.trick && bombTier(o.trick.move)===0 && o.trick.move.power<=8 && rows.length>1){
+      const oppMinB=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
+      if(oppMinB>2){
+        const rc={}; for(const c of o.hand) rc[c.r]=(rc[c.r]||0)+1;
+        const bombRanks=new Set(Object.keys(rc).filter(r=>rc[r]>=4&&+r<16).map(Number));
+        const splits=r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.ids.some(id=>bombRanks.has(INDEX[id].r));
+        const keep=rows.filter(r=>!splits(r));
+        if(keep.length)rows=keep;
+      }
+    }
+    // 用配牌去压对方小牌：浪费（除非能走完、对手快走完、或组成炸弹/同花顺）
+    if(W.reserveWild && o.trick && bombTier(o.trick.move)===0 && o.trick.move.power<=8 && rows.length>1){
+      const oppMinW=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
+      if(oppMinW>2){
+        const burnsWild=r=>r.move&&bombTier(r.move)===0&&!r.finish&&r.move.ids.some(id=>wild(INDEX[id],o.level));
+        const keep=rows.filter(r=>!burnsWild(r));
+        if(keep.length)rows=keep;
+      }
     }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
