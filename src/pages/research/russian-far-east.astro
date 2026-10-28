@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const assets = '/research/russian-far-east/v1-2';
+const chapters = [
+  ['01', '山河海洋与既有社会'], ['02', '大陆东扩与陆上疆界'],
+  ['03', '海洋扩张与海疆变迁'], ['04', '定居、铁路与城市'],
+  ['05', '革命、战争与计划开发'], ['06', '冷战前沿与国家建设'],
+  ['07', '人口民族与地方生活'], ['08', '资源怎样成为地方的财富'],
+  ['09', '国家转型与太平洋方向的重新选择'], ['10', '下一阶段开发的几个支点'],
+];
+---
+<BaseLayout current="research" title="俄罗斯远东的形成与变迁 · 劳伦斯" description="以俄罗斯远东为主体，联系东西伯利亚与北太平洋，叙述疆界、人口、开发与军事。劳伦斯著，附左右跨页总图、历史照片与EPUB下载。" image={`${assets}/cover.jpg`}>
+  <main id="content" class="page book-page" data-version="1.2">
+    <header class="book-hero">
+      <div class="book-cover"><img src={`${assets}/cover.jpg`} width="1600" height="2300" alt="《俄罗斯远东的形成与变迁》封面，劳伦斯著，配1895年海参崴历史照片" fetchpriority="high" /></div>
+      <div class="book-intro">
+        <span class="kicker">历史与研究 · 自行出版电子书</span>
+        <h1>俄罗斯远东的<br class="desktop-break" />形成与变迁</h1>
+        <p class="subtitle">疆界 · 人口 · 开发与军事</p>
+        <p class="byline">劳伦斯 著</p>
+        <p class="description">从勒拿河到太平洋，从黑龙江到白令海。几百年间，毛皮商、军人、农户和囚徒沿河东来，港口、铁路、矿山与城市相继兴起。清朝、俄国、日本及邻近社会的命运，也在这里交错。</p>
+        <p class="description">本书以俄罗斯远东为主体，联系东西伯利亚与北太平洋，沿着疆界形成、人口迁移、国家开发和地方生活，读这片土地怎样走到今天。</p>
+        <div class="book-meta"><span>正文约5.25万汉字</span><span>十章 · 导论与结语</span><span>2026年10月28日更新</span></div>
+        <a class="button download-primary" id="download-epub" href={`${assets}/russian-far-east-lawrence-v1.2.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.2.epub">下载 EPUB · 跨页版 v1.2 <span aria-hidden="true">↓</span></a>
+        <p class="reading-tip">正文可调整字号。卷首总图采用左右跨页，并附区划文字名录与完整图。</p>
+      </div>
+    </header>
+
+    <nav class="book-nav" aria-label="本书导航"><a href="#map">卷首总图</a><a href="#contents">全书目录</a><a href="#preface">写在前面</a><a href="#edition">版本说明</a></nav>
+
+    <section class="section map-section" id="map" aria-labelledby="map-title">
+      <div class="section-head"><div><span class="kicker">山河与方位</span><h2 id="map-title">先看清这片地方</h2></div><p>远东11个联邦主体、行政中心与东西伯利亚联系地区。</p></div>
+      <a class="map-image" href={`${assets}/administrative-map.png`} target="_blank" rel="noopener" aria-label="打开完整行政区划高清总图"><img src={`${assets}/map-spread-preview.jpg`} width="1600" height="1150" alt="卷首总图左右两页合览：俄罗斯远东行政区划、东西伯利亚联系地区和北太平洋方位" loading="lazy" /></a>
+      <div class="map-caption"><p>在支持跨页的阅读器中，左右两页连续展开；区划名录另排为可调字号的文字页。图中南千岛群岛按实际管辖着色，归属争议见第三章。</p><a href={`${assets}/administrative-map.png`} target="_blank" rel="noopener">查看高清全图 ↗</a><a href={`${assets}/administrative-map.svg`} download>下载矢量图 ↓</a></div>
+    </section>
+
+    <section class="section" id="contents" aria-labelledby="contents-title">
+      <div class="section-head"><div><span class="kicker">全书目录</span><h2 id="contents-title">沿着十章读下去</h2></div><p>导论：远方怎样成为一个地方</p></div>
+      <ol class="chapter-list">{chapters.map(([number, title]) => <li><span>{number}</span><h3>{title}</h3></li>)}</ol>
+      <p class="after-contents">结语：大国疆域与地方生活。书末附地名与资料说明、分章阅读线索、图像来源及来源目录。</p>
+    </section>
+
+    <section class="section preface" id="preface" aria-labelledby="preface-title">
+      <span class="kicker">前言节选</span><h2 id="preface-title">给有兴趣于此的朋友</h2>
+      <p>这一课题吸引我，正在于许多问题仍有继续追索的余地。就我接触的中文读物而言，远东的综合叙述相对零散，将疆界、人口、开发与地方生活放在一起讨论的著作也较少见。各国学者已经积累了可观的专题研究，普通读者仍需要一条可以沿着走下去的线索。</p>
+      <p>本书尝试提供这样的线索。它以俄罗斯远东为主体，联系东西伯利亚及北太平洋，从沿河征收与设堡写到海洋扩张，从帝国移民写到苏联建设，再看当代居民的去留与资源经营。疆域的伸缩、国家的打算和家庭的日子，始终相互牵连。读一座港口的兴起，也要读它的粮食、工人和邻国；读一处矿山的产出，也要看留下来的城镇。</p>
+      <p>我希望这部书能给有兴趣于此的朋友提供一份连贯的参考，也为继续阅读和讨论留下一些入口。有关远东的故事，值得从国界与战事一路读到普通人的生活。</p>
+      <p class="signature">劳伦斯<br />2026年10月</p>
+    </section>
+
+    <section class="section edition" id="edition" aria-labelledby="edition-title">
+      <span class="kicker">电子版 v1.2</span><h2 id="edition-title">本次更新</h2>
+      <p>卷首地图改为左右连续跨页，调整中缝附近的地名，完整保留地理图层。远东11个主体的名录及行政中心另排为文字，方便放大、检索。历史正文沿用大幅修订后的v1.1版，含六组真实历史照片和重要人物肖像；资料核查截至2026年10月28日。</p>
+      <p>部分阅读器会按单页显示地图，可依次查看左右页，或打开随书的完整总图。全书引据及图源列在书末。</p>
+      <a class="button" href={`${assets}/russian-far-east-lawrence-v1.2.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.2.epub">下载新版 EPUB <span aria-hidden="true">↓</span></a>
+      <a class="back-link" href="/research/">返回全部研究 →</a>
+    </section>
+  </main>
+</BaseLayout>
+<style>
+  .book-page{max-width:1160px}.book-hero{display:grid;grid-template-columns:minmax(240px,.75fr) minmax(0,1.35fr);gap:clamp(30px,5vw,76px);align-items:center;padding:56px 0 48px}.book-cover{max-width:370px;justify-self:center;box-shadow:8px 14px 28px #233a401c}.book-cover img{display:block;width:100%;height:auto}.book-intro h1{font:600 clamp(30px,3.7vw,48px)/1.45 var(--serif);letter-spacing:.02em;margin:15px 0 10px}.subtitle{font:20px/1.7 var(--serif);color:var(--ink-2);margin:0 0 10px}.byline{font:15px/1.6 var(--serif);margin:0 0 24px}.description{font:15px/1.95 var(--serif);color:var(--ink-2);margin:12px 0}.book-meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:11px;color:var(--ink-3);margin:23px 0 20px}.download-primary{font-size:14px}.reading-tip{font-size:12px;line-height:1.8;color:var(--ink-3);margin:14px 0 0}.book-nav{display:flex;flex-wrap:wrap;gap:14px 30px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:14px}.book-nav a{text-decoration:none}.section{padding-top:45px}.section h2{font:500 clamp(24px,2.6vw,32px)/1.5 var(--serif);margin:10px 0 24px}.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:20px}.section-head h2{margin-bottom:0}.section-head>p{max-width:360px;font-size:13px;line-height:1.8;color:var(--ink-2);margin:0}.map-image{display:block;border:1px solid var(--line);background:#faf8f2}.map-image img{display:block;width:100%;height:auto}.map-caption{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;font-size:12px;line-height:1.85;color:var(--ink-2)}.map-caption p{flex:1 1 500px}.map-caption a{white-space:nowrap}.chapter-list{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;list-style:none;padding:0;margin:0}.chapter-list li{display:flex;gap:18px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--line)}.chapter-list span{font:12px var(--mono);color:var(--ink-3)}.chapter-list h3{font:500 18px/1.7 var(--serif);margin:0}.after-contents{font-size:13px;line-height:1.9;color:var(--ink-2);margin-top:24px}.preface{max-width:760px;margin:0 auto}.preface>p{font:16px/2.1 var(--serif);text-align:justify;margin:20px 0}.preface .signature{text-align:right;font-size:14px}.edition{border-top:1px solid var(--line);margin-top:45px;padding-bottom:50px}.edition>p{max-width:760px;font-size:14px;line-height:1.95;color:var(--ink-2)}.edition .button{margin-top:10px}.back-link{display:inline-block;margin-left:25px;font-size:13px}
+  @media(max-width:720px){.book-hero{grid-template-columns:1fr;gap:30px;padding-top:32px}.book-cover{width:58%;min-width:180px;max-width:280px}.book-intro h1{font-size:32px}.desktop-break{display:none}.section-head{display:block}.section-head>p{margin-top:12px}.chapter-list{grid-template-columns:1fr}.chapter-list h3{font-size:17px}.map-caption p{margin-bottom:0}.book-nav{gap:15px 23px}.preface>p{font-size:15px}.back-link{display:block;margin:25px 0 0}.book-meta{gap:7px 14px}}
+</style>

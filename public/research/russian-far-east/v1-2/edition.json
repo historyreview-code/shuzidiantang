@@ -1,0 +1,34 @@
+{
+  "version": "1.2",
+  "date": "2026-10-28",
+  "author": "劳伦斯",
+  "body_CJK": 52545,
+  "epub_sha256": "d2a48e3eb679665874f1468a164ad10d6c249bc378b0241f14cf2208057adf6b",
+  "files": {
+    "map-spread-preview.jpg": {
+      "bytes": 224094,
+      "sha256": "f5131c77354b0a22ef7dd2e424660b20bbe2e60180d1a7ab623c64bd9d365a6c"
+    },
+    "russian-far-east-lawrence-v1.2.epub": {
+      "bytes": 7281939,
+      "sha256": "d2a48e3eb679665874f1468a164ad10d6c249bc378b0241f14cf2208057adf6b"
+    },
+    "administrative-map.png": {
+      "bytes": 980781,
+      "sha256": "1938da131a9289bbbc757b4ccf9d24ab610309298302882350341d9a52f7feb5"
+    },
+    "cover.jpg": {
+      "bytes": 529956,
+      "sha256": "6d5f23d45f12cedef6b6fc741d00fe0ed5fc1d334f1ff4396cba581e1a4e4a45"
+    },
+    "administrative-map.svg": {
+      "bytes": 1161553,
+      "sha256": "1e411c403414a63ab178500e03db3939e3d41cddb691b6808f1bbeaa451899fb"
+    }
+  },
+  "changes": [
+    "卷首总图改为左右跨页",
+    "区划名录另列文字页",
+    "正文承接v1.1"
+  ]
+}
