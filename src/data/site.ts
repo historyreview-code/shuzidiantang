@@ -40,8 +40,8 @@ export const site = {
 // 作品内容源；分类与图标由 catalog.ts 统一组织。
 export const works = [
   {
-    id: 'japan-sea-war', title: '环日本海：战争的交通地理', eyebrow: '历史地理短片 · 1904—1905',
-    href: '/films/japan-sea-war/', image: '/films/japan-sea-war/poster-v4.1.jpg',
+    id: 'japan-sea-war', title: '日俄战争——环日本海的地理空间视角', eyebrow: '历史地理短片 · 1904—1905',
+    href: '/films/japan-sea-war/', image: '/films/japan-sea-war/poster-v4.2.jpg',
     summary: '沿铁路、山地与军港观察日俄战争：从二〇三高地俯瞰旅顺港湾，跟随辽阳、奉天与对马战事，走向战后和约。',
     tags: ['7 分 57 秒', '三维地形', '章节跳转'], status: '影像新作',
   },

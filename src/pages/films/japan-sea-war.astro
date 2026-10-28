@@ -1,23 +1,23 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const film = '/films/japan-sea-war/japan-sea-war-v4.1-720p.mp4';
+const film = '/films/japan-sea-war/japan-sea-war-v4.2-720p.mp4';
 const chapters = [{"time": 0, "stamp": "00:00", "title": "战前格局"}, {"time": 110.50000000000001, "stamp": "01:50", "title": "铁路与补给"}, {"time": 157.625, "stamp": "02:37", "title": "旅顺与二〇三高地"}, {"time": 210.33333333333334, "stamp": "03:30", "title": "黄海与蔚山"}, {"time": 262.875, "stamp": "04:22", "title": "辽阳会战"}, {"time": 290.75, "stamp": "04:50", "title": "奉天会战"}, {"time": 368.5833333333333, "stamp": "06:08", "title": "对马海战"}, {"time": 423.3333333333333, "stamp": "07:03", "title": "战后和约"}];
 ---
-<BaseLayout current="works" directory title="环日本海：战争的交通地理 — 劳伦斯实验室" description="7 分 57 秒历史地理短片。从铁路、山地与军港，观察 1904—1905 年日俄战争。包含旅顺、辽阳、奉天、对马及战后和约，支持章节跳转。" image="/films/japan-sea-war/poster-v4.1.jpg">
+<BaseLayout current="works" directory title="日俄战争——环日本海的地理空间视角 — 劳伦斯实验室" description="7 分 57 秒历史地理短片。从铁路、山地与军港，观察 1904—1905 年日俄战争。包含旅顺、辽阳、奉天、对马及战后和约，支持章节跳转。" image="/films/japan-sea-war/poster-v4.2.jpg">
   <main id="content" class="page film-page">
     <header class="page-title">
       <span class="kicker">历史地理短片 · 1904—1905</span>
-      <h1>环日本海<span>战争的交通地理</span></h1>
+      <h1>日俄战争<span>环日本海的地理空间视角</span></h1>
       <p>军列沿西伯利亚向东，运兵船驶过黄海。<br />从山地、铁路与军港，看军队如何抵达战场。</p>
-      <div class="film-meta"><span>2026.10.28</span><span>7 分 57 秒</span><span>720p · 18.76 MB</span><span>中文配音与字幕 · v4.1</span></div>
+      <div class="film-meta"><span>2026.10.28</span><span>7 分 57 秒</span><span>720p · 18.83 MB</span><span>中文配音与字幕 · v4.2</span></div>
     </header>
-    <section class="screening" aria-label="环日本海放映厅">
-      <video id="japan-sea-player" controls playsinline preload="metadata" poster="/films/japan-sea-war/poster-v4.1.jpg" aria-label="播放环日本海：战争的交通地理" aria-describedby="film-caption">
+    <section class="screening" aria-label="日俄战争放映厅">
+      <video id="japan-sea-player" controls playsinline preload="metadata" poster="/films/japan-sea-war/poster-v4.2.jpg" aria-label="播放日俄战争——环日本海的地理空间视角" aria-describedby="film-caption">
         <source src={film} type="video/mp4" />
-        <track kind="subtitles" src="/films/japan-sea-war/captions-zh-v4.1.vtt" srclang="zh" label="中文" />
+        <track kind="subtitles" src="/films/japan-sea-war/captions-zh-v4.2.vtt" srclang="zh" label="中文" />
         <p>可<a href={film}>直接打开影片</a>。</p>
       </video>
-      <div class="screening-caption" id="film-caption"><span>开启声音；全屏观看便于阅读地图。</span><a href={film} download>下载轻量版 · 18.76 MB ↓</a></div>
+      <div class="screening-caption" id="film-caption"><span>开启声音；全屏观看便于阅读地图。</span><a href={film} download>下载轻量版 · 18.83 MB ↓</a></div>
       <p id="playback-error" class="playback-error" hidden>影片暂未加载成功。可<a href={film}>直接打开视频</a>。</p>
     </section>
     <section class="film-chapters" aria-labelledby="chapters-title">
@@ -37,9 +37,9 @@ const chapters = [{"time": 0, "stamp": "00:00", "title": "战前格局"}, {"time
           <li><a href="https://history.state.gov/historicaldocuments/frus1904/d92" target="_blank" rel="noopener noreferrer">FRUS：清廷中立文书</a> · <a href="https://history.state.gov/historicaldocuments/frus1905/d915" target="_blank" rel="noopener noreferrer">朴茨茅斯和约</a></li>
         </ul>
         <p>二〇三高地近景使用约 20 米高程网格，显示网格约 40 米，高程夸张 2.5 倍。港湾轮廓取现代高程近似；观察与校射关系参照史料，舰位与炮位采用示意布局。</p>
-        <a href="/films/japan-sea-war/sources-v4.1.json">公开来源与数据口径</a>
+        <a href="/films/japan-sea-war/sources-v4.2.json">公开来源与数据口径</a>
       </details>
-      <div class="film-resources"><a href="/films/japan-sea-war/captions-zh-v4.1.srt" download>下载中文字幕 ↓</a><a href="/works/#media">返回影像与播客 →</a></div>
+      <div class="film-resources"><a href="/films/japan-sea-war/captions-zh-v4.2.srt" download>下载中文字幕 ↓</a><a href="/works/#media">返回影像与播客 →</a></div>
     </section>
   </main>
 </BaseLayout>
