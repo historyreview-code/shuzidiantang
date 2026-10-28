@@ -40,6 +40,12 @@ export const site = {
 // 作品内容源；分类与图标由 catalog.ts 统一组织。
 export const works = [
   {
+    id: 'japan-sea-war', title: '环日本海：战争的交通地理', eyebrow: '历史地理短片 · 1904—1905',
+    href: '/films/japan-sea-war/', image: '/films/japan-sea-war/poster-v4.1.jpg',
+    summary: '沿铁路、山地与军港观察日俄战争：从二〇三高地俯瞰旅顺港湾，跟随辽阳、奉天与对马战事，走向战后和约。',
+    tags: ['7 分 57 秒', '三维地形', '章节跳转'], status: '影像新作',
+  },
+  {
     id: 'guandan', title: '阿尔法掼蛋狗', eyebrow: '实战训练 · 逐步复盘',
     href: '/games/guandan/', image: '/games/guandan/cover.svg',
     summary: '在清爽牌桌上练整手规划与搭档配合。自由理牌、快速出牌、可选智能对战，结合真实牌谱的 AI 分析与语音解读。',

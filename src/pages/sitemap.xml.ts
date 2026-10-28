@@ -5,6 +5,7 @@ const urls = [
   ['/', 'weekly', '1.0'],
   ['/works/', 'weekly', '0.9'],
   ['/podcasts/don-quixote/', 'monthly', '0.8'],
+  ['/films/japan-sea-war/', 'monthly', '0.8'],
   ['/films/babylon-tower/', 'monthly', '0.8'],
   ['/films/single-bit-error/', 'monthly', '0.8'],
   ['/films/droplet/', 'monthly', '0.8'],

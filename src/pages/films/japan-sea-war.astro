@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const film = '/films/japan-sea-war/japan-sea-war-v4.1-720p.mp4';
+const chapters = [{"time": 0, "stamp": "00:00", "title": "战前格局"}, {"time": 110.50000000000001, "stamp": "01:50", "title": "铁路与补给"}, {"time": 157.625, "stamp": "02:37", "title": "旅顺与二〇三高地"}, {"time": 210.33333333333334, "stamp": "03:30", "title": "黄海与蔚山"}, {"time": 262.875, "stamp": "04:22", "title": "辽阳会战"}, {"time": 290.75, "stamp": "04:50", "title": "奉天会战"}, {"time": 368.5833333333333, "stamp": "06:08", "title": "对马海战"}, {"time": 423.3333333333333, "stamp": "07:03", "title": "战后和约"}];
+---
+<BaseLayout current="works" directory title="环日本海：战争的交通地理 — 劳伦斯实验室" description="7 分 57 秒历史地理短片。从铁路、山地与军港，观察 1904—1905 年日俄战争。包含旅顺、辽阳、奉天、对马及战后和约，支持章节跳转。" image="/films/japan-sea-war/poster-v4.1.jpg">
+  <main id="content" class="page film-page">
+    <header class="page-title">
+      <span class="kicker">历史地理短片 · 1904—1905</span>
+      <h1>环日本海<span>战争的交通地理</span></h1>
+      <p>军列沿西伯利亚向东，运兵船驶过黄海。<br />从山地、铁路与军港，看军队如何抵达战场。</p>
+      <div class="film-meta"><span>2026.10.28</span><span>7 分 57 秒</span><span>720p · 18.76 MB</span><span>中文配音与字幕 · v4.1</span></div>
+    </header>
+    <section class="screening" aria-label="环日本海放映厅">
+      <video id="japan-sea-player" controls playsinline preload="metadata" poster="/films/japan-sea-war/poster-v4.1.jpg" aria-label="播放环日本海：战争的交通地理" aria-describedby="film-caption">
+        <source src={film} type="video/mp4" />
+        <track kind="subtitles" src="/films/japan-sea-war/captions-zh-v4.1.vtt" srclang="zh" label="中文" />
+        <p>可<a href={film}>直接打开影片</a>。</p>
+      </video>
+      <div class="screening-caption" id="film-caption"><span>开启声音；全屏观看便于阅读地图。</span><a href={film} download>下载轻量版 · 18.76 MB ↓</a></div>
+      <p id="playback-error" class="playback-error" hidden>影片暂未加载成功。可<a href={film}>直接打开视频</a>。</p>
+    </section>
+    <section class="film-chapters" aria-labelledby="chapters-title">
+      <div class="section-head"><div><span class="kicker">沿时间轴观看</span><h2 id="chapters-title">从战前格局到战后和约</h2></div></div>
+      <div class="chapter-grid">{chapters.map(c => <button type="button" class="chapter" data-time={c.time} aria-label={`从 ${c.stamp} 播放：${c.title}`}><span class="chapter-time">{c.stamp}<span aria-hidden="true">↗</span></span><strong>{c.title}</strong></button>)}</div>
+    </section>
+    <section class="film-note" aria-labelledby="film-note-title">
+      <h2 id="film-note-title">沿地图读战争</h2>
+      <p>短片把日本列岛、中国东北、华北与西伯利亚的交通联系放在同一张地图上，跟随战争进程观察旅顺、辽阳与奉天。二〇三高地的镜头从高地附近望向旅顺港湾，展示观察员、港内舰队与后方炮兵的关系；最后回到朴茨茅斯和约中的领土、港口和铁路安排。</p>
+      <p>地图采用现代高程与海岸参照，高程经过夸张。实线表示史料支持的行动联系，虚线表示推定连接；路线、舰位、炮位及控制范围均按注明口径示意。人口年份、战役兵力与损失类别在画面中分别列示。</p>
+      <p class="credit">原创解说与程序化三维地图；SVG 舰船、火车及战斗示意。配音：MiniMax；配乐：火山引擎音乐 API。</p>
+      <details><summary>资料与制图口径</summary>
+        <ul>
+          <li><a href="https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou08_detail.html" target="_blank" rel="noopener noreferrer">JACAR：第三次旅顺总攻与二〇三高地观察点</a></li>
+          <li><a href="https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou05_detail.html" target="_blank" rel="noopener noreferrer">JACAR：辽阳会战</a> · <a href="https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou09_detail.html" target="_blank" rel="noopener noreferrer">奉天会战</a></li>
+          <li><a href="https://rgo.ru/activity/redaction/articles/dorogi-bez-durakov-kak-prokladyvali-ussuriyskuyu-vetku/" target="_blank" rel="noopener noreferrer">俄罗斯地理学会：乌苏里铁路建设</a></li>
+          <li><a href="https://history.state.gov/historicaldocuments/frus1904/d92" target="_blank" rel="noopener noreferrer">FRUS：清廷中立文书</a> · <a href="https://history.state.gov/historicaldocuments/frus1905/d915" target="_blank" rel="noopener noreferrer">朴茨茅斯和约</a></li>
+        </ul>
+        <p>二〇三高地近景使用约 20 米高程网格，显示网格约 40 米，高程夸张 2.5 倍。港湾轮廓取现代高程近似；观察与校射关系参照史料，舰位与炮位采用示意布局。</p>
+        <a href="/films/japan-sea-war/sources-v4.1.json">公开来源与数据口径</a>
+      </details>
+      <div class="film-resources"><a href="/films/japan-sea-war/captions-zh-v4.1.srt" download>下载中文字幕 ↓</a><a href="/works/#media">返回影像与播客 →</a></div>
+    </section>
+  </main>
+</BaseLayout>
+<script>
+  const player = document.querySelector<HTMLVideoElement>('#japan-sea-player');
+  const errorMessage = document.querySelector<HTMLElement>('#playback-error');
+  if (player) {
+    let pending: number | null = null;
+    const seek = (time: number) => { player.currentTime = time; player.play().catch(() => player.focus()); };
+    player.addEventListener('loadedmetadata', () => { if (pending !== null) { seek(pending); pending = null; } });
+    document.querySelectorAll<HTMLButtonElement>('.chapter').forEach(button => button.addEventListener('click', () => {
+      const time = Number(button.dataset.time);
+      if (player.readyState >= 1) seek(time); else { pending = time; player.load(); }
+      player.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    }));
+    player.addEventListener('error', () => { if (errorMessage) errorMessage.hidden = false; });
+    player.addEventListener('playing', () => { if (errorMessage) errorMessage.hidden = true; });
+  }
+</script>
+<style>
+.film-page{padding-bottom:70px}h1 span{display:block;font-size:.53em;margin-top:14px;letter-spacing:.03em}.film-meta{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:24px;color:var(--ink-3);font-size:.82rem}.screening{border:1px solid var(--line);background:#101e27;box-shadow:var(--shadow)}.screening video{width:100%;aspect-ratio:16/9;display:block;background:#101e27}.screening-caption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:17px 22px;color:#c5d0cf;font-size:.8rem;border-top:1px solid #3b5058}.screening-caption a,.playback-error a{color:#efe2c5;text-underline-offset:4px}.playback-error{padding:0 22px 16px;color:#efb895}.film-chapters{margin-top:50px}.chapter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.chapter{appearance:none;text-align:left;color:var(--ink);font:inherit;border:1px solid var(--line);background:var(--card);padding:22px;cursor:pointer}.chapter:hover{border-color:var(--amber)}.chapter:focus-visible{outline:2px solid var(--amber);outline-offset:4px}.chapter-time{display:flex;justify-content:space-between;color:var(--ink-3);font-family:var(--mono);font-size:.78rem;margin-bottom:16px}.chapter strong{font-family:var(--serif);font-size:1.1rem}.film-note{max-width:820px;margin-top:48px}.film-note h2{font-family:var(--serif);font-size:1.4rem}.film-note p{line-height:1.95;color:var(--ink-2)}.film-note .credit{font-size:.84rem;color:var(--ink-3)}.film-note a{text-underline-offset:4px}.film-note details{margin:26px 0;padding:20px 22px;border:1px solid var(--line)}.film-note summary{cursor:pointer}.film-note li{margin:12px 0;line-height:1.8}.film-resources{display:flex;flex-wrap:wrap;gap:14px 24px;margin:26px 0;font-size:.86rem}@media(max-width:800px){.chapter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.chapter{padding:16px}.chapter strong{font-size:1rem}.screening-caption{padding:14px}.film-note details{padding:16px}}
+</style>

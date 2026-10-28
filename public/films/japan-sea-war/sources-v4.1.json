@@ -1,0 +1,255 @@
+{
+  "title": "环日本海：战争的交通地理",
+  "version": "4.1",
+  "date": "2026-10-28",
+  "sources": {
+    "frus-china-neutrality": {
+      "title": "FRUS 1904, no. 92：清廷中立上谕与庆亲王照会",
+      "url": "https://history.state.gov/historicaldocuments/frus1904/d92",
+      "role": "1904 年 2 月 12 日上谕的英译附件及同日照会：宣布中立、要求军民遵守、重申东三省主权"
+    },
+    "rosstat1897": {
+      "title": "Rosstat：1897 年俄帝国人口普查",
+      "url": "https://rosstat.gov.ru/folder/313/document/113882",
+      "role": "人口约 1.256 亿，1897 年普查覆盖范围"
+    },
+    "ipss1900": {
+      "title": "日本国立社会保障·人口问题研究所：历史人口表",
+      "url": "https://www.ipss.go.jp/syoushika/tohkei/Data/Popular2005/01-01.htm",
+      "role": "1900 年日本内地估计人口 4384.7 万"
+    },
+    "jacar-opening": {
+      "title": "JACAR：陆海战斗序盘",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/hayawakari02_01.html",
+      "role": "总体资源、战争节奏、初期行动和海运"
+    },
+    "jacar-mid": {
+      "title": "JACAR：陆海战斗中盘",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/hayawakari02_02.html",
+      "role": "首次旅顺总攻兵力与日军损失概数"
+    },
+    "jacar-first": {
+      "title": "JACAR：第一次旅顺总攻",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou04_detail.html",
+      "role": "总攻日期与攻势受挫"
+    },
+    "jacar-third": {
+      "title": "JACAR：第三次旅顺总攻及开城",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou08_detail.html",
+      "role": "二〇三高地、1905 年 1 月 2 日投降协定"
+    },
+    "jacar-liaoyang": {
+      "title": "JACAR：辽阳会战",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou05_detail.html",
+      "role": "13 万 / 22 万；日死伤 2.2 万、俄死伤 2.5 万，均为展览概数"
+    },
+    "jacar-mukden": {
+      "title": "JACAR：奉天会战",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou09_detail.html",
+      "role": "25 万 / 31 万；日死伤 7 万，俄损失 8 万含被俘；行动与结局"
+    },
+    "jacar-naval": {
+      "title": "JACAR：黄海与蔚山海战",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/kaijou_06_detail.html",
+      "role": "参战舰名、舰队行动与战果"
+    },
+    "ndl-kamimura": {
+      "title": "日本国立国会图书馆：上村彦之丞",
+      "url": "https://www.ndl.go.jp/portrait/datas/59/index.html",
+      "role": "第二舰队指挥与蔚山海战"
+    },
+    "jacar-tsushima": {
+      "title": "JACAR：对马海战",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/kaijou_08_detail.html",
+      "role": "1905 年 5 月 27 日作战与俄舰北上目标"
+    },
+    "nids-tsushima": {
+      "title": "日本防卫研究所：日俄战争 120 周年史料展",
+      "url": "https://www.nids.mod.go.jp/military_archives/digital_siryo/russojapanesewar120th/index.html",
+      "role": "日方损失三艘鱼雷艇"
+    },
+    "navy-tsushima": {
+      "title": "澳大利亚海军史学会：The Battle of Tsushima, 1905",
+      "url": "https://navyhistory.au/the-battle-of-tsushima-1905/",
+      "role": "舰种编制：日 4 战列舰 + 8 装甲巡洋舰；俄 8 战列舰 + 3 岸防舰"
+    },
+    "nhhc": {
+      "title": "美国海军历史与遗产司令部：Innovation in the U.S. Navy",
+      "url": "https://www.history.navy.mil/content/dam/nhhc/research/publications/publication-508-pdf/USNavy-Innovation-book-508.pdf",
+      "role": "俄方 11 艘战列舰及岸防舰沉没或被俘的总结口径"
+    },
+    "vlad-sub": {
+      "title": "海参崴中央图书馆系统：早期太平洋潜艇",
+      "url": "https://vladlib.ru/n27_07_21_4/",
+      "role": "1905 年潜艇部署、近岸巡逻与港口防御"
+    },
+    "jacar-sakhalin": {
+      "title": "JACAR：库页岛作战",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/rikujou10_detail.html",
+      "role": "1905 年 7 月登陆、占领"
+    },
+    "jacar-peace": {
+      "title": "JACAR：日俄讲和",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/sensoushi/seiji08_detail.html",
+      "role": "双方议和背景"
+    },
+    "portsmouth": {
+      "title": "美国外交文书 FRUS：朴次茅斯和约全文",
+      "url": "https://history.state.gov/historicaldocuments/frus1905/d915",
+      "role": "第 II、III、V、VI、IX 条及撤兵附约"
+    },
+    "commanders": {
+      "title": "JACAR：日俄战争人物词条",
+      "url": "https://www.jacar.go.jp/exhibition/nichiro2/yougoshu/index.html",
+      "role": "阿列克谢耶夫的远东陆海军总司令任期与库罗帕特金"
+    },
+    "china1905": {
+      "title": "JACAR：1905 年 12 月 22 日中日条约",
+      "url": "https://www.jacar.go.jp/english/exhibition/nichiro/19051222.htm",
+      "role": "清政府承认俄国在东北权益向日本移转的中日条约"
+    },
+    "ussuri1897": {
+      "title": "俄罗斯地理学会：乌苏里铁路的建设",
+      "url": "https://rgo.ru/activity/redaction/articles/dorogi-bez-durakov-kak-prokladyvali-ussuriyskuyu-vetku/",
+      "role": "海参崴—伯力段于 1897 年通车；早期尼科利斯克段已于 1893 年运营"
+    },
+    "loc-transsib": {
+      "title": "美国国会图书馆：Trans-Siberian Railroad",
+      "url": "https://www.loc.gov/collections/meeting-of-frontiers/articles-and-essays/development/trans-siberian-railroad",
+      "role": "西西伯利亚段从车里雅宾斯克至新尼古拉耶夫斯克；中西伯利亚、外贝加尔与乌苏里各段背景"
+    },
+    "volc-music": {
+      "title": "火山引擎：纯音乐生成 API",
+      "url": "https://docs.volcengine.com/docs/Audiovideounderstandingandprocessing/Generatepuremusic?lang=zh",
+      "role": "GenBGMForTime / Version 2024-08-12 / v5.0；5 条生成任务及结果保存在 assets/music/volc"
+    }
+  },
+  "facts": [
+    {
+      "subject": "开战时清廷立场",
+      "date": "1904-02-12",
+      "position": "局外中立",
+      "detail": "上谕要求各地军民遵守；同日照会重申东三省主权属于中国",
+      "sources": [
+        "frus-china-neutrality"
+      ],
+      "scope": "外交文书收录的上谕英译及庆亲王同日照会；官方表态与地方实际战争影响分别说明"
+    },
+    {
+      "subject": "战前人口",
+      "japan": 43847000,
+      "japanDate": "1900-01-01",
+      "russia": 125600000,
+      "russiaDate": "1897",
+      "unit": "人",
+      "scope": "分别列示年份及统计覆盖范围；用于资源背景",
+      "sources": [
+        "ipss1900",
+        "rosstat1897"
+      ]
+    },
+    {
+      "subject": "旅顺首次总攻",
+      "period": "1904-08",
+      "japanForces": 50000,
+      "russiaForces": 40000,
+      "japanLosses": {
+        "value": 10000,
+        "relation": "greater_than",
+        "category": "死伤"
+      },
+      "russiaLosses": null,
+      "sources": [
+        "jacar-mid",
+        "jacar-first"
+      ],
+      "scope": "首次总攻概数；最终投降另列"
+    },
+    {
+      "subject": "辽阳",
+      "japanForces": 130000,
+      "russiaForces": 220000,
+      "japanLosses": {
+        "value": 22000,
+        "category": "死伤"
+      },
+      "russiaLosses": {
+        "value": 25000,
+        "category": "死伤"
+      },
+      "scope": "JACAR 详细展页概数；俄方兵力包括各兵种，页面另列俄步兵约 13 万；学术文献范围差异保留",
+      "sources": [
+        "jacar-liaoyang"
+      ]
+    },
+    {
+      "subject": "奉天",
+      "japanForces": 250000,
+      "russiaForces": 310000,
+      "japanLosses": {
+        "value": 70000,
+        "category": "死伤"
+      },
+      "russiaLosses": {
+        "value": 80000,
+        "category": "死伤及被俘"
+      },
+      "scope": "JACAR 概数；损失类别分别列示",
+      "sources": [
+        "jacar-mukden"
+      ]
+    },
+    {
+      "subject": "黄海",
+      "japanCore": {
+        "battleship": 4,
+        "armoredCruiser": 2
+      },
+      "russiaCore": {
+        "battleship": 6
+      },
+      "scope": "日方第一战队、俄方战列舰核心；其他巡洋舰、驱逐舰另见来源舰名表",
+      "sources": [
+        "jacar-naval"
+      ]
+    },
+    {
+      "subject": "蔚山",
+      "japanCore": {
+        "armoredCruiser": 4
+      },
+      "russiaCore": {
+        "armoredCruiser": 3
+      },
+      "result": "留里克号沉没，另两艘俄舰北撤",
+      "sources": [
+        "jacar-naval"
+      ]
+    },
+    {
+      "subject": "对马",
+      "japanCore": {
+        "battleship": 4,
+        "armoredCruiser": 8
+      },
+      "russiaCore": {
+        "battleship": 8,
+        "coastalDefenseShip": 3
+      },
+      "result": "俄方上述 11 艘沉没或被俘；日方损失 3 艘鱼雷艇",
+      "scope": "核心战列舰种；其他舰艇见编制来源",
+      "sources": [
+        "navy-tsushima",
+        "nids-tsushima",
+        "nhhc"
+      ]
+    }
+  ],
+  "mapNotes": [
+    "现代高程与海岸参照；高程作视觉夸张。",
+    "实线表示史料支持的行动联系，虚线表示推定连接；路线按节点示意连绘。",
+    "二〇三高地近景采用约 20 米高程网格，显示网格约 40 米；现代港湾轮廓从海平面连通区域近似提取。",
+    "舰船、炮位及控制范围采用示意布局。",
+    "人口年份、战役兵力与损失范围逐项列示。"
+  ]
+}

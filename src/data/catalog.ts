@@ -29,7 +29,7 @@ export interface CatalogGroup {
 
 // 新作品默认进入数字探索，避免更新内容时因漏填分类而消失。
 const groups: Record<string, string[]> = {
-  media: ['don-quixote-podcast', 'math-beauty-astra', 'babylon-tower', 'single-bit-error', 'droplet', 'electricity', 'autumn-train'],
+  media: ['japan-sea-war', 'don-quixote-podcast', 'math-beauty-astra', 'babylon-tower', 'single-bit-error', 'droplet', 'electricity', 'autumn-train'],
   travel: ['york-wander', 'cambridge-wander', 'glasgow-wander', 'harbin-wander', 'edinburgh-wander', 'kyoto-wander'],
   research: ['jilin-shipyards', 'shamanism', 'huanghe', 'shanghai-time-map'],
   tools: ['guandan', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games'],
