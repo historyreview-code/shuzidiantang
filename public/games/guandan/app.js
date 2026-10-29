@@ -166,17 +166,22 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   const progActive=()=>!!(db.progress&&db.progress.active&&!db.progress.finished);
   const progLevel=()=>db.progress?db.progress.level:2;
   function progDelta(){const st2=states.at(-1);if(!st2.over||!st2.result)return 0;const f=st2.finish;if(f[0]%2!==0)return 0;return f[1]%2===0?3:2;}
-  function progHUD(){return progActive()?`<span class="mode-label">升级赛 · 打 ${G.rankName(progLevel())}</span>`:'';}
+  function progHUD(){if(!progActive())return '';const laps=(db.progress&&db.progress.laps)||0;return `<span class="mode-label">升级赛 · 打 ${G.rankName(progLevel())}${laps?` · 第 ${laps+1} 圈`:''}</span>`;}
   function startProgression(){const lvSel=$('#new-level'),trSel=$('#prog-tribute');const startLevel=lvSel?Math.max(2,Math.min(A_LEVEL-1,+lvSel.value)):2;const useTribute=trSel?trSel.value!=='0':true;
     archive();closeModal();db.progress={active:true,level:startLevel,played:0,wins:0,badges:[],finished:false,tribute:useTribute};save();
-    setRecord(createRecord(G.deal(freshSeed(),startLevel,0)));toast(`升级赛开始：从 ${G.rankName(startLevel)} 打到 A，头游 +2、双上 +3${useTribute?'，每局之间进贡还贡':'，不进贡'}。`);}
-  function nextProgressionRound(){const st2=states.at(-1);const delta=progDelta();const f=st2.finish;const from=progLevel();let level=Math.min(A_LEVEL,from+delta);
-    let finished=!!(st2.over&&st2.result&&st2.result.team===0&&from>=A_LEVEL);
+    setRecord(createRecord(G.deal(freshSeed(),startLevel,0)));toast(`升级赛开始：从 ${G.rankName(startLevel)} 起一路升级，头游 +2、双上 +3；打到 A 后可继续下一圈${useTribute?'，每局之间进贡还贡':'，不进贡'}。`);}
+  function nextProgressionRound(){const st2=states.at(-1);const delta=progDelta();const f=st2.finish;const from=progLevel();
+    let level=from,laps=(db.progress&&db.progress.laps)||0,passedA=false;
+    if(delta>0){
+      if(from+delta<=A_LEVEL)level=from+delta;
+      else if(from<A_LEVEL)level=A_LEVEL;                       // 先升到 A，不越级
+      else{laps++;passedA=true;level=((from+delta-A_LEVEL-1)%13)+2;}  // 已在 A：溢出步数进入下一圈（A 后回到 2）
+    }
     if(delta>0){db.progress.wins=(db.progress.wins||0)+1;
       const marks=[[3,'初出茅庐'],[6,'牌桌熟手'],[9,'掼蛋老练'],[A_LEVEL,'登顶 A 级']];
-      for(const [lv,name] of marks){if(from<lv&&level>=lv&&!(db.progress.badges||[]).includes(name))db.progress.badges=[...(db.progress.badges||[]),name];}}
-    db.progress.level=level;db.progress.played=(db.progress.played||0)+1;db.progress.finished=finished;save();closeModal();archive();
-    if(finished){battle.cancel();stop();openModal(`<div class="result-hero"><div class="medal">🏆</div><h3>通关！</h3><p>从 2 一路打到 A，并赢下最后一局。</p></div><div class="summary-box">共 ${db.progress.played} 局，胜 ${db.progress.wins} 局。<br>徽章：${(db.progress.badges||[]).join(' · ')||'—'}</div><p class="subtle">截图保存这张通关记录，分享你的牌技进度。</p><div class="actions"><button class="button primary" data-action="closeModal">收下徽章</button><button class="button" data-action="startProgression">再来一轮</button></div>`);render();return;}
+      for(const [lv,name] of marks){if(from<lv&&(from+delta)>=lv&&!(db.progress.badges||[]).includes(name))db.progress.badges=[...(db.progress.badges||[]),name];}}
+    db.progress.level=level;db.progress.laps=laps;db.progress.played=(db.progress.played||0)+1;db.progress.finished=false;save();closeModal();archive();
+    if(passedA){try{toast(`打完 A！进入第 ${laps+1} 圈，从 ${G.rankName(level)} 继续升级`);}catch(e){}}
     let start;const seed=freshSeed();
     try{const base=G.deal(seed,level,0);const T=window.GuandanTribute;const use=T&&db.progress.tribute!==false&&st2.over;
       const res=use?T.resolve(base.hands.map(h=>h.map(c=>({...c}))),level,f):null;
