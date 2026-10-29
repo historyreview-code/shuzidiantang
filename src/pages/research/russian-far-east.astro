@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const assets = '/research/russian-far-east/v1-2';
+const assets = '/research/russian-far-east/v1-4';
 const chapters = [
   ['01', '山河海洋与既有社会'], ['02', '大陆东扩与陆上疆界'],
   ['03', '海洋扩张与海疆变迁'], ['04', '定居、铁路与城市'],
@@ -10,7 +10,7 @@ const chapters = [
 ];
 ---
 <BaseLayout current="research" title="俄罗斯远东的形成与变迁 · 劳伦斯" description="以俄罗斯远东为主体，联系东西伯利亚与北太平洋，叙述疆界、人口、开发与军事。劳伦斯著，附左右跨页总图、历史照片与EPUB下载。" image={`${assets}/cover.jpg`}>
-  <main id="content" class="page book-page" data-version="1.2">
+  <main id="content" class="page book-page" data-version="1.4">
     <header class="book-hero">
       <div class="book-cover"><img src={`${assets}/cover.jpg`} width="1600" height="2300" alt="《俄罗斯远东的形成与变迁》封面，劳伦斯著，配1895年海参崴历史照片" fetchpriority="high" /></div>
       <div class="book-intro">
@@ -20,8 +20,8 @@ const chapters = [
         <p class="byline">劳伦斯 著</p>
         <p class="description">从勒拿河到太平洋，从黑龙江到白令海。几百年间，毛皮商、军人、农户和囚徒沿河东来，港口、铁路、矿山与城市相继兴起。清朝、俄国、日本及邻近社会的命运，也在这里交错。</p>
         <p class="description">本书以俄罗斯远东为主体，联系东西伯利亚与北太平洋，沿着疆界形成、人口迁移、国家开发和地方生活，读这片土地怎样走到今天。</p>
-        <div class="book-meta"><span>正文约5.25万汉字</span><span>十章 · 导论与结语</span><span>2026年10月28日更新</span></div>
-        <a class="button download-primary" id="download-epub" href={`${assets}/russian-far-east-lawrence-v1.2.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.2.epub">下载 EPUB · 跨页版 v1.2 <span aria-hidden="true">↓</span></a>
+        <div class="book-meta"><span>正文约6.1万汉字</span><span>十章 · 导论与结语</span><span>2026年10月29日更新</span></div>
+        <a class="button download-primary" id="download-epub" href={`${assets}/russian-far-east-lawrence-v1.4.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.4.epub">下载 EPUB · 跨页版 v1.4 <span aria-hidden="true">↓</span></a>
         <p class="reading-tip">正文可调整字号。卷首总图采用左右跨页，并附区划文字名录与完整图。</p>
       </div>
     </header>
@@ -37,7 +37,7 @@ const chapters = [
     <section class="section" id="contents" aria-labelledby="contents-title">
       <div class="section-head"><div><span class="kicker">全书目录</span><h2 id="contents-title">沿着十章读下去</h2></div><p>导论：远方怎样成为一个地方</p></div>
       <ol class="chapter-list">{chapters.map(([number, title]) => <li><span>{number}</span><h3>{title}</h3></li>)}</ol>
-      <p class="after-contents">结语：大国疆域与地方生活。书末附地名与资料说明、分章阅读线索、图像来源及来源目录。</p>
+      <p class="after-contents">结语：大国疆域与地方生活。书末附地名与资料说明、分章阅读线索、图像来源及来源目录；附录四表（大事年表、条约与勘界表、地名对照表、人口经济底表），另有图7—图10四幅研究图。</p>
     </section>
 
     <section class="section preface" id="preface" aria-labelledby="preface-title">
@@ -49,10 +49,12 @@ const chapters = [
     </section>
 
     <section class="section edition" id="edition" aria-labelledby="edition-title">
-      <span class="kicker">电子版 v1.2</span><h2 id="edition-title">本次更新</h2>
-      <p>卷首地图改为左右连续跨页，调整中缝附近的地名，完整保留地理图层。远东11个主体的名录及行政中心另排为文字，方便放大、检索。历史正文沿用大幅修订后的v1.1版，含六组真实历史照片和重要人物肖像；资料核查截至2026年10月28日。</p>
+      <span class="kicker">电子版 v1.4</span><h2 id="edition-title">本次更新</h2>
+      <p>v1.4 在 v1.3 基础上新增图10“远东的军事存在示意”与表A-4“人口经济底表”（远东、萨哈、马加丹，2020—2024年GRP、预算、投资与人口，数据源为俄联邦统计局与国库署公开报表）。同时修正 v1.3 经济底表 GRP 的单位换算错误，并把图9所引 C239—C241 补入参考资料。</p>
+      <p>正文约6.1万汉字，含图7—图10四幅研究图、附录四表、索引331条、书目150条；历史正文承接 v1.1—v1.3 的修订，含六组真实历史照片和重要人物肖像。资料核查截至2026年10月29日。</p>
       <p>部分阅读器会按单页显示地图，可依次查看左右页，或打开随书的完整总图。全书引据及图源列在书末。</p>
-      <a class="button" href={`${assets}/russian-far-east-lawrence-v1.2.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.2.epub">下载新版 EPUB <span aria-hidden="true">↓</span></a>
+      <a class="button" href={`${assets}/russian-far-east-lawrence-v1.4.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.4.epub">下载跨页版 EPUB v1.4 <span aria-hidden="true">↓</span></a>
+      <a class="button" href={`${assets}/russian-far-east-lawrence-v1.4-flow.epub`} download="俄罗斯远东的形成与变迁_劳伦斯_v1.4_流式版.epub" style="margin-left:12px">下载流式版 EPUB <span aria-hidden="true">↓</span></a>
       <a class="back-link" href="/research/">返回全部研究 →</a>
     </section>
   </main>

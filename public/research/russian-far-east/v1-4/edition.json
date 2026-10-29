@@ -1,0 +1,41 @@
+{
+  "version": "1.4",
+  "date": "2026-10-29",
+  "author": "劳伦斯",
+  "body_CJK": 61048,
+  "epub_sha256": "19d6439eb39a91e7448447d7e6ba65754a8f787945aeab3a1eab83302d950e6d",
+  "body_note": "正文（不含各章依据）；依据另 3,805 字",
+  "files": {
+    "map-spread-preview.jpg": {
+      "bytes": 200600,
+      "sha256": "d3a19b6e6fd8d2ee2dff200bebe958251a1c3bd397719faf6ec4467dfcc0290b"
+    },
+    "russian-far-east-lawrence-v1.4.epub": {
+      "bytes": 9375076,
+      "sha256": "19d6439eb39a91e7448447d7e6ba65754a8f787945aeab3a1eab83302d950e6d"
+    },
+    "administrative-map.png": {
+      "bytes": 1435983,
+      "sha256": "e184fe315c3a4bc5a305018dffcebced0747f5785673c9e6d5b9b31a24cf2f94"
+    },
+    "cover.jpg": {
+      "bytes": 558235,
+      "sha256": "6317b675c15758c1587e37edd8c5532b1393b925d3d4d52cb8cf38f6dd095a09"
+    },
+    "administrative-map.svg": {
+      "bytes": 9303389,
+      "sha256": "36cf93ef6fd56136a76bcb4ff4e7d2de47bc6eb063f733e1113915eaa6f1ec62"
+    },
+    "russian-far-east-lawrence-v1.4-flow.epub": {
+      "bytes": 7893238,
+      "sha256": "c31b62badfe7f9aed2ded15288d45f72a2cc20731505d721c835428d725092f7"
+    }
+  },
+  "changes": [
+    "新增图10 军事存在示意（公开资料点位，不作部署推断）",
+    "新增表A-4 人口经济底表（2020—2024，GRP/预算/投资/人口）",
+    "修正 v1.3 经济底表 GRP 全 0 的单位换算 bug",
+    "新增图7—图9、附录四表、索引331条；正文较v1.1增8,421字",
+    "参考书目150条入书（来源总表173条）"
+  ]
+}
