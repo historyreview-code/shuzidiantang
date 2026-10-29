@@ -20,7 +20,11 @@
     }
   }
   function turnText(state){
-    if(state.over)return `本副结束，${state.result.team===0?'你和搭档获胜':'对方获胜'}${state.result.doubleDown?'，双下':''}。`;
+    if(state.over){
+      const ours=state.result.team===0;
+      const dbl=state.result.doubleDown?(ours?'，双上':'，双下'):'';
+      return `本副结束，${ours?'你和搭档获胜':'对方获胜'}${dbl}。`;
+    }
     if(!state.trick&&state.leadReason.includes('借风'))return `${seats[state.turn]}借风，重新领出。`;
     return `轮到${seats[state.turn]}${state.trick?'出牌':'领出'}。`;
   }
