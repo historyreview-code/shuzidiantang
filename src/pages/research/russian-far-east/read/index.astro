@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import reading from '../../../../data/russian-far-east-reading.json';
+const data = reading as any;
+const pages = data.pages as any[];
+const groups = [
+  { title: '开始', slugs: ['guide', 'preface', 'introduction'] },
+  { title: '十章', slugs: ['01','02','03','04','05','06','07','08','09','10'] },
+  { title: '收束', slugs: ['conclusion','appendix','sources'] },
+];
+const bySlug = Object.fromEntries(pages.map((p: any) => [p.slug, p]));
+---
+<BaseLayout current="research" title="在线阅读 · 俄罗斯远东的形成与变迁 · 劳伦斯" description="《俄罗斯远东的形成与变迁》v1.4 在线阅读：前言、导论、十章、结语、附录四表与参考资料。劳伦斯著。" image="/research/russian-far-east/v1-4/cover.jpg">
+  <main class="page reading-page read-index">
+    <header class="read-head">
+      <p class="read-kicker">在线阅读 · v1.4</p>
+      <h1>俄罗斯远东的形成与变迁</h1>
+      <p class="read-sub">劳伦斯 著 · 疆界 · 人口 · 开发与军事</p>
+      <p class="read-lead">正文约6.1万汉字，含前言、导论、十章与结语；附录四表与参考资料另列。每章末尾保留“依据”段，方括号编号可点入参考资料。</p>
+      <p class="read-actions"><a class="button" href="/research/russian-far-east/v1-4/russian-far-east-lawrence-v1.4.epub" download>下载跨页版 EPUB</a><a class="button" href="/research/russian-far-east/v1-4/russian-far-east-lawrence-v1.4-flow.epub" download>下载流式版 EPUB</a><a class="back-link" href="/research/russian-far-east/">返回书籍页 →</a></p>
+    </header>
+    {groups.map((g) => (
+      <section class="read-group">
+        <h2>{g.title}</h2>
+        <ol class="read-list">
+          {g.slugs.map((slug) => {
+            const p = bySlug[slug];
+            return p ? <li><a href={`/research/russian-far-east/read/${p.slug}/`}><span>{p.kicker}</span><strong>{p.label}</strong></a></li> : null;
+          })}
+        </ol>
+      </section>
+    ))}
+    <p class="read-note">阅读页为网页排版，图表与照片随章插入；纸本页码与 EPUB 分页另见下载文件。</p>
+  </main>
+</BaseLayout>
+<style>
+  .reading-page{max-width:860px;margin:0 auto;padding:52px 24px 70px}
+  .read-head{border-bottom:1px solid var(--line);padding-bottom:30px;margin-bottom:12px}
+  .read-kicker{font:11px var(--mono);letter-spacing:.22em;color:var(--amber);margin:0 0 14px}
+  .read-head h1{font:600 clamp(28px,4vw,42px)/1.45 var(--serif);margin:0 0 10px}
+  .read-sub{font:15px/1.8 var(--serif);color:var(--ink-2);margin:0 0 18px}
+  .read-lead{font:15px/1.95 var(--serif);color:var(--ink-2);margin:0 0 18px}
+  .read-actions{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:0}
+  .read-actions .button,.read-actions .back-link{margin:0}
+  .read-group{margin-top:34px}
+  .read-group h2{font:500 22px/1.5 var(--serif);margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .read-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
+  .read-list li{border-bottom:1px solid var(--line)}
+  .read-list a{display:flex;gap:16px;align-items:baseline;padding:13px 0;text-decoration:none;color:var(--ink)}
+  .read-list a:hover strong{color:var(--amber)}
+  .read-list span{font:10px var(--mono);color:var(--ink-3);min-width:2.6em}
+  .read-list strong{font:500 16px/1.65 var(--serif)}
+  .read-note{font:12px/1.9 var(--serif);color:var(--ink-3);margin-top:28px}
+  @media(max-width:720px){.reading-page{padding:30px 16px 46px}.read-list{grid-template-columns:1fr}.read-actions .button{display:block;margin:0 0 8px;text-align:center}.read-actions .back-link{display:block;margin:4px 0 0}}
+</style>

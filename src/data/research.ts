@@ -13,7 +13,7 @@ export const research = [
     actionLabel: '查看本书与总图',
     kind: '历史地理 · 电子书',
     coverImage: '/research/russian-far-east/v1-4/cover.jpg',
-    format: '约6.1万字 · 十章 · 四图六表 · 跨页版 v1.4',
+    format: '约6.1万字 · 152页 · 十章 · 四图六表 · 跨页版 v1.4',
     tags: ['俄罗斯远东', '东西伯利亚', '历史地理'],
     sources: 150,
     pages: 0,
