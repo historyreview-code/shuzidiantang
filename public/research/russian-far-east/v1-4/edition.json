@@ -2,8 +2,8 @@
   "version": "1.4",
   "date": "2026-10-29",
   "author": "劳伦斯",
-  "body_CJK": 61048,
-  "epub_sha256": "85cb1127d5af4d386fa73c15b0d240539cc49888ab4b81821b7155235adfa7b4",
+  "body_CJK": 61015,
+  "epub_sha256": "d2617deeec92f17737150de8f726ff722270d1fc9c535b5b32dcda0b284add64",
   "body_note": "正文（不含各章依据）；依据另 3,805 字",
   "files": {
     "map-spread-preview.jpg": {
@@ -11,8 +11,8 @@
       "sha256": "d3a19b6e6fd8d2ee2dff200bebe958251a1c3bd397719faf6ec4467dfcc0290b"
     },
     "russian-far-east-lawrence-v1.4.epub": {
-      "bytes": 9379508,
-      "sha256": "85cb1127d5af4d386fa73c15b0d240539cc49888ab4b81821b7155235adfa7b4"
+      "bytes": 9379372,
+      "sha256": "d2617deeec92f17737150de8f726ff722270d1fc9c535b5b32dcda0b284add64"
     },
     "administrative-map.png": {
       "bytes": 1435983,
@@ -27,8 +27,8 @@
       "sha256": "36cf93ef6fd56136a76bcb4ff4e7d2de47bc6eb063f733e1113915eaa6f1ec62"
     },
     "russian-far-east-lawrence-v1.4-flow.epub": {
-      "bytes": 7897670,
-      "sha256": "428a2c12bf4065b5659e9319ab82aed28cd5ae938353b7f765bebf6f3e191b63"
+      "bytes": 7897534,
+      "sha256": "5f837ec2612064c42cda61125096c656f401ace1381531d8f04ff9b3f188d670"
     }
   },
   "changes": [
@@ -42,5 +42,6 @@
   "pages": 152,
   "figures": 20,
   "tables": 6,
-  "bibliography": 150
+  "bibliography": 150,
+  "text_revision": "结语删去两句、改写贝阿铁路效益句；正文 61,015 汉字"
 }
