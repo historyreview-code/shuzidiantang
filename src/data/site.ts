@@ -1,7 +1,7 @@
 export const site = {
   name: '劳伦斯实验室',
   title: '劳伦斯实验室 · 个人主站',
-  description: '劳伦斯实验室：数字作品、理论研究、旅行实验室与手记。',
+  description: '劳伦斯实验室：本站视频与播客、数字作品与游戏、专题研究电子书、城市悠游与创作手记。',
   url: 'https://shuzidiantang.com',
   social: [
     {
@@ -383,20 +383,6 @@ export const notes = [
     category: 'AI 手记',
     href: '/notes/2026-10-30-ai-writing-ebook.html',
     summary: '三本书同时进入终稿的这一周：怎么让 AI 写、怎么查 AI 腔、怎么把稿子做成能发出去的电子书。一份来自编辑现场的工序复盘。',
-  },
-  {
-    title: '小兴安岭金秋专列纪行',
-    date: '2026-09-22',
-    category: '实践手记',
-    href: '/notes/2026-09-22-autumn-train.html',
-    summary: '给朋友们造一列穿行在东北五彩山林中的金秋专列。鹤岗、伊春、牡丹江、佳木斯，有空上车坐一会儿，不用担心错过末班车。',
-  },
-  {
-    title: '我又用上了 Kimi',
-    date: '2026-09-04',
-    category: 'AI 手记',
-    href: '/notes/2026-09-04-kimi.html',
-    summary: '闲鱼上居然有开通 Kimi Coding Plan 的服务，亲测可用；本站开屏片头就是 Kimi 按指令实现的。',
   },
   {
     title: '转身就忘的事，值得当回事——三分钟记忆自测小工具的由来',
