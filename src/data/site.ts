@@ -371,6 +371,13 @@ export const travelSeries = [
 
 export const notes = [
   {
+    title: '10 小时 22 分：我和三个 AI 工位在一天内上线了一个掼蛋游戏',
+    date: '2026-10-30',
+    category: 'AI 手记',
+    href: '/notes/2026-10-30-guandan-ai.html',
+    summary: '从第一个 commit 到当天最后一版核验用了 10 小时 22 分；六天后 35 台设备、230 局开局。规则引擎、冻结基准、三个 AI 工位与上线踩坑的完整复盘。',
+  },
+  {
     title: '同题三篇：三个 AI 写「求仁得仁」',
     date: '2026-10-30',
     category: 'AI 手记',

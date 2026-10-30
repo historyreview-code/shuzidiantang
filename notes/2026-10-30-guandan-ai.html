@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 小时 22 分：我和三个 AI 工位在一天内上线了一个掼蛋游戏 · 劳伦斯实验室</title>
+<meta name="description" content="从第一个 commit 到当天最后一版核验用了 10 小时 22 分；六天后 35 台设备、230 局开局、214 局完成。规则引擎、冻结基准、三个 AI 工位与上线踩坑的完整复盘，含 8 个被数据证伪的方向。">
+<link rel="canonical" href="https://shuzidiantang.com/notes/2026-10-30-guandan-ai.html">
+<meta property="og:title" content="10 小时 22 分：我和三个 AI 工位在一天内上线了一个掼蛋游戏">
+<meta property="og:description" content="从第一个 commit 到当天最后一版核验用了 10 小时 22 分；六天后 35 台设备、230 局开局、214 局完成。规则引擎、冻结基准、三个 AI 工位与上线踩坑的完整复盘，含 8 个被数据证伪的方向。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://shuzidiantang.com/notes/2026-10-30-guandan-ai.html">
+<meta property="og:image" content="https://shuzidiantang.com/notes/og/2026-10-30-guandan-ai.png">
+<meta property="article:published_time" content="2026-10-30T10:00:00+08:00">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuzidiantang.com/notes/og/2026-10-30-guandan-ai.png">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.45; margin: 34px 0 12px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  blockquote p { margin: 6px 0; }
+  .cta { margin: 26px 0; padding: 14px 18px; border: 1px solid rgba(180,85,30,.3); border-radius: 10px;
+    background: rgba(180,85,30,.05); }
+  .cta p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 22px 0; font-size: .9rem; line-height: 1.6; }
+  th, td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; }
+  th { background: rgba(38,34,26,.05); font-weight: 600; white-space: nowrap; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+    h1 { font-size: 1.55rem; }
+    table { font-size: .82rem; }
+    th, td { padding: 7px 8px; }
+  }
+  .site-footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 40px; border-top: 1px solid var(--line-strong);
+    color: var(--ink-3); font-size: .85rem; }
+  .site-footer .icp a { color: var(--ink-3); text-decoration: none; }
+  .site-footer .icp a:hover { color: var(--amber); }
+  h3 { font-family: var(--serif); font-size: 1.08rem; line-height: 1.5; margin: 26px 0 10px; }
+  .article-copy ul, .article-copy ol { margin: 16px 0 16px 1.5em; }
+  .article-copy li { margin: 7px 0; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-compact-first td:first-child, .table-compact-first th:first-child { white-space: nowrap; }
+  .article-copy code { font-family: var(--mono); font-size: .86em; background: rgba(38,34,26,.07); padding: 1px 5px; border-radius: 4px; }
+  .article-copy hr { border: 0; border-top: 1px solid var(--line); margin: 34px 0; }
+  .article-copy blockquote p { margin: 8px 0; }
+  .article-copy blockquote p:first-child { margin-top: 0; }
+  .article-copy blockquote p:last-child { margin-bottom: 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span><strong>劳伦斯实验室</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>10 小时 22 分：我和三个 AI 工位在一天内上线了一个掼蛋游戏</h1>
+    <p class="meta"><time datetime="2026-10-30">2026-10-30</time> · 约 5,241 字 · 分类：AI 手记</p>
+    <div class="article-copy">
+<blockquote>
+<p>2026 年 10 月 24 日 12:03，这个项目落下第一个 commit；22:25:59，当天最后一版核验通过。从第一个 commit 到当晚最后一次发布，10 小时 22 分。当天 20:29 的一次线上核验里，正式站资源已经和本地逐字节一致。</p>
+<p>六天后，统计功能上线以来累计：35 台设备、230 局开局、214 局完成，完成率 93%。</p>
+<p>这不是一篇「AI 太神了」的爽文。它记录的是：AI 帮我省掉了哪些时间，又制造了哪些新麻烦；哪些判断我坚持自己做，哪些事到今天也不敢全交给它。</p>
+</blockquote>
+<h2>一、先交代做出来的东西</h2>
+<p>它叫「阿尔法掼蛋狗」，挂在数字殿堂的 <a href="https://shuzidiantang.com/games/guandan/" target="_blank" rel="noopener">https://shuzidiantang.com/games/guandan/</a>。</p>
+<p>掼蛋是四人两副牌的团队游戏，规则不难、牌理很深。先出完牌的叫「头游」，队友包揽前两名叫「双上」。这个程序现在能做这些事：</p>
+<ul>
+<li>单机人机对局，也可以开一个好友房间，发邀请链接一起打；</li>
+<li>AI 坐席可补齐空位；规则引擎负责合法性与结算，决策在本地毫秒级完成；</li>
+<li>每局可逐步回放，能把自己、搭档或对手换到任意座位「重打」，保留原局做对照；</li>
+<li>中文语音播报「谁出牌、出了什么、下一位是谁」，点评由大模型生成；</li>
+<li>全站匿名统计参与设备、开局数、完成数，入口藏在「菜单 → 更多」。</li>
+</ul>
+<p>这几项能力不是一次做完的，后面几天还在改。</p>
+<p>技术栈很朴素：原生 JavaScript 写规则引擎和牌桌，后端用 EdgeOne Pages 的云函数，主站是 Astro。AI 能力来自 MiniMax：早期对战由它在合法候选里做选择，后来改为本地决策，它只负责复盘点评和语音合成。游戏本体没有用任何前端框架。</p>
+<p>为什么不用 React 或游戏引擎？牌桌是高频、细碎的 DOM 操作；原生代码交给 AI 改，每一行都看得懂、审得动。框架能省事，也会在出 bug 时多一层黑盒。</p>
+<h2>二、时间线：AI 把时间省在了哪</h2>
+<div class="table-wrap"><table class="table-compact-first">
+<thead>
+<tr>
+<th>日期</th>
+<th>做了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10-24</td>
+<td>规则引擎、牌桌、AI 对战、复盘、语音；20:29 线上资源已与本地一致，22:25 当天最后一版核验</td>
+</tr>
+<tr>
+<td>10-25</td>
+<td>算法方案、冻结基准、v5→v8 四步改进、模型裁判对照实验</td>
+</tr>
+<tr>
+<td>10-26</td>
+<td>好友联机、难度档位、进贡还贡引擎、一批牌理修复</td>
+</tr>
+<tr>
+<td>10-27</td>
+<td>按真实牌谱反馈修牌理：红心级牌单出禁令、顺牌与压搭档、桌面排序、牌谱导出</td>
+</tr>
+<tr>
+<td>10-28</td>
+<td>统一入口、连续撤销、3D 手牌与胜利动画、MiniMax 欢迎语音</td>
+</tr>
+<tr>
+<td>10-29</td>
+<td>运营数据盘点、双上/双下语音 bug 修复</td>
+</tr>
+</tbody>
+</table></div>
+<p>真正省时间的是「想法 → 能跑」：规则引擎、牌桌、接口、构建、部署脚本、测试，AI 一两个小时就能给出可跑的雏形。以前要几天，现在一个下午，是实打实的杠杆。</p>
+<p>但它不省「想清楚」的时间：哪些规则必须由本地引擎裁定、模型能看到什么、什么算赢、什么算上线，AI 只会给建议，决定权在我。10-25 那天我下过一条很朴素的指令：</p>
+<blockquote>
+<p>「说实话，我不是太懂你的意思，不过无所谓，请你继续推进工作按照你的方法论。我的目标是有效提升我的程序 AI 的实战水平，等你认为方案成熟了，再升级程序，我可以在新版本上测试。」</p>
+</blockquote>
+<p>这句话就是我们整个协作的基调：我负责目标和验收，它负责把方案做成可运行的实验。</p>
+<h2>三、第一条经验：先建「可验证的过程」，再接模型</h2>
+<p>这个项目里，模型从来不是「大脑」，规则引擎才是。</p>
+<p>牌型判定、配牌声明、合法动作、结束条件、计分，都由本地规则引擎负责。最初模型只在引擎给出的合法候选里挑一个；后来这一步也改成本地决策，模型彻底退出出牌链。服务端和浏览器各自复验；超时、格式错误、引用过期状态的结果直接丢弃，记一次本地接管。真实对局用实体牌 ID、配牌声明和决策来源落谱，每一步都能回放。</p>
+<p>这条边界看起来简单，实际上决定了后面所有玩法能不能复用。</p>
+<p>它带来三个直接好处：</p>
+<ol>
+<li><strong>模型可以换。</strong> 从 MiniMax 选候选到完全本地决策，规则和牌谱格式一行没动。</li>
+<li><strong>争议可以查。</strong> 用户说某一步打得不对，可以精确到第几步、哪张牌、当时给了哪些候选、为什么选它。</li>
+<li><strong>新玩法能复用。</strong> 好友房间、换座重打、导入导出，全都建立在「每一步可回放」上。</li>
+</ol>
+<p>AI 最容易放错位置的地方是「图方便」：把完整游戏状态丢给模型自己判断。我们加了一条硬约束：策略函数只能拿到当前座位的观察——自己的手牌、级牌、各家张数、桌面牌、公开历史，拿不到其他三家的牌。测试里专门做「隐藏手牌置换」：把别人的牌互换，决策结果必须完全不变。看不到的东西，它就没法偷看。</p>
+<p>这套设计也不是一次成型。联机版第一版就翻过车：房间能进、牌能出，AI 坐席却明显「变笨」，还偶发牌型不合法。查下去发现，联机版走自己的状态逻辑，没复用单机版的规则与决策。修法不是调提示词，而是把「规则 / 决策 / 表现」重新分层：房间只负责连接和同步，规则与坐席全部复用同一套代码。那之后，单机和联机才真正是同一个游戏。</p>
+<h2>四、第二条经验：把「变强」翻译成数字</h2>
+<p>10-25 上午，我在本地试完第一版改进，回了一句：「测试效果，快速模式有很大提升。」</p>
+<p>这话听着爽，但不能作为上线依据。于是我先让 AI 把评测做扎实：冻结基准、预注册、分区、MDE、配对自助法置信区间、多重比较校正。后来这份方法写成给「多个 agent」用的说明，开头是三条铁律：</p>
+<blockquote>
+<ol>
+<li>先冻结，再看数。种子、分区、对手、指标、停止规则先写下来；跑之前登记，跑完不许改口径。</li>
+<li>一只眼睛一次。<code>dev</code> 随便看、随便调；<code>heldout</code> 只允许看一次；结论用从没用过的 <code>confirm</code>。</li>
+<li>区间不跨零且 |δ| &gt; MDE 才能说「变强」。否则一律写「未测到差异」。</li>
+</ol>
+</blockquote>
+<p>最终冻结的基准（gb-bench-v7）是：dev 200 副、heldout 120 副、confirm 120 副，同一副牌做对照，按原始发牌聚类做自助法。上线前的四步改进，每一步都在各自版本当时的冻结基准上做过 confirm 级评测；其中 v6 的区间跨零，是按「不更差 + 修正明显怪手」的口径上线的：</p>
+<div class="table-wrap"><table class="table-compact-first">
+<thead>
+<tr>
+<th>版本</th>
+<th>改了什么</th>
+<th>confirm swap δ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v5</td>
+<td>基础权重调优：更快出手、更愿意喂牌、少囤炸弹</td>
+<td>+0.281</td>
+</tr>
+<tr>
+<td>v6</td>
+<td>大牌经济学：大牌是货币，不是普通牌</td>
+<td>+0.046（区间跨零，按「不更差 + 修正明显怪手」口径上线）</td>
+</tr>
+<tr>
+<td>v7</td>
+<td>牌权与顺牌经济学：顺走、弱牌先走</td>
+<td>+0.175</td>
+</tr>
+<tr>
+<td>v8</td>
+<td>概率化炸弹风险：开炸成本随对手炸弹可能性上浮</td>
+<td>+0.263</td>
+</tr>
+</tbody>
+</table></div>
+<p>四步用的是各自版本当时冻结的基准，数字可以横向看方向，不要当成同一套牌上的严格对比。</p>
+<p>评测做扎实之后，很多直觉被推翻。</p>
+<p>外部坐标也很清楚：对随机出牌是 +1.2 分/副，头游率约 70%；对公开资料里常被当作强基线的 DanLM（据其自述是 Botzone 掼蛋第一）是 −1.2 分/副，双上 3/40，头游率 35%–40%。在基准对手的坐标上，它早就越过了「会看牌型」的下限，但离顶级还差一截，差距集中在团队协同和长程节奏。这些数字都是对固定基准对手跑出来的，不是真人水平；真人盲评还没做。这个结论不好看，但它可复现。</p>
+<p>最反直觉的一次实验是「让大模型当裁判」。10-25 下午我们抽了 20 个有真实选择余地的决策点（18 个有效），分别让「模型选择」和「本地打分第一名」各走完一整副，后续交给本地策略。结果：模型和本地只一致 8 次；不一致的 10 次里，模型 1 次更好、4 次打平、5 次更差，均值 −0.72 分/决策点。样本小，95% 聚类自助区间 [−1.67, +0.25] 跨零——方向性证据，不是统计显著。但工程决定仍清楚：这里让模型改选没有稳定收益。于是我们把大模型从决策链拿掉，改成本地毫秒级决策，模型只负责复盘讲解；对战接口响应从 7.5–19 秒降到 1.35 秒，还省掉每步一次的 API 费用。</p>
+<p>这件事让我记住了一条：<strong>「大模型更强」不是默认项，是一个需要被证明的假设。</strong></p>
+<p>被证伪的方向还有一串，全部有数据、全部归档：口诀硬规则 −0.34，防双上抢权 −1.35，读人参数 −1.20，角色差异化约等于 0，大牌风险概率化 −0.255，Top-K 结构混合恒为 0，MLP 扩容比线性还差，价值模型直接决策 −2.60。另有反事实分析：中盘跟牌的选择差异几乎不产生收益差（−0.067）。这些「失败」不是白跑——它们把「单步打分」的剩余空间压到了 0.1 分/副以内，让我们有底气冻结 v8。</p>
+<p>AI 在评测里最容易骗人的地方，我们也踩过：解析标签和下标时用了「默认值兜底」，当天出了三次假高分。后来这成了纪律：先 <code>node --check</code> 和单测，再跑整条管线；标签解析禁止默认值兜底；按原始发牌分区，禁止同副牌泄漏；同算力对照；负结果同样归档。</p>
+<p>数据不会让 AI 变聪明，但会让它没法糊弄你。</p>
+<h2>五、第三条经验：多个 AI 工位并行，先校准同一把尺子</h2>
+<p>10-25 上午我布置了一句大意是「Kimi 和 DeepSeek 同时研究、分别改进，请扩容研究方法」的任务。</p>
+<p>分工不是一开始定好的，是边跑边校准出来的。</p>
+<p>那之后，这个项目大约是这么分工的：</p>
+<ul>
+<li><strong>DeepSeek</strong> 的编码 agent 负责主工程：规则引擎、前端、接口、部署、主策略；</li>
+<li><strong>Kimi</strong> 在独立目录里做研究和交叉验证：读论文、查开源仓库、出候选证据包，还生成了一批教师轨迹（后来统计到 15,122 条），供对照与训练映射使用；</li>
+<li><strong>Grok 的 bot</strong> 负责跑 smoke 和 dev 冻结基准对照，并起草 DanLM 同副误差热力图实验，没有参与线上发布；</li>
+<li><strong>我</strong> 负责发任务、看数据、拍板，以及在它们意见不一致时当裁判。</li>
+</ul>
+<p>三个工位并不直接对话：共享同一套代码目录、同一个冻结基准和预注册协议，我负责转交结论、当裁判。多 agent 协作真正的难点不是「同时开工」，而是「结果可比」：各写各的评测、各说各的「提升了」，最后就是一堆无法互相验证的结论。</p>
+<p>所以我们在仓库里建了一个公共实验室（<code>lab-js/</code>），定了三条规矩：</p>
+<ol>
+<li>策略是独立文件，一个 agent 一个文件，只写自己的目录；</li>
+<li>改动先注册策略、再写预注册 JSON，<code>heldout</code> 和 <code>confirm</code> 没登记就拒绝开跑；</li>
+<li>报告必须写清比较对象、设计（swap 还是 duel）、分区、δ、置信区间、MDE、源码哈希。设计不同，δ 能差两倍，不写清楚就是耍流氓。</li>
+</ol>
+<p>有了共同标尺，失败实验也能快速结案。10-26 的 C3 实验「开局构型优先于冒进炸」：预注册门槛是 δ ≥ +0.05 且区间不跨零；smoke 结果 δ = −0.0063，改选 7 次，直接 KILL、归档、不进线上。没有争论，因为规则是开跑前写死的。</p>
+<p>共用一把尺子，比多开几个窗口重要得多。</p>
+<h2>六、第四条经验：体验靠人判断，AI 负责把判断变成可测的东西</h2>
+<p>从 10-25 到 10-29，主会话里我发了 275 条消息，不少是「继续」「开工」「下一步」。推进的节奏，本质上是反复确认下一步。</p>
+<p>回头看，真正改变产品的往往是这些判断。</p>
+<p>真正有价值的消息，基本都是在给牌理和体验下判断：</p>
+<p><strong>「搭档第一张牌出小王的怪事，这是怎么决策的？」</strong>
+——查决策链，发现大牌在被当成普通牌打分。于是有了 v6「大牌经济学」：领出控制单张默认扣分，但收尾路线、对手报单报双、手牌 ≤8、手里还有第二张控制单张这四种情况豁免。改完，同样的开局从「单张大王」变成「三连对 A」。</p>
+<p><strong>「对手频繁过牌是什么原因？」</strong>
+——统计下来，能压时全局过牌 62%，对手控牌时 49% 过牌。跟牌顺走、领出弱牌、用大牌抢回牌权这三件事，在旧打分里都没有正向价值。于是 v7 给 <code>takeLead</code> 和 <code>shedLead</code> 各加 50 分，六次测试同向为正，confirm 上 δ = +0.175。</p>
+<p><strong>「头回出牌就出个三 A 带两个大王去管我下家，现实中不会这样。」</strong>
+——这不是大模型的问题，是本地评分没把「带牌要保留剩余战力」算进去。规则改成三带二优先带最小、最无用的对子。</p>
+<p>类似的小修还有很多：红心级牌百搭经常算错；桌面出牌该按牌型排，而不是按花色乱排；搭档只剩三张时不能建议出三带二；打 2 时红心 2 配不了同花（bug）……每一个都是用户用真实牌局喂出来的。AI 的价值，是把一句「这手打得怪」变成可复现的决策链，然后改评分、跑基准、看 δ。</p>
+<p>产品层面的判断，同样是人做的：10-26 我让它「请思考一下现在版本是否可以取消智能对战功能」，后来难度档位也取消、固定最强；观战、AI 讲解按钮、电脑代打观摩，一个个砍掉。砍功能比加功能难，但手机上一屏只能有一个主任务。最后留下牌桌和手牌、一个模式按钮、手牌下方的出牌区，低频功能全进菜单。</p>
+<p>手机适配也交过学费：窄屏截图在 320 和 390 像素下都正常，真机上却还是被发现「邀请按钮无效」「缓存直接进了上一局残局」。截图过关不等于真机过关，这句后来写进了发布检查项。</p>
+<p>等待时间也被当成产品规则：每张出牌有看得清的停顿（最早至少 2 秒，后来按真机体验调过），过牌即时确认，电脑回合最多等 10 秒，超时由本地规则接管。用户不需要知道背后是 API 调用还是本地计算，只需要知道「下一手什么时候来」。</p>
+<h2>七、第五条经验：上线是另一场考试</h2>
+<p>代码能跑、测试能过，和「正式站上是新的」，是三件不同的事。上线之后，麻烦才真正开始。</p>
+<p>10-24 发布时，我们撞上 EdgeOne 的部署存储上限：账号的部署文件存储只有 5 GB（报错写作 5 GiB），代码提交了、构建也成功，新版本就是上不去。查控制台才发现，历史部署记录有 158 条，里面挂着三条早已失效的部署，以及 79 个页面不再引用的旧视频。确认无用后，删掉 3 条失效部署，再清理旧视频（约 173 MiB），部署才恢复正常。后来整个项目清理约 1.86 GiB 过程文件。</p>
+<p>这件事之后，我们把「上线」拆成了四级证据，每一级都要单独核对：</p>
+<ol>
+<li>Git push 成功；</li>
+<li>构建成功；</li>
+<li>正式域名返回 200；</li>
+<li>正式资源哈希与本地源码一致，关键接口返回真实合法的结果。</li>
+</ol>
+<p>第 3 级经常骗人：页面 200，可能只是旧缓存。我们最后固定做的是——拉取正式站的 <code>engine.js</code>，算 SHA256，和本地逐字节比对；再发一次真实的智能决策请求，确认返回合法动作；最后在页面上确认版本号。版本号就在「菜单 → 更多」里。</p>
+<p>回退也要提前设计：每个版本保留上一版权重常量，发布记录写清 commit、验证证据和回退步骤。回退操作约 1 分钟，线上生效还要等一次构建（约 2–4 分钟）。旧平台 Sites 停用后只留一个正式入口，密钥一并回收，避免两套服务同时跑、两套行为打架。</p>
+<p>主站还有每天 02:00 UTC 的定时构建；push 则由 EdgeOne 控制台的 Git 集成触发。定时任务负责数据刷新，手动发布负责代码更新，两条路径最后都落到 EdgeOne 的发布与核验。AI 能帮你写这些脚本，但「确认线上真的是新的」得自己核验。</p>
+<h2>八、第六条经验：把边界写进产品</h2>
+<p>这个项目的 README 里，有一节叫「当前能力与边界」，写的是它不能做什么：</p>
+<ul>
+<li>统计里的「参与设备数」是匿名浏览器标识，不是实名人数，也不是抗作弊数据；</li>
+<li>旧牌局不回填统计，清空浏览器或换设备会产生新标识；</li>
+<li>策略经验只存在当前浏览器，是「可审查的提示库」，不是训练模型权重，也没有「胜率提升」的承诺；</li>
+<li>AI 棋力还没做过真人盲评系统验收，目前只有对随机和 DanLM 的基准坐标；</li>
+<li>好友联机是这周补的功能，房间重启后的持久化、掉线托管还没做；</li>
+<li>真实手机的触控和扬声器，还没有经过系统的人工验收；</li>
+<li>对接的模型和接口版本会写进文档，方便以后核对。</li>
+</ul>
+<p>边界不是写给别人看的，是写给下一次迭代的自己看的。</p>
+<p>写这些不是为了自谦，是因为 AI 太容易把「看起来」写成「已经」：一个生成出来的页面、一次 200 响应、一句「测试通过」，都可能让人误以为完成了。把没验证的部分明确写出来，既防自己误判，也防用户产生不该有的期待。</p>
+<p>这一条和代码质量同等重要。产品可以小，边界必须清楚。</p>
+<h2>九、如果你也想复制：一份最小清单</h2>
+<ol>
+<li><strong>先把玩具拆成三层</strong>：规则内核、决策层、表现层。规则负责对错，决策负责好坏，表现负责体验，三层不要混。</li>
+<li><strong>先写回放和测试，再写功能</strong>。能重放，才有资格谈优化；测试是 AI 犯错的保险丝。</li>
+<li><strong>先定基准和验收，再让 AI 优化</strong>。没有数字，「提升了」就只是感觉。</li>
+<li><strong>让 AI 交「证据包」，不交「结论」</strong>：测试日志、牌谱、截图、资源哈希、接口返回，比一句「已完成」有用。</li>
+<li><strong>多工位并行前先定协议和写域</strong>。谁改哪个目录、用什么基准、报告写什么，先说清楚。</li>
+<li><strong>每次上线只改一件事，并且保留回退</strong>。发布记录不是形式主义，是出事时的救生圈。</li>
+<li><strong>人守三件事</strong>：规则解释权、产品取舍、发布核对。这三件事 AI 可以给建议，但不该替你做决定。</li>
+<li><strong>接受 AI 会犯错，把错误变成测试用例</strong>。这个项目有 23 个测试文件，不少都是踩坑之后补出来的。</li>
+</ol>
+<h2>十、写在最后</h2>
+<p>一天内上线、10 小时 22 分做完当天最后一版，不算奇迹。真正的杠杆，是「改一版、测一版」的成本从一天变成了一小时：同样的时间，你可以试十次，而不是一次。</p>
+<p>AI 不会替你把游戏做完。它只是让「做错一次」变得便宜。</p>
+<p>方向盘还在人手里：你得知道这手牌为什么怪，哪个功能该砍，线上那个 200 到底是不是新的。</p>
+<p>这些数字不漂亮，但都能复查。</p>
+<p>这个项目下一步要做的，也很普通：真人盲评、真机系统验收、房间持久化与掉线托管。游戏还在，牌局还会继续。</p>
+<hr />
+<h2>附：关键数字</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首个 commit → 当天最后一版核验</td>
+<td>12:03 → 22:25:59，10 小时 22 分（20:29 已有线上资源匹配核验）</td>
+</tr>
+<tr>
+<td>线上版本</td>
+<td>规则与策略 <code>team-plan-v8</code>；对战接口本地决策</td>
+</tr>
+<tr>
+<td>上线六天数据</td>
+<td>35 台匿名设备 / 230 局开局 / 214 局完成（93%）</td>
+</tr>
+<tr>
+<td>测试规模</td>
+<td>封箱 96 项 → v7 时 122 项 → 结项 138 项 → 10-27 142 项</td>
+</tr>
+<tr>
+<td>算法上线</td>
+<td>v5 → v8 四步，confirm swap δ：+0.281 / +0.046（跨零，按不更差口径）/ +0.175 / +0.263</td>
+</tr>
+<tr>
+<td>外部坐标</td>
+<td>对随机 +1.2 分/副；对 DanLM −1.2 分/副</td>
+</tr>
+<tr>
+<td>模型对照</td>
+<td>20 个决策点（18 个有效），不一致 10 次：1 好 / 4 平 / 5 差，均值 −0.72（95% CI [−1.67, +0.25]，跨零）</td>
+</tr>
+<tr>
+<td>延迟变化</td>
+<td>模型决策 7.5–19 秒 → 本地决策 1.35 秒</td>
+</tr>
+<tr>
+<td>被证伪方向</td>
+<td>8 个，均有数据并归档</td>
+</tr>
+<tr>
+<td>10-25 至 10-27 的 AI 用量</td>
+<td>1,016 个 agent 步骤（约 788 次工具调用），约 128 万输入 token / 92 万输出 token</td>
+</tr>
+<tr>
+<td>发布事故</td>
+<td>EdgeOne 部署存储 5 GB 上限（报错显示 5 GiB）；删 3 条失效部署 + 79 个旧视频（约 173 MiB）</td>
+</tr>
+<tr>
+<td>项目清理</td>
+<td>过程文件约 1.86 GiB</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>数据截至 2026-10-30 09:14（Asia/Shanghai），统计口径为匿名设备与完整实战对局，非实名人数。</p>
+</blockquote>
+    </div>
+
+    <div class="cta">
+      <p>🎮 <a href="https://shuzidiantang.com/games/guandan/" target="_blank" rel="noopener">打开「阿尔法掼蛋狗」玩一局 ↗</a></p>
+      <p>单机人机、好友房间、复盘换座、中文语音播报，都在这一个入口里。</p>
+    </div>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>劳伦斯实验室 · 手记</p>
+  <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
+</footer>
+</body>
+</html>
