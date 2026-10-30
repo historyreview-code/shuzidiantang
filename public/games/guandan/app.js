@@ -187,8 +187,16 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
       const res=use?T.resolve(base.hands.map(h=>h.map(c=>({...c}))),level,f):null;
       const lead=res?res.lead:f[0];
       start=res?G.makeStart(res.hands,level,lead,seed,'full'):G.deal(seed,level,lead);
-      if(res)start.tribute=res.records;}catch(e){start=G.deal(seed,level,0);}
-    setRecord(createRecord(start));toast((delta?'升级到打 '+G.rankName(level):'本局未升级，仍在打 '+G.rankName(level))+(db.progress.tribute!==false?'；已按上局名次进贡还贡。':'。'));}
+      if(res)start.tribute=[...(res.gives||[]),...(res.records||[])];}catch(e){start=G.deal(seed,level,0);}
+    setRecord(createRecord(start));
+    let tnote='';
+    try{
+      const tr=record.start.tribute||[];
+      const gives=tr.filter(x=>!x.kind),backs=tr.filter(x=>x.kind==='back');
+      if(gives.length)tnote='；进贡 '+gives.map(g=>`${seats[g.giver]}→${seats[g.receiver]} ${G.name(g.card)}`).join('，');
+      if(backs.length)tnote+=(tnote?'；':'；')+'还贡 '+backs.map(r=>`${seats[r.from]}→${seats[r.to]} ${G.name(r.card)}`).join('，');
+    }catch(e){}
+    toast((delta?'升级到打 '+G.rankName(level):'本局未升级，仍在打 '+G.rankName(level))+(tnote||'。'));}
   function nextRoundChooser(){const st2=states.at(-1);const delta=progDelta();const f=st2.finish;const from=progLevel();const to=Math.min(A_LEVEL,from+delta);
     openModal(`<div class="eyebrow">NEXT ROUND</div><h2>下一局怎么开始？</h2><p class="subtle">本局 ${delta?'升 '+delta+' 级':'未升级'}：打 ${G.rankName(from)} → 打 ${G.rankName(to)}</p><div class="actions" style="display:grid;gap:8px"><button class="button primary" data-action="nextRoundGo">继续本轮升级赛（打 ${G.rankName(to)}）</button><button class="button" data-action="nextRoundRestart">重开新一轮（重新选起始关）</button><button class="button ghost" data-action="closeModal">先复盘本局</button></div>`);}
   function summaryModal(){const s=states.at(-1),own=record.events.map((a,i)=>({a,i})).filter(x=>x.a.seat===0);openModal(`<div class="result-hero"><div class="medal">♠</div><h3>${s.result?.team===0?'你和搭档赢下这一副':'这一副，对方组合获胜'}</h3><p>${s.result?.doubleDown?(s.result.team===0?'你和搭档包揽头游、二游，双上结束。':'对方包揽头游、二游，我方双下。'):s.finish.map((p,i)=>`${i+1} 游：${seats[p]}`).join(' · ')}</p></div><div class="summary-box">本副 ${record.events.length} 次行动，你的位置行动 ${own.length} 次，其中自主操作 ${own.filter(x=>x.a.origin==='human'&&x.i>=(record.perspective?.atStep||0)).length} 次。<br>先挑一手搭档配合，再挑一手拆组取舍。用当时的信息解释自己的判断，然后另开分支试一次。</div><p>单副胜负不代表长期水平；复盘中可查看每一步实际由 AI分析、本地策略或确定性规则决定。</p>${progActive()?`<div class="summary-box">升级赛 · 当前打 ${G.rankName(progLevel())} · 本局${progDelta()?'可升 '+progDelta()+' 级':'不升级'}</div>`:''}<div class="actions"><button class="button primary" data-action="nextRoundGo" ${progActive()?'':'hidden'}>继续升级（贡还）</button><button class="button" data-action="freeDeal">自由打牌</button><button class="button" data-action="summaryReview">复盘本局</button><button class="button" data-action="rotateSeat">换座</button><button class="button ghost" data-action="home">退出</button></div>`);}
