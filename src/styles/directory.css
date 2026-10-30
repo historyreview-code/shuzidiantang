@@ -30,10 +30,11 @@ body.directory-page::before, body.directory-page::after { display: none; }
 .feature-caption { padding: 14px 5px 4px; display: flex; flex-direction: column; gap: 4px; }
 .feature-caption > span { font-size: 10px; color: #757464; }
 .feature-caption > strong { font: 600 17px/1.6 var(--serif); }
-.feature-dots { display: flex; justify-content: center; gap: 8px; padding: 9px 0 2px; }
-.feature-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: #d3d0c1; cursor: pointer; transition: background .2s ease, transform .2s ease; }
-.feature-dots button[aria-selected="true"] { background: #55684f; transform: scale(1.28); }
-.feature-dots button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.feature-dots { display: flex; justify-content: center; gap: 2px; padding: 4px 0 0; }
+.feature-dots button { position: relative; width: 24px; height: 24px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.feature-dots button::before { content: ''; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border-radius: 50%; background: #d3d0c1; transform: translate(-50%, -50%); transition: background .2s ease, transform .2s ease; }
+.feature-dots button[aria-selected="true"]::before { background: #55684f; transform: translate(-50%, -50%) scale(1.28); }
+.feature-dots button:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; border-radius: 50%; }
 .directory-nav { display: grid; grid-template-columns: repeat(var(--category-columns, 5), minmax(0, 1fr)); position: sticky; top: var(--directory-header-height); z-index: 15; background: #f7f5ef; padding: 12px 0; gap: 9px; border-top: 1px solid #dddcd1; border-bottom: 1px solid #dddcd1; scroll-margin-top: calc(var(--directory-header-height) + 12px); }
 .tone-green { --tone: #506a58; --tint: #e7ece3; }
 .tone-terracotta { --tone: #9a5944; --tint: #f1e4dd; }
@@ -186,7 +187,7 @@ body.directory-page::before, body.directory-page::after { display: none; }
   .directory-lead { max-width: 340px; }
   .directory-feature { display: block; padding: 7px; }
   .feature-image > img { aspect-ratio: 16 / 10; }
-  .feature-dots { padding-top: 7px; }
+  .feature-dots { padding-top: 3px; }
   .feature-label { display: none; }
   .feature-caption { justify-content: center; padding: 6px; }
   .feature-caption > strong { font-size: 14px; }

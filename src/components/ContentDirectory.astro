@@ -16,7 +16,7 @@ const { worksPage = false } = Astro.props;
     </div>
     {!worksPage && <div class="directory-feature" data-feature-carousel role="group" aria-roledescription="推送轮播" aria-label="首屏滚动推送">
       <div class="feature-track">
-        {featuredItems.map((item, index) => <a class:list={['feature-slide', index === 0 && 'is-active']} href={item.href} data-slide aria-hidden={index === 0 ? undefined : 'true'} tabindex={index === 0 ? undefined : -1}>
+        {featuredItems.map((item, index) => <a class:list={['feature-slide', index === 0 && 'is-active']} href={item.href} data-slide id={`feature-panel-${index}`} role="tabpanel" aria-labelledby={`feature-tab-${index}`} aria-hidden={index === 0 ? undefined : 'true'} tabindex={index === 0 ? undefined : -1}>
           <div class="feature-image">
             <img src={item.image} alt={`${item.title}封面`} width="720" height="405" loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : undefined} />
             <span class="feature-label"><Icon name={item.icon} size={15} /> {item.meta}</span>
@@ -26,7 +26,7 @@ const { worksPage = false } = Astro.props;
         </a>)}
       </div>
       <div class="feature-dots" role="tablist" aria-label="选择推送内容">
-        {featuredItems.map((item, index) => <button type="button" role="tab" data-dot={index} aria-selected={index === 0 ? 'true' : 'false'} aria-label={`第 ${index + 1} 项：${item.title}`}></button>)}
+        {featuredItems.map((item, index) => <button type="button" role="tab" data-dot={index} id={`feature-tab-${index}`} aria-controls={`feature-panel-${index}`} aria-selected={index === 0 ? 'true' : 'false'} tabindex={index === 0 ? 0 : -1} aria-label={`第 ${index + 1} 项：${item.title}`}></button>)}
       </div>
     </div>}
   </section>
@@ -106,16 +106,28 @@ const { worksPage = false } = Astro.props;
         if (active) { slide.removeAttribute('aria-hidden'); slide.removeAttribute('tabindex'); }
         else { slide.setAttribute('aria-hidden', 'true'); slide.setAttribute('tabindex', '-1'); }
       });
-      dots.forEach((dot, i) => dot.setAttribute('aria-selected', i === current ? 'true' : 'false'));
+      dots.forEach((dot, i) => {
+        dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+        dot.tabIndex = i === current ? 0 : -1;
+      });
     };
     const stop = () => { if (timer !== undefined) { window.clearInterval(timer); timer = undefined; } };
     const start = () => { if (reducedMotion) return; stop(); timer = window.setInterval(() => show(current + 1), 6000); };
     dots.forEach((dot, i) => dot.addEventListener('click', () => { show(i); start(); }));
+    carousel.querySelector('.feature-dots')?.addEventListener('keydown', (event) => {
+      if (!(event instanceof KeyboardEvent)) return;
+      const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      event.preventDefault();
+      const next = (current + step + slides.length) % slides.length;
+      show(next); dots[next]?.focus(); start();
+    });
     carousel.addEventListener('mouseenter', stop);
     carousel.addEventListener('mouseleave', start);
     carousel.addEventListener('focusin', stop);
     carousel.addEventListener('focusout', start);
     document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); });
+    show(0);
     start();
   }
 </script>
