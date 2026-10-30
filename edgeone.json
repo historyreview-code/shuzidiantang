@@ -13,6 +13,16 @@
       "source": "/podcasts/2026-10-19-news/morning-brief.wav",
       "destination": "/podcasts/2026-10-19-news/morning-brief.mp3",
       "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-09-04-kimi.html",
+      "destination": "/notes/",
+      "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-09-22-autumn-train.html",
+      "destination": "/notes/",
+      "statusCode": 301
     }
   ]
 }

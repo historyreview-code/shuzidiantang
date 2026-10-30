@@ -1,5 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { travelSeries } from '../../data/site';
+
+const biliVideos = travelSeries.filter((item) => item.external && item.href).slice(0, 3);
 
 const exhibits = [
   { num: '04', title: '悠游 · 约克，把时间走慢', desc: '16 处地标与 16 篇手记，5 个餐食备选、6 条路线。城墙与河流 · 博物与街巷 · 一口甜。', href: '/travel/york/', img: '/travel/york/cover.svg?v=1', tag: '手机漫游' },
@@ -15,12 +18,11 @@ const exhibits = [
 <BaseLayout current="works" title="旅行实验室 · 劳伦斯实验室" description="旅行实验室：会飞的路书、小红书卡片工具与旅行记录视频。">
   <main id="content" class="page">
     <header class="page-title">
-      <span class="kicker">旅行实验室 · Travel Lab</span>
-      <h1>旅行实验室</h1>
+      <span class="kicker">城市悠游 · Travel Lab</span>
+      <h1>城市悠游</h1>
       <p>
-        旅行目的地的历史文化手绘介绍，路线确定后生成路书，作为旅途助手；
-        途中产出小红书发布卡片，照片与视频用旅行视频工具生成记录短片。
-        一切都智能高效，富有知识向和审美标准。
+        六座城市，六段可以慢慢走的交互漫游：每座城市有缩微地标、有来源的编辑部手记与主题路线，
+        支持手机全屏地图与离线资料。另附两件旅行工具：会飞的路书与小红书手绘卡片。
         <a class="github-badge" href="https://www.bilibili.com/video/BV1gH4k63EUm" target="_blank" rel="noopener">▶ B站演示 ↗</a>
       </p>
     </header>
@@ -48,8 +50,37 @@ const exhibits = [
       </div>
     </section>
 
+    <section class="section outbound" aria-label="站外视频">
+      <div class="outbound-copy">
+        <span class="kicker">站外视频 · 下一层</span>
+        <h2>手绘跨时空旅行 · 英伦漫记</h2>
+        <p>九部手绘短片发布在 B 站，按城市与小镇各成一集。站内只保留目录与封面，点进子页再转到站外观看。</p>
+        <a class="button" href="/travel/films/">查看站外视频目录 <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="outbound-thumbs">
+        {biliVideos.map((video) => (
+          <a href="/travel/films/" aria-label={`${video.title}（站外视频目录）`}>
+            <img src={video.img} alt={`${video.title}封面`} loading="lazy" decoding="async" />
+            <span>{video.title}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
     <div class="notes-more">
       <a class="button" href="/">返回首页</a>
     </div>
   </main>
 </BaseLayout>
+
+<style>
+  .outbound { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 44px; align-items: center; border-top: 1px solid var(--line); }
+  .outbound h2 { font: 600 clamp(24px, 2.6vw, 32px)/1.5 var(--serif); margin: 12px 0 14px; }
+  .outbound-copy p { max-width: 520px; font-size: 13px; line-height: 1.95; color: var(--ink-2); margin-bottom: 22px; }
+  .outbound-thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .outbound-thumbs a { display: block; text-decoration: none; color: var(--ink-3); font-size: 11px; }
+  .outbound-thumbs img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); background: #e9e4d8; transition: transform .18s ease, border-color .18s ease; }
+  .outbound-thumbs a:hover img { transform: translateY(-3px); border-color: var(--amber); }
+  .outbound-thumbs span { display: block; padding-top: 6px; }
+  @media (max-width: 820px) { .outbound { grid-template-columns: 1fr; gap: 24px; } .outbound-thumbs { max-width: 420px; } }
+</style>

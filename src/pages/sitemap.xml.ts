@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { research } from '../data/research';
+import { research, historyProject } from '../data/research';
 
 const urls = [
   ['/', 'weekly', '1.0'],
@@ -12,6 +12,9 @@ const urls = [
   ['/films/math-beauty-astra/', 'monthly', '0.8'],
   ['/films/electricity/', 'monthly', '0.8'],
   ['/research/', 'monthly', '0.8'],
+  [historyProject.href, 'monthly', '0.9'],
+  ['/fengxi/', 'monthly', '0.8'],
+  ['/books/war-and-return/', 'monthly', '0.8'],
   ...research.map(report => [report.href, 'monthly', '0.8']),
   ['/notes/', 'weekly', '0.8'],
   ['/about/', 'yearly', '0.5'],
@@ -30,6 +33,7 @@ const urls = [
   ['/seaside-delivery/', 'monthly', '0.8'],
   ['/autumn-train/', 'monthly', '0.8'],
   ['/travel/', 'monthly', '0.7'],
+  ['/travel/films/', 'monthly', '0.4'],
   ['/travel/glasgow/', 'monthly', '0.8'],
   ['/travel/cambridge/', 'monthly', '0.8'],
   ['/travel/york/', 'monthly', '0.8'],

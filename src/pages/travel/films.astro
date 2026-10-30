@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { travelSeries } from '../../data/site';
+
+// 站外视频：B 站「手绘跨时空旅行 · 英伦漫记」系列。
+// 首页与 /travel/ 只保留汇总入口，这里才是站外视频的下一层目录。
+const videos = travelSeries.filter((item) => item.external && item.href);
+---
+<BaseLayout current="works" title="站外视频 · 手绘跨时空旅行 · 英伦漫记 · 劳伦斯实验室" description="手绘跨时空旅行 · 英伦漫记：九部发布在 B 站的手绘旅行短片目录，按城市与小镇各成一集。">
+  <main id="content" class="page">
+    <header class="page-title">
+      <span class="kicker">站外视频 · Bilibili</span>
+      <h1>手绘跨时空旅行 · 英伦漫记</h1>
+      <p>
+        九部短片按城市与小镇各成一集，发布在 B 站。这里只保留站内目录与封面，
+        点进任意一集转到站外观看；站内视频与播客请回到<a href="/works/">作品分类</a>。
+        <a class="github-badge" href="https://space.bilibili.com/13483307" target="_blank" rel="noopener noreferrer">▶ B站主页 ↗</a>
+      </p>
+    </header>
+
+    <section class="section" aria-label="英伦漫记片单">
+      <div class="bili-grid">
+        {videos.map((video) => (
+          <a class="bili-card" href={video.href} target="_blank" rel="noopener noreferrer">
+            <div class="bili-cover">
+              <img src={video.img} alt={`${video.title}封面`} loading="lazy" decoding="async" />
+              <span class="bili-badge">B站 · 站外</span>
+            </div>
+            <div class="bili-body">
+              <span class="meta">手绘旅行短片</span>
+              <h3>{video.title}</h3>
+              <p>{video.sub}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <div class="notes-more">
+      <a class="button" href="/travel/">← 返回城市悠游</a>
+      <a class="button" href="/">返回首页</a>
+    </div>
+  </main>
+</BaseLayout>
+<style>
+  @media (min-width: 900px) { .page-title h1 { max-width: 1100px; } }
+  .bili-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .bili-card { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--card); text-decoration: none; color: var(--ink); overflow: hidden; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  .bili-card:hover { transform: translateY(-4px); border-color: var(--amber); box-shadow: var(--shadow-lift); }
+  .bili-cover { position: relative; overflow: hidden; background: #e9e4d8; }
+  .bili-cover img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+  .bili-badge { position: absolute; left: 10px; top: 10px; padding: 3px 8px; border-radius: 999px; background: rgba(252, 250, 241, .92); color: #7a3f2a; font: 10px var(--mono); letter-spacing: .04em; }
+  .bili-body { padding: 15px 16px 18px; }
+  .bili-body h3 { font: 600 17px/1.5 var(--serif); margin: 8px 0 6px; }
+  .bili-body p { font-size: 12px; line-height: 1.8; color: var(--ink-3); }
+  @media (max-width: 1100px) { .bili-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 720px) { .bili-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .bili-body { padding: 12px 12px 14px; } .bili-body h3 { font-size: 15px; } }
+</style>

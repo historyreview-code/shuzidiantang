@@ -1,23 +1,97 @@
-export const research = [
+export interface ResearchReport {
+  slug: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  date: string;
+  evidenceDate: string;
+  href: string;
+  pdf: string;
+  download?: string;
+  downloadLabel?: string;
+  actionLabel?: string;
+  kind?: string;
+  coverImage?: string;
+  /** 封面底色：浅色封面用浅底，避免卡片内出现深色留边。 */
+  coverBackground?: string;
+  format?: string;
+  tags: string[];
+  sources?: number;
+  pages: number;
+}
+
+// 历史研究子项目：奉系 / 战争与归途。
+// 两部专著共用同一段东北亚近代史脉络，首页与专题页都只保留一个子项目入口，
+// 具体书目在 /research/history/ 再展开。
+export const historyProject: ResearchReport = {
+  slug: 'history-fengxi-war',
+  title: '奉系 / 战争与归途',
+  subtitle: '两部近代东北军政专著',
+  summary:
+    '从奉系—东北军以军队、铁路与省权立身，到日俄战争、苏联对日宣战与战后抑留归途：两部专著围绕近代东北亚的战争、国家能力与人的命运展开，整理为同一研究子项目。',
+  date: '2026-10-29',
+  evidenceDate: '2026-10-29',
+  href: '/research/history/',
+  pdf: '',
+  coverImage: '/assets/img/research/history-fengxi-war.png',
+  coverBackground: '#f3eee1',
+  kind: '历史研究 · 子项目',
+  format: '两部专著 · 奉系约 27 万字 · 战争与归途约 6.7 万字',
+  actionLabel: '进入历史研究',
+  tags: ['奉系—东北军', '日俄战争', '战后归途'],
+  pages: 0,
+};
+
+export interface HistoryBook {
+  slug: string;
+  title: string;
+  subtitle: string;
+  meta: string;
+  status: string;
+  kind: string;
+  summary: string;
+  href: string;
+  cover: string;
+  actionLabel: string;
+  download?: string;
+  downloadLabel?: string;
+  note: string;
+}
+
+export const historyBooks: HistoryBook[] = [
+  {
+    slug: 'fengxi',
+    title: '军队、铁路与国家能力',
+    subtitle: '奉系—东北军的兴起与解体',
+    meta: '六编十八章 · 约 27 万字 · 14 幅图',
+    status: '暂定稿 · 供朋友阅读',
+    kind: '历史研究 · 图文专著',
+    summary:
+      '一支从辽西保险队起家的地方武装，为什么能在二十多年里变成拥有铁路、兵工厂、财政和空军的东北军政集团？又为什么在 1931 年几乎一夜之间丢掉根基？把这些问题放回材料里，从头理一遍。',
+    href: '/fengxi/',
+    cover: '/fengxi/assets/cover-front.jpg',
+    actionLabel: '在线阅读',
+    note: '暂定稿，非最终出版：地图审图号、照片授权、ISBN 与版次待补。',
+  },
   {
     slug: 'war-and-return',
     title: '战争与归途',
     subtitle: '日本与俄国、苏联的战略较量',
-    summary: '劳伦斯著。从1904年日俄战争到1945年远东战局，再到战后抑留、归途与日苏关系；十八章与结语串起战略、代价与人的命运，附26幅研究地图、历史图版与天皇责任学术述评。',
-    date: '2026-10-29',
-    evidenceDate: '2026-10-29',
+    meta: '204 页 · 18 章 · 26 幅地图 · 244 条来源',
+    status: 'v1.0 研究分享版',
+    kind: '历史研究 · 图文专著',
+    summary:
+      '从 1904 年日俄战争到 1945 年远东战局，再到战后抑留、归途与日苏关系；十八章与结语串起战略、代价与人的命运，附 26 幅研究地图、历史图版与天皇责任学术述评。',
     href: '/books/war-and-return/',
-    pdf: '',
+    cover: '/books/war-and-return/cover.jpg',
+    actionLabel: '在线阅读',
     download: '/books/war-and-return/war-and-return-v1.0.epub',
     downloadLabel: '下载 EPUB',
-    actionLabel: '在线阅读',
-    kind: '历史研究 · 图文专著',
-    coverImage: '/books/war-and-return/cover-wide.jpg',
-    format: '约6.7万字 · 204页 · 18章 · 26幅地图',
-    tags: ['日俄战争', '苏联', '远东'],
-    sources: 244,
-    pages: 204,
+    note: '研究分享版，仅供研究交流；PDF / EPUB 与站内书页同版。',
   },
+];
+
+export const research: ResearchReport[] = [
   {
     slug: 'russian-far-east',
     title: '俄罗斯远东的形成与变迁',

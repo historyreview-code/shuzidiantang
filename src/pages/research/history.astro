@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { historyBooks } from '../../data/research';
+---
+<BaseLayout current="research" title="历史研究 · 奉系 / 战争与归途 · 劳伦斯实验室" description="历史研究子项目：两部近代东北军政专著——《军队、铁路与国家能力：奉系—东北军的兴起与解体》与《战争与归途：日本与俄国、苏联的战略较量》，站内在线阅读。">
+  <main id="content" class="page">
+    <section class="page-title history-title">
+      <span class="kicker">专题研究 · 历史研究 · 子项目</span>
+      <h1>奉系 / 战争与归途</h1>
+      <p>
+        从辽西保险队起家，到铁路、兵工厂、财政与空军的东北军政集团；从 1904 年日俄战争，到 1945 年苏联对日宣战与战后抑留归途。
+        两部专著共用同一段东北亚近代史脉络，收在同一个研究子项目里。
+      </p>
+    </section>
+
+    <section class="section history-books" aria-label="两部专著">
+      {historyBooks.map((book, index) => (
+        <article class="history-book">
+          <a class="book-cover" href={book.href} aria-label={`${book.title}在线阅读`}>
+            <img src={book.cover} alt={`${book.title}封面`} loading={index === 0 ? 'eager' : 'lazy'} />
+          </a>
+          <div class="book-copy">
+            <span class="kicker">{book.kind} · {String(index + 1).padStart(2, '0')}</span>
+            <h2><a href={book.href}>{book.title}</a></h2>
+            <p class="book-subtitle">{book.subtitle}</p>
+            <p class="book-summary">{book.summary}</p>
+            <dl class="book-meta">
+              <div><dt>篇幅</dt><dd>{book.meta}</dd></div>
+              <div><dt>状态</dt><dd>{book.status}</dd></div>
+            </dl>
+            <div class="book-actions">
+              <a class="button" href={book.href}>{book.actionLabel} <span aria-hidden="true">→</span></a>
+              {book.download && <a class="book-download" href={book.download} download>{book.downloadLabel} <span aria-hidden="true">↓</span></a>}
+            </div>
+            <p class="book-note">{book.note}</p>
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section class="section why-read" aria-label="为什么并读">
+      <div class="why-head">
+        <span class="kicker">为什么并读</span>
+        <h2>区域军政集团，如何被战争、铁路与省权推着走</h2>
+      </div>
+      <div class="why-grid">
+        <p>
+          奉系不是突然冒出来的：边疆、移民、铁路、战争与省权一层层把辽西的地方武装推成了东北军政集团。
+          这本书把军队、铁路与国家能力放在一条线上，追问它为什么兴起、又为什么在 1931 年几乎一夜之间丢掉根基。
+        </p>
+        <p>
+          战争与归途把镜头拉远：日本与俄国、苏联在东北亚的战略较量，以及战争结束后被抑留者的归途。
+          两本书对象不同，却在同一片土地上彼此解释——一边看国家能力如何长出来，一边看战争如何把人的命运卷走。
+        </p>
+      </div>
+    </section>
+
+    <section class="section history-method" aria-label="版本与资料说明">
+      <span class="kicker">版本与资料说明</span>
+      <div>
+        <h2>两部书处在不同的版本阶段。</h2>
+        <p>
+          奉系—东北军一部为暂定稿，供朋友阅读，不是最终出版：地图审图号、照片授权、ISBN 与版次仍在待补。
+          战争与归途为 v1.0 研究分享版，站内书页、PDF 与 EPUB 同版。
+          两份文本都保留资料截止日期、来源与需要继续核对的地方；事实、判断与假设分别交代，便于复核和继续更新。
+        </p>
+      </div>
+    </section>
+
+    <div class="notes-more">
+      <a class="button" href="/research/">← 返回专题研究</a>
+      <a class="button" href="/">返回首页</a>
+    </div>
+  </main>
+</BaseLayout>
+<style>
+  .history-title p { max-width: 780px; }
+  .history-books { display: grid; gap: 34px; }
+  .history-book { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 42px; align-items: start; padding: 30px; border: 1px solid var(--line); background: var(--card); border-radius: 5px; }
+  .book-cover { display: block; background: #eee9dc; padding: 12px; border: 1px solid var(--line); }
+  .book-cover img { display: block; width: 100%; height: auto; box-shadow: 0 12px 30px rgba(50, 44, 32, .18); }
+  .book-copy { min-width: 0; }
+  .book-copy h2 { font: 600 clamp(26px, 3.2vw, 38px)/1.45 var(--serif); margin: 12px 0 4px; }
+  .book-copy h2 a { text-decoration: none; }
+  .book-subtitle { font: 500 17px/1.7 var(--serif); color: var(--ink-2); margin-bottom: 16px; }
+  .book-summary { font-size: 14px; line-height: 2; color: var(--ink-2); max-width: 660px; }
+  .book-meta { display: flex; flex-wrap: wrap; gap: 10px 34px; margin: 22px 0 4px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .book-meta div { display: flex; gap: 10px; align-items: baseline; }
+  .book-meta dt { font: 11px var(--mono); letter-spacing: .12em; color: var(--ink-3); }
+  .book-meta dd { margin: 0; font-size: 13px; color: var(--ink-2); }
+  .book-actions { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; margin-top: 24px; }
+  .book-download { font-size: 13px; text-underline-offset: 5px; }
+  .book-note { margin: 22px 0 0; font-size: 11px; line-height: 1.9; color: var(--ink-3); }
+  .why-read { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 42px; }
+  .why-read h2 { font: 500 26px/1.6 var(--serif); margin: 12px 0 0; }
+  .why-grid { display: grid; gap: 18px; max-width: 720px; }
+  .why-grid p { font-size: 14px; line-height: 2.05; color: var(--ink-2); }
+  .history-method { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; border-top: 1px solid var(--line); padding-top: 38px; }
+  .history-method h2 { font: 500 26px/1.6 var(--serif); margin: 0 0 15px; }
+  .history-method p { max-width: 700px; font-size: 14px; line-height: 2; color: var(--ink-2); }
+  @media (max-width: 820px) {
+    .history-book { grid-template-columns: 1fr; gap: 26px; padding: 20px; }
+    .book-cover { max-width: 220px; }
+    .why-read, .history-method { grid-template-columns: 1fr; gap: 18px; }
+  }
+</style>

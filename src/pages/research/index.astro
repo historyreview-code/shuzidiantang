@@ -1,18 +1,42 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResearchCard from '../../components/ResearchCard.astro';
-import { research } from '../../data/research';
+import { research, historyProject } from '../../data/research';
 ---
-<BaseLayout current="research" title="理论研究 · 劳伦斯实验室" description="从文化、历史到制度与经济，整理有出处、可核验的专题研究。萨满文化时间与空间导览，土地续期与补地价比较。">
+<BaseLayout current="research" title="专题研究 · 劳伦斯实验室" description="专题研究：历史研究（奉系 / 战争与归途）、俄罗斯远东、吉林船厂、云梦泽、萨满、黄河与土地制度等有出处、可核验的专题与电子书。">
   <main id="content" class="page">
     <section class="page-title research-title">
-      <span class="kicker">理论研究 · Research</span>
-      <h1>理论研究</h1>
-      <p>从具体问题出发，追溯文化、历史与制度的依据，形成有出处、可核验的专题研究。</p>
+      <span class="kicker">专题研究 · Research</span>
+      <h1>专题研究</h1>
+      <p>从具体问题出发，追溯文化、历史与制度的依据，形成有出处、可核验的专题研究与电子书。按研究线索归档：历史研究、历史地理、文化研究与制度研究。</p>
     </section>
-    <section class="section research-archive" aria-label="研究报告">
-      {research.map(report => <ResearchCard report={report} />)}
+
+    <section class="section research-feature" aria-label="历史研究">
+      <div class="section-head">
+        <div>
+          <span class="kicker">历史研究 · 子项目</span>
+          <h2>奉系 / 战争与归途</h2>
+        </div>
+        <p class="section-side-note">一部写奉系—东北军的兴起与解体，一部写从日俄战争到战后归途；两本书共用同一段东北亚近代史脉络，可并读。</p>
+      </div>
+      <div class="research-archive">
+        <ResearchCard report={historyProject} />
+      </div>
     </section>
+
+    <section class="section" aria-label="其他专题">
+      <div class="section-head">
+        <div>
+          <span class="kicker">专题档案 · Archive</span>
+          <h2>其他专题</h2>
+        </div>
+        <p class="section-side-note">历史地理、文化研究与制度研究；每份报告保留资料截止日期、适用地区与原始来源。</p>
+      </div>
+      <div class="research-archive">
+        {research.map(report => <ResearchCard report={report} />)}
+      </div>
+    </section>
+
     <section class="section research-method">
       <span class="kicker">研究方法</span>
       <div><h2>先给结论，再展开依据。</h2><p>每份报告保留资料截止日期、适用地区与原始来源。事实、测算假设和研究判断分别交代，让结论可以复核，也能随新材料继续更新。</p></div>
@@ -21,5 +45,16 @@ import { research } from '../../data/research';
 </BaseLayout>
 <style>
   .research-archive{display:grid;gap:24px}
-.research-title{padding-bottom:16px}.research-archive{padding-top:16px}.research-method{display:grid;grid-template-columns:160px 1fr;gap:30px;border-top:1px solid var(--line);padding-top:35px;margin-bottom:30px}.research-method h2{font:500 26px/1.5 var(--serif);margin:0 0 15px}.research-method p{max-width:680px;font-size:14px;line-height:2;color:var(--ink-2)}@media(max-width:720px){.research-method{grid-template-columns:1fr;gap:15px}}
+  .research-title{padding-bottom:16px}
+  .research-feature .section-head h2{font:600 30px/1.4 var(--serif);margin:8px 0 0}
+  .section-side-note{max-width:430px;font-size:13px;line-height:1.9;color:var(--ink-3);text-align:right}
+  .research-feature{padding-top:36px}
+  .research-method{display:grid;grid-template-columns:160px 1fr;gap:30px;border-top:1px solid var(--line);padding-top:35px;margin-bottom:30px}
+  .research-method h2{font:500 26px/1.5 var(--serif);margin:0 0 15px}
+  .research-method p{max-width:680px;font-size:14px;line-height:2;color:var(--ink-2)}
+  @media(max-width:720px){
+    .section-head{display:block}
+    .section-side-note{text-align:left;margin-top:12px}
+    .research-method{grid-template-columns:1fr;gap:15px}
+  }
 </style>
