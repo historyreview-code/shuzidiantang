@@ -149,9 +149,21 @@ def fit_font_size(draw, text, kind, start_size, max_width, min_size=28):
 
 
 def wrap_title(title):
-    """长标题按字符数均分成两行 (每行 <= 13 字)。"""
+    """长标题折成两行：优先在冒号/顿号等标点后断行，否则按字符数均分。"""
     if len(title) <= 13:
         return [title]
+    mid = len(title) / 2
+    best = None
+    for i, ch in enumerate(title):
+        if ch in "：:、，,；;—·":
+            score = abs((i + 1) - mid)
+            if best is None or score < best[0]:
+                best = (score, i + 1)
+    if best is not None:
+        cut = best[1]
+        left, right = title[:cut].rstrip(), title[cut:].lstrip("：:、，,；;—· ")
+        if left and right:
+            return [left, right]
     mid = len(title) // 2
     return [title[:mid], title[mid:]]
 

@@ -371,6 +371,13 @@ export const travelSeries = [
 
 export const notes = [
   {
+    title: '一周三本书之后：AI 写作、审稿与出电子书的工序',
+    date: '2026-10-30',
+    category: 'AI 手记',
+    href: '/notes/2026-10-30-ai-writing-ebook.html',
+    summary: '三本书同时进入终稿的这一周：怎么让 AI 写、怎么查 AI 腔、怎么把稿子做成能发出去的电子书。一份来自编辑现场的工序复盘。',
+  },
+  {
     title: '小兴安岭金秋专列纪行',
     date: '2026-09-22',
     category: '实践手记',
