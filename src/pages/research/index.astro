@@ -2,6 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResearchCard from '../../components/ResearchCard.astro';
 import { research, historyProject } from '../../data/research';
+import { works } from '../../data/site';
+
+const huanghe = works.find((work) => work.id === 'huanghe')!;
 ---
 <BaseLayout current="research" title="专题研究 · 劳伦斯实验室" description="专题研究：历史研究（奉系 / 战争与归途）、俄罗斯远东、吉林船厂、云梦泽、萨满、黄河与土地制度等有出处、可核验的专题与电子书。">
   <main id="content" class="page">
@@ -37,6 +40,25 @@ import { research, historyProject } from '../../data/research';
       </div>
     </section>
 
+    <section class="section atlas-section" aria-label="交互图志">
+      <div class="section-head">
+        <div>
+          <span class="kicker">交互图志 · Atlas</span>
+          <h2>黄河 · 改道两千年</h2>
+        </div>
+        <p class="section-side-note">历史地理的可交互读法：滚动看叙事，拨时间轴看河道显影。</p>
+      </div>
+      <a class="atlas-card" href={huanghe.href}>
+        <img src={huanghe.image} alt={`${huanghe.title}预览`} loading="lazy" decoding="async" />
+        <div class="atlas-copy">
+          <span class="kicker">{huanghe.eyebrow}</span>
+          <h3>{huanghe.title}</h3>
+          <p>{huanghe.summary}</p>
+          <span class="atlas-link">打开交互图志 <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+    </section>
+
     <section class="section research-method">
       <span class="kicker">研究方法</span>
       <div><h2>先给结论，再展开依据。</h2><p>每份报告保留资料截止日期、适用地区与原始来源。事实、测算假设和研究判断分别交代，让结论可以复核，也能随新材料继续更新。</p></div>
@@ -49,12 +71,19 @@ import { research, historyProject } from '../../data/research';
   .research-feature .section-head h2{font:600 30px/1.4 var(--serif);margin:8px 0 0}
   .section-side-note{max-width:430px;font-size:13px;line-height:1.9;color:var(--ink-3);text-align:right}
   .research-feature{padding-top:36px}
+  .atlas-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 34px; align-items: center; padding: 24px; border: 1px solid var(--line); background: var(--card); border-radius: 5px; color: var(--ink); text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
+  .atlas-card:hover { border-color: var(--amber); transform: translateY(-2px); }
+  .atlas-card > img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--line); background: #e9e4d8; }
+  .atlas-copy h3 { font: 600 clamp(24px, 2.6vw, 32px)/1.45 var(--serif); margin: 10px 0 12px; }
+  .atlas-copy p { font-size: 14px; line-height: 1.95; color: var(--ink-2); }
+  .atlas-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 13px; color: var(--amber); }
   .research-method{display:grid;grid-template-columns:160px 1fr;gap:30px;border-top:1px solid var(--line);padding-top:35px;margin-bottom:30px}
   .research-method h2{font:500 26px/1.5 var(--serif);margin:0 0 15px}
   .research-method p{max-width:680px;font-size:14px;line-height:2;color:var(--ink-2)}
   @media(max-width:720px){
     .section-head{display:block}
     .section-side-note{text-align:left;margin-top:12px}
+    .atlas-card { grid-template-columns: 1fr; gap: 20px; padding: 16px; }
     .research-method{grid-template-columns:1fr;gap:15px}
   }
 </style>

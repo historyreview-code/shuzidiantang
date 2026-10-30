@@ -11,6 +11,8 @@ export interface CatalogItem {
   summary: string;
   meta: string;
   icon: string;
+  /** 轮播推送用的补充说明（时长 / 页数等）。 */
+  note?: string;
   external?: boolean;
   github?: string;
 }
@@ -53,7 +55,8 @@ const workItem = (id: string): CatalogItem => {
 // 每个栏目显式列出条目，保证首页顺序与主编排一致。
 const groups: Record<string, string[]> = {
   screen: ['japan-sea-war', 'don-quixote-podcast', 'babylon-tower', 'single-bit-error', 'droplet', 'math-beauty-astra', 'electricity', 'autumn-train'],
-  code: ['earth', 'liberty', 'seaside-delivery', 'fireworks-player', 'mindverse', 'guandan', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games', 'huanghe', 'shanghai-time-map'],
+  // 掼蛋排第一；黄河·改道两千年移到专题研究组。
+  code: ['guandan', 'earth', 'liberty', 'seaside-delivery', 'fireworks-player', 'mindverse', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games', 'shanghai-time-map'],
 };
 
 const libertyItem: CatalogItem = {
@@ -65,6 +68,9 @@ const libertyItem: CatalogItem = {
   meta: '交互 3D · 原始高精度版',
   icon: 'cube',
 };
+
+// 技术编程组：掼蛋置顶，liberty 为站外封面特例。
+const codeItems: CatalogItem[] = groups.code.map((id) => (id === 'liberty' ? libertyItem : workItem(id)));
 
 const reportItems: CatalogItem[] = research.map((report) => ({
   id: report.slug, title: report.title, href: report.href,
@@ -78,7 +84,7 @@ const historyItem: CatalogItem = {
   title: historyProject.title,
   href: historyProject.href,
   image: historyProject.coverImage,
-  summary: historyProject.subtitle,
+  summary: '《军队、铁路与国家能力：奉系—东北军的兴起与解体》与《战争与归途：日本与俄国、苏联的战略较量》两部专著，共用同一段东北亚近代史脉络。',
   meta: '历史研究 · 子项目 · 两部专著',
   icon: 'book',
 };
@@ -121,20 +127,20 @@ const noteItems: CatalogItem[] = readdirSync(notesDirectory)
 
 export const catalog: CatalogGroup[] = [
   {
+    id: 'code', title: '技术编程 · 数字作品与游戏', navLabel: '技术编程与游戏', english: 'DIGITAL WORKS & GAMES', icon: 'grid', color: 'green',
+    description: '用代码做出来的数字作品、交互实验与小游戏。',
+    items: codeItems,
+    more: { label: '创意小游戏', href: '/games/' },
+  },
+  {
     id: 'screen', title: '本站视频与播客', english: 'FILM & PODCAST', icon: 'headphones', color: 'terracotta',
     description: '站内可看的影像与可听的播客，从历史短片到文学对谈。',
     items: [...groups.screen.map(workItem), cosmosItem],
   },
   {
-    id: 'code', title: '技术编程 · 数字作品与游戏', navLabel: '技术编程与游戏', english: 'DIGITAL WORKS & GAMES', icon: 'grid', color: 'green',
-    description: '用代码做出来的数字作品、交互实验与小游戏。',
-    items: [workItem('earth'), libertyItem, ...groups.code.slice(2).map(workItem)],
-    more: { label: '创意小游戏', href: '/games/' },
-  },
-  {
     id: 'research', title: '专题研究 · 电子书', english: 'RESEARCH & EBOOKS', icon: 'book', color: 'brown',
     description: '有出处、可核验的专题研究与电子书，按研究线索归档。',
-    items: [historyItem, ...reportItems],
+    items: [historyItem, ...reportItems, workItem('huanghe')],
     more: { label: '全部专题', href: '/research/' },
   },
   {
@@ -152,4 +158,30 @@ export const catalog: CatalogGroup[] = [
   },
 ];
 export const catalogCount = catalog.reduce((sum, group) => sum + group.items.length + (group.related?.length || 0), 0);
-export const featured = toItem(works.find((work) => work.id === 'don-quixote-podcast')!);
+
+// 首屏滚动推送：掼蛋游戏、堂吉诃德播客、水滴，以及三部电子书。
+// 轮播顺序即数组顺序；note 显示在标题下方。
+const pushNote = (item: CatalogItem, note: string): CatalogItem => ({ ...item, note });
+export const featuredItems: CatalogItem[] = [
+  pushNote(workItem('guandan'), '理牌练习 · 分支复盘 · 语音教练'),
+  pushNote(workItem('don-quixote-podcast'), '10 分钟双人对谈 · 文稿与章节'),
+  pushNote(workItem('droplet'), '92 秒程序化三维短片'),
+  {
+    id: 'fengxi-book', title: '军队、铁路与国家能力', href: '/fengxi/',
+    image: '/assets/img/research/fengxi-wide.png',
+    summary: '奉系—东北军的兴起与解体', meta: '历史研究 · 电子书 · 暂定稿',
+    note: '六编十八章 · 约 27 万字', icon: 'book',
+  },
+  {
+    id: 'war-and-return-book', title: '战争与归途', href: '/books/war-and-return/',
+    image: '/books/war-and-return/cover-wide.jpg',
+    summary: '日本与俄国、苏联的战略较量', meta: '历史研究 · 电子书 · v1.0',
+    note: '204 页 · 18 章 · 26 幅地图', icon: 'book',
+  },
+  {
+    id: 'russian-far-east-book', title: '俄罗斯远东的形成与变迁', href: '/research/russian-far-east/',
+    image: '/research/russian-far-east/v1-4/map-spread-preview.jpg',
+    summary: '疆界 · 人口 · 开发与军事', meta: '历史地理 · 电子书 · v1.4',
+    note: '152 页 · 跨页总图 · 四图六表', icon: 'book',
+  },
+];
