@@ -1,5 +1,5 @@
 import { works, notes } from './site';
-import { research, historyProject } from './research';
+import { research, historyBookReports } from './research';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -78,16 +78,16 @@ const reportItems: CatalogItem[] = research.map((report) => ({
   meta: `研究 · ${report.date}${report.sources ? ` · ${report.sources} 条来源` : ''}`, icon: 'book',
 }));
 
-// 历史研究子项目：奉系 / 战争与归途，作为一个入口。
-const historyItem: CatalogItem = {
-  id: historyProject.slug,
-  title: historyProject.title,
-  href: historyProject.href,
-  image: historyProject.coverImage,
-  summary: '《军队、铁路与国家能力：奉系—东北军的兴起与解体》与《战争与归途：日本与俄国、苏联的战略较量》两部专著，共用同一段东北亚近代史脉络。',
-  meta: '历史研究 · 子项目 · 两部专著',
+// 历史研究：两本独立的电子书，各自封面与入口。
+const historyBookItems: CatalogItem[] = historyBookReports.map((book, index) => ({
+  id: book.slug,
+  title: book.title,
+  href: book.href,
+  image: book.coverImage,
+  summary: book.subtitle,
+  meta: `历史研究 · 电子书 · ${index === 0 ? '暂定稿' : 'v1.0'}`,
   icon: 'book',
-};
+}));
 
 // 天文馆：六部短片整体作为一个标签入口，不再在首页逐集铺开。
 const cosmosItem: CatalogItem = {
@@ -140,7 +140,7 @@ export const catalog: CatalogGroup[] = [
   {
     id: 'research', title: '专题研究 · 电子书', english: 'RESEARCH & EBOOKS', icon: 'book', color: 'brown',
     description: '有出处、可核验的专题研究与电子书，按研究线索归档。',
-    items: [historyItem, ...reportItems, workItem('huanghe')],
+    items: [...historyBookItems, ...reportItems, workItem('huanghe')],
     more: { label: '全部专题', href: '/research/' },
   },
   {

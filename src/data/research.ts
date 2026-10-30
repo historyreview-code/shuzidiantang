@@ -91,6 +91,48 @@ export const historyBooks: HistoryBook[] = [
   },
 ];
 
+// 首页/专题页的“电子书”条目：两本书独立入口、各自封面，不再共用一个子项目图标。
+export const historyBookReports: ResearchReport[] = [
+  {
+    slug: 'fengxi-book',
+    title: '军队、铁路与国家能力',
+    subtitle: '奉系—东北军的兴起与解体',
+    summary:
+      '一支从辽西保险队起家的地方武装，为什么能在二十多年里变成拥有铁路、兵工厂、财政和空军的东北军政集团？又为什么在 1931 年几乎一夜之间丢掉根基？',
+    date: '2026-10-29',
+    evidenceDate: '2026-10-29',
+    href: '/fengxi/',
+    pdf: '',
+    coverImage: '/assets/img/research/fengxi-wide.png',
+    coverBackground: '#f3eee1',
+    kind: '历史研究 · 电子书',
+    format: '六编十八章 · 约 27 万字 · 14 幅图',
+    tags: ['奉系—东北军', '近代东北', '国家能力'],
+    pages: 0,
+    actionLabel: '在线阅读',
+  },
+  {
+    slug: 'war-and-return-book',
+    title: '战争与归途',
+    subtitle: '日本与俄国、苏联的战略较量',
+    summary:
+      '从 1904 年日俄战争到 1945 年远东战局，再到战后抑留、归途与日苏关系；十八章与结语串起战略、代价与人的命运。',
+    date: '2026-10-29',
+    evidenceDate: '2026-10-29',
+    href: '/books/war-and-return/',
+    pdf: '',
+    download: '/books/war-and-return/war-and-return-v1.0.epub',
+    downloadLabel: '下载 EPUB',
+    coverImage: '/books/war-and-return/cover-wide.jpg',
+    kind: '历史研究 · 电子书',
+    format: '204 页 · 18 章 · 26 幅地图',
+    tags: ['日俄战争', '战后归途', '日苏关系'],
+    sources: 244,
+    pages: 204,
+    actionLabel: '在线阅读',
+  },
+];
+
 export const research: ResearchReport[] = [
   {
     slug: 'russian-far-east',

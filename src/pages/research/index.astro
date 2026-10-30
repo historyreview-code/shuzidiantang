@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResearchCard from '../../components/ResearchCard.astro';
-import { research, historyProject } from '../../data/research';
+import { research, historyBookReports } from '../../data/research';
 import { works } from '../../data/site';
 
 const huanghe = works.find((work) => work.id === 'huanghe')!;
@@ -20,10 +20,10 @@ const huanghe = works.find((work) => work.id === 'huanghe')!;
           <span class="kicker">历史研究 · 子项目</span>
           <h2>奉系 / 战争与归途</h2>
         </div>
-        <p class="section-side-note">一部写奉系—东北军的兴起与解体，一部写从日俄战争到战后归途；两本书共用同一段东北亚近代史脉络，可并读。</p>
+        <p class="section-side-note">两本独立的电子书，各有封面与入口：一部写奉系—东北军的兴起与解体，一部写从日俄战争到战后归途。</p>
       </div>
       <div class="research-archive">
-        <ResearchCard report={historyProject} />
+        {historyBookReports.map((report) => <ResearchCard report={report} />)}
       </div>
     </section>
 
