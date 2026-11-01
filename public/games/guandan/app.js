@@ -19,7 +19,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   let handMode=H.modes.includes(db.handMode)?db.handMode:'rank';
   db.handOrders=db.handOrders&&typeof db.handOrders==='object'&&!Array.isArray(db.handOrders)?db.handOrders:{};
   db.handLayouts=db.handLayouts&&typeof db.handLayouts==='object'&&!Array.isArray(db.handLayouts)?db.handLayouts:{};
-  let record,states,view='practice',undoCount=0,cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,playDelay=1000,timer=null,lastToastTimer;
+  let record,states,takePartner=!!(db&&db.takePartner),view='practice',undoCount=0,cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,playDelay=1000,timer=null,lastToastTimer;
   const freshSeed=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0].toString(36).toUpperCase();};
   const newId=()=>`g-${Date.now().toString(36)}-${freshSeed()}`;
   function createRecord(start,events=[],lessonId=null){return {format:'guandan-lab-record-v1',id:newId(),created:new Date().toISOString(),title:`实战 · 打 ${G.rankName(start.level)}`,start,events:events.map(a=>a.origin?a:{...a,origin:'lesson'}),lessonId,branchOf:null,notes:{}};}
@@ -35,7 +35,8 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   function archive(r=record,force=false){if(!r.events.length&&!force)return;const copy=G.clone(r),i=db.records.findIndex(x=>x.id===r.id);if(i>=0)db.records[i]=copy;else db.records.unshift(copy);db.records=db.records.slice(0,20);save();}
   const current=()=>states[cursor];
   const atLive=()=>!review&&cursor===record.events.length;
-  const myTurn=()=>!arrangeMode&&!dealWaiting&&atLive()&&!current().over&&current().turn===0&&!autoHero;
+  const ctrlSeat=()=>{const s=current();return takePartner&&s&&!s.over&&s.turn===2?2:0;};
+  const myTurn=()=>!arrangeMode&&!dealWaiting&&atLive()&&!current().over&&current().turn===ctrlSeat()&&!autoHero;
   function stop(){clearTimeout(timer);timer=null;}
   function setRecord(r,isReview=false,waitForStart=false){stop();battle.cancel();ai.stopReading();narrator.cancel();record=r;states=G.replay(r.start,r.events);cursor=isReview?0:r.events.length;review=isReview;dealWaiting=!isReview&&!states.at(-1).over&&(waitForStart||(r.start.kind==='full'&&!r.events.length));arrangeMode=dealWaiting;layoutUndo=[];arrangeSelected=[];selected=[];declarationKey='';showHint=false;hintSeen=false;showAll=false;paused=false;autoHero=false;view='practice';toolsOpen=isReview;save();announce(isReview?'进入复盘。'+S.turnText(current()):'开始练习，打'+S.rank(current().level)+'。'+S.turnText(current()));render();}
   function cardHTML(c,opts={}){
@@ -44,16 +45,16 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     const body=`<span class="rank">${esc(G.rankName(c.r))}</span><span class="suit">${G.SYMBOLS[c.s]}</span>${w?'<span class="wild-mark">配</span>':''}`;
     return opts.selectable?`<button class="${cls}" data-action="card" data-id="${c.id}" aria-label="${esc(G.name(c))}${w?'，配牌':''}" aria-pressed="${sel}" ${opts.draggable?'data-drag-card="true" title="拖动调整位置；点按选择"':''} ${!opts.draggable&&!myTurn()&&!arrangeMode?'disabled':''}>${body}</button>`:`<span class="${cls}" title="${esc(G.name(c))}">${body}</span>`;
   }
-  function selectedMoves(){const s=current(),cards=selected.map(id=>s.hands[0].find(c=>c.id===id)).filter(Boolean);if(!cards.length)return [];const ms=G.classify(cards,s.level).filter(m=>G.beats(m,s.trick?.move));return ms.sort((a,b)=>G.bombTier(b)-G.bombTier(a)||b.power-a.power);}
+  function selectedMoves(){const s=current(),cards=selected.map(id=>s.hands[ctrlSeat()].find(c=>c.id===id)).filter(Boolean);if(!cards.length)return [];const ms=G.classify(cards,s.level).filter(m=>G.beats(m,s.trick?.move));return ms.sort((a,b)=>G.bombTier(b)-G.bombTier(a)||b.power-a.power);}
   function titleHTML(){const titles={archive:['历史牌局','选择一副牌，回看真实的每一步。'],tools:['分析与辅助','按需查看，不打断牌桌。']};if(view==='practice')return '';const t=titles[view];return `<section class="intro"><div><h1>${t[0]}</h1><p>${t[1]}</p></div></section>`;}
   function seatHTML(p,place,s){const finished=s.finish.indexOf(p);let label='';const last=s.lastActions[p];if(last)label=last.kind==='pass'?'过牌':G.describe(last.move);return `<div class="seat ${p%2===0?'ally':'opponent'} ${place} ${!s.over&&s.turn===p?'active':''}" data-action="seatHistory" data-seat="${p}" role="button" tabindex="0" title="查看${p===0?'我':seats[p]}的出牌记录"><div class="avatar">${p===0?'我':p===2?'友':'对'}</div><div class="seat-name">${p===2?'搭档':seats[p]}<span>${!s.over&&s.turn===p?'轮到出牌':p%2===0?'我方':'对手'}</span></div><div class="count">${finished>=0?`<strong class="finish-place">${['头游','二游','三游','末游'][finished]}</strong>${s.hands[p].length?`<small>余 ${s.hands[p].length} 张</small>`:''}`:`剩 <b>${s.hands[p].length}</b> 张`}</div>${!s.hands[p].length?'':`<div class="cardback-stack" aria-hidden="true">${'<i></i>'.repeat(5)}</div>`}<div class="action-label">${esc(label)}</div></div>`;}
   function trickHTML(s){if(s.over)return `<div class="table-empty"><div class="big-suit">${s.result.team===0?'♠':'♣'}</div><b>${s.result.team===0?'你和搭档获胜':'对方组合获胜'}</b><p>${s.result.doubleDown?(s.result.team===0?'你和搭档包揽头游、二游 · 双上':'对方包揽头游、二游 · 我方双下'):`名次：${s.finish.map(p=>seats[p]).join(' → ')}`}</p><button class="button gold small" data-action="summary">查看本副复盘</button></div>`;if(!s.trick)return `<div class="table-empty"><div class="big-suit">♠</div><b>${s.turn===0?'轮到你领出':`${seats[s.turn]}领出`}</b><p>${esc(s.leadReason)}</p></div>`;return `<div class="trick-caption">${seats[s.trick.seat]} 的出牌</div><div class="table-cards">${G.displayIds(s.trick.move,s.level).map(id=>cardHTML(G.INDEX[id],{mini:true})).join('')}</div><div class="table-note">${G.describe(s.trick.move)}</div>${s.trick.move.assign.some(a=>a.r!==s.level||a.s!=='H')?`<div class="disclosure">${s.trick.move.assign.map(a=>`${G.name(G.INDEX[a.id])} → ${G.SYMBOLS[a.s]}${G.rankName(a.r)}`).join('，')}</div>`:''}`;}
-  const canArrangeHand=()=>atLive()&&!current().over&&current().hands[0].length>0;
-  const displayedHand=()=>H.orderedCards(current().hands[0],current().level,review&&handMode==='groups'?'rank':handMode,db.handOrders[record.id],db.handLayouts[record.id]);
+  const canArrangeHand=()=>atLive()&&!current().over&&current().hands[ctrlSeat()].length>0;
+  const displayedHand=()=>H.orderedCards(current().hands[ctrlSeat()],current().level,review&&handMode==='groups'?'rank':handMode,db.handOrders[record.id],db.handLayouts[record.id]);
   const displayedOrder=()=>displayedHand().map(c=>c.id);
   function commitOrder(order){
     layoutUndo.push({mode:handMode,order:displayedOrder()});layoutUndo=layoutUndo.slice(-20);
-    db.handOrders[record.id]=H.normaliseOrder(order,current().hands[0]);handMode='groups';save();render();
+    db.handOrders[record.id]=H.normaliseOrder(order,current().hands[ctrlSeat()]);handMode='groups';save();render();
   }
   function tapCard(id){
     if(arrangeMode){arrangeSelected=arrangeSelected.includes(id)?arrangeSelected.filter(x=>x!==id):[...arrangeSelected,id];render();return;}
@@ -61,7 +62,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   }
   function finishArranging(){if(dealWaiting)window.GuandanMetrics.track('started',record);arrangeMode=false;dealWaiting=false;arrangeSelected=[];selected=[];declarationKey='';save();announce(S.turnText(current()));render();}
   function handHTML(){const s=current(),canArrange=canArrangeHand(),mode=review&&handMode==='groups'?'rank':handMode;
-    return `<div class="hand-order-toolbar"><strong>我的手牌 <b>${s.hands[0].length}</b> 张</strong>${arrangeMode?`<label class="sr-only" for="hand-sort">手牌顺序</label><select id="hand-sort">${[['rank','点数'],['suit','花色'],['groups','自由']].map(([key,label])=>`<option value="${key}" ${mode===key?'selected':''}>${label}</option>`).join('')}</select>`:''}${canArrange?`${layoutUndo.length?'<button class="text-control" data-action="undoLayout">撤销</button>':''}${!arrangeMode?'<button class="text-control" data-action="arrangeStart">理牌</button>':''}`:''}</div><div class="flat-hand" aria-label="连续手牌，可拖动调整相邻次序">${displayedHand().map(c=>`<div class="hand-card-unit" data-layout-card="${c.id}">${cardHTML(c,{selectable:!review&&!s.over,draggable:canArrange})}</div>`).join('')||'<p class="subtle">你已走完，继续观察搭档。</p>'}</div>${arrangeMode?'<p class="flat-hand-tip">点选多张，拖动任一选中牌一起换位。</p>':''}`;
+    return `<div class="hand-order-toolbar"><strong>${ctrlSeat()===2?'搭档的手牌（接管中）':'我的手牌'} <b>${s.hands[ctrlSeat()].length}</b> 张</strong>${arrangeMode?`<label class="sr-only" for="hand-sort">手牌顺序</label><select id="hand-sort">${[['rank','点数'],['suit','花色'],['groups','自由']].map(([key,label])=>`<option value="${key}" ${mode===key?'selected':''}>${label}</option>`).join('')}</select>`:''}${canArrange?`${layoutUndo.length?'<button class="text-control" data-action="undoLayout">撤销</button>':''}${!arrangeMode?'<button class="text-control" data-action="arrangeStart">理牌</button>':''}${takePartner?'<button class="text-control" data-action="takePartner">仅控制自己</button>':'<button class="text-control" data-action="takePartner">接管搭档</button>'}`:''}</div><div class="flat-hand" aria-label="连续手牌，可拖动调整相邻次序">${displayedHand().map(c=>`<div class="hand-card-unit" data-layout-card="${c.id}">${cardHTML(c,{selectable:!review&&!s.over,draggable:canArrange})}</div>`).join('')||'<p class="subtle">你已走完，继续观察搭档。</p>'}</div>${arrangeMode?'<p class="flat-hand-tip">点选多张，拖动任一选中牌一起换位。</p>':''}`;
   }
   function actionDockHTML(s,moves){
     if(review)return `<div class="play-dock replay-dock">${progActive()?'<button class="button primary" data-action="nextRound">继续升级赛</button>':''}<button class="button" data-action="rotateSeat">换座重打</button><button class="button" data-action="branch" ${branchStep()<0?'disabled':''}>原位重试</button><button class="button" data-action="reveal">${showAll?'收起全牌':'查看全牌'}</button></div>`;
@@ -89,7 +90,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     return `<details class="panel practice-tools" ${toolsOpen?'open':''}><summary>复盘与辅助工具 <span>AI分析 · 同花顺助手 · 决策拆解</span></summary><div class="coach"><div class="coach-body">${ai.html()}${flushHTML()}${!review&&!s.over&&!showHint?`<button class="button" data-action="hint" ${!myTurn()?'disabled':''}>查看候选思路</button>`:''}${body}</div></div></details>`;
   }
   function flushHTML(){
-    const s=current(),found=G.findStraightFlushes(s.hands[0],s.level,s.trick?.move);
+    const s=current(),found=G.findStraightFlushes(s.hands[ctrlSeat()],s.level,s.trick?.move);
     return `<details class="flush-helper secondary-details" data-tool="flush"><summary>♠ 同花顺发现助手 <span>展开检查你的手牌</span></summary><p>只看你在当前时刻的手牌。同花色五张相连，A 可接 2 或作最高牌；不能首尾绕接。</p>${found.length?`<p><b>发现 ${found.length} 种组合</b> · ${found.filter(x=>x.natural).length} 种天然 · ${found.filter(x=>x.playable).length} 种可领出或压过桌面</p>${found.map((x,i)=>`<div class="flush-option"><div class="head"><strong>${G.SYMBOLS[x.suit]} ${x.ranks.map(G.rankName).join(' · ')}</strong><span class="tag ${x.natural?'':'gold'}">${x.natural?'天然同花顺':`配牌补 ${x.replacements.length} 张`}</span></div><div class="flush-cards">${G.displayIds(x.move,current().level).map(id=>cardHTML(G.INDEX[id],{mini:true})).join('')}</div><p>${x.replacements.length?x.replacements.map(a=>`${G.name(G.INDEX[a.id])} 当作 ${G.SYMBOLS[a.s]}${G.rankName(a.r)}`).join('；'):'五张原牌即可组成，无需替代点数或花色。'}</p><button class="button small" data-action="pickFlush" data-index="${i}" ${(!arrangeMode&&!myTurn())||(!arrangeMode&&!x.playable)?'disabled':''}>${arrangeMode?'将这几张排在一起':!x.playable?'本轮无法压过':review?'复盘中仅查看':myTurn()?'选中这组同花顺':'等待轮到你'}</button></div>`).join('')}`:'<div class="flush-empty">当前没有可组成的同花顺，已把红桃级牌的补位方式一起检查。</div>'}<p class="subtle">同花顺大于五张炸弹、小于六张炸弹。同花色与点数相同的两副牌只展示一组；选中后仍需确认出牌。</p></details>`;
   }
   function hintHTML(x,i,interactive){return `<div class="hint-card"><div class="head"><strong>${x.move?G.describe(x.move):'过牌，保留手牌'}</strong><span class="index">0${i+1}</span></div><p>${esc(x.facts[0])}</p><p>${esc(x.reasons[0])}</p>${interactive?`<button class="button small" data-action="pickHint" data-index="${i}">${x.move?'选中这组牌':'选择过牌'}</button>`:''}</div>`;}
@@ -98,7 +99,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   const battleKey=()=>`${record.id}:${record.events.length}:${current().turn}:${botMode}`;
   function battleStatus(){if(dealWaiting)return record.perspective?'接手准备中 · 先熟悉手牌':'发牌整理中 · 尚未开打';if(review)return '复盘模式';if(current().over)return '本副完成';if(paused)return '可催促重试';if(current().turn===0&&!autoHero)return '由你决定';return botMode==='minimax'?`${seats[current().turn]}${battle.pending(battleKey())?'思考 · '+(turnClock.remaining()??30)+'秒':'准备出牌'}`:`${seats[current().turn]}出牌中`;}
   function updateBattleStatus(){const el=$('[data-battle-status]');if(el)el.textContent=battleStatus();}
-  function canAdvance(){return view==='practice'&&!review&&!paused&&!dealWaiting&&!dragState&&!document.hidden&&!$('#modal-root').children.length&&!narrator.snapshot().busy&&!current().over&&cursor===record.events.length&&(current().turn!==0||autoHero);}
+  function canAdvance(){return view==='practice'&&!review&&!paused&&!dealWaiting&&!dragState&&!document.hidden&&!$('#modal-root').children.length&&!narrator.snapshot().busy&&!current().over&&cursor===record.events.length&&(current().turn!==0||autoHero)&&!(takePartner&&current().turn===2);}
   function canHurry(){return view==='practice'&&!review&&!dealWaiting&&!current().over&&atLive()&&(current().turn!==0||autoHero);}
   function localDecision(manual=false){const D=window.GuandanDifficulty;const pack=D&&D.analyseTop?D.analyseTop(G,current(),difficulty):{top:G.analyse(G.observe(current()))[0],tier:{name:'高手'}};
   // 与联机版一致：用 choose（含搭档保护/防跑牌/留王等硬规则）出决策，再用 analyse 结果做解释
@@ -123,8 +124,8 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     if(next.over){autoHero=false;archive();window.GuandanMetrics.track('finished',record);try{window.GuandanMetrics.result(record,{win:next.result?.team===0,dbl:!!next.result?.doubleDown,undo:undoCount});}catch(e){}}save();announce(S.actionText(stored,next));render();if(window.GuandanEffects.shouldCelebrate(before,next,!review))window.GuandanEffects.celebrate();}
   function doPlay(){if(!myTurn())return;const m=selectedMoves().find(x=>x.key===declarationKey);if(!m){toast('请选择合法牌型后再出牌。');return;}
   // 红心级牌不能单出（手里还有其它牌时）
-  if(m.type==='single'&&current().hands[0].length>1){const c=G.INDEX[m.ids[0]];if(c.s==='H'&&c.r===current().level){toast('红心级牌不能单出：它可以当任意牌配成对子/顺子/炸弹');return;}}
-  takeAction({seat:0,kind:'play',move:m});}
+  if(m.type==='single'&&current().hands[ctrlSeat()].length>1){const c=G.INDEX[m.ids[0]];if(c.s==='H'&&c.r===current().level){toast('红心级牌不能单出：它可以当任意牌配成对子/顺子/炸弹');return;}}
+  takeAction({seat:current().turn,kind:'play',move:m});}
   function goto(step){view='practice';toolsOpen=true;stop();battle.cancel();arrangeMode=false;arrangeSelected=[];review=true;cursor=Math.max(0,Math.min(record.events.length,step));selected=[];showHint=false;autoHero=false;if(record.events.length&&!db.reviewed.includes(record.id)){db.reviewed.push(record.id);save();}announce(announcement());render();}
   function perspectiveHTML(){
     const p=record.perspective;if(!p)return '';
@@ -224,7 +225,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     if(!dragState||e.pointerId!==dragState.pointerId)return;const drag=dragState,target=insertionAt(e.clientX,e.clientY);suppressLayoutClick=Date.now()+400;clearDrag();
     if(drag.recordId!==record.id||!canArrangeHand())return;
     if(!drag.moved){tapCard(drag.id);return;}
-    if(target)commitOrder(H.insertCards(displayedOrder(),drag.ids,target.id,target.after,current().hands[0]));
+    if(target)commitOrder(H.insertCards(displayedOrder(),drag.ids,target.id,target.after,current().hands[ctrlSeat()]));
   });
   document.addEventListener('pointercancel',()=>{if(dragState)clearDrag();});
   window.addEventListener('blur',()=>{if(dragState)clearDrag();});
@@ -233,19 +234,19 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'card':tapCard(b.dataset.id);break;
     case 'arrangeStart':if(canArrangeHand()){stop();arrangeMode=true;arrangeSelected=[];selected=[];showHint=false;save();render();}break;
     case 'arrangeDone':finishArranging();break;
-    case 'undoLayout':if(canArrangeHand()&&layoutUndo.length){const previous=layoutUndo.pop();db.handOrders[record.id]=H.normaliseOrder(previous.order,current().hands[0]);handMode=previous.mode;save();render();}break;
-    case 'nudgeCard':if(canArrangeHand()&&arrangeSelected.length){const order=displayedOrder(),picked=order.filter(id=>arrangeSelected.includes(id)),after=Number(b.dataset.dir)>0,target=order[order.indexOf(after?picked.at(-1):picked[0])+(after?1:-1)];if(target)commitOrder(H.insertCards(order,picked,target,after,current().hands[0]));}break;
+    case 'undoLayout':if(canArrangeHand()&&layoutUndo.length){const previous=layoutUndo.pop();db.handOrders[record.id]=H.normaliseOrder(previous.order,current().hands[ctrlSeat()]);handMode=previous.mode;save();render();}break;
+    case 'nudgeCard':if(canArrangeHand()&&arrangeSelected.length){const order=displayedOrder(),picked=order.filter(id=>arrangeSelected.includes(id)),after=Number(b.dataset.dir)>0,target=order[order.indexOf(after?picked.at(-1):picked[0])+(after?1:-1)];if(target)commitOrder(H.insertCards(order,picked,target,after,current().hands[ctrlSeat()]));}break;
     case 'clearArrange':arrangeSelected=[];render();break;
     case 'clear':selected=[];declarationKey='';render();break;
     case 'play':doPlay();break;
     case 'pass':if(myTurn())takeAction({seat:0,kind:'pass'});break;
     case 'seatHistory':{const p=+b.dataset.seat;const s2=current();const evs=record.events.map((a,i)=>({a,i})).filter(x=>x.a.seat===p);openModal(`<div class="eyebrow">SEAT HISTORY</div><h2>${esc(p===0?'我':seats[p])} 的出牌记录</h2><p class="subtle">共 ${evs.length} 手 · 当前余 ${s2.hands[p].length} 张</p><div class="event-list seat-history">${evs.map(({a,i})=>`<div class="event-row"><span class="event-no">${String(i+1).padStart(2,'0')}</span><b>${a.kind==='pass'?'过牌':esc(G.describe(a.move))}</b>${a.kind==='play'?`<span class="event-cards seat-cards">${G.displayIds(a.move,current().level).map(id=>cardHTML(G.INDEX[id],{mini:true})).join('')}</span>`:''}</div>`).join('')||'<div class="empty">该坐席还没有出过牌。</div>'}</div><button class="button primary" data-action="closeModal">关闭</button>`);break;}
     case 'undoStep':{if(review||!atLive()){toast('当前状态不能撤销。');break;}let i=record.events.length-1;while(i>=0&&record.events[i].seat!==0)i--;if(i<0){toast('还没有你的出牌可以撤销。');break;}record.events.splice(i);states=G.replay(record.start,record.events);cursor=record.events.length;selected=[];declarationKey='';showHint=false;arrangeMode=false;battle.cancel();stop();save();undoCount++;toast('已撤销你上一手出牌，可重新选择。');render();break;}
-    case 'flushHelper':{closeModal();const s3=current();const found=G.findStraightFlushes(s3.hands[0],s3.level,s3.trick?.move);openModal(`<div class="eyebrow">STRAIGHT FLUSH</div><h2>同花顺组牌建议</h2><p class="subtle">共 ${found.length} 组 · 仅供参考，可接受或放弃</p><div class="flush-list">${found.map((x,i)=>`<article class="flush-card"><strong>${G.displayIds(x.move,current().level).map(id=>esc(G.name(G.INDEX[id]))).join(' ')}</strong><p class="subtle">${esc(G.describe(x.move))}</p><div class="flush-actions"><button class="button small primary" data-action="acceptFlush" data-index="${i}">接受并排在一起</button></div></article>`).join('')||'<div class="empty">当前手牌组不出同花顺。</div>'}</div><button class="button" data-action="closeModal">放弃</button>`);break;}
-    case 'acceptFlush':{const found2=G.findStraightFlushes(current().hands[0],current().level,current().trick?.move);const x=found2[+b.dataset.index];closeModal();if(!x)break;const ids=x.move.ids;commitOrder([...ids,[...displayedOrder()].filter(id=>!ids.includes(id))]);toast('已按建议把同花顺排在前面。');break;}
+    case 'flushHelper':{closeModal();const s3=current();const found=G.findStraightFlushes(s3.hands[ctrlSeat()],s3.level,s3.trick?.move);openModal(`<div class="eyebrow">STRAIGHT FLUSH</div><h2>同花顺组牌建议</h2><p class="subtle">共 ${found.length} 组 · 仅供参考，可接受或放弃</p><div class="flush-list">${found.map((x,i)=>`<article class="flush-card"><strong>${G.displayIds(x.move,current().level).map(id=>esc(G.name(G.INDEX[id]))).join(' ')}</strong><p class="subtle">${esc(G.describe(x.move))}</p><div class="flush-actions"><button class="button small primary" data-action="acceptFlush" data-index="${i}">接受并排在一起</button></div></article>`).join('')||'<div class="empty">当前手牌组不出同花顺。</div>'}</div><button class="button" data-action="closeModal">放弃</button>`);break;}
+    case 'acceptFlush':{const found2=G.findStraightFlushes(current().hands[ctrlSeat()],current().level,current().trick?.move);const x=found2[+b.dataset.index];closeModal();if(!x)break;const ids=x.move.ids;commitOrder([...ids,[...displayedOrder()].filter(id=>!ids.includes(id))]);toast('已按建议把同花顺排在前面。');break;}
     case 'hint':if(myTurn()){view='tools';toolsOpen=true;hintSeen=true;showHint=true;render();$('.coach')?.scrollIntoView({behavior:'smooth',block:'nearest'});}break;
     case 'hideHint':showHint=false;render();break;
-    case 'pickFlush':{const x=G.findStraightFlushes(current().hands[0],current().level,current().trick?.move)[+b.dataset.index];if(!x)break;if(arrangeMode){hintSeen=true;const ids=x.move.ids;commitOrder([...ids,...displayedOrder().filter(id=>!ids.includes(id))]);toast('这几张已排在一起，仍可拖动调整。');break;}if(!myTurn()||!x.playable)break;view='practice';hintSeen=true;selected=[...x.move.ids];declarationKey=x.move.key;render();toast('已选中同花顺，请核对牌型后确认出牌。');}break;
+    case 'pickFlush':{const x=G.findStraightFlushes(current().hands[ctrlSeat()],current().level,current().trick?.move)[+b.dataset.index];if(!x)break;if(arrangeMode){hintSeen=true;const ids=x.move.ids;commitOrder([...ids,...displayedOrder().filter(id=>!ids.includes(id))]);toast('这几张已排在一起，仍可拖动调整。');break;}if(!myTurn()||!x.playable)break;view='practice';hintSeen=true;selected=[...x.move.ids];declarationKey=x.move.key;render();toast('已选中同花顺，请核对牌型后确认出牌。');}break;
     case 'pickHint':{const x=G.analyse(G.observe(current(),0))[+b.dataset.index];if(!x||!myTurn())break;view='practice';if(!x.move)takeAction({seat:0,kind:'pass'});else{selected=[...x.move.ids];declarationKey=x.move.key;render();}}break;
 
     case 'autoplay':dealWaiting=false;arrangeMode=false;arrangeSelected=[];save();closeModal();autoHero=!autoHero;paused=false;selected=[];render();toast(autoHero?'电脑现在代打你的位置，可再次点击停止观摩。':'已停止观摩，下次轮到你时自行出牌。');break;
@@ -270,6 +271,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'reviewStart':closeModal();view='practice';goto(0);break;
     case 'live':toolsOpen=false;review=false;cursor=record.events.length;showAll=false;selected=[];announce(announcement());render();break;
     case 'reveal':showAll=!showAll;render();break;
+    case 'takePartner':takePartner=!takePartner;db.takePartner=takePartner;save();selected=[];declarationKey='';render();toast(takePartner?'已接管搭档：轮到搭档时由你出牌':'已交还搭档：电脑继续负责搭档');break;
     case 'branch':branch(branchStep());break;
     case 'rotateSeat':rotateModal();break;
     case 'confirmRotate':startRotated(b.dataset.from);break;
