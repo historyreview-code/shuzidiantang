@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -366,7 +366,12 @@
       const provenControl=isBomb?bombTier(m)>=unseenBombTier&&(m.type!=='flush'||m.power>=unseenFlushPower):safe&&unseenBombTier===0;
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
-      const effBombUse=W.bombUse*(1+W.bombRiskK*(provenControl?0:bombRisk));
+      // 炸弹/同花顺要留：对手还没接近走完时，动用炸弹级牌型的代价成倍放大
+      let bombMul=1;
+      if(W.bombSave&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>2){
+        bombMul=1+W.bombSave*Math.min(1,Math.max(0,threat-2)/10);
+      }
+      const effBombUse=W.bombUse*bombMul*(1+W.bombRiskK*(provenControl?0:bombRisk));
       // 三带二：带的“二”应尽量小；带王/大牌额外扣分（保留战力）
       let carryPen = 0;
       if(m.type === 'full'){
@@ -401,6 +406,13 @@
       }
       // 拆炸弹组同花顺去压对手的炸弹/同花顺：值得，额外加分
       if(o.trick && bombTier(o.trick.move)>0 && m.type==='flush' && bombTier(m)>bombTier(o.trick.move)) score+=W.flushUpgrade;-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
+      // 隐忍：对手都还远，自己不急着抢牌权时，不为普通牌型消耗 K/A/级牌/王 或拆结构
+      if(W.patience&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>3&&o.hand.length>9){
+        const spend=m.ids.filter(id=>power(INDEX[id].r,o.level)>=13).length;
+        score-=W.patience*spend;
+        if(breakBomb)score-=W.patience*2;
+        if(breakFlush)score-=W.patience*2;
+      }
       score-=lostReserve*W.lostReserve;
       if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
       if(controlExit)score+=W.controlExit;
@@ -705,6 +717,14 @@
       if(nextOppC2>2){
         const safeRows=rows.filter(r=>r.move&&!r.finish&&bombTier(r.move)===0&&r.move.ids.every(id=>power(INDEX[id].r,o.level)<14));
         if(safeRows.length&&safeRows.length<rows.length)rows=safeRows.concat(rows.filter(r=>!safeRows.includes(r)));
+      }
+    }
+    // 同花顺/炸弹级牌型保留：中前期、对手都还远、自己牌还多时，不拿它们去压普通牌
+    if(W.flushHold && o.trick && bombTier(o.trick.move)===0 && rows.length>1){
+      const oppMinH=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
+      if(oppMinH>4 && o.hand.length>=10 && o.trick.move.power<=10){
+        const plain=rows.filter(r=>r.move&&bombTier(r.move)===0);
+        if(plain.length)rows=plain;
       }
     }
     const best=rows[0];
