@@ -114,7 +114,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   function syncTurnClock(){turnClock.sync(battleKey(),canHurry()&&!document.hidden&&!$('#modal-root').children.length);turnClock.tick(()=>{hurry('timeout');toast('等待已满30秒，本步已由本地策略出牌。');});}
   // 出牌节奏：每张出牌至少停留 2 秒方便看清牌面；过牌即时确认。
   const heroFinished=()=>{try{return current().finish.includes(0)&&!current().over;}catch(e){return false;}};
-  function paceAction(a,run){const fast=heroFinished();const wait=a.kind==='play'?(fast?90:Math.max(0,playDelay-delay)):0;if(wait>0){timer=setTimeout(run,wait);}else run();}
+  function paceAction(a,run){const fast=heroFinished();const wait=a.kind==='play'?(fast?90:Math.max(0,playDelay-delay)):0;const guarded=()=>{if(takePartner&&current().turn===2)return;run();};if(wait>0){timer=setTimeout(guarded,wait);}else guarded();}
   function schedule(){stop();syncTurnClock();if(!canAdvance())return;const key=battleKey();if(botMode==='minimax'&&battle.pending(key))return;timer=setTimeout(()=>{
     if(!canAdvance()||key!==battleKey())return;
     try{
@@ -124,7 +124,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
       else {const snapshot=G.clone(current());battle.request(key,record,()=>G.choose(snapshot));}
     }catch(e){paused=true;toast(e.message);render();}
   },heroFinished()?60:delay);}
-  function takeAction(a,human=true,decision=null){if(human)window.GuandanMetrics.track('started',record);const before=states.at(-1);let next;try{next=G.apply(before,a);}catch(err){try{window.GuandanMetrics.error('play',err.message,{stack:err.stack});}catch(e){}throw err;}const stored=a.kind==='play'?{seat:before.turn,kind:'play',move:next.lastActions[before.turn].move}:{seat:before.turn,kind:'pass'};stored.origin=human?'human':'bot';if(!human&&decision)stored.decision=G.decisionTrace(decision);battle.cancel();if(human&&hintSeen)stored.assisted=true;hintSeen=false;record.events.push(stored);states.push(next);cursor=record.events.length;selected=[];declarationKey='';showHint=false;try{if(next.over&&next.result&&next.result.team===0)celebrateWin();}catch(e){}
+  function takeAction(a,human=true,decision=null){if(!human&&takePartner&&current().turn===2){return;}if(human)window.GuandanMetrics.track('started',record);const before=states.at(-1);let next;try{next=G.apply(before,a);}catch(err){try{window.GuandanMetrics.error('play',err.message,{stack:err.stack});}catch(e){}throw err;}const stored=a.kind==='play'?{seat:before.turn,kind:'play',move:next.lastActions[before.turn].move}:{seat:before.turn,kind:'pass'};stored.origin=human?'human':'bot';if(!human&&decision)stored.decision=G.decisionTrace(decision);battle.cancel();if(human&&hintSeen)stored.assisted=true;hintSeen=false;record.events.push(stored);states.push(next);cursor=record.events.length;selected=[];declarationKey='';showHint=false;try{if(next.over&&next.result&&next.result.team===0)celebrateWin();}catch(e){}
     if(next.over){autoHero=false;archive();window.GuandanMetrics.track('finished',record);try{window.GuandanMetrics.result(record,{win:next.result?.team===0,dbl:!!next.result?.doubleDown,undo:undoCount});}catch(e){}}save();announce(S.actionText(stored,next));render();if(window.GuandanEffects.shouldCelebrate(before,next,!review))window.GuandanEffects.celebrate();}
   function doPlay(){if(!myTurn())return;const m=selectedMoves().find(x=>x.key===declarationKey);if(!m){toast('请选择合法牌型后再出牌。');return;}
   // 红心级牌不能单出（手里还有其它牌时）
@@ -282,7 +282,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'live':toolsOpen=false;review=false;cursor=record.events.length;showAll=false;selected=[];announce(announcement());render();break;
     case 'reveal':showAll=!showAll;render();break;
     case 'exitHand':exitHand();break;
-    case 'takePartnerOn':takePartner=true;db.takePartner=true;save();selected=[];declarationKey='';render();toast('已接管搭档：轮到搭档时由你出牌，不会超时自动出牌');break;
+    case 'takePartnerOn':takePartner=true;db.takePartner=true;stop();save();selected=[];declarationKey='';render();toast('已接管搭档：轮到搭档时由你出牌，不会超时自动出牌');break;
     case 'takePartnerOff':takePartner=false;db.takePartner=false;save();selected=[];declarationKey='';render();toast('已交还搭档：电脑继续负责搭档');break;
     case 'branch':branch(branchStep());break;
     case 'rotateSeat':rotateModal();break;
