@@ -368,8 +368,8 @@
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
       // 炸弹/同花顺要留：对手还没接近走完时，动用炸弹级牌型的代价成倍放大
       let bombMul=1;
-      if(W.bombSave&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>2){
-        bombMul=1+W.bombSave*Math.min(1,Math.max(0,threat-2)/10);
+      if(W.bombSave&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>10){
+        bombMul=1+W.bombSave*Math.min(1,(threat-10)/10);
       }
       const effBombUse=W.bombUse*bombMul*(1+W.bombRiskK*(provenControl?0:bombRisk));
       // 三带二：带的“二”应尽量小；带王/大牌额外扣分（保留战力）
@@ -407,7 +407,7 @@
       // 拆炸弹组同花顺去压对手的炸弹/同花顺：值得，额外加分
       if(o.trick && bombTier(o.trick.move)>0 && m.type==='flush' && bombTier(m)>bombTier(o.trick.move)) score+=W.flushUpgrade;-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
       // 隐忍：对手都还远，自己不急着抢牌权时，不为普通牌型消耗 K/A/级牌/王 或拆结构
-      if(W.patience&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>3&&o.hand.length>9){
+      if(W.patience&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>10&&o.hand.length>9){
         const spend=m.ids.filter(id=>power(INDEX[id].r,o.level)>=13).length;
         score-=W.patience*spend;
         if(breakBomb)score-=W.patience*2;
@@ -722,7 +722,7 @@
     // 同花顺/炸弹级牌型保留：中前期、对手都还远、自己牌还多时，不拿它们去压普通牌
     if(W.flushHold && o.trick && bombTier(o.trick.move)===0 && rows.length>1){
       const oppMinH=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
-      if(oppMinH>4 && o.hand.length>=10 && o.trick.move.power<=10){
+      if(oppMinH>10 && o.hand.length>=10 && o.trick.move.power<=10){
         const plain=rows.filter(r=>r.move&&bombTier(r.move)===0);
         if(plain.length)rows=plain;
       }
