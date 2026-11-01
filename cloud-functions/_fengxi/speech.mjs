@@ -48,7 +48,8 @@ export async function handleSpeech(request) {
   try { store = getStore({name: 'guandan-audio', consistency: 'strong'}); storeStatus = 'ready'; } catch (e) { storeStatus = 'init-error:' + (e?.message || ''); }
   if (store) {
     try {
-      const cached = await store.get(cacheKey, {type: 'arrayBuffer'});
+      const cached = await store.get(cacheKey, {type: 'arrayBuffer', consistency: 'strong'});
+      storeStatus = 'get:' + (cached ? cached.byteLength : 'null');
       if (cached && cached.byteLength) {
         return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit', 'X-TTS-Store': storeStatus}});
       }
