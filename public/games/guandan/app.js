@@ -16,7 +16,7 @@
   let toolsOpen=false,hintSeen=false,speechUnlocked=false,arrangeMode=false,arrangeSelected=[],dealWaiting=false,layoutUndo=[],dragState=null,suppressLayoutClick=0;
   let botMode='local'; // 智能出牌已下线，始终本地策略
 let difficulty='expert'; // 难度固定为最高（专家/高手），不提供切换
-  let handMode=H.modes.includes(db.handMode)?db.handMode:'rank';
+  let handMode=H.modes.includes(db.handMode)?db.handMode:'groups';
   db.handOrders=db.handOrders&&typeof db.handOrders==='object'&&!Array.isArray(db.handOrders)?db.handOrders:{};
   db.handLayouts=db.handLayouts&&typeof db.handLayouts==='object'&&!Array.isArray(db.handLayouts)?db.handLayouts:{};
   let record,states,takePartner=!!(db&&db.takePartner),view='practice',undoCount=0,cursor=0,review=false,selected=[],declarationKey='',showHint=false,showAll=false,paused=false,autoHero=false,delay=180,playDelay=1000,timer=null,lastToastTimer;
@@ -54,11 +54,12 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   function seatHTML(p,place,s){const finished=s.finish.indexOf(p);let label='';const last=s.lastActions[p];if(last)label=last.kind==='pass'?'过牌':G.describe(last.move);return `<div class="seat ${p%2===0?'ally':'opponent'} ${place} ${!s.over&&s.turn===p?'active':''}" data-action="seatHistory" data-seat="${p}" role="button" tabindex="0" title="查看${p===0?'我':seats[p]}的出牌记录"><div class="avatar">${p===0?'我':p===2?'友':'对'}</div><div class="seat-name">${p===2?'搭档':seats[p]}<span>${!s.over&&s.turn===p?'轮到出牌':p%2===0?'我方':'对手'}</span></div><div class="count">${finished>=0?`<strong class="finish-place">${['头游','二游','三游','末游'][finished]}</strong>${s.hands[p].length?`<small>余 ${s.hands[p].length} 张</small>`:''}`:`剩 <b>${s.hands[p].length}</b> 张`}</div>${!s.hands[p].length?'':`<div class="cardback-stack" aria-hidden="true">${'<i></i>'.repeat(5)}</div>`}<div class="action-label">${esc(label)}</div></div>`;}
   function trickHTML(s){if(s.over)return `<div class="table-empty"><div class="big-suit">${s.result.team===0?'♠':'♣'}</div><b>${s.result.team===0?'你和搭档获胜':'对方组合获胜'}</b><p>${s.result.doubleDown?(s.result.team===0?'你和搭档包揽头游、二游 · 双上':'对方包揽头游、二游 · 我方双下'):`名次：${s.finish.map(p=>seats[p]).join(' → ')}`}</p><button class="button gold small" data-action="summary">查看本副复盘</button></div>`;if(!s.trick)return `<div class="table-empty"><div class="big-suit">♠</div><b>${s.turn===0?'轮到你领出':`${seats[s.turn]}领出`}</b><p>${esc(s.leadReason)}</p></div>`;return `<div class="trick-caption">${seats[s.trick.seat]} 的出牌</div><div class="table-cards">${G.displayIds(s.trick.move,s.level).map(id=>cardHTML(G.INDEX[id],{mini:true})).join('')}</div><div class="table-note">${G.describe(s.trick.move)}</div>${s.trick.move.assign.some(a=>a.r!==s.level||a.s!=='H')?`<div class="disclosure">${s.trick.move.assign.map(a=>`${G.name(G.INDEX[a.id])} → ${G.SYMBOLS[a.s]}${G.rankName(a.r)}`).join('，')}</div>`:''}`;}
   const canArrangeHand=()=>atLive()&&!current().over&&current().hands[ctrlSeat()].length>0;
-  const displayedHand=()=>H.orderedCards(current().hands[ctrlSeat()],current().level,review&&handMode==='groups'?'rank':handMode,db.handOrders[record.id],db.handLayouts[record.id]);
+  const displayedHand=()=>H.orderedCards(current().hands[ctrlSeat()],current().level,handMode,db.handOrders[orderKey()],db.handLayouts[record.id]);
   const displayedOrder=()=>displayedHand().map(c=>c.id);
+  const orderKey=()=>record.id+(ctrlSeat()===2?':2':'');
   function commitOrder(order){
     layoutUndo.push({mode:handMode,order:displayedOrder()});layoutUndo=layoutUndo.slice(-20);
-    db.handOrders[record.id]=H.normaliseOrder(order,current().hands[ctrlSeat()]);handMode='groups';save();render();
+    db.handOrders[orderKey()]=H.normaliseOrder(order,current().hands[ctrlSeat()]);handMode='groups';db.handMode='groups';save();render();
   }
   function tapCard(id){
     if(arrangeMode){arrangeSelected=arrangeSelected.includes(id)?arrangeSelected.filter(x=>x!==id):[...arrangeSelected,id];render();return;}
