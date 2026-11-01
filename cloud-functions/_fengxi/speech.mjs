@@ -40,7 +40,7 @@ export async function handleSpeech(request) {
     return Response.json({error: '没有这一段。'}, {status: 404, headers: {'Cache-Control': 'no-store'}});
   }
   const text = BLOCKS[block];
-  const cacheKey = 'fengxi/voice/' + await sha256(`${MODEL}|${VOICE}|${text}`) + '.mp3';
+  const cacheKey = 'f' + await sha256(`${MODEL}|${VOICE}|${text}`) + '.mp3';
   if (mem.has(cacheKey)) {
     return new Response(mem.get(cacheKey), {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'mem'}});
   }
@@ -51,7 +51,7 @@ export async function handleSpeech(request) {
       const cached = await store.get(cacheKey, {type: 'arrayBuffer', consistency: 'strong'});
       storeStatus = 'get:' + (cached ? cached.byteLength : 'null');
       if (cached && cached.byteLength) {
-        return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit', 'X-TTS-Store': storeStatus}});
+        return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit', 'X-TTS-Get': storeStatus}});
       }
     } catch (e) { storeStatus = 'get-error:' + (e?.message || ''); }
   }
@@ -68,5 +68,5 @@ export async function handleSpeech(request) {
     } catch (e) { storeStatus = 'set-error:' + (e?.message || ''); }
   }
   mem.set(cacheKey, mp3);
-  return new Response(mp3, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'miss', 'X-TTS-Store': storeStatus}});
+  return new Response(mp3, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'miss', 'X-TTS-Get': storeStatus}});
 }
