@@ -3,6 +3,8 @@ import {getStore} from '@edgeone/pages-blob';
 
 export const MODEL = 'speech-2.8-hd';
 export const VOICE = 'Chinese (Mandarin)_Reliable_Executive';
+const mem = new Map();
+let storeStatus = 'none';
 
 async function sha256(text) {
   const data = new TextEncoder().encode(text);
@@ -39,15 +41,18 @@ export async function handleSpeech(request) {
   }
   const text = BLOCKS[block];
   const cacheKey = 'fengxi/voice/' + await sha256(`${MODEL}|${VOICE}|${text}`) + '.mp3';
+  if (mem.has(cacheKey)) {
+    return new Response(mem.get(cacheKey), {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'mem'}});
+  }
   let store = null;
-  try { store = getStore({name: 'guandan-audio', consistency: 'strong'}); } catch (_) {}
+  try { store = getStore({name: 'guandan-audio', consistency: 'strong'}); storeStatus = 'ready'; } catch (e) { storeStatus = 'init-error:' + (e?.message || ''); }
   if (store) {
     try {
       const cached = await store.get(cacheKey, {type: 'arrayBuffer'});
       if (cached && cached.byteLength) {
-        return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit'}});
+        return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit', 'X-TTS-Store': storeStatus}});
       }
-    } catch (_) {}
+    } catch (e) { storeStatus = 'get-error:' + (e?.message || ''); }
   }
   let mp3;
   try { mp3 = await synthesize(text, process.env); }
@@ -58,8 +63,9 @@ export async function handleSpeech(request) {
   if (store) {
     try {
       const ab = mp3.buffer.slice(mp3.byteOffset, mp3.byteOffset + mp3.byteLength);
-      await store.set(cacheKey, ab);
-    } catch (_) {}
+      await store.set(cacheKey, ab); storeStatus = 'stored:' + mp3.byteLength;
+    } catch (e) { storeStatus = 'set-error:' + (e?.message || ''); }
   }
-  return new Response(mp3, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'miss'}});
+  mem.set(cacheKey, mp3);
+  return new Response(mp3, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'miss', 'X-TTS-Store': storeStatus}});
 }
