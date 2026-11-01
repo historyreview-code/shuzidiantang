@@ -364,11 +364,15 @@
       const remainingMask=plan.full^plan.mask(m),remainingTurns=plan.turns(remainingMask),safe=ordinarySafe(m),afterReserve=reserve(remainingMask);
       const threat=opponents.length?Math.min(...opponents.map(x=>x.count)):27;
       const provenControl=isBomb?bombTier(m)>=unseenBombTier&&(m.type!=='flush'||m.power>=unseenFlushPower):safe&&unseenBombTier===0;
+      const jokerCount=o.hand.filter(c=>c.r>=16).length;
+      const wildCountHand=o.hand.filter(c=>wild(c,o.level)).length;
+      // 自己手上控牌多（≥2 组炸弹，或 1 组炸弹+2 王，或 ≥3 张王/配牌资源）→ 前期花大牌不心疼
+      const richControl=beforeReserve.count>=2||(beforeReserve.count>=1&&jokerCount>=2)||jokerCount>=3||(jokerCount>=1&&wildCountHand>=1&&beforeReserve.count>=1);
       const lostReserve=Math.max(0,beforeReserve.count-afterReserve.count-(isBomb?1:0)),controlExit=remainingTurns===1&&provenControl;
       const breakFlush=flushes.some(f=>f.ids.some(id=>m.ids.includes(id)))&&!isBomb&&!flushes.some(f=>f.ids.every(id=>!m.ids.includes(id)));
       // 炸弹/同花顺要留：对手还没接近走完时，动用炸弹级牌型的代价成倍放大
       let bombMul=1;
-      if(W.bombSave&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>10){
+      if(W.bombSave&&!richControl&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>10){
         bombMul=1+W.bombSave*Math.min(1,(threat-10)/10);
       }
       const effBombUse=W.bombUse*bombMul*(1+W.bombRiskK*(provenControl?0:bombRisk));
@@ -409,7 +413,7 @@
       // 隐忍：对手都还远，自己不急着抢牌权时，不为普通牌型消耗 K/A/级牌/王 或拆结构
       if(W.patience&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>10&&o.hand.length>9){
         const spend=m.ids.filter(id=>power(INDEX[id].r,o.level)>=13).length;
-        score-=W.patience*spend;
+        score-=W.patience*spend*(richControl?0.4:1);
         if(breakBomb)score-=W.patience*2;
         if(breakFlush)score-=W.patience*2;
       }
@@ -719,10 +723,14 @@
         if(safeRows.length&&safeRows.length<rows.length)rows=safeRows.concat(rows.filter(r=>!safeRows.includes(r)));
       }
     }
+    const jokersHand=o.hand.filter(c=>c.r>=16).length;
+    const wildsHand=o.hand.filter(c=>wild(c,o.level)).length;
+    let bombGroups=0;{const rc={};for(const c of o.hand)rc[c.r]=(rc[c.r]||0)+1;bombGroups=Object.values(rc).filter(n=>n>=4).length;}
+    const richControlFlag=bombGroups>=2||(bombGroups>=1&&jokersHand>=2)||jokersHand>=3||(bombGroups>=1&&jokersHand>=1&&wildsHand>=1);
     // 同花顺/炸弹级牌型保留：中前期、对手都还远、自己牌还多时，不拿它们去压普通牌
     if(W.flushHold && o.trick && bombTier(o.trick.move)===0 && rows.length>1){
       const oppMinH=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2));
-      if(oppMinH>10 && o.hand.length>=10 && o.trick.move.power<=10){
+      if(!richControlFlag && oppMinH>10 && o.hand.length>=10 && o.trick.move.power<=10){
         const plain=rows.filter(r=>r.move&&bombTier(r.move)===0);
         if(plain.length)rows=plain;
       }
