@@ -55,6 +55,21 @@ a { color:#7a3d34; text-decoration:none; }
 .cover-figure { margin: 0 0 1.4em; }
 .cover-figure img { width: 100%; max-width: 100%; }
 @media (min-width:700px){ .cover-figure { margin-left: -56px; margin-right: -56px; margin-top: -48px; } }
+</style><style>
+#tts-player{position:fixed;right:18px;bottom:18px;z-index:120;font-family:"Songti SC","STSong",serif}
+#tts-toggle{background:#963f35;color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:14px;letter-spacing:.08em;box-shadow:0 3px 14px rgba(0,0,0,.18);cursor:pointer}
+#tts-panel{position:absolute;right:0;bottom:54px;width:300px;max-width:calc(100vw - 36px);background:#f5f1e8;border:1px solid rgba(37,42,40,.22);box-shadow:0 10px 34px rgba(0,0,0,.18);padding:14px 16px 12px;display:none}
+#tts-panel.open{display:block}
+#tts-panel h3{margin:0 0 4px;font-size:15px;color:#252a28;letter-spacing:.06em}
+#tts-panel .tts-note{margin:0 0 10px;font-size:11px;color:#6b6a63;line-height:1.6}
+#tts-close{float:right;background:none;border:0;color:#6b6a63;font-size:18px;cursor:pointer;line-height:1}
+#tts-tracks{list-style:none;margin:0 0 10px;padding:0}
+#tts-tracks li{margin:5px 0}
+#tts-tracks button{width:100%;text-align:left;background:none;border:1px solid rgba(37,42,40,.16);padding:7px 9px;font:13px/1.5 "Songti SC","STSong",serif;color:#252a28;cursor:pointer}
+#tts-tracks button:hover,#tts-tracks button.active{background:rgba(150,63,53,.08);border-color:#963f35}
+#tts-tracks .dur{float:right;color:#6b6a63;font-size:11px}
+#tts-audio{width:100%;height:34px;margin-top:2px}
+@media(max-width:600px){#tts-player{right:12px;bottom:12px}}
 </style></head>
 <body>
 <style>
@@ -67,14 +82,9 @@ body { box-shadow: none; }
 body.lb-open { overflow:hidden; }
 @media (max-width:700px){ .draft-banner{position:static;} }
 </style><figure class="cover-figure">
-<img alt="封面" src="assets/cover-front.jpg">
-
-</img></figure><div class="draft-banner">暂定稿 · 供朋友阅读 · 非最终出版</div>
-
+<img alt="封面" src="assets/cover-front.jpg"/>
+</figure><div class="draft-banner">暂定稿 · 供朋友阅读 · 非最终出版</div>
 <div id="lb"><img alt=""/></div>
-
-
-
 <h1 id="军队铁路与国家能力">军队、铁路与国家能力</h1>
 <h2 id="奉系东北军的兴起与解体">奉系—东北军的兴起与解体</h2>
 <p>劳伦斯　著</p>
@@ -5242,5 +5252,39 @@ document.getElementById('lb').addEventListener('click', function(){
   this.style.display='none'; document.body.classList.remove('lb-open');
 });
 </script>
-</body>
+
+<div id="tts-player">
+<button aria-controls="tts-panel" aria-expanded="false" id="tts-toggle" type="button">听书</button>
+<div aria-label="语音朗读试听" id="tts-panel" role="dialog">
+<button aria-label="关闭" id="tts-close" type="button">×</button>
+<h3>语音朗读 · 试听</h3>
+<p class="tts-note">MiniMax · 沉稳男声。先放三段试听，完整配音待评估用量后开放。</p>
+<ul id="tts-tracks"></ul>
+<audio controls="" id="tts-audio" preload="none"></audio>
+</div>
+</div>
+<script>
+(function(){
+  var tracks = [{"id": "preface", "title": "前言", "src": "audio/preface.mp3", "duration_ms": 117216, "bytes": 939156, "usage_characters": 1081}, {"id": "ch10-3", "title": "第十章　皇姑屯的清晨", "src": "audio/ch10-3.mp3", "duration_ms": 349092, "bytes": 2794164, "usage_characters": 3097}, {"id": "ch13-3", "title": "第十三章　柳条湖：十点二十分", "src": "audio/ch13-3.mp3", "duration_ms": 276660, "bytes": 2214708, "usage_characters": 2436}];
+  var player = document.getElementById('tts-player');
+  var toggle = document.getElementById('tts-toggle');
+  var panel = document.getElementById('tts-panel');
+  var close = document.getElementById('tts-close');
+  var list = document.getElementById('tts-tracks');
+  var audio = document.getElementById('tts-audio');
+  function fmt(ms){ if(!ms) return ''; var s=Math.round(ms/1000), m=Math.floor(s/60); s%=60; return m+'分'+(s<10?'0':'')+s+'秒'; }
+  tracks.forEach(function(t, i){
+    var li=document.createElement('li');
+    var b=document.createElement('button'); b.type='button'; b.innerHTML='<span>'+t.title+'</span><span class="dur">'+fmt(t.duration_ms)+'</span>';
+    b.addEventListener('click', function(){
+      list.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); audio.src=t.src; audio.play();
+    });
+    li.appendChild(b); list.appendChild(li);
+  });
+  function open(v){ panel.classList.toggle('open', v); toggle.setAttribute('aria-expanded', v?'true':'false'); }
+  toggle.addEventListener('click', function(){ open(!panel.classList.contains('open')); });
+  close.addEventListener('click', function(){ open(false); audio.pause(); });
+})();
+</script></body>
 </html>
