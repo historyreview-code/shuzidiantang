@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -416,6 +416,12 @@
         score-=W.patience*spend*(richControl?0.4:1);
         if(breakBomb)score-=W.patience*2;
         if(breakFlush)score-=W.patience*2;
+      }
+      // 小单牌尽量前期出掉：领出时，留下的小单张越多扣分越多
+      if(W.smallLeft&&!o.trick&&!finish&&o.hand.length>10){
+        const cntAfter={};for(const c of remaining)cntAfter[c.r]=(cntAfter[c.r]||0)+1;
+        const smallAfter=Object.entries(cntAfter).filter(([r,n])=>+r<=6&&n===1).length;
+        score-=W.smallLeft*smallAfter;
       }
       score-=lostReserve*W.lostReserve;
       if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
