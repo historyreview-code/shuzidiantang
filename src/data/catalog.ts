@@ -163,7 +163,7 @@ export const catalogCount = catalog.reduce((sum, group) => sum + group.items.len
 // 轮播顺序即数组顺序；note 显示在标题下方。
 const pushNote = (item: CatalogItem, note: string): CatalogItem => ({ ...item, note });
 export const featuredItems: CatalogItem[] = [
-  pushNote(workItem('guandan'), '理牌练习 · 分支复盘 · 语音教练'),
+  pushNote(workItem('guandan'), '单机/联机 · 复盘重打 · 语音播报'),
   pushNote(workItem('don-quixote-podcast'), '10 分钟双人对谈 · 文稿与章节'),
   pushNote(workItem('droplet'), '92 秒程序化三维短片'),
   {
