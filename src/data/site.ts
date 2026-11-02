@@ -371,11 +371,11 @@ export const travelSeries = [
 
 export const notes = [
   {
-    title: 'AI 不是阿拉丁神灯：我和三个 AI 把掼蛋做成「掼蛋大师 2.0」',
+    title: 'AI 不是阿拉丁神灯，你要成为 AI coding 时的产品经理',
     date: '2026-11-02',
     category: 'AI 手记',
-    href: '/notes/2026-11-02-guandan-master-v2.html',
-    summary: '70 台匿名设备、471 局开局之后的产品经理手记：AI 不是阿拉丁神灯，复盘能力、AI 棋力上限与 vibecoding 里人的位置。',
+    href: '/notes/2026-11-02-guandan-master-v3.html',
+    summary: '70 台匿名设备、471 局开局之后的产品经理手记：AI 不是阿拉丁神灯，复盘能力、AI 棋力上限与 AI coding 时人的位置。',
   },
   {
     title: '同题三篇：三个 AI 写「求仁得仁」',
