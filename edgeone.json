@@ -23,6 +23,11 @@
       "source": "/notes/2026-09-22-autumn-train.html",
       "destination": "/notes/",
       "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-11-02-guandan-master.html",
+      "destination": "/notes/2026-11-02-guandan-master-v2.html",
+      "statusCode": 301
     }
   ]
 }

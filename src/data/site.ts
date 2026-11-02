@@ -46,10 +46,10 @@ export const works = [
     tags: ['7 分 57 秒', '三维地形', '章节跳转'], status: '影像新作',
   },
   {
-    id: 'guandan', title: '阿尔法掼蛋狗', eyebrow: '实战训练 · 逐步复盘',
+    id: 'guandan', title: '掼蛋大师 2.0', eyebrow: '单机联机 · 复盘重打',
     href: '/games/guandan/', image: '/games/guandan/cover.svg',
-    summary: '在清爽牌桌上练整手规划与搭档配合。自由理牌、快速出牌、可选智能对战，结合真实牌谱的 AI 分析与语音解读。',
-    tags: ['理牌练习', '分支复盘', '语音教练'], status: '在线体验',
+    summary: '单机和好友联机共用一张牌桌：自由打或升级赛、进贡还贡；可原座/换座重打、控制搭档、四家明牌，对局中随时撤销。',
+    tags: ['单机/联机', '复盘重打', '语音播报'], status: '在线体验',
   },
   {
     id: 'earth',
@@ -374,7 +374,7 @@ export const notes = [
     title: 'AI 不是阿拉丁神灯：我和三个 AI 把掼蛋做成「掼蛋大师 2.0」',
     date: '2026-11-02',
     category: 'AI 手记',
-    href: '/notes/2026-11-02-guandan-master.html',
+    href: '/notes/2026-11-02-guandan-master-v2.html',
     summary: '70 台匿名设备、471 局开局之后的产品经理手记：AI 不是阿拉丁神灯，复盘能力、AI 棋力上限与 vibecoding 里人的位置。',
   },
   {
