@@ -141,7 +141,7 @@ export const works = [
     title: '萨满：与看不见的世界打交道',
     eyebrow: '文化研究 · 图文专著',
     href: '/research/shamanism-study/',
-    image: '/research/shamanism/research/cover.png',
+    image: '/research/shamanism/research/archive/1907-evenki-family.jpg',
     summary: '从西伯利亚到东亚、环北极与美洲，梳理萨满传统与研究史；12 章、16 幅图，附朗读、EPUB 与 PDF 研究稿。',
     tags: ['12 章', '16 幅图', '朗读版'],
     status: '研究专题',

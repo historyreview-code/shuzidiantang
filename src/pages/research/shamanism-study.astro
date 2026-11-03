@@ -6,12 +6,13 @@ const { meta, theses, paradigms, chapters, figures, archive, evidence } = data;
 const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')} 汉字，${meta.chapters} 章，附术语表、年表与核心书目；研究初稿，待审校。`;
 ---
 
-<BaseLayout current="research" title={`${meta.title} · 研究专题 · 劳伦斯实验室`} description={description} image={figures[0].src}>
+<BaseLayout current="research" title={`${meta.title} · 研究专题 · 劳伦斯实验室`} description={description} image={archive[0].src} keywords={meta.keywords}>
   <main id="content" class="page ss-page">
     <header class="ss-hero">
       <span class="kicker">{meta.kicker}</span>
       <h1>{meta.title}</h1>
       <p class="ss-sub">{meta.subtitle}</p>
+      <div class="ss-tags">{meta.tags.map((tag) => <span>{tag}</span>)}</div>
       <p class="ss-thesis">{meta.thesis}</p>
       <div class="ss-meta">
         <span>{meta.date}</span>
@@ -32,7 +33,7 @@ const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')
       <span class="kicker">核心论点</span>
       <div class="ss-head">
         <h2 id="theses-title">三句话，三条线索</h2>
-        <p>本书不把「萨满教」当作统一的宗教实体，而把它当作一套被社群授权、处理人与非人存在之间关系的实践技术。</p>
+        <p>本书不把「萨满教」当作统一的宗教实体，而把它当作一套被社群授权、处理人与非人存在之间往来的实践技术。</p>
       </div>
       <div class="ss-theses">
         {theses.map((item) => (
@@ -86,7 +87,7 @@ const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')
     <section class="ss-section" id="figures" aria-labelledby="figures-title">
       <span class="kicker">配图</span>
       <div class="ss-head">
-        <h2 id="figures-title">先看关系，再看制度</h2>
+        <h2 id="figures-title">先看往来，再看制度</h2>
         <p>原创示意图与地图；历史照片/博物馆藏品图另附来源与许可。地图点位与路线为示意，不代表文化边界或人口分布。</p>
       </div>
       <div class="ss-figures">
@@ -139,8 +140,8 @@ const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')
         <p>当前为研究初稿：EPUB 含封面、目录、脚注与 12 幅正文图；PDF 为 A4 打印稿。正式版将在事实核查、图注统一后发布。</p>
       </div>
       <div class="ss-actions">
-        <a class="ss-btn" href={meta.epub} download>EPUB 研究稿 v2.6</a>
-        <a class="ss-btn ghost" href={meta.pdf} download>PDF 研究稿 v2.6（页码/书签）</a>
+        <a class="ss-btn" href={meta.epub} download>EPUB 研究稿 v2.9</a>
+        <a class="ss-btn ghost" href={meta.pdf} download>PDF 研究稿 v2.9（页码/书签）</a>
         <a class="ss-btn ghost" href="/research/">返回专题研究</a>
       </div>
     </section>
@@ -166,6 +167,9 @@ const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')
   .ss-sub { font: 400 clamp(1.05rem, 2vw, 1.35rem)/1.7 var(--serif); color: var(--ink-2); max-width: 820px; margin: 0 0 18px; }
   .ss-thesis { font-size: 15px; line-height: 2; color: var(--ink); max-width: 820px; border-left: 3px solid var(--amber); padding-left: 18px; margin: 22px 0; }
   .ss-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--ink-3); font-size: 12px; margin: 18px 0 24px; }
+
+  .ss-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+  .ss-tags span { font-size: 11px; line-height: 1.6; color: var(--ink-3); border: 1px solid var(--line); padding: 2px 8px; background: var(--card); }
   .ss-actions { display: flex; flex-wrap: wrap; gap: 12px; }
   .ss-btn { display: inline-block; padding: 11px 18px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font-size: 13px; text-decoration: none; }
   .ss-btn.ghost { background: transparent; color: var(--ink); }

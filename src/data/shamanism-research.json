@@ -4,21 +4,27 @@
     "workingTitle": "萨满：一种关系的历史",
     "subtitle": "从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究",
     "kicker": "文化研究 · 图文专著",
-    "thesis": "不是「萨满教是什么」，而是「萨满实践在做什么」：关系、权威、历史，三条线索互相牵制。",
-    "words": 91459,
+    "thesis": "不是「萨满教是什么」，而是「萨满实践在做什么」：往来、权威、历史，三条线索互相牵制。",
+    "words": 91586,
     "chapters": 12,
     "sources": 180,
     "date": "2026-11",
     "status": "研究初稿 · 待审校",
-    "epub": "/research/shamanism/research/downloads/shaman-research-v2.6.epub",
-    "pdf": "/research/shamanism/research/downloads/shaman-research-v2.6.pdf"
+    "epub": "/research/shamanism/research/downloads/shaman-research-v2.9.epub",
+    "pdf": "/research/shamanism/research/downloads/shaman-research-v2.9.pdf",
+    "tags": [
+      "萨满：与看不见的世界打交道",
+      "从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究"
+    ],
+    "keywords": "萨满：与看不见的世界打交道,从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究,萨满,萨满传统,西伯利亚,东亚,环北极,美洲",
+    "image": "/research/shamanism/research/archive/1907-evenki-family.jpg"
   },
   "theses": [
     {
       "no": "01",
-      "label": "关系",
-      "title": "关系先于信仰",
-      "text": "灵、祖先、动物、山川是关系中的主体；萨满的工作是结盟、交换、义务、修复，而不是宣讲教义。"
+      "label": "往来",
+      "title": "往来先于信仰",
+      "text": "灵、祖先、动物、山川是往来中的一方；萨满的工作是结盟、交换、义务、修复，而不是宣讲教义。"
     },
     {
       "no": "02",
@@ -52,7 +58,7 @@
       "no": "03",
       "name": "社会功能 / 治疗",
       "figures": "列维-斯特劳斯、特纳、肯德尔",
-      "claim": "效力在社会关系、治疗与权力位置。",
+      "claim": "效力在社会往来、治疗与权力位置。",
       "limit": "功能解释易循环，象征效力难证伪。"
     },
     {
@@ -66,7 +72,7 @@
       "no": "05",
       "name": "本体论 / 泛灵论",
       "figures": "德斯科拉、维韦罗斯·德·卡斯特罗、威勒斯列夫",
-      "claim": "萨满实践是人与非人存在的关系技术。",
+      "claim": "萨满实践是人与非人存在之间的往来技术。",
       "limit": "容易制造新本质，对权力、国家关注不足。"
     },
     {
@@ -105,7 +111,7 @@
     {
       "no": "04",
       "title": "灵与主人：非人存在的社会性",
-      "question": "萨满打交道的「灵」，是信仰对象，还是关系中的主体？",
+      "question": "萨满打交道的「灵」，是信仰对象，还是往来中的主体？",
       "china": true
     },
     {
@@ -179,7 +185,7 @@
     {
       "no": "3",
       "src": "/research/shamanism/research/figures/fig-03-relations.png",
-      "caption": "关系的语法：萨满在做什么",
+      "caption": "往来的语法：萨满在做什么",
       "credit": "原创示意图"
     },
     {

@@ -7,6 +7,7 @@ interface Props {
   description?: string;
   current?: string;
   image?: string;
+  keywords?: string;
   directory?: boolean;
 }
 
@@ -16,6 +17,7 @@ const {
   current = '',
   directory = false,
   image = '/assets/og/brand.png',
+  keywords = '',
 } = Astro.props;
 
 const nav = [
@@ -35,6 +37,7 @@ const nav = [
     <link rel="preload" href="/assets/fonts/mashanzheng-title.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
     <link rel="canonical" href={new URL(Astro.url.pathname, site.url).href} />
     <meta property="og:url" content={new URL(Astro.url.pathname, site.url).href} />
     <meta property="og:title" content={title} />
