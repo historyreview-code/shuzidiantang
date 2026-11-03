@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSH桌面伴侣：AI干活你休闲 · 劳伦斯实验室</title>
+<meta name="description" content="AI 干活时总有傻等的间隙，被一枚浮窗接住了。一篇关于 DSH 自定义插件「桌面伴侣」的随笔：电子贴纸式的轻内容、预定的栏目、运动提醒和烟花。">
+<link rel="canonical" href="https://shuzidiantang.com/notes/2026-11-03-dsh-desktop-companion.html">
+<meta property="og:title" content="DSH桌面伴侣：AI干活你休闲">
+<meta property="og:description" content="AI 干活时总有傻等的间隙，被一枚浮窗接住了。一篇关于 DSH 自定义插件「桌面伴侣」的随笔：电子贴纸式的轻内容、预定的栏目、运动提醒和烟花。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://shuzidiantang.com/notes/2026-11-03-dsh-desktop-companion.html">
+<meta property="og:image" content="https://shuzidiantang.com/notes/og/2026-11-03-dsh-desktop-companion.png">
+<meta property="article:published_time" content="2026-11-03T22:45:00+08:00">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuzidiantang.com/notes/og/2026-11-03-dsh-desktop-companion.png">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.45; margin: 34px 0 12px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  blockquote p { margin: 6px 0; }
+  .cta { margin: 26px 0; padding: 14px 18px; border: 1px solid rgba(180,85,30,.3); border-radius: 10px;
+    background: rgba(180,85,30,.05); }
+  .cta p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 22px 0; font-size: .9rem; line-height: 1.6; }
+  th, td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; }
+  th { background: rgba(38,34,26,.05); font-weight: 600; white-space: nowrap; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+    h1 { font-size: 1.55rem; }
+    table { font-size: .82rem; }
+    th, td { padding: 7px 8px; }
+  }
+  .site-footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 40px; border-top: 1px solid var(--line-strong);
+    color: var(--ink-3); font-size: .85rem; }
+  .site-footer .icp a { color: var(--ink-3); text-decoration: none; }
+  .site-footer .icp a:hover { color: var(--amber); }
+  h3 { font-family: var(--serif); font-size: 1.08rem; line-height: 1.5; margin: 26px 0 10px; }
+  .article-copy ul, .article-copy ol { margin: 16px 0 16px 1.5em; }
+  .article-copy li { margin: 7px 0; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap table { min-width: 520px; }
+  .table-compact-first td:first-child, .table-compact-first th:first-child { white-space: nowrap; }
+  .article-copy code { font-family: var(--mono); font-size: .86em; background: rgba(38,34,26,.07); padding: 1px 5px; border-radius: 4px; }
+  .article-copy hr { border: 0; border-top: 1px solid var(--line); margin: 34px 0; }
+  .article-copy blockquote p { margin: 8px 0; }
+  .article-copy blockquote p:first-child { margin-top: 0; }
+  .article-copy blockquote p:last-child { margin-bottom: 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span><strong>劳伦斯实验室</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>DSH桌面伴侣：AI干活你休闲</h1>
+    <p class="meta"><time datetime="2026-11-03">2026-11-03</time> · 约 671 字 · 分类：AI 手记</p>
+    <div class="article-copy">
+<p>用 DSH 干活，总有一种时间：AI 在读文件、跑命令、等模型，几十秒到几分钟。切去别处会断思路，干等又觉得可惜。</p>
+<p>能不能让界面自己在这段空白里递点轻东西？这就是利用 DSH 创造模式下的插件能力开发的 <strong>DSH桌面伴侣</strong>。</p>
+<p>DSH 支持自定义插件，这是前提：插件是个普通小包，装上之后界面里多出一块位置，主程序一行都不用改。插件一半在后台，负责按规则生成或抓取内容、按钟点缓存；另一半在页面上把它画出来。内容每半小时一格，同一格只生成一次，等你的时候早就备好了。</p>
+<p>它像一张电子贴纸：点“知道了”就缩成一张小纸条，随时可以展开，看你预先设定的栏目。栏目里的东西按规则即时生成或抓取，所以永远不会看腻。</p>
+<p>适合放在这里的内容得轻，两三行读完；得按时间排班；得能随手丢掉。它还留了个出口：看完点“知道了”收起，觉得有用点“列入任务”，内容拼成一段提示，开个新会话就能接着做。</p>
+<p>下午三点推一条三分钟肩颈拉伸，傍晚推一条快手家常菜做法，也可以随时查阅项目进度或者发布游戏的在线数据；有时只是一点小东西——跨领域的小实验、一条地道英文表达、一个推荐的小灵感。</p>
+<p>最喜欢运动提醒这一块。每刻钟到点，浮窗里冒出一句“起来动一动”，带几个 CSS 小火花；后来又加上了全屏烟花，六连发、带重力拖尾，五秒多，从屏幕这头炸到那头，也不挡鼠标。到了晚上快睡觉时倒计时启动，最后一分钟开红灯警示快去睡觉，比闹钟温柔。</p>
+<p>窗口的手感也调过：能拖到顺手的位置，关了再开还在原处；字号加了一档，因为它是用来“瞥”的。</p>
+<p>等待是低负荷的时刻，人没把注意力全交出去，却又走不开，正好接住这种随时能中断的东西。它不催你，不猜你，看完点一下就干净。</p>
+<p>后来再等 AI 干活，我不急着切窗口了，抬眼看看右上角：今天在说什么，晚饭有着落没有，烟花什么时候会炸。</p>
+<p>这就是今天的一个收获，工作的时候顺便开发的小插件。</p>
+    </div>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>劳伦斯实验室 · 手记</p>
+  <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
+</footer>
+</body>
+</html>
