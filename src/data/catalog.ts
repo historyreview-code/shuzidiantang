@@ -35,7 +35,7 @@ export interface CatalogGroup {
 
 const byId = new Map(works.map((work) => [work.id, work] as const));
 const icons: Record<string, string> = {
-  earth: 'globe', liberty: 'cube', 'seaside-delivery': 'route', 'fireworks-player': 'wave', mindverse: 'book',
+  earth: 'globe', 'seaside-delivery': 'route', 'fireworks-player': 'wave', mindverse: 'book',
   'don-quixote-podcast': 'headphones', 'math-beauty-astra': 'spark', electricity: 'bolt', 'autumn-train': 'route',
   guandan: 'game', cad: 'layers', naoliceshi: 'grid', 'mini-games': 'game', 'fireworks-kaleidoscope': 'spark', 'retro-kaleidoscope': 'spark',
   'japan-sea-war': 'map', 'babylon-tower': 'play', 'single-bit-error': 'play', droplet: 'play',
@@ -56,21 +56,13 @@ const workItem = (id: string): CatalogItem => {
 const groups: Record<string, string[]> = {
   screen: ['japan-sea-war', 'don-quixote-podcast', 'babylon-tower', 'single-bit-error', 'droplet', 'math-beauty-astra', 'electricity', 'autumn-train'],
   // 掼蛋排第一；黄河·改道两千年移到专题研究组。
-  code: ['guandan', 'earth', 'liberty', 'seaside-delivery', 'fireworks-player', 'mindverse', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games', 'shanghai-time-map'],
+  code: ['guandan', 'earth', 'seaside-delivery', 'fireworks-player', 'mindverse', 'cad', 'naoliceshi', 'fireworks-kaleidoscope', 'retro-kaleidoscope', 'mini-games', 'shanghai-time-map'],
 };
 
-const libertyItem: CatalogItem = {
-  id: 'liberty',
-  title: '自由女神像',
-  href: '/liberty/',
-  image: 'https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F5f8a4c410665028677cf0e63b021a6923810a7a75bc758f04d979bc19da116c5?filename=cover.png&sig=cxAlmHIX4cwU3Onel9rdRdlIMD1tW0_EZo5wWATNns4=&t=o',
-  summary: '以原始高精度交互 3D 呈现冠冕、火炬、书板、铜绿长袍与石质底座，支持旋转、缩放和模型下载。',
-  meta: '交互 3D · 原始高精度版',
-  icon: 'cube',
-};
 
-// 技术编程组：掼蛋置顶，liberty 为站外封面特例。
-const codeItems: CatalogItem[] = groups.code.map((id) => (id === 'liberty' ? libertyItem : workItem(id)));
+
+// 技术编程组：掼蛋置顶。
+const codeItems: CatalogItem[] = groups.code.map(workItem);
 
 const reportItems: CatalogItem[] = research.map((report) => ({
   id: report.slug, title: report.title, href: report.href,
