@@ -374,7 +374,7 @@ export const notes = [
     title: 'DSH桌面伴侣：AI干活你休闲',
     date: '2026-11-03',
     category: 'AI 手记',
-    href: '/notes/2026-11-03-dsh-desktop-companion.html',
+    href: '/notes/2026-11-03-dsh-desktop-companion-v2.html',
     summary: 'AI 干活时的傻等间隙，被一枚浮窗接住了：一张电子贴纸式的桌面伴侣，轻内容、预定的栏目、运动提醒和烟花。',
   },
   {

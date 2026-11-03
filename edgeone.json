@@ -53,6 +53,11 @@
       "source": "/research/shamanism/",
       "destination": "/research/shamanism-study/",
       "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-11-03-dsh-desktop-companion.html",
+      "destination": "/notes/2026-11-03-dsh-desktop-companion-v2.html",
+      "statusCode": 301
     }
   ]
 }

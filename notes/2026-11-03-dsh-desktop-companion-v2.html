@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DSH桌面伴侣：AI干活你休闲 · 劳伦斯实验室</title>
 <meta name="description" content="AI 干活时总有傻等的间隙，被一枚浮窗接住了。一篇关于 DSH 自定义插件「桌面伴侣」的随笔：电子贴纸式的轻内容、预定的栏目、运动提醒和烟花。">
-<link rel="canonical" href="https://shuzidiantang.com/notes/2026-11-03-dsh-desktop-companion.html">
+<link rel="canonical" href="https://shuzidiantang.com/notes/2026-11-03-dsh-desktop-companion-v2.html">
 <meta property="og:title" content="DSH桌面伴侣：AI干活你休闲">
 <meta property="og:description" content="AI 干活时总有傻等的间隙，被一枚浮窗接住了。一篇关于 DSH 自定义插件「桌面伴侣」的随笔：电子贴纸式的轻内容、预定的栏目、运动提醒和烟花。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://shuzidiantang.com/notes/2026-11-03-dsh-desktop-companion.html">
+<meta property="og:url" content="https://shuzidiantang.com/notes/2026-11-03-dsh-desktop-companion-v2.html">
 <meta property="og:image" content="https://shuzidiantang.com/notes/og/2026-11-03-dsh-desktop-companion.png">
 <meta property="article:published_time" content="2026-11-03T22:45:00+08:00">
 <meta name="twitter:card" content="summary_large_image">
@@ -84,6 +84,10 @@
   .article-copy blockquote p:first-child { margin-top: 0; }
   .article-copy blockquote p:last-child { margin-bottom: 0; }
 
+  .note-figure { margin: 26px 0; }
+  .note-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .note-figure figcaption { margin-top: 8px; color: var(--ink-3); font-size: .82rem; line-height: 1.65; text-align: center; }
+
 </style>
 </head>
 <body>
@@ -105,9 +109,13 @@
     <p class="meta"><time datetime="2026-11-03">2026-11-03</time> · 约 671 字 · 分类：AI 手记</p>
     <div class="article-copy">
 <p>用 DSH 干活，总有一种时间：AI 在读文件、跑命令、等模型，几十秒到几分钟。切去别处会断思路，干等又觉得可惜。</p>
-<p>能不能让界面自己在这段空白里递点轻东西？这就是利用 DSH 创造模式下的插件能力开发的 <strong>DSH桌面伴侣</strong>。</p>
+<p>能不能有一个方案，让自己不要像个傻子一样看 AI 在吐思维链？这就是我刚刚开发的 <strong>DSH桌面伴侣</strong>。</p>
 <p>DSH 支持自定义插件，这是前提：插件是个普通小包，装上之后界面里多出一块位置，主程序一行都不用改。插件一半在后台，负责按规则生成或抓取内容、按钟点缓存；另一半在页面上把它画出来。内容每半小时一格，同一格只生成一次，等你的时候早就备好了。</p>
 <p>它像一张电子贴纸：点“知道了”就缩成一张小纸条，随时可以展开，看你预先设定的栏目。栏目里的东西按规则即时生成或抓取，所以永远不会看腻。</p>
+<figure class="note-figure">
+  <img src="../assets/img/notes/dsh-desktop-companion.webp" alt="DSH桌面伴侣浮窗：右上角显示美食建议、22:55 倒计时和运动提醒" loading="lazy">
+  <figcaption>DSH桌面伴侣：挂在主界面右上角的一枚轻浮窗，简报、22:55 倒计时和运动提醒都在里面。</figcaption>
+</figure>
 <p>适合放在这里的内容得轻，两三行读完；得按时间排班；得能随手丢掉。它还留了个出口：看完点“知道了”收起，觉得有用点“列入任务”，内容拼成一段提示，开个新会话就能接着做。</p>
 <p>下午三点推一条三分钟肩颈拉伸，傍晚推一条快手家常菜做法，也可以随时查阅项目进度或者发布游戏的在线数据；有时只是一点小东西——跨领域的小实验、一条地道英文表达、一个推荐的小灵感。</p>
 <p>最喜欢运动提醒这一块。每刻钟到点，浮窗里冒出一句“起来动一动”，带几个 CSS 小火花；后来又加上了全屏烟花，六连发、带重力拖尾，五秒多，从屏幕这头炸到那头，也不挡鼠标。到了晚上快睡觉时倒计时启动，最后一分钟开红灯警示快去睡觉，比闹钟温柔。</p>
