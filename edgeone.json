@@ -26,12 +26,12 @@
     },
     {
       "source": "/notes/2026-11-02-guandan-master.html",
-      "destination": "/notes/2026-11-02-guandan-master-v3.html",
+      "destination": "/notes/2026-11-02-guandan-master-v4.html",
       "statusCode": 301
     },
     {
       "source": "/notes/2026-11-02-guandan-master-v2.html",
-      "destination": "/notes/2026-11-02-guandan-master-v3.html",
+      "destination": "/notes/2026-11-02-guandan-master-v4.html",
       "statusCode": 301
     },
     {
@@ -42,6 +42,11 @@
     {
       "source": "/notes/2026-10-30-ai-writing-ebook-v2.html",
       "destination": "/notes/2026-10-30-ai-writing-ebook-v3.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-11-02-guandan-master-v3.html",
+      "destination": "/notes/2026-11-02-guandan-master-v4.html",
       "statusCode": 301
     }
   ]

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI不是阿拉丁神灯 · 劳伦斯实验室</title>
+<meta name="description" content="70 台匿名设备、471 局开局、420 局完成之后的产品经理手记：AI 不是阿拉丁神灯，复盘能力、AI 棋力上限与 vibecoding 里人的位置。">
+<link rel="canonical" href="https://shuzidiantang.com/notes/2026-11-02-guandan-master-v4.html">
+<meta property="og:title" content="AI不是阿拉丁神灯">
+<meta property="og:description" content="70 台匿名设备、471 局开局、420 局完成之后的产品经理手记：AI 不是阿拉丁神灯，复盘能力、AI 棋力上限与 vibecoding 里人的位置。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://shuzidiantang.com/notes/2026-11-02-guandan-master-v4.html">
+<meta property="og:image" content="https://shuzidiantang.com/notes/og/2026-11-02-guandan-master-v4.png">
+<meta property="article:published_time" content="2026-10-30T10:00:00+08:00">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuzidiantang.com/notes/og/2026-11-02-guandan-master-v4.png">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.45; margin: 34px 0 12px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  blockquote p { margin: 6px 0; }
+  .cta { margin: 26px 0; padding: 14px 18px; border: 1px solid rgba(180,85,30,.3); border-radius: 10px;
+    background: rgba(180,85,30,.05); }
+  .cta p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 22px 0; font-size: .9rem; line-height: 1.6; }
+  th, td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; }
+  th { background: rgba(38,34,26,.05); font-weight: 600; white-space: nowrap; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+    h1 { font-size: 1.55rem; }
+    table { font-size: .82rem; }
+    th, td { padding: 7px 8px; }
+  }
+  .site-footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 40px; border-top: 1px solid var(--line-strong);
+    color: var(--ink-3); font-size: .85rem; }
+  .site-footer .icp a { color: var(--ink-3); text-decoration: none; }
+  .site-footer .icp a:hover { color: var(--amber); }
+  h3 { font-family: var(--serif); font-size: 1.08rem; line-height: 1.5; margin: 26px 0 10px; }
+  .article-copy ul, .article-copy ol { margin: 16px 0 16px 1.5em; }
+  .article-copy li { margin: 7px 0; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap table { min-width: 520px; }
+  .table-compact-first td:first-child, .table-compact-first th:first-child { white-space: nowrap; }
+  .article-copy code { font-family: var(--mono); font-size: .86em; background: rgba(38,34,26,.07); padding: 1px 5px; border-radius: 4px; }
+  .article-copy hr { border: 0; border-top: 1px solid var(--line); margin: 34px 0; }
+  .article-copy blockquote p { margin: 8px 0; }
+  .article-copy blockquote p:first-child { margin-top: 0; }
+  .article-copy blockquote p:last-child { margin-bottom: 0; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span><strong>劳伦斯实验室</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>AI不是阿拉丁神灯</h1>
+    <p class="meta"><time datetime="2026-11-02">2026-11-02</time> · 约 2,229 字 · 分类：AI 手记</p>
+    <div class="article-copy">
+<blockquote>
+<p>上线 9 天，70 台匿名设备、471 局开局、420 局完成。游戏在：<a href="https://shuzidiantang.com/games/guandan/" target="_blank" rel="noopener">https://shuzidiantang.com/games/guandan/</a></p>
+<p>这篇文章只讲一件事：AI 不是许愿机。一句话换不来产品，人得像产品经理一样工作。</p>
+</blockquote>
+<h2>一、2.0 是什么</h2>
+<p>它最早叫「阿尔法掼蛋狗」，现在叫「掼蛋大师 2.0」——给朋友练掼蛋的工具，不是商业产品。</p>
+<ul>
+<li>单机和联机同一个入口：一个人练直接开桌；朋友来就建房，发邀请链接。缺人电脑补位。</li>
+<li>自由打一把，或开升级赛从 2 打到 A；单机升级赛可选是否进贡还贡，联机按真实规则自动进贡还贡。</li>
+<li>复盘：原座/换座重打，从头或某一步接手；可控制搭档坐席或交给电脑；可把另外三家的牌摊开，四家明牌。</li>
+<li>对局中撤销：单人可连续撤销，联机在下家出牌前有 3 秒窗口。</li>
+<li>还有 AI 坐席、语音播报、同花顺助手、牌谱导入导出。</li>
+</ul>
+<p>数据不算大，但都是真实对局；这个量足够暴露问题。</p>
+<h2>二、一句话得不到产品</h2>
+<p>第一天，AI 几小时就给了个能发牌、能出牌的原型。但原型不是产品：它能把你的一句话翻译成代码，却不知道你心里的「好」是什么。</p>
+<p>demo 看起来总是完整，产品经理要在这份完整里挑出不对：规则和线下不一样、流程多一步、手机上没法用。快不等于对，能跑也不等于能玩。一个能玩的游戏是几百个决定，不是一句提示词。</p>
+<p>AI 能写代码、做测试、跑基准，也能给你方案；但它不知道哪条规则该还原、哪一步体验该省、朋友到底会不会用。这些要人定。</p>
+<h2>三、产品经理做什么</h2>
+<p><strong>定义问题。</strong>「做个掼蛋游戏」是愿望，不是问题。真问题是：给想提高水平的朋友，一个能打完、能看懂、能重来、能一起玩的工具。于是先做什么也清楚了：规则引擎、复盘、换座和撤销、房间邀请。AI 可以帮你实现任何一项，但先做哪一项、做到什么程度，是产品经理的判断。</p>
+<p><strong>定验收标准。</strong> AI 很爱说「已完成」，但页面能开、测试能过只是工程完成。AI 很会「完成」，产品经理要判断「对不对」。我只问四个问题：没看过说明的人能自己打完一局吗？打完能说出哪手错了吗？想重来能只改那一手吗？想叫朋友能发个链接就进来吗？这比功能列表全部打勾有用得多。</p>
+<p><strong>收集种子用户反馈。</strong> 反馈不会是需求文档：「搭档第一手出小王」——大牌被当普通牌打分，后来有了大牌经济学；「对手怎么一直过牌」——能压时过牌 62%，后来有了牌权规则；「三 A 带两个大王」——带牌没算剩余战力，改成带最小对子；双上语音念成双下、红心 2 配不了同花，都是 bug。我会把朋友的牌谱导出来逐手看，再问一句「你当时想干嘛」。这些反馈里有些是 bug，有些是规则理解偏差，还有些是用户没表达出来的诉求——嘴上说 AI 不够强，真正卡住的却是输得不明不白。用户不会说要可解释的决策链，只会说这手打得怪；产品经理要翻译成：第几步、什么牌、有哪些选择、为什么选。</p>
+<p><strong>做取舍。</strong> 2.0 砍了难度选择、观战、AI 讲解、电脑代打，固定「高手」难度，把首页留给牌桌、手牌和复盘。产品经理的价值，很多时候不是决定做什么，而是决定不做什么。</p>
+<h2>四、复盘：把「再来一局」变成「重来这一步」</h2>
+<p>朋友打完最常说「刚才那手是不是错了」。只能再来一局，是重复；能回到那一手换选择，才是练习。</p>
+<p>所以有了：原座重打、换座重打（接手搭档/上家/下家）、控制搭档坐席、四家明牌、连续撤销。撤销本来防手机误触，后来成了边打边复盘。界面上明确写着「明牌仅用于研究牌局」，它不是作弊，是学习工具。</p>
+<p>判断：复盘不是倒放，是让用户改一个决策变量，看结果怎么变。复盘也不是替人打牌，而是让人看懂自己为什么输。规则引擎必须能回放每一手：谁出的、哪张实体牌、配牌怎么解释、当时有哪些选择、为什么选它。每一手都能回放，才有资格谈复盘。</p>
+<h2>五、AI 棋力：能改到哪，天花板在哪</h2>
+<p>朋友说电脑战力普通。先澄清：比较的是「本地预设规则打分」和「同步调用大模型选牌」。</p>
+<p>最早每次电脑出牌，都把局面和选项发给大模型等返回：要 7.5–19 秒，而且更差。抽 20 个真有选择余地的局面，两边只有 8 次一致；不一致的 10 次，大模型 1 次更好、4 次平、5 次更差，平均亏 0.72 分。于是让它退出出牌，只做复盘讲解；响应降到 1.35 秒。</p>
+<p>之后只改本地规则，四轮都先用一批牌局调参，再用另一批没见过的牌局验收：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>轮次</th>
+<th>改了什么</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础版</td>
+<td>更快出手、多喂搭档、少囤炸弹</td>
+<td>有提升</td>
+</tr>
+<tr>
+<td>大牌版</td>
+<td>大牌是资源，不随便单出；收尾/拦人才用</td>
+<td>基本持平，修掉第一手单出小王</td>
+</tr>
+<tr>
+<td>牌权版</td>
+<td>能顺走就顺走，必要时用大牌抢回牌权</td>
+<td>小幅提升</td>
+</tr>
+<tr>
+<td>炸弹版</td>
+<td>开炸成本随对手可能有炸弹的概率变化</td>
+<td>有提升</td>
+</tr>
+</tbody>
+</table></div>
+<p>评测只认一条：换一批没见过的牌局仍然更好，才留下，不接受「感觉变强了」。</p>
+<p>现在对随机 +1.2 分/副、头游约 70%；对 DanLM −1.2 分/副、双上 3/40、头游 35%–40%。差距在团队协同和长程节奏。</p>
+<p>再往上试过口诀、防双上、读人、角色差异化、更大模型、让模型直接接管选牌……8 个方向都被数据否掉。这些失败不是白跑，它们把「只靠眼前这一手打分」这条路走到了尽头，剩余空间不到 0.1 分/副。继续走，要更强的团队建模、长程规划、能判断对手的模型，甚至让 AI 自己和自己打很多局。</p>
+<p>如果继续做，我会先用真实牌谱训练一个简单的局面评估模型，再在残局做有限搜索，然后让 AI 学会判断搭档和对手；每一步都用新牌局验收。</p>
+<p>更现实的选择是：把强度停在「能让普通朋友有压力」的位置，把更多精力放在复盘和讲解上。这个工具的目的是帮人变强，不是让 AI 拿冠军。</p>
+<p>大模型能解数学题，也能写代码；但「强 AI」不是提示词能堆出来的。</p>
+<p><strong>上限：</strong> AlphaGo 需要海量自对弈、分布式算力和研究团队。一个人、一台电脑、几个个人 AI，做不出 AlphaGo。写工程、跑实验、查资料它们很强；但提出新方法、做长期研究，算力和数据都不够。AI 能解数学题，不代表能替你做出强 AI。</p>
+<h2>六、两条体会</h2>
+<ol>
+<li><strong>AI 替代不了产品经理。</strong> 它不知道朋友真正想要什么，不知道哪个功能先做、哪个砍，不知道什么算好用、什么时候停。AI 是执行力很强的团队，但团队需要定方向、定标准、承担结果的人。</li>
+<li><strong>个人 AI 有上限。</strong> Codex、DeepSeek、Kimi、Grok 这类工具足够做出一个真实可用的小产品；但需要长期研究、海量算力、团队协作的问题，个人做不了。不追求世界冠军，做一个朋友愿意用的工具，边界反而清楚。</li>
+</ol>
+<h2>七、边界与下一步</h2>
+<p>设备数是匿名浏览器标识；AI 棋力还没做真人盲评；联机房间的持久化、掉线托管有限；真机触控和扬声器还要系统验收；不是商业产品，也没做完整赛事、账号和防作弊。</p>
+<p>下一步：继续收集种子用户的牌局和疑问，把复盘做清楚，把 AI 讲解做得更像懂牌的朋友。</p>
+<p>AI 不是阿拉丁神灯。它是一支执行力很强的团队，但方向、标准和「什么算好」，在人这边。</p>
+<hr />
+<h2>附：关键数字</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前版本</td>
+<td>掼蛋大师 2.0</td>
+</tr>
+<tr>
+<td>累计数据</td>
+<td>70 台匿名设备 / 471 局开局 / 420 局完成（约 89%）</td>
+</tr>
+<tr>
+<td>单机 AI</td>
+<td>本地规则决策；大模型只做复盘讲解</td>
+</tr>
+<tr>
+<td>棋力</td>
+<td>对随机 +1.2 分/副；对 DanLM −1.2 分/副</td>
+</tr>
+<tr>
+<td>大模型对照</td>
+<td>20 个局面，8 次一致；不一致 10 次：1 好 / 4 平 / 5 差</td>
+</tr>
+<tr>
+<td>失败方向</td>
+<td>8 个，均有数据</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>数据截至 2026-11-02 21:07（Asia/Shanghai）。设备数为匿名浏览器标识；AI 棋力尚未做真人盲评。</p>
+</blockquote>
+    </div>
+
+    <div class="cta">
+      <p>🎮 <a href="https://shuzidiantang.com/games/guandan/" target="_blank" rel="noopener">打开「掼蛋大师 2.0」玩一局 ↗</a></p>
+      <p>单机人机、好友房间、复盘换座、中文语音播报，都在这一个入口里。</p>
+    </div>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>劳伦斯实验室 · 手记</p>
+  <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
+</footer>
+</body>
+</html>
