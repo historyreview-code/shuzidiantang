@@ -13,6 +13,7 @@ const urls = [
   ['/films/electricity/', 'monthly', '0.8'],
   ['/research/', 'monthly', '0.8'],
   ['/research/shamanism-study/', 'monthly', '0.9'],
+  ['/research/shamanism/research/read/', 'monthly', '0.7'],
   [historyProject.href, 'monthly', '0.9'],
   ['/fengxi/', 'monthly', '0.8'],
   ['/books/war-and-return/', 'monthly', '0.8'],

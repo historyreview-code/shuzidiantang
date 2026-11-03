@@ -1,0 +1,55 @@
+
+:root{--paper:#f2eadb;--paper-2:#faf6ec;--ink:#1f2a2e;--ink-2:#3f4b4a;--ink-3:#6b6b63;--line:#d7cdbd;--amber:#b5651d;--amber-faint:#f3e2c7}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Songti SC","Noto Serif SC","Source Han Serif SC",serif;line-height:2;text-align:justify;overflow-x:hidden}
+a{color:var(--amber);text-underline-offset:3px}
+.r-head{position:sticky;top:0;z-index:20;background:rgba(242,234,219,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.r-head-in{max-width:880px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;gap:16px;align-items:center;font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:12px;color:var(--ink-3)}
+.r-head a{color:var(--ink-2);text-decoration:none}
+.r-head a:hover{color:var(--amber)}
+.r-head-in span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.r-main{max-width:880px;margin:0 auto;padding:34px 24px 120px}
+.r-kicker{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:11px;letter-spacing:.18em;color:var(--amber);text-transform:uppercase}
+.r-title{font-size:clamp(26px,5vw,46px);line-height:1.45;font-weight:700;letter-spacing:.02em;margin:12px 0 8px;overflow-wrap:anywhere}
+.r-meta{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:11.5px;line-height:1.9;color:var(--ink-3);border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:26px}
+.r-body{font-size:17px;line-height:2.05;color:var(--ink);overflow-wrap:anywhere}
+.r-body h2{font-size:25px;line-height:1.55;margin:42px 0 14px;padding-top:12px;border-top:1px solid var(--line)}
+.r-body h3{font-size:19px;line-height:1.65;margin:30px 0 10px}
+.r-body p{margin:0 0 16px}
+.r-body blockquote{margin:20px 0;padding:8px 0 8px 18px;border-left:3px solid var(--amber);color:var(--ink-2);background:var(--amber-faint)}
+.r-body ul,.r-body ol{padding-left:1.4em;margin:0 0 18px}
+.r-body li{margin:4px 0}
+.r-body img{display:block;width:100%;height:auto;margin:24px auto 8px;border:1px solid var(--line);background:var(--paper-2)}
+.r-body figure{margin:26px 0}
+.r-body figcaption{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:12px;line-height:1.8;color:var(--ink-3);text-align:center}
+.r-body table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.7;margin:20px 0;display:block;overflow-x:auto}
+.r-body th,.r-body td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+.r-body code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.9em;background:var(--paper-2);padding:1px 5px}
+.r-body .footnotes{font-size:12.5px;line-height:1.9;color:var(--ink-3);border-top:1px solid var(--line);margin-top:42px;padding-top:16px}
+.r-body .footnotes h2{font-size:15px;border:0;padding:0;margin:0 0 8px}
+.r-body .footnotes ol{padding-left:1.2em}
+.r-nav{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);margin-top:44px;padding-top:20px;font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:13px}
+.r-nav a{max-width:46%;line-height:1.7;color:var(--ink-2);text-decoration:none}
+.r-nav a:hover{color:var(--amber)}
+.r-nav small{display:block;color:var(--ink-3);font-size:10.5px;letter-spacing:.08em}
+.r-foot{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:11px;line-height:1.9;color:var(--ink-3);margin-top:30px}
+.r-index-list{list-style:none;padding:0;margin:24px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:0 28px}
+.r-index-list li{border-bottom:1px solid var(--line);padding:14px 0}
+.r-index-list a{display:flex;gap:14px;text-decoration:none;color:var(--ink)}
+.r-index-list a:hover h3{color:var(--amber)}
+.r-index-no{font-family:"SFMono-Regular",Consolas,monospace;font-size:11px;color:var(--amber);min-width:4.6em;white-space:nowrap;padding-top:5px}
+.r-index-list h3{font-size:16px;line-height:1.6;margin:0 0 4px}
+.r-index-list p{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:11.5px;line-height:1.8;color:var(--ink-3);margin:0;text-align:left}
+.r-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.r-btn{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:12.5px;padding:9px 14px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;background:transparent}
+.r-btn:hover{background:var(--amber);border-color:var(--amber);color:#fff}
+.r-btn.solid{background:var(--ink);color:var(--paper)}
+.r-btn.solid:hover{background:var(--amber);border-color:var(--amber)}
+.r-tts{position:fixed;right:18px;bottom:18px;z-index:40;display:flex;gap:7px}
+.r-tts button{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:9px 13px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.14)}
+.r-tts button:hover{background:var(--amber);border-color:var(--amber)}
+.r-tts button[hidden]{display:none}
+.r-tts-active{background:var(--amber-faint)!important;box-shadow:inset 3px 0 0 var(--amber)}
+@media(max-width:760px){.r-main{padding:24px 18px 100px;width:100%}.r-body{font-size:16px}.r-index-list{grid-template-columns:1fr}.r-index-list h3{font-size:15px}.r-head-in{padding:10px 16px;gap:8px}.r-head-in span{max-width:52%}.r-title{font-size:26px}.r-nav{flex-direction:column}.r-nav a{max-width:none}}
+@media print{.r-head,.r-tts,.r-nav{display:none}.r-main{max-width:none;padding:0}.r-body{font-size:11pt}}

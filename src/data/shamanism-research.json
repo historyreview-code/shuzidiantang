@@ -88,85 +88,99 @@
       "no": "导论",
       "title": "为什么「萨满」难以下定义",
       "question": "从一部小说、一座墓、一场祭、一面鼓进入；三条线索与研究方法。",
-      "china": false
+      "china": false,
+      "slug": "00"
     },
     {
       "no": "01",
       "title": "西伯利亚的发现：词、旅行者与民族志",
       "question": "「萨满」一词怎样旅行？早期记录者如何把地方实践变成比较范畴？",
-      "china": true
+      "china": true,
+      "slug": "01"
     },
     {
       "no": "02",
       "title": "出神的普世化：伊利亚德与比较宗教学",
       "question": "伊利亚德做对了什么，又丢掉了什么？",
-      "china": false
+      "china": false,
+      "slug": "02"
     },
     {
       "no": "03",
       "title": "谁发明了萨满教：批判、重构与中国学术史",
       "question": "如果「萨满教」是发明的，还能比较吗？中国学界如何回应？",
-      "china": true
+      "china": true,
+      "slug": "03"
     },
     {
       "no": "04",
       "title": "灵与主人：非人存在的社会性",
       "question": "萨满打交道的「灵」，是信仰对象，还是往来中的主体？",
-      "china": true
+      "china": true,
+      "slug": "04"
     },
     {
       "no": "05",
       "title": "出神、附体与仪式：效力从哪里来",
       "question": "鼓、歌、舞、衣、空间、供物如何工作？效力有几层？",
-      "china": true
+      "china": true,
+      "slug": "05"
     },
     {
       "no": "06",
       "title": "治疗、不幸与共同体",
       "question": "萨满为什么首先是「治病的人」？治疗的对象是身体、社会，还是意义？",
-      "china": true
+      "china": true,
+      "slug": "06"
     },
     {
       "no": "07",
       "title": "权威、性别与制度：谁有资格做萨满",
       "question": "萨满的权威从哪里来？谁被允许说话？",
-      "china": true
+      "china": true,
+      "slug": "07"
     },
     {
       "no": "08",
       "title": "北亚：狩猎、游牧与联盟",
       "question": "为什么北亚萨满实践常以「联盟」为核心？",
-      "china": false
+      "china": false,
+      "slug": "08"
     },
     {
       "no": "09",
       "title": "中国东北：家族、村社与国家",
       "question": "满、赫哲、鄂伦春、鄂温克、达斡尔、锡伯、蒙古，以及跳大神/出马仙，如何与萨满传统相遇？",
-      "china": true
+      "china": true,
+      "slug": "09"
     },
     {
       "no": "10",
       "title": "东亚：宫廷、巫俗与海洋",
       "question": "清宫、朝鲜巫俗、济州海女祭，如何把「萨满」放进不同制度？",
-      "china": true
+      "china": true,
+      "slug": "10"
     },
     {
       "no": "11",
       "title": "环北极与美洲：殖民、收藏与归还",
       "question": "殖民主义如何改变萨满传统的物质、档案与叙述条件？",
-      "china": false
+      "china": false,
+      "slug": "11"
     },
     {
       "no": "12",
       "title": "现代性：市场、疗愈与遗产",
       "question": "当「萨满」变成疗愈商品、非遗项目、旅游体验，谁有权力定义它？",
-      "china": true
+      "china": true,
+      "slug": "12"
     },
     {
       "no": "结论",
       "title": "三个克制与一个议程",
       "question": "不普世化、不把仪式当超自然证明、不把活态冻结成原始；中国与东北亚的研究议程。",
-      "china": true
+      "china": true,
+      "slug": "conclusion"
     }
   ],
   "figures": [
