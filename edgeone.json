@@ -48,6 +48,11 @@
       "source": "/notes/2026-11-02-guandan-master-v3.html",
       "destination": "/notes/2026-11-02-guandan-master-v4.html",
       "statusCode": 301
+    },
+    {
+      "source": "/research/shamanism/",
+      "destination": "/research/shamanism-study/",
+      "statusCode": 301
     }
   ]
 }
