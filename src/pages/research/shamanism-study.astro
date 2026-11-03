@@ -1,0 +1,334 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import data from '../../data/shamanism-research.json';
+
+const { meta, theses, paradigms, chapters, figures, archive, evidence } = data;
+const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')} 汉字，${meta.chapters} 章，附术语表、年表与核心书目；研究初稿，待审校。`;
+---
+
+<BaseLayout current="research" title={`${meta.title} · 研究专题 · 劳伦斯实验室`} description={description} image={figures[0].src}>
+  <main id="content" class="page ss-page">
+    <header class="ss-hero">
+      <span class="kicker">{meta.kicker}</span>
+      <h1>{meta.title}</h1>
+      <p class="ss-sub">{meta.subtitle}</p>
+      <p class="ss-thesis">{meta.thesis}</p>
+      <div class="ss-meta">
+        <span>{meta.date}</span>
+        <span>约 {(meta.words / 10000).toFixed(1)} 万字 · {meta.chapters} 章</span>
+        <span>附录 A–G</span>
+        <span>{meta.sources} 条来源</span>
+        <span>{meta.status}</span>
+      </div>
+      <div class="ss-actions">
+        <a class="ss-btn" href="#chapters">开始阅读</a>
+        <a class="ss-btn ghost" href={meta.epub} download>下载 EPUB</a>
+        <a class="ss-btn ghost" href={meta.pdf} download>下载 PDF</a>
+        <a class="ss-btn ghost" href="#map">研究地图</a>
+      </div>
+    </header>
+
+    <section class="ss-section" aria-labelledby="theses-title">
+      <span class="kicker">核心论点</span>
+      <div class="ss-head">
+        <h2 id="theses-title">三句话，三条线索</h2>
+        <p>本书不把「萨满教」当作统一的宗教实体，而把它当作一套被社群授权、处理人与非人存在之间关系的实践技术。</p>
+      </div>
+      <div class="ss-theses">
+        {theses.map((item) => (
+          <article class="ss-thesis-card">
+            <span class="ss-no">{item.no} / {item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ss-section" id="map" aria-labelledby="map-title">
+      <span class="kicker">研究地图</span>
+      <div class="ss-head">
+        <h2 id="map-title">六次范式，六场争论</h2>
+        <p>从西伯利亚民族志、伊利亚德的出神说，到概念批判、本体论转向与认知/演化；先看「学者们到底在争什么」，再进入案例。</p>
+      </div>
+      <div class="ss-paradigms">
+        {paradigms.map((item) => (
+          <article class="ss-paradigm">
+            <span class="ss-no">{item.no}</span>
+            <h3>{item.name}</h3>
+            <p class="ss-figures">{item.figures}</p>
+            <p>{item.claim}</p>
+            <p class="ss-limit">局限：{item.limit}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ss-section" id="chapters" aria-labelledby="chapters-title">
+      <span class="kicker">全书目录</span>
+      <div class="ss-head">
+        <h2 id="chapters-title">从概念到实践，再到历史</h2>
+        <p>导论 + 12 章 + 结论；每章保留「本章要点」与「延伸阅读」，可直接作课程/读书会线索。</p>
+      </div>
+      <ol class="ss-chapters">
+        {chapters.map((item) => (
+          <li>
+            <span class="ss-ch-no">{item.no}</span>
+            <div>
+              <h3>{item.title}{item.china && <span class="ss-tag">中国 / 东北亚</span>}</h3>
+              <p>{item.question}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="ss-section" id="figures" aria-labelledby="figures-title">
+      <span class="kicker">配图</span>
+      <div class="ss-head">
+        <h2 id="figures-title">先看关系，再看制度</h2>
+        <p>原创示意图与地图；历史照片/博物馆藏品图另附来源与许可。地图点位与路线为示意，不代表文化边界或人口分布。</p>
+      </div>
+      <div class="ss-figures">
+        {figures.map((item) => (
+          <figure>
+            <img src={item.src} alt={item.caption} loading="lazy" decoding="async" width="1600" height="1000" />
+            <figcaption><span>图 {item.no}</span>{item.caption}<small>{item.credit}</small></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <section class="ss-section" id="archive" aria-labelledby="archive-title">
+      <span class="kicker">档案图</span>
+      <div class="ss-head">
+        <h2 id="archive-title">历史图像，不是奇观</h2>
+        <p>四幅公共领域档案图：1907 年鄂温克萨满家庭、赫哲萨满与助手、1994 年鄂伦春萨满、萨米鼓线描。它们帮助建立历史感，但不替代民族志证据；图注保留作者、馆藏与许可。</p>
+      </div>
+      <div class="ss-figures">
+        {archive.map((item, i) => (
+          <figure>
+            <img src={item.src} alt={item.caption} loading="lazy" decoding="async" />
+            <figcaption><span>档案图 {i + 1}</span>{item.caption}<small>{item.credit}</small></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <section class="ss-section" id="evidence" aria-labelledby="evidence-title">
+      <span class="kicker">证据与来源</span>
+      <div class="ss-head">
+        <h2 id="evidence-title">先给结论，再交代依据</h2>
+        <p>A/B/C/D 证据分级；事实、解释、信念分开。未核实材料标「待核」；文学是入口，不是证据。</p>
+      </div>
+      <div class="ss-evidence">
+        {evidence.map((item) => (
+          <article>
+            <span class="ss-no">{item.label}</span>
+            <p>{item.text}</p>
+          </article>
+        ))}
+      </div>
+      <p class="ss-note">详细分级、民族志可信度五问、待核实清单，见书稿附录 F《证据与待核实》；核心书目见附录 D。</p>
+    </section>
+
+    <section class="ss-section ss-film" aria-labelledby="film-title">
+      <span class="kicker">影像资料</span>
+      <div class="ss-head">
+        <h2 id="film-title">影片是资料，不是框架</h2>
+        <p>原有 8 分 26 秒科普影片、逐段文案与 24 条来源保留为「影像资料」；研究页以文字、图与来源为主，影片不再占据第一屏。</p>
+      </div>
+      <a class="ss-link" href="/research/shamanism">打开影片与逐段文案 <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="ss-section" aria-labelledby="downloads-title">
+      <span class="kicker">继续学习</span>
+      <div class="ss-head">
+        <h2 id="downloads-title">带走书稿与研究资料</h2>
+        <p>当前为研究初稿：EPUB 含封面、目录、脚注与 12 幅正文图；PDF 为 A4 打印稿。正式版将在事实核查、图注统一后发布。</p>
+      </div>
+      <div class="ss-actions">
+        <a class="ss-btn" href={meta.epub} download>EPUB 研究稿 v2.6</a>
+        <a class="ss-btn ghost" href={meta.pdf} download>PDF 研究稿 v2.6（页码/书签）</a>
+        <a class="ss-btn ghost" href="/research/">返回专题研究</a>
+      </div>
+    </section>
+
+    <div class="ss-tts" aria-live="polite">
+      <button id="ss-tts-toggle" type="button" aria-pressed="false" title="朗读本页">
+        <span class="ss-tts-icon" aria-hidden="true">▶</span><span class="ss-tts-label">朗读</span>
+      </button>
+      <button id="ss-tts-stop" type="button" hidden title="停止朗读">停止</button>
+    </div>
+
+    <footer class="ss-foot">
+      <p>资料核对截至 {meta.date}；书稿与图注仍在审校。引用请以正式出版版本为准。</p>
+      <p>底图：Natural Earth 1:110m Land（公共领域）。原创示意图：劳伦斯实验室。</p>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .ss-page { padding-bottom: 72px; }
+  .ss-hero { padding: 54px 0 40px; border-bottom: 1px solid var(--line); }
+  .ss-hero h1 { font: 600 clamp(2.2rem, 5vw, 4.1rem)/1.28 var(--serif); margin: 14px 0 12px; letter-spacing: .015em; }
+  .ss-sub { font: 400 clamp(1.05rem, 2vw, 1.35rem)/1.7 var(--serif); color: var(--ink-2); max-width: 820px; margin: 0 0 18px; }
+  .ss-thesis { font-size: 15px; line-height: 2; color: var(--ink); max-width: 820px; border-left: 3px solid var(--amber); padding-left: 18px; margin: 22px 0; }
+  .ss-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--ink-3); font-size: 12px; margin: 18px 0 24px; }
+  .ss-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .ss-btn { display: inline-block; padding: 11px 18px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font-size: 13px; text-decoration: none; }
+  .ss-btn.ghost { background: transparent; color: var(--ink); }
+  .ss-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .ss-btn:not(.ghost):hover { background: var(--amber); border-color: var(--amber); color: var(--paper); }
+  .ss-section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+  .ss-head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 34px; align-items: end; margin: 8px 0 24px; }
+  .ss-head h2 { font: 500 clamp(1.6rem, 3vw, 2.2rem)/1.45 var(--serif); margin: 0; }
+  .ss-head > p { font-size: 13px; line-height: 1.95; color: var(--ink-3); margin: 0; max-width: 520px; }
+  .ss-theses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .ss-thesis-card, .ss-paradigm, .ss-evidence article { border: 1px solid var(--line); background: var(--card); padding: 22px; }
+  .ss-thesis-card h3 { font: 500 1.35rem/1.5 var(--serif); margin: 8px 0 8px; }
+  .ss-thesis-card p { font-size: 13px; line-height: 1.95; color: var(--ink-2); margin: 0; }
+  .ss-no { font: 11px var(--mono); letter-spacing: .12em; color: var(--amber); }
+  .ss-paradigms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .ss-paradigm h3 { font: 500 1.16rem/1.5 var(--serif); margin: 6px 0 2px; }
+  .ss-paradigm p { font-size: 12.5px; line-height: 1.85; color: var(--ink-2); margin: 4px 0 0; }
+  .ss-figures { display: flex; flex-direction: column; gap: 6px; }
+  .ss-paradigm .ss-figures { color: var(--ink-3); font-size: 11px; margin: 0 0 6px; }
+  .ss-paradigm .ss-limit { color: var(--ink-3); font-size: 11.5px; }
+  .ss-chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 36px; }
+  .ss-chapters li { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .ss-ch-no { flex: 0 0 46px; font: 12px var(--mono); color: var(--amber); padding-top: 3px; }
+  .ss-chapters h3 { font: 500 1.05rem/1.55 var(--serif); margin: 0 0 4px; }
+  .ss-chapters p { font-size: 12.5px; line-height: 1.85; color: var(--ink-3); margin: 0; }
+  .ss-tag { display: inline-block; margin-left: 8px; padding: 1px 6px; border: 1px solid var(--line-strong); font: 10px var(--sans); color: var(--ink-3); vertical-align: 2px; }
+  .ss-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .ss-figures figure { margin: 0; border: 1px solid var(--line); background: var(--card); padding: 10px; }
+  .ss-figures img { display: block; width: 100%; height: auto; }
+  .ss-figures figcaption { font-size: 12px; line-height: 1.8; color: var(--ink-3); padding: 7px 3px 1px; }
+  .ss-figures figcaption span { color: var(--amber); font: 10px var(--mono); margin-right: 6px; }
+  .ss-figures figcaption small { display: block; font-size: 10.5px; color: var(--ink-3); }
+  .ss-evidence { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .ss-evidence p { font-size: 12.5px; line-height: 1.9; color: var(--ink-2); margin: 6px 0 0; }
+  .ss-note { font-size: 12px; line-height: 1.9; color: var(--ink-3); margin: 16px 0 0; }
+  .ss-film { background: linear-gradient(90deg, var(--amber-faint), transparent 70%); }
+  .ss-link { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: var(--amber); text-decoration: none; }
+  .ss-foot { padding-top: 24px; color: var(--ink-3); font-size: 11.5px; line-height: 1.9; }
+  .ss-foot p { margin: 4px 0; }
+
+  .ss-tts { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: flex; gap: 8px; align-items: center; }
+  .ss-tts button { appearance: none; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font: 13px var(--sans); padding: 10px 14px; border-radius: 999px; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.16); }
+  .ss-tts button:hover { border-color: var(--amber); background: var(--amber); }
+  .ss-tts button[hidden] { display: none; }
+  .ss-tts-icon { margin-right: 6px; font-size: 11px; }
+  .ss-tts-active { background: var(--amber-faint) !important; box-shadow: inset 3px 0 0 var(--amber); }
+  @media print { .ss-tts { display: none !important; } }
+  @media (max-width: 900px) {
+    .ss-head { grid-template-columns: 1fr; gap: 12px; }
+    .ss-theses, .ss-paradigms, .ss-evidence { grid-template-columns: 1fr 1fr; }
+    .ss-thesis-card:last-child, .ss-paradigm:last-child, .ss-evidence article:last-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 680px) {
+    .ss-hero { padding-top: 36px; }
+    .ss-theses, .ss-paradigms, .ss-evidence, .ss-chapters, .ss-figures { grid-template-columns: 1fr; }
+    .ss-thesis-card:last-child, .ss-paradigm:last-child, .ss-evidence article:last-child { grid-column: auto; }
+    .ss-chapters { gap: 0; }
+    .ss-btn { width: 100%; text-align: center; }
+  }
+
+
+
+</style>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('.ss-page');
+    const toggle = document.getElementById('ss-tts-toggle');
+    const stop = document.getElementById('ss-tts-stop');
+    if (!root || !toggle || !stop) return;
+    if (!('speechSynthesis' in window)) { toggle.hidden = true; return; }
+
+    let blocks = [];
+    let index = 0;
+    let speaking = false;
+    let paused = false;
+    let current = null;
+    let utterance = null;
+
+    const clearActive = () => {
+      root.querySelectorAll('.ss-tts-active').forEach(el => el.classList.remove('ss-tts-active'));
+    };
+    const update = (label, isSpeaking, isPaused) => {
+      toggle.querySelector('.ss-tts-label').textContent = label;
+      toggle.setAttribute('aria-pressed', String(isSpeaking));
+      stop.hidden = !isSpeaking;
+      speaking = isSpeaking;
+      paused = isPaused;
+    };
+    const voice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      return voices.find(v => /^zh(-|_)/i.test(v.lang)) || voices.find(v => /Chinese|Mandarin|中文|普通话/i.test(v.name)) || null;
+    };
+    const collect = () => {
+      blocks = [];
+      root.querySelectorAll('h2, h3, p, li').forEach(el => {
+        if (el.closest('.ss-actions, .ss-foot, .ss-tts, figure, nav, .ss-meta')) return;
+        const text = (el.innerText || '').replace(/\s+/g, ' ').trim();
+        if (text.length > 8) blocks.push({ el, text });
+      });
+    };
+    const finish = () => {
+      clearActive();
+      current = null;
+      utterance = null;
+      update('朗读', false, false);
+    };
+    const speakAt = (i) => {
+      if (i >= blocks.length) { finish(); return; }
+      index = i;
+      current = blocks[i];
+      clearActive();
+      current.el.classList.add('ss-tts-active');
+      current.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      utterance = new SpeechSynthesisUtterance(current.text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.95;
+      utterance.pitch = 1;
+      const v = voice();
+      if (v) utterance.voice = v;
+      utterance.onend = () => {
+        if (!speaking) return;
+        if (paused) return;
+        speakAt(index + 1);
+      };
+      utterance.onerror = () => {
+        if (!speaking) return;
+        speakAt(index + 1);
+      };
+      window.speechSynthesis.speak(utterance);
+    };
+    const start = () => {
+      collect();
+      if (!blocks.length) return;
+      window.speechSynthesis.cancel();
+      update('暂停', true, false);
+      speakAt(0);
+    };
+
+    toggle.addEventListener('click', () => {
+      if (!speaking) { start(); return; }
+      if (!paused) {
+        window.speechSynthesis.pause();
+        update('继续', true, true);
+      } else {
+        window.speechSynthesis.resume();
+        update('暂停', true, false);
+      }
+    });
+    stop.addEventListener('click', () => {
+      window.speechSynthesis.cancel();
+      finish();
+    });
+    window.addEventListener('pagehide', () => window.speechSynthesis.cancel(), { once: true });
+  })();
+</script>
+

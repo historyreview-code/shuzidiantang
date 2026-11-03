@@ -27,6 +27,25 @@ const huanghe = works.find((work) => work.id === 'huanghe')!;
       </div>
     </section>
 
+    <section class="section shaman-feature" aria-label="萨满研究">
+      <div class="section-head">
+        <div>
+          <span class="kicker">文化研究 · 图文专著</span>
+          <h2>萨满：与看不见的世界打交道</h2>
+        </div>
+        <p class="section-side-note">从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究；12 章、约 9.1 万字、16 幅图，附术语表、年表与来源。</p>
+      </div>
+      <a class="shaman-study-card" href="/research/shamanism-study">
+        <img src="/research/shamanism/research/figures/fig-03-relations.png" alt="萨满关系语法示意图" width="1000" height="820" loading="lazy" />
+        <div class="shaman-study-copy">
+          <span class="kicker">研究框架版 · 2026.11</span>
+          <h3>关系、权威与历史</h3>
+          <p>不是「萨满教是什么」，而是「萨满实践在做什么」：六次范式、14 节目录、9 幅示意图与 3 幅图版；可下载 EPUB/PDF 研究稿。</p>
+          <span class="shaman-study-link">进入研究页 <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+    </section>
+
     <section class="section" aria-label="其他专题">
       <div class="section-head">
         <div>
@@ -66,6 +85,15 @@ const huanghe = works.find((work) => work.id === 'huanghe')!;
   </main>
 </BaseLayout>
 <style>
+
+  .shaman-feature{padding-top:24px}
+  .shaman-study-card{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:32px;align-items:center;padding:24px;border:1px solid var(--line);background:var(--card);border-radius:5px;color:var(--ink);text-decoration:none;transition:border-color .2s ease,transform .2s ease}
+  .shaman-study-card:hover{border-color:var(--amber);transform:translateY(-2px)}
+  .shaman-study-card > img{display:block;width:100%;height:auto;border:1px solid var(--line);background:#f8f4ea}
+  .shaman-study-copy h3{font:600 clamp(24px,2.6vw,32px)/1.45 var(--serif);margin:10px 0 12px}
+  .shaman-study-copy p{font-size:14px;line-height:1.95;color:var(--ink-2)}
+  .shaman-study-link{display:inline-flex;gap:8px;margin-top:8px;font-size:13px;color:var(--amber)}
+  @media(max-width:820px){.shaman-study-card{grid-template-columns:1fr;gap:20px;padding:16px}}
   .research-archive{display:grid;gap:24px}
   .research-title{padding-bottom:16px}
   .research-feature .section-head h2{font:600 30px/1.4 var(--serif);margin:8px 0 0}

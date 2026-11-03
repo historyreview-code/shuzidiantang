@@ -1,0 +1,276 @@
+{
+  "meta": {
+    "title": "萨满：与看不见的世界打交道",
+    "workingTitle": "萨满：一种关系的历史",
+    "subtitle": "从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究",
+    "kicker": "文化研究 · 图文专著",
+    "thesis": "不是「萨满教是什么」，而是「萨满实践在做什么」：关系、权威、历史，三条线索互相牵制。",
+    "words": 91459,
+    "chapters": 12,
+    "sources": 180,
+    "date": "2026-11",
+    "status": "研究初稿 · 待审校",
+    "epub": "/research/shamanism/research/downloads/shaman-research-v2.6.epub",
+    "pdf": "/research/shamanism/research/downloads/shaman-research-v2.6.pdf"
+  },
+  "theses": [
+    {
+      "no": "01",
+      "label": "关系",
+      "title": "关系先于信仰",
+      "text": "灵、祖先、动物、山川是关系中的主体；萨满的工作是结盟、交换、义务、修复，而不是宣讲教义。"
+    },
+    {
+      "no": "02",
+      "label": "权威",
+      "title": "权威先于个人",
+      "text": "萨满的权威由家族、社区、国家、市场共同生产；继承、选召、学习，传统、魅力、制度，彼此冲突又共存。"
+    },
+    {
+      "no": "03",
+      "label": "历史",
+      "title": "历史先于残余",
+      "text": "萨满传统不是史前活化石，而是在帝国、殖民、国家、市场与遗产制度中不断被重组的历史产物。"
+    }
+  ],
+  "paradigms": [
+    {
+      "no": "01",
+      "name": "西伯利亚民族志",
+      "figures": "史禄国、博戈拉兹",
+      "claim": "萨满是社会角色、精灵的主人；经验民族志的基础。",
+      "limit": "区域性强、功能主义，对历史与国家关注不足。"
+    },
+    {
+      "no": "02",
+      "name": "比较宗教学",
+      "figures": "伊利亚德",
+      "claim": "萨满教是古老的出神技术：灵魂旅行、宇宙轴、入门。",
+      "limit": "无田野、二手材料、去历史，排除附体传统。"
+    },
+    {
+      "no": "03",
+      "name": "社会功能 / 治疗",
+      "figures": "列维-斯特劳斯、特纳、肯德尔",
+      "claim": "效力在社会关系、治疗与权力位置。",
+      "limit": "功能解释易循环，象征效力难证伪。"
+    },
+    {
+      "no": "04",
+      "name": "认知 / 文化演化",
+      "figures": "温克尔曼、辛格",
+      "claim": "意识改变状态、说服技术、文化适应。",
+      "limit": "易还原，操作化依赖二手材料。"
+    },
+    {
+      "no": "05",
+      "name": "本体论 / 泛灵论",
+      "figures": "德斯科拉、维韦罗斯·德·卡斯特罗、威勒斯列夫",
+      "claim": "萨满实践是人与非人存在的关系技术。",
+      "limit": "容易制造新本质，对权力、国家关注不足。"
+    },
+    {
+      "no": "06",
+      "name": "概念史 / 后殖民",
+      "figures": "基霍、赫顿、兹纳缅斯基",
+      "claim": "「萨满教」是西方发明/殖民知识生产的范畴。",
+      "limit": "批判强于建设；比较单位仍需辩护。"
+    }
+  ],
+  "chapters": [
+    {
+      "no": "导论",
+      "title": "为什么「萨满」难以下定义",
+      "question": "从一部小说、一座墓、一场祭、一面鼓进入；三条线索与研究方法。",
+      "china": false
+    },
+    {
+      "no": "01",
+      "title": "西伯利亚的发现：词、旅行者与民族志",
+      "question": "「萨满」一词怎样旅行？早期记录者如何把地方实践变成比较范畴？",
+      "china": true
+    },
+    {
+      "no": "02",
+      "title": "出神的普世化：伊利亚德与比较宗教学",
+      "question": "伊利亚德做对了什么，又丢掉了什么？",
+      "china": false
+    },
+    {
+      "no": "03",
+      "title": "谁发明了萨满教：批判、重构与中国学术史",
+      "question": "如果「萨满教」是发明的，还能比较吗？中国学界如何回应？",
+      "china": true
+    },
+    {
+      "no": "04",
+      "title": "灵与主人：非人存在的社会性",
+      "question": "萨满打交道的「灵」，是信仰对象，还是关系中的主体？",
+      "china": true
+    },
+    {
+      "no": "05",
+      "title": "出神、附体与仪式：效力从哪里来",
+      "question": "鼓、歌、舞、衣、空间、供物如何工作？效力有几层？",
+      "china": true
+    },
+    {
+      "no": "06",
+      "title": "治疗、不幸与共同体",
+      "question": "萨满为什么首先是「治病的人」？治疗的对象是身体、社会，还是意义？",
+      "china": true
+    },
+    {
+      "no": "07",
+      "title": "权威、性别与制度：谁有资格做萨满",
+      "question": "萨满的权威从哪里来？谁被允许说话？",
+      "china": true
+    },
+    {
+      "no": "08",
+      "title": "北亚：狩猎、游牧与联盟",
+      "question": "为什么北亚萨满实践常以「联盟」为核心？",
+      "china": false
+    },
+    {
+      "no": "09",
+      "title": "中国东北：家族、村社与国家",
+      "question": "满、赫哲、鄂伦春、鄂温克、达斡尔、锡伯、蒙古，以及跳大神/出马仙，如何与萨满传统相遇？",
+      "china": true
+    },
+    {
+      "no": "10",
+      "title": "东亚：宫廷、巫俗与海洋",
+      "question": "清宫、朝鲜巫俗、济州海女祭，如何把「萨满」放进不同制度？",
+      "china": true
+    },
+    {
+      "no": "11",
+      "title": "环北极与美洲：殖民、收藏与归还",
+      "question": "殖民主义如何改变萨满传统的物质、档案与叙述条件？",
+      "china": false
+    },
+    {
+      "no": "12",
+      "title": "现代性：市场、疗愈与遗产",
+      "question": "当「萨满」变成疗愈商品、非遗项目、旅游体验，谁有权力定义它？",
+      "china": true
+    },
+    {
+      "no": "结论",
+      "title": "三个克制与一个议程",
+      "question": "不普世化、不把仪式当超自然证明、不把活态冻结成原始；中国与东北亚的研究议程。",
+      "china": true
+    }
+  ],
+  "figures": [
+    {
+      "no": "1",
+      "src": "/research/shamanism/research/figures/fig-01-word-travel.png",
+      "caption": "「萨满」一词的旅行",
+      "credit": "原创示意图；词源与路线为示意"
+    },
+    {
+      "no": "2",
+      "src": "/research/shamanism/research/figures/fig-02-academic-genealogy.png",
+      "caption": "六次范式转换（与中国学术史对照）",
+      "credit": "原创示意图"
+    },
+    {
+      "no": "3",
+      "src": "/research/shamanism/research/figures/fig-03-relations.png",
+      "caption": "关系的语法：萨满在做什么",
+      "credit": "原创示意图"
+    },
+    {
+      "no": "4",
+      "src": "/research/shamanism/research/figures/fig-04-ritual-flow.png",
+      "caption": "一场仪式的流程",
+      "credit": "原创示意图"
+    },
+    {
+      "no": "5",
+      "src": "/research/shamanism/research/figures/fig-05-authority.png",
+      "caption": "权威从哪里来",
+      "credit": "原创示意图"
+    },
+    {
+      "no": "6",
+      "src": "/research/shamanism/research/figures/fig-06-three-scenes.png",
+      "caption": "三种制度场景：宫廷、巫俗、海洋",
+      "credit": "原创示意图"
+    },
+    {
+      "no": "7",
+      "src": "/research/shamanism/research/figures/fig-07-north-asia-map.png",
+      "caption": "北亚：狩猎、游牧与联盟",
+      "credit": "Natural Earth 底图；点位为示意"
+    },
+    {
+      "no": "8",
+      "src": "/research/shamanism/research/figures/fig-08-china-northeast-map.png",
+      "caption": "中国东北与锡伯西迁",
+      "credit": "Natural Earth 底图；路线为示意"
+    },
+    {
+      "no": "9",
+      "src": "/research/shamanism/research/figures/fig-09-circumpolar-map.png",
+      "caption": "环北极与白令：迁徙、交往与殖民",
+      "credit": "Natural Earth 底图；点位为示意"
+    },
+    {
+      "no": "10",
+      "src": "/research/shamanism/research/figures/fig-10-hilazon-burial.png",
+      "caption": "希拉宗墓葬示意",
+      "credit": "原创示意图；非复原，据 Grosman et al. 2008 简化"
+    },
+    {
+      "no": "11",
+      "src": "/research/shamanism/research/figures/fig-11-kuninggong-plan.png",
+      "caption": "坤宁宫萨满祭祀空间示意",
+      "credit": "原创平面示意；非建筑复原图"
+    },
+    {
+      "no": "12",
+      "src": "/research/shamanism/research/figures/fig-12-drum-line.png",
+      "caption": "萨满鼓与法器形制示意",
+      "credit": "原创示意图；不复制具体圣物图案"
+    }
+  ],
+  "evidence": [
+    {
+      "label": "事实",
+      "text": "谁在何时、何地、做了什么。例：希拉宗墓葬距今约 1.2 万年，随葬约 50 具陆龟壳。"
+    },
+    {
+      "label": "解释",
+      "text": "学者如何理解。例：发掘者认为这位女性是「萨满式仪式专家」。"
+    },
+    {
+      "label": "信念",
+      "text": "参与者相信什么。例：参与者相信萨满能与神灵沟通。"
+    }
+  ],
+  "archive": [
+    {
+      "src": "/research/shamanism/research/archive/1907-evenki-family.jpg",
+      "caption": "1907 年鄂温克萨满家庭",
+      "credit": "A. A. Makarenko 摄；俄罗斯民族志博物馆藏；公共领域"
+    },
+    {
+      "src": "/research/shamanism/research/archive/goldi-shaman-assistant.jpg",
+      "caption": "赫哲（Goldi）萨满与助手",
+      "credit": "Library of Congress；公共领域"
+    },
+    {
+      "src": "/research/shamanism/research/archive/oroqen-chuonnasuan-1994.jpg",
+      "caption": "鄂伦春萨满楚农那苏恩，1994",
+      "credit": "Richard Noll 摄；公共领域"
+    },
+    {
+      "src": "/research/shamanism/research/archive/sami-drum-manker.png",
+      "caption": "萨米鼓线描（Manker）",
+      "credit": "Ernst Manker 绘；公共领域"
+    }
+  ]
+}
