@@ -36,7 +36,12 @@
     },
     {
       "source": "/notes/2026-10-30-ai-writing-ebook.html",
-      "destination": "/notes/2026-10-30-ai-writing-ebook-v2.html",
+      "destination": "/notes/2026-10-30-ai-writing-ebook-v3.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-10-30-ai-writing-ebook-v2.html",
+      "destination": "/notes/2026-10-30-ai-writing-ebook-v3.html",
       "statusCode": 301
     }
   ]
