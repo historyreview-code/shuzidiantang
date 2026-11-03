@@ -50,6 +50,7 @@ a{color:var(--amber);text-underline-offset:3px}
 .r-tts button{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:9px 13px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.14)}
 .r-tts button:hover{background:var(--amber);border-color:var(--amber)}
 .r-tts button[hidden]{display:none}
+.r-tts-status{font-family:"PingFang SC","Noto Sans SC",sans-serif;font-size:11px;color:var(--ink-3);background:rgba(242,234,219,.94);padding:5px 8px;border:1px solid var(--line);border-radius:3px;max-width:220px;line-height:1.5}
 .r-tts-active{background:var(--amber-faint)!important;box-shadow:inset 3px 0 0 var(--amber)}
 @media(max-width:760px){.r-main{padding:24px 18px 100px;width:100%}.r-body{font-size:16px}.r-index-list{grid-template-columns:1fr}.r-index-list h3{font-size:15px}.r-head-in{padding:10px 16px;gap:8px}.r-head-in span{max-width:52%}.r-title{font-size:26px}.r-nav{flex-direction:column}.r-nav a{max-width:none}}
 @media print{.r-head,.r-tts,.r-nav{display:none}.r-main{max-width:none;padding:0}.r-body{font-size:11pt}}

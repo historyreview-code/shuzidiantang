@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>环北极与美洲：殖民、收藏与归还 · 萨满研究</title>
 <link rel="stylesheet" href="/research/shamanism/research/read/reader.css">
-</head><body>
+</head><body data-chapter="11">
 <header class="r-head"><div class="r-head-in"><a href="/research/shamanism-study/">← 研究页</a><span>第 11 章 · 萨满：与看不见的世界打交道</span><a href="/research/shamanism/research/read/">目录</a></div></header>
 <main class="r-main">
 <div class="r-kicker">第 11 章</div>
@@ -122,54 +122,76 @@
 <nav class="r-nav"><a href="../10/"><small>上一章</small>东亚：宫廷、巫俗与海洋</a><a href="../12/" style="text-align:right"><small>下一章</small>现代性：市场、疗愈与遗产</a></nav>
 <p class="r-foot">《萨满：与看不见的世界打交道》· 从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究 · 劳伦斯实验室</p>
 </main>
-<div class="r-tts"><button id="r-tts-toggle" type="button" aria-pressed="false"><span class="r-tts-label">朗读</span></button><button id="r-tts-stop" type="button" hidden>停止</button></div>
+<div class="r-tts"><span id="r-tts-status" aria-live="polite"></span><button id="r-tts-toggle" type="button" aria-pressed="false"><span class="r-tts-label">朗读</span></button><button id="r-tts-stop" type="button" hidden>停止</button></div>
 
 <script>
 (() => {
   const root = document.querySelector('.r-body');
   const toggle = document.getElementById('r-tts-toggle');
   const stop = document.getElementById('r-tts-stop');
+  const status = document.getElementById('r-tts-status');
   if (!root || !toggle || !stop) return;
-  if (!('speechSynthesis' in window)) { toggle.hidden = true; return; }
-  let blocks = [], index = 0, speaking = false, paused = false, current = null, utterance = null;
-  const clear = () => root.querySelectorAll('.r-tts-active').forEach(el => el.classList.remove('r-tts-active'));
-  const update = (label, isSpeaking, isPaused) => {
-    toggle.querySelector('.r-tts-label').textContent = label;
-    toggle.setAttribute('aria-pressed', String(isSpeaking));
-    stop.hidden = !isSpeaking; speaking = isSpeaking; paused = isPaused;
+  const chapterId = document.body.dataset.chapter || '';
+  const audio = new Audio();
+  audio.preload = 'auto';
+  let blocks = null, index = 0, started = false, busy = false, objectUrl = null;
+  const prefetch = new Map();
+  const setStatus = (s) => { if (status) status.textContent = s; };
+  const label = (s) => { const el = toggle.querySelector('.r-tts-label'); if (el) el.textContent = s; };
+  const reset = () => {
+    audio.pause(); audio.removeAttribute('src'); audio.load();
+    if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
+    started = false; busy = false; index = 0; label('朗读'); stop.hidden = true; setStatus('');
   };
-  const voice = () => {
-    const voices = window.speechSynthesis.getVoices();
-    return voices.find(v => /^zh(-|_)/i.test(v.lang)) || voices.find(v => /Chinese|Mandarin|中文|普通话/i.test(v.name)) || null;
+  const manifest = async () => {
+    if (!blocks) {
+      const r = await fetch('/research/shamanism/research/read/audio-index.json', {cache: 'force-cache'});
+      if (!r.ok) throw new Error('manifest');
+      const data = await r.json();
+      const ch = data.chapters.find(x => x.id === chapterId);
+      blocks = ch ? ch.blocks : [];
+    }
+    return blocks;
   };
-  const collect = () => {
-    blocks = [];
-    root.querySelectorAll('h2, h3, p, li').forEach(el => {
-      if (el.closest('.footnotes, figure, nav, .r-nav')) return;
-      const text = (el.innerText || '').replace(/\s+/g, ' ').trim();
-      if (text.length > 8) blocks.push({ el, text });
-    });
+  const getBlock = async (id) => {
+    if (!prefetch.has(id)) {
+      prefetch.set(id, fetch('/api/shaman/speech?block=' + encodeURIComponent(id)).then(r => {
+        if (!r.ok) throw new Error('speech');
+        return r.blob();
+      }));
+    }
+    return prefetch.get(id);
   };
-  const finish = () => { clear(); current = null; utterance = null; update('朗读', false, false); };
-  const speakAt = (i) => {
-    if (i >= blocks.length) { finish(); return; }
-    index = i; current = blocks[i]; clear(); current.el.classList.add('r-tts-active');
-    current.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    utterance = new SpeechSynthesisUtterance(current.text);
-    utterance.lang = 'zh-CN'; utterance.rate = 0.95; utterance.pitch = 1;
-    const v = voice(); if (v) utterance.voice = v;
-    utterance.onend = () => { if (!speaking || paused) return; speakAt(index + 1); };
-    utterance.onerror = () => { if (!speaking) return; speakAt(index + 1); };
-    window.speechSynthesis.speak(utterance);
+  const playIndex = async (i) => {
+    const list = await manifest();
+    if (!list.length) throw new Error('empty');
+    if (i >= list.length) { reset(); return; }
+    index = i; busy = true; started = true; stop.hidden = false;
+    label('暂停'); setStatus(`正在准备第 ${i + 1}/${list.length} 段…`);
+    const blob = await getBlock(list[i].id);
+    if (!started) return;
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    objectUrl = URL.createObjectURL(blob);
+    audio.src = objectUrl;
+    busy = false;
+    try { await audio.play(); } catch (e) { label('继续'); setStatus('点一下「继续」开始播放。'); }
+    if (i + 1 < list.length) getBlock(list[i + 1].id).catch(() => {});
   };
-  const start = () => { collect(); if (!blocks.length) return; window.speechSynthesis.cancel(); update('暂停', true, false); speakAt(0); };
+  const start = async () => {
+    try { await manifest(); await playIndex(0); }
+    catch (e) { started = false; label('重试'); setStatus('语音服务暂不可用，请稍后重试。'); stop.hidden = true; }
+  };
   toggle.addEventListener('click', () => {
-    if (!speaking) { start(); return; }
-    if (!paused) { window.speechSynthesis.pause(); update('继续', true, true); }
-    else { window.speechSynthesis.resume(); update('暂停', true, false); }
+    if (busy) return;
+    if (!started) { start(); return; }
+    if (!audio.paused) { audio.pause(); label('继续'); setStatus('已暂停'); }
+    else { audio.play().then(() => { label('暂停'); setStatus(`第 ${index + 1}/${blocks.length} 段`); }).catch(() => {}); }
   });
-  stop.addEventListener('click', () => { window.speechSynthesis.cancel(); finish(); });
-  window.addEventListener('pagehide', () => window.speechSynthesis.cancel(), { once: true });
+  stop.addEventListener('click', reset);
+  audio.addEventListener('ended', () => { if (started) playIndex(index + 1).catch(() => reset()); });
+  audio.addEventListener('error', () => { setStatus('音频加载失败，请重试。'); label('重试'); started = false; });
+  audio.addEventListener('play', () => { if (blocks) setStatus(`第 ${index + 1}/${blocks.length} 段`); });
+  window.addEventListener('pagehide', () => { audio.pause(); if (objectUrl) URL.revokeObjectURL(objectUrl); }, {once: true});
 })();
 </script>
 
