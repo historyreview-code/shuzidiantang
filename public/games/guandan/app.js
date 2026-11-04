@@ -110,9 +110,9 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   function fitHand(){
     const el=document.querySelector('.flat-hand.stacked');if(!el)return;
     const units=[...el.querySelectorAll('.hand-card-unit')];if(!units.length)return;
-    const docW=document.documentElement.clientWidth||window.innerWidth||390;
-    const parentW=(el.parentElement&&el.parentElement.clientWidth)||el.clientWidth||docW;
-    const W=Math.max(240,Math.min(parentW,docW-20));
+    const vw=(window.visualViewport&&window.visualViewport.width)||document.documentElement.clientWidth||window.innerWidth||390;
+    const parentW=(el.parentElement&&el.parentElement.clientWidth)||el.clientWidth||vw;
+    const W=Math.max(240,Math.min(parentW,vw-20));
     el.style.maxWidth=W+'px';el.style.width=W+'px';el.style.overflow='visible';
     const narrow=W<=520;const cw=narrow?40:52;
     const gap=narrow?Math.max(8,Math.min(14,(W-cw-8)/Math.max(1,units.length-1))):Math.max(10,Math.min(cw-10,(W-cw-8)/Math.max(1,units.length-1)));
