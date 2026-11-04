@@ -4,14 +4,14 @@
     "workingTitle": "萨满：一种关系的历史",
     "subtitle": "从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究",
     "kicker": "文化研究 · 图文专著",
-    "thesis": "不是「萨满教是什么」，而是「萨满实践在做什么」：往来、权威、历史，三条线索互相牵制。",
-    "words": 91586,
+    "thesis": "不是「萨满教是什么」，而是「萨满传统在做什么」：通神、权威、历史，三条线索互相牵制。",
+    "words": 91841,
     "chapters": 12,
     "sources": 180,
     "date": "2026-11",
     "status": "研究初稿 · 待审校",
-    "epub": "/research/shamanism/research/downloads/shaman-research-v2.9.epub",
-    "pdf": "/research/shamanism/research/downloads/shaman-research-v2.9.pdf",
+    "epub": "/research/shamanism/research/downloads/shaman-research-v3.0.epub",
+    "pdf": "/research/shamanism/research/downloads/shaman-research-v3.0.pdf",
     "tags": [
       "萨满：与看不见的世界打交道",
       "从西伯利亚到东亚，兼及环北极与美洲的萨满传统研究"
@@ -22,9 +22,9 @@
   "theses": [
     {
       "no": "01",
-      "label": "往来",
-      "title": "往来先于信仰",
-      "text": "灵、祖先、动物、山川是往来中的一方；萨满的工作是结盟、交换、义务、修复，而不是宣讲教义。"
+      "label": "通神",
+      "title": "通神先于信仰",
+      "text": "萨满的核心不是宣讲教义，而是与超自然力量沟通、求取、交涉；灵、祖先、动物、山川是通神所面对的一方。"
     },
     {
       "no": "02",
@@ -58,7 +58,7 @@
       "no": "03",
       "name": "社会功能 / 治疗",
       "figures": "列维-斯特劳斯、特纳、肯德尔",
-      "claim": "效力在社会往来、治疗与权力位置。",
+      "claim": "效力在社会关系、治疗与权力位置。",
       "limit": "功能解释易循环，象征效力难证伪。"
     },
     {
@@ -72,7 +72,7 @@
       "no": "05",
       "name": "本体论 / 泛灵论",
       "figures": "德斯科拉、维韦罗斯·德·卡斯特罗、威勒斯列夫",
-      "claim": "萨满实践是人与非人存在之间的往来技术。",
+      "claim": "萨满传统是人与超自然力量之间的通神技术。",
       "limit": "容易制造新本质，对权力、国家关注不足。"
     },
     {
@@ -94,7 +94,7 @@
     {
       "no": "01",
       "title": "西伯利亚的发现：词、旅行者与民族志",
-      "question": "「萨满」一词怎样旅行？早期记录者如何把地方实践变成比较范畴？",
+      "question": "「萨满」一词怎样旅行？早期记录者如何把地方传统变成比较范畴？",
       "china": true,
       "slug": "01"
     },
@@ -114,8 +114,8 @@
     },
     {
       "no": "04",
-      "title": "灵与主人：非人存在的社会性",
-      "question": "萨满打交道的「灵」，是信仰对象，还是往来中的主体？",
+      "title": "灵与主人：萨满所面对的世界",
+      "question": "萨满打交道的「灵」，是信仰对象，还是通神所面对的一方？",
       "china": true,
       "slug": "04"
     },
@@ -143,7 +143,7 @@
     {
       "no": "08",
       "title": "北亚：狩猎、游牧与联盟",
-      "question": "为什么北亚萨满实践常以「联盟」为核心？",
+      "question": "为什么北亚萨满传统常以「联盟」为核心？",
       "china": false,
       "slug": "08"
     },
@@ -199,7 +199,7 @@
     {
       "no": "3",
       "src": "/research/shamanism/research/figures/fig-03-relations.png",
-      "caption": "往来的语法：萨满在做什么",
+      "caption": "通神的语法：萨满在做什么",
       "credit": "原创示意图"
     },
     {

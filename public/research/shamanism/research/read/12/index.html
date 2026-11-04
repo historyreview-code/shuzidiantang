@@ -7,7 +7,7 @@
 <main class="r-main">
 <div class="r-kicker">第 12 章</div>
 <h1 class="r-title">现代性：市场、疗愈与遗产</h1>
-<div class="r-meta">研究稿 v2.9 · 在线试读 · 引用请以 EPUB/PDF 为准</div>
+<div class="r-meta">研究稿 v3.0 · 在线试读 · 引用请以 EPUB/PDF 为准</div>
 <article class="r-body"><p>一个城市消费者，报名参加周末的「萨满疗愈工作坊」：两天课程，学鼓、学「旅程」、学「与力量动物相遇」；收费不低，宣传语是「找回你内在的萨满」。这样的场景，在今天的都市里并不罕见。它和西伯利亚的帐篷、朝鲜的巫堂、清宫的坤宁宫，有什么相干？<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <p>也许有，也许没有。工作坊的导师可能真的学过某种传统，也可能只是把几本书、几段视频、几次旅行拼在一起；参与者可能真的感到放松、被安慰，也可能只是买了一次「异域体验」。这就是「现代萨满主义」的复杂性：它既可以是真实的灵性实践，也可以是商业化的文化挪用；既可以让边缘传统获得可见度，也可以把复杂的仪式简化为商品。</p>
 <p>本章要说明：<strong>「萨满」在当代，不只是一个「传统」，还是一个市场、一种遗产、一个政治资源、一个身份标签。</strong> 谁在定义它、谁在消费它、谁在保护它、谁在反对它？这些问题是理解当代萨满的关键。</p>
@@ -129,7 +129,7 @@
   const chapterId = document.body.dataset.chapter || '';
   const audio = new Audio();
   audio.preload = 'auto';
-  let blocks = null, index = 0, started = false, busy = false, objectUrl = null;
+  let blocks = null, index = 0, started = false, busy = false, objectUrl = null, ttsVersion = '3.0';
   const prefetch = new Map();
   const setStatus = (s) => { if (status) status.textContent = s; };
   const label = (s) => { const el = toggle.querySelector('.r-tts-label'); if (el) el.textContent = s; };
@@ -143,6 +143,7 @@
       const r = await fetch('/research/shamanism/research/read/audio-index.json', {cache: 'force-cache'});
       if (!r.ok) throw new Error('manifest');
       const data = await r.json();
+      ttsVersion = data.version || ttsVersion;
       const ch = data.chapters.find(x => x.id === chapterId);
       blocks = ch ? ch.blocks : [];
     }
@@ -150,7 +151,7 @@
   };
   const getBlock = async (id) => {
     if (!prefetch.has(id)) {
-      prefetch.set(id, fetch('/api/shaman/speech?block=' + encodeURIComponent(id)).then(r => {
+      prefetch.set(id, fetch('/api/shaman/speech?block=' + encodeURIComponent(id) + '&v=' + encodeURIComponent(ttsVersion)).then(r => {
         if (!r.ok) throw new Error('speech');
         return r.blob();
       }));
