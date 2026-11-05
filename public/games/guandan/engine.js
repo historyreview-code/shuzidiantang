@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,shedSmallLead:1,bombLeadHold:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,shedSmallLead:1,bombLeadHold:1,patientPass:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -812,6 +812,20 @@
       if(oppMinB2>3){
         const plain=rows.filter(r=>r.move&&bombTier(r.move)===0);
         if(plain.length)rows=plain;
+      }
+    }
+    // 隐忍过牌：对手出中档牌型、局面不急时，不为了压住而过度消耗大牌/拆结构，让对手先出
+    if(W.patientPass && o.trick && o.trick.seat%2!==o.seat%2 && bombTier(o.trick.move)===0 && o.trick.move.power>=10 && o.trick.move.power<=13 && o.hand.length>8 && !rows.some(r=>r.finish)){
+      const oppMinP=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
+      if(oppMinP>5){
+        const beats=rows.filter(r=>r.move&&bombTier(r.move)===0);
+        const cheap=beats.filter(r=>r.move.power<=o.trick.move.power+3&&!r.move.ids.some(id=>wild(INDEX[id],o.level))&&!(r.breakBomb>0)&&!(r.breakFlush));
+        if(cheap.length){
+          rows=cheap.concat(rows.filter(r=>!cheap.includes(r)));
+        }else if(beats.length){
+          const passRow=rows.find(r=>!r.move);
+          if(passRow)rows=[passRow];
+        }
       }
     }
     const best=rows[0];
