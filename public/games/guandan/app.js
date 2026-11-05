@@ -253,7 +253,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   }
   const luckyLead=(seed,level)=>{
     const probe=G.deal(seed,level,0);
-    const seat=probe.hands.findIndex(h=>h.some(c=>c.id==='0S14'));
+    const seat=probe.hands.findIndex(h=>h.some(c=>c.id==='0S3'));
     return seat>=0?seat:0;
   };
   function newModal(){openModal(`<div class="eyebrow">SINGLE PLAYER</div><h2>升级赛</h2><p class="subtle">从打 2 开始，按名次升级；打到 A 后可继续下一圈。</p><label class="setting-row"><span>进贡还贡</span><input id="prog-tribute-toggle" type="checkbox" ${db.progress&&db.progress.tribute?'checked':''}></label><div class="menu-actions"><button class="button" data-action="closeModal">取消</button><button class="button primary" data-action="startProgression">开始升级赛</button></div>`);}
@@ -267,7 +267,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   function startProgression(){const tr=$('#prog-tribute-toggle');const useTribute=tr?!!tr.checked:false;const startLevel=2;
     archive();closeModal();db.progress={active:true,level:startLevel,played:0,wins:0,badges:[],finished:false,tribute:useTribute};save();
     const seed=freshSeed();const lead=luckyLead(seed,startLevel);
-    setRecord(createRecord(G.deal(seed,startLevel,lead)));toast(`幸运牌 ♠A 在${seats[lead]}手里，由 TA 先领出；升级赛从打 2 开始${useTribute?'，进贡还贡已开启':'，不进贡'}。`);}
+    setRecord(createRecord(G.deal(seed,startLevel,lead)));toast(`幸运牌 ♠3（通用最小牌）在${seats[lead]}手里，由 TA 先领出；升级赛从打 2 开始${useTribute?'，进贡还贡已开启':'，不进贡'}。`);}
   function nextProgressionRound(){const st2=states.at(-1);const delta=progDelta();const f=st2.finish;const from=progLevel();
     let level=from,laps=(db.progress&&db.progress.laps)||0,passedA=false;
     if(delta>0){
