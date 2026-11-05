@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -422,6 +422,15 @@
         const cntAfter={};for(const c of remaining)cntAfter[c.r]=(cntAfter[c.r]||0)+1;
         const smallAfter=Object.entries(cntAfter).filter(([r,n])=>+r<=6&&n===1).length;
         score-=W.smallLeft*smallAfter;
+      }
+      // 回收牌权能力：出了小牌以后，余牌里是否还留有能重新抢回领出权的大牌（级牌/王/炸弹/大对子）
+      if(W.retakeBonus && !isBomb && !finish && m.power<=10 && o.hand.length>4){
+        const rc={}; for(const c of remaining) rc[c.r]=(rc[c.r]||0)+1;
+        const highGroups=Object.entries(rc).filter(([r,n])=>n>=2&&power(+r,o.level)>=13).length;
+        const jokersRem=remaining.filter(c=>c.r>=16).length;
+        const levelRem=remaining.filter(c=>c.r===o.level).length;
+        const reclaim=Math.min(2,afterReserve.count)+Math.min(2,jokersRem)+Math.min(2,levelRem)+Math.min(2,highGroups);
+        if(reclaim>0)score+=W.retakeBonus*Math.min(3,reclaim);
       }
       score-=lostReserve*W.lostReserve;
       if(!isBomb&&beforeReserve.strongest>=600&&afterReserve.strongest<600)score-=W.strongestDrop;
