@@ -3,6 +3,13 @@ import {getStore} from '@edgeone/pages-blob';
 
 export const MODEL = 'speech-2.8-hd';
 export const VOICE = 'Chinese (Mandarin)_Reliable_Executive';
+export const VOICES = {
+  reliable: 'Chinese (Mandarin)_Reliable_Executive',
+  sincere: 'Chinese (Mandarin)_Sincere_Adult',
+  anchor: 'Chinese (Mandarin)_News_Anchor',
+  announcer: 'Chinese (Mandarin)_Male_Announcer',
+  wise: 'Chinese (Mandarin)_Wise_Women',
+};
 const mem = new Map();
 
 async function sha256(text) {
@@ -11,7 +18,7 @@ async function sha256(text) {
   return Array.from(new Uint8Array(digest), x => x.toString(16).padStart(2, '0')).join('');
 }
 
-async function synthesize(text, env) {
+async function synthesize(text, env, voiceId) {
   const key = env.SHAMAN_MINIMAX_API_KEY || env.FENGXI_MINIMAX_API_KEY || env.GUANDAN_MINIMAX_API_KEY;
   if (!key) throw new Error('missing MiniMax key');
   const response = await fetch('https://api.minimax.cn/v1/t2a_v2', {
@@ -19,7 +26,7 @@ async function synthesize(text, env) {
     headers: {'Content-Type': 'application/json', Authorization: `Bearer ${key}`},
     body: JSON.stringify({
       model: MODEL, text, stream: false, language_boost: 'Chinese',
-      voice_setting: {voice_id: VOICE, speed: 0.96, vol: 1, pitch: 0},
+      voice_setting: {voice_id: voiceId, speed: 0.96, vol: 1, pitch: 0},
       audio_setting: {sample_rate: 32000, bitrate: 64000, format: 'mp3', channel: 1},
       output_format: 'hex'
     }),
@@ -39,9 +46,12 @@ export async function handleSpeech(request) {
     return Response.json({error: '没有这一段。'}, {status: 404, headers: {'Cache-Control': 'no-store'}});
   }
   const text = BLOCKS[block];
-  const cacheKey = 's' + await sha256(`${MODEL}|${VOICE}|${text}`) + '.mp3';
+  const voiceKey = url.searchParams.get('voice') || 'reliable';
+  const voiceId = VOICES[voiceKey];
+  if (!voiceId) return Response.json({error: '没有这个音色。'}, {status: 400, headers: {'Cache-Control': 'no-store'}});
+  const cacheKey = 's' + await sha256(`${MODEL}|${voiceId}|${text}`) + '.mp3';
   if (mem.has(cacheKey)) {
-    return new Response(mem.get(cacheKey), {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'mem'}});
+    return new Response(mem.get(cacheKey), {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'mem', 'X-TTS-Voice': voiceKey}});
   }
   let store = null;
   try { store = getStore({name: 'guandan-audio', consistency: 'strong'}); } catch (e) {}
@@ -49,12 +59,12 @@ export async function handleSpeech(request) {
     try {
       const cached = await store.get(cacheKey, {type: 'arrayBuffer', consistency: 'strong'});
       if (cached && cached.byteLength) {
-        return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit'}});
+        return new Response(cached, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'hit', 'X-TTS-Voice': voiceKey}});
       }
     } catch (e) {}
   }
   let mp3;
-  try { mp3 = await synthesize(text, process.env); }
+  try { mp3 = await synthesize(text, process.env, voiceId); }
   catch (error) {
     console.error('shaman_tts_failed', error?.message || String(error));
     return Response.json({error: '语音暂时生成失败，请稍后再试。'}, {status: 502, headers: {'Cache-Control': 'no-store'}});
@@ -66,5 +76,5 @@ export async function handleSpeech(request) {
     } catch (e) {}
   }
   mem.set(cacheKey, mp3);
-  return new Response(mp3, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'miss'}});
+  return new Response(mp3, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=604800', 'X-TTS-Cache': 'miss', 'X-TTS-Voice': voiceKey}});
 }

@@ -142,8 +142,8 @@ const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')
         <p>当前为研究初稿：EPUB 含封面、目录、脚注与 12 幅正文图；PDF 为 A4 打印稿。正式版将在事实核查、图注统一后发布。</p>
       </div>
       <div class="ss-actions">
-        <a class="ss-btn" href={meta.epub} download>EPUB 研究稿 v3.0</a>
-        <a class="ss-btn ghost" href={meta.pdf} download>PDF 研究稿 v3.0（页码/书签）</a>
+        <a class="ss-btn" href={meta.epub} download>EPUB 研究稿 v3.1</a>
+        <a class="ss-btn ghost" href={meta.pdf} download>PDF 研究稿 v3.1（页码/书签）</a>
         <a class="ss-btn ghost" href="/research/">返回专题研究</a>
       </div>
     </section>
@@ -257,7 +257,7 @@ const description = `${meta.subtitle}。约 ${meta.words.toLocaleString('zh-CN')
       if (busy) return;
       busy = true; label('加载…');
       try {
-        const r = await fetch('/api/shaman/speech?block=study-overview&v=3.0');
+        const r = await fetch('/api/shaman/speech?block=study-overview&v=3.1');
         if (!r.ok) throw new Error('speech');
         const blob = await r.blob();
         if (objectUrl) URL.revokeObjectURL(objectUrl);
