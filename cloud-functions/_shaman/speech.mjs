@@ -2,8 +2,9 @@ import {BLOCKS} from './data.mjs';
 import {getStore} from '@edgeone/pages-blob';
 
 export const MODEL = 'speech-2.8-hd';
-export const VOICE = 'Chinese (Mandarin)_Reliable_Executive';
+export const VOICE = 'Chinese (Mandarin)_Wise_Women';
 export const VOICES = {
+  default: 'Chinese (Mandarin)_Wise_Women',
   reliable: 'Chinese (Mandarin)_Reliable_Executive',
   sincere: 'Chinese (Mandarin)_Sincere_Adult',
   anchor: 'Chinese (Mandarin)_News_Anchor',
@@ -46,7 +47,7 @@ export async function handleSpeech(request) {
     return Response.json({error: '没有这一段。'}, {status: 404, headers: {'Cache-Control': 'no-store'}});
   }
   const text = BLOCKS[block];
-  const voiceKey = url.searchParams.get('voice') || 'reliable';
+  const voiceKey = url.searchParams.get('voice') || 'default';
   const voiceId = VOICES[voiceKey];
   if (!voiceId) return Response.json({error: '没有这个音色。'}, {status: 400, headers: {'Cache-Control': 'no-store'}});
   const cacheKey = 's' + await sha256(`${MODEL}|${voiceId}|${text}`) + '.mp3';

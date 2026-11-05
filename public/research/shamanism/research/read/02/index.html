@@ -114,7 +114,7 @@
   const chapterId = document.body.dataset.chapter || '';
   const audio = new Audio();
   audio.preload = 'auto';
-  let blocks = null, index = 0, started = false, busy = false, objectUrl = null, ttsVersion = '3.1';
+  let blocks = null, index = 0, started = false, busy = false, objectUrl = null, ttsVersion = '3.2';
   const prefetch = new Map();
   const setStatus = (s) => { if (status) status.textContent = s; };
   const label = (s) => { const el = toggle.querySelector('.r-tts-label'); if (el) el.textContent = s; };
