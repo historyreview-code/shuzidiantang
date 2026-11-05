@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -579,6 +579,8 @@
   function choose(s,seat=s.turn,W=WEIGHTS) {
     const o=observe(s,seat);
     let rows=analyse(o,weightsFor(o,W));
+    const oppActive=o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0);
+    const oppMinAll=oppActive.length?Math.min(...oppActive):27;
     // 硬规则：整局第一手（空桌面）不允许单出王。除非手里只有王这一种合法出牌。
     if(o.step===0&&!o.trick&&rows.length){
       const isJoker=m=>m&&m.type==='single'&&INDEX[m.ids[0]].r>=16;
@@ -618,9 +620,8 @@
       }
     }
     // 防跑牌：领出时若对手只剩 1 张，避免送出单张（除非只剩单张可选）。
-    if(W.antiRunout&&!o.trick&&rows.length){
-      const oppCounts=o.counts.filter((c,i)=>i%2!==o.seat%2);
-      const minOpp=Math.min(...oppCounts);
+    if(W.antiRunout&&!o.trick&&rows.length&&oppActive.length){
+      const minOpp=oppMinAll;
       if(minOpp<=1){
         const nonSingle=rows.filter(r=>r.move&&r.move.type!=='single');
         if(nonSingle.length)rows=nonSingle;
@@ -754,11 +755,17 @@
     }
     // 残局领出：手里只剩几手牌时，先用“大一点的多张组”保持牌权，而不是先甩小单张把牌权送人
     if(W.endgameHold && !o.trick && o.hand.length<=6 && !rows.some(r=>r.finish)){
-      const strong=rows.filter(r=>r.move&&r.move.ids.length>=2&&r.move.power>=10&&!(r.move.type==='bomb'&&r.move.ids.length<4));
+      const strong=rows.filter(r=>r.move&&r.move.ids.length>=2&&r.move.power>=10&&!(r.move.type==='bomb'&&r.move.ids.length<4)&&r.move.ids.filter(id=>INDEX[id].r===o.level).length<2);
       if(strong.length){
         const keep=strong.filter(r=>r.move.ids.length>=2);
         if(keep.length)rows=keep;
       }
+    }
+    // 级牌对/三张是回收牌权的关键：手牌还多、又不能一把走完时，不领出两张以上级牌
+    if(W.levelPairHold && !o.trick && !rows.some(r=>r.finish) && o.hand.length>=5){
+      const spends=r=>r.move&&bombTier(r.move)===0&&r.move.ids.filter(id=>INDEX[id].r===o.level).length>=2;
+      const keep=rows.filter(r=>!spends(r));
+      if(keep.length)rows=keep;
     }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
