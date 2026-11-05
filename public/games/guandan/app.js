@@ -249,7 +249,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
       <div class="menu-actions"><button class="button small" data-action="export">导出当前牌谱</button><button class="button small" data-action="copyRecord">复制牌谱到剪贴板</button><button class="button small" data-action="import">导入牌谱</button></div>
       <p class="subtle" data-usage-stats>正在读取体验数据…</p><p class="subtle" data-app-version>版本 ${G.STRATEGY_VERSION}</p>
     </details>
-    <div class="menu-actions"><button class="button primary" data-action="closeModal">返回牌桌</button></div>`);
+    <div class="menu-actions"><button class="button" data-action="feedback">意见反馈</button><button class="button primary" data-action="closeModal">返回牌桌</button></div>`);
   }
   const luckyLead=(seed,level)=>{
     const probe=G.deal(seed,level,0);
@@ -366,6 +366,11 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'speechRepeat':announce(announcement());render();break;
     case 'new':newModal();break;
     case 'confirmNew':{const level=+$('#new-level').value,lead=+$('#new-lead').value,seed=(($('#new-seed')&&$('#new-seed').value.trim())||freshSeed());archive();closeModal();setRecord(createRecord(G.deal(seed,level,lead)));}break;
+    case 'feedback':openModal(`<div class="eyebrow">FEEDBACK</div><h2>意见反馈</h2><p class="subtle">遇到 bug、觉得哪里不好用，或者想要什么功能，都可以写在这里。</p><textarea id="feedback-text" maxlength="300" rows="4" style="width:100%;min-height:96px;background:#0b1626;color:#e9eefb;border:1px solid #35516d;border-radius:10px;padding:8px;font-size:13px" placeholder="例如：出牌记录浮层挡住了手牌；希望增加 XX 功能…"></textarea><p class="subtle" id="feedback-count">0 / 300</p><input id="feedback-contact" maxlength="60" placeholder="可选：微信/邮箱，方便回复你" style="width:100%;margin-top:6px;background:#0b1626;color:#e9eefb;border:1px solid #35516d;border-radius:10px;padding:8px;font-size:13px"><div class="menu-actions" style="margin-top:10px"><button class="button" data-action="closeModal">取消</button><button class="button primary" data-action="sendFeedback">提交反馈</button></div>`);break;
+    case 'sendFeedback':{const text=($('#feedback-text')?.value||'').trim();if(text.length<5){toast('请至少写 5 个字，方便我们理解问题。');break;}const contact=($('#feedback-contact')?.value||'').trim();const btn=$('#modal-root [data-action="sendFeedback"]');if(btn)btn.disabled=true;
+      let id;try{id=localStorage.getItem('gdFeedbackDevice');if(!id){id=crypto.randomUUID();localStorage.setItem('gdFeedbackDevice',id);}}catch(e){id='00000000-0000-4000-8000-000000000000';}
+      const base=document.querySelector('meta[name=guandan-api-base]')?.content||'/api';
+      fetch(base+'/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({device:id,text,contact})}).then(async r=>{const x=await r.json().catch(()=>({}));if(r.ok){closeModal();toast('反馈已收到，谢谢！');}else{if(btn)btn.disabled=false;toast(x.error||'提交失败，请稍后再试。');}}).catch(()=>{if(btn)btn.disabled=false;toast('网络异常，请稍后再试。');});break;}
     case 'closeModal':closeModal();break;
     case 'export':exportRecord(record);break;
     case 'copyRecord':copyRecord(record);break;
@@ -396,7 +401,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'nextRoundRestart':startProgression();break;
     case 'summaryReview':closeModal();goto(0);break;
   }}catch(err){toast(err.message||'操作未完成，请检查选择。');}});
-  document.addEventListener('change',e=>{if(e.target.name==='rotate-seat')updateRotateChoice();if(e.target.id==='hand-sort'&&H.modes.includes(e.target.value)){handMode=e.target.value;save();render();}if(e.target.id==='bot-mode'){botMode='local';battle.cancel();save();render();}if(e.target.id==='speech-enabled'){db.speechEnabled=e.target.checked;narrator.enable(e.target.checked);save();render();settingsModal();}if(e.target.id==='speech-rate'){narrator.setRate(+e.target.value);db.speechRate=narrator.snapshot().rate;save();render();settingsModal();}if(e.target.id==='declaration'){declarationKey=e.target.value;render();}if(e.target.id==='speed'){delay=+e.target.value;render();}if(e.target.id==='timeline-range')goto(+e.target.value);});
+  document.addEventListener('change',e=>{if(e.target.name==='rotate-seat')updateRotateChoice();if(e.target.id==='hand-sort'&&H.modes.includes(e.target.value)){handMode=e.target.value;save();render();}if(e.target.id==='bot-mode'){botMode='local';battle.cancel();save();render();}if(e.target.id==='speech-enabled'){db.speechEnabled=e.target.checked;narrator.enable(e.target.checked);save();render();settingsModal();}if(e.target.id==='feedback-text'){const c=$('#feedback-count');if(c)c.textContent=(e.target.value||'').length+' / 300';}if(e.target.id==='speech-rate'){narrator.setRate(+e.target.value);db.speechRate=narrator.snapshot().rate;save();render();settingsModal();}if(e.target.id==='declaration'){declarationKey=e.target.value;render();}if(e.target.id==='speed'){delay=+e.target.value;render();}if(e.target.id==='timeline-range')goto(+e.target.value);});
   document.addEventListener('toggle',e=>{if(e.target.matches?.('.practice-tools')&&e.target.isConnected)toolsOpen=e.target.open;if(e.target.matches?.('[data-tool=flush]')&&e.target.open&&myTurn())hintSeen=true;},true);
   document.addEventListener('input',e=>{if(e.target.id==='decision-note'){record.notes=record.notes||{};record.notes[e.target.dataset.step]=e.target.value.slice(0,1000);const saved=db.records.find(r=>r.id===record.id);if(saved)saved.notes=G.clone(record.notes);save();}});
   $('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>2*1024*1024)throw Error('牌谱文件上限为 2 MB');const r=G.importRecord(JSON.parse(await file.text()));archive();closeModal();setRecord(r,true);archive();toast('牌谱校验通过，已进入逐步回放。');}catch(err){toast(`导入失败：${err.message}`);}finally{e.target.value='';}});
