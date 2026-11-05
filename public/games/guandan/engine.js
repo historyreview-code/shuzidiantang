@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -775,6 +775,20 @@
       const spends=r=>r.move&&bombTier(r.move)===0&&r.move.ids.filter(id=>INDEX[id].r===o.level).length>=2;
       const keep=rows.filter(r=>!spends(r));
       if(keep.length)rows=keep;
+    }
+    // 对方同花顺：用“够用且不浪费”的炸弹回应——优先少张数、不烧配牌、不用级牌
+    if(W.flushCounter && o.trick && o.trick.move.type==='flush' && rows.length>1){
+      const cost=r=>{
+        if(!r.move)return 1e9;
+        const wildUsed=r.move.ids.filter(id=>wild(INDEX[id],o.level)).length;
+        const levelUsed=r.move.ids.filter(id=>INDEX[id].r===o.level).length;
+        return r.move.ids.length + wildUsed*6 + levelUsed*2;
+      };
+      const candidates=rows.filter(r=>r.move);
+      if(candidates.length>1){
+        candidates.sort((a,b)=>(a.finish?-999:0)+(cost(a))-((b.finish?-999:0)+cost(b)));
+        rows=candidates;
+      }
     }
     const best=rows[0];
     if(!best)throw Error('没有可用动作');
