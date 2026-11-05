@@ -375,7 +375,7 @@ export const notes = [
     date: '2026-11-05',
     category: 'AI 手记',
     href: '/notes/2026-11-05-dsh-workbench.html',
-    summary: '一晚上长出来的五个入口：微信读书、B 站、Grok、我的课题与每日总结，以及一本书、一个课题、一条视频之间那条终于接上的线。',
+    summary: '一晚上长出来的四个入口：微信读书、B 站、我的课题与每日总结，以及一本书、一个课题、一条视频之间那条终于接上的线。',
   },
   {
     title: 'DSH桌面伴侣：AI干活你休闲',
