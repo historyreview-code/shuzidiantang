@@ -151,6 +151,15 @@
   }
   const classify=(cards,level)=>enumerate(cards,level,true);
   const bombTier=m=>m.type==='kings'?10000:m.type==='flush'?550:m.type==='bomb'?(m.ids.length>=6?600+m.ids.length*30:m.ids.length===5?500:400)+m.power:0;
+  // 民间口径的“大牌”：单/对/三张只有级牌与大小王算；三带二 10 以上算；同花顺与炸弹算；K 及以下不算大牌
+  const bigRank=(r,level)=>r===level||r>=16;
+  const bigPlay=(m,level)=>{
+    if(!m)return false;
+    if(bombTier(m)>0)return true;
+    if(m.type==='full')return m.power>=10;
+    if(['single','pair','triple'].includes(m.type))return m.ids.every(id=>bigRank(INDEX[id].r,level));
+    return false;
+  };
   function beats(a,b) {
     if(!b)return true;
     const ta=bombTier(a),tb=bombTier(b);
@@ -354,7 +363,7 @@
     const ctrlIsControl=m=>{
       if(!m||m.type!=='single')return false;
       const c=INDEX[m.ids[0]];
-      return !wild(c,o.level)&&power(c.r,o.level)>=14;
+      return !wild(c,o.level)&&bigRank(c.r,o.level);
     };
     const scored=moves.map(m=>{
       const remaining=o.hand.filter(c=>!m.ids.includes(c.id)),after=structure(remaining,o.level),finish=!remaining.length;
@@ -426,10 +435,10 @@
       // 回收牌权能力：出了小牌以后，余牌里是否还留有能重新抢回领出权的大牌（级牌/王/炸弹/大对子）
       if(W.retakeBonus && !isBomb && !finish && m.power<=10 && o.hand.length>4){
         const rc={}; for(const c of remaining) rc[c.r]=(rc[c.r]||0)+1;
-        const highGroups=Object.entries(rc).filter(([r,n])=>n>=2&&power(+r,o.level)>=13).length;
+        const bigSingles=remaining.filter(c=>bigRank(c.r,o.level)).length;
         const jokersRem=remaining.filter(c=>c.r>=16).length;
         const levelRem=remaining.filter(c=>c.r===o.level).length;
-        const reclaim=Math.min(2,afterReserve.count)+Math.min(2,jokersRem)+Math.min(2,levelRem)+Math.min(2,highGroups);
+        const reclaim=Math.min(2,afterReserve.count)+Math.min(2,bigSingles)+Math.min(2,jokersRem)+Math.min(2,levelRem);
         if(reclaim>0)score+=W.retakeBonus*Math.min(3,reclaim);
       }
       score-=lostReserve*W.lostReserve;
@@ -819,7 +828,7 @@
       const oppMinP=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
       if(oppMinP>5){
         const beats=rows.filter(r=>r.move&&bombTier(r.move)===0);
-        const cheap=beats.filter(r=>r.move.power<=o.trick.move.power+3&&!r.move.ids.some(id=>wild(INDEX[id],o.level))&&!(r.breakBomb>0)&&!(r.breakFlush));
+        const cheap=beats.filter(r=>!bigPlay(r.move,o.level)&&!(r.breakBomb>0)&&!(r.breakFlush));
         if(cheap.length){
           rows=cheap.concat(rows.filter(r=>!cheap.includes(r)));
         }else if(beats.length){
