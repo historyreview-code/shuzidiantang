@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSH 工作台：把书、课题和 B 站收进一扇窗 · 劳伦斯实验室</title>
+<meta name="description" content="一晚上长出来的五个入口：微信读书、B 站、Grok、我的课题与每日总结，以及一本书、一个课题、一条视频之间那条终于接上的线。一篇 DSH 插件开发手记。">
+<meta name="keywords" content="DSH,DeepSeek Harness,插件,微信读书,B站,课题,手记">
+<link rel="canonical" href="https://shuzidiantang.com/notes/2026-11-05-dsh-workbench.html">
+<meta property="og:title" content="DSH 工作台：把书、课题和 B 站收进一扇窗">
+<meta property="og:description" content="一晚上长出来的五个入口：微信读书、B 站、Grok、我的课题与每日总结，以及一本书、一个课题、一条视频之间那条终于接上的线。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://shuzidiantang.com/notes/2026-11-05-dsh-workbench.html">
+<meta property="og:image" content="https://shuzidiantang.com/notes/og/2026-11-05-dsh-workbench.png">
+<meta property="article:published_time" content="2026-11-06T00:15:00+08:00">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuzidiantang.com/notes/og/2026-11-05-dsh-workbench.png">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.45; margin: 34px 0 12px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  blockquote p { margin: 6px 0; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+    h1 { font-size: 1.55rem; }
+  }
+  .site-footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 40px; border-top: 1px solid var(--line-strong);
+    color: var(--ink-3); font-size: .85rem; }
+  .site-footer .icp a { color: var(--ink-3); text-decoration: none; }
+  .site-footer .icp a:hover { color: var(--amber); }
+  .article-copy code { font-family: var(--mono); font-size: .86em; background: rgba(38,34,26,.07); padding: 1px 5px; border-radius: 4px; }
+
+  .note-figure { margin: 26px 0; }
+  .note-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .note-figure figcaption { margin-top: 8px; color: var(--ink-3); font-size: .82rem; line-height: 1.65; text-align: center; }
+  .nw { white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="https://shuzidiantang.com/">
+    <span><strong>劳伦斯实验室</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="https://shuzidiantang.com/">首页</a>
+    <a href="https://shuzidiantang.com/works/">作品</a>
+    <a class="active" href="https://shuzidiantang.com/notes/">手记</a>
+    <a href="https://shuzidiantang.com/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>DSH 工作台：把书、课题和 <span class="nw">B 站</span>收进一扇窗</h1>
+    <p class="meta"><time datetime="2026-11-05">2026-11-05</time> · 约 900 字 · 分类：AI 手记</p>
+    <div class="article-copy">
+<p>晚上十一点四十二，我截了这张图。左边是 DSH 的侧栏：插件、自动化任务，往下依次是微信读书、B 站、Grok、我的课题、每日总结；右边是我书架里的 322 本书，和其中一本在 B 站的 19 个书评视频。从「我在读什么」到「别人怎么看这本书」，只隔一次点击。</p>
+<p>在这之前，它们分在三个地方：微信读书、文件夹和 B 站的搜索框。</p>
+<figure class="note-figure">
+  <img src="../assets/img/notes/2026-11-05-dsh-workbench-01.webp" alt="同一扇窗：左边是微信读书书架里的 322 本书，右边是其中一本在 B 站的 19 个书评视频" loading="eager">
+  <figcaption>图 1 · 同一扇窗：左边是微信读书书架里的 322 本书，右边是其中一本在 B 站的 19 个「书评」视频。</figcaption>
+</figure>
+<h2>一、插件不是补丁，是地基</h2>
+<p>DSH 本来是个智能工作台，插件让它不止于此：装上插件，界面里就能长出自己的位置——侧栏入口、整页面板，还有浮在界面上的小窗。插件是个小目录：后台那一半跑在 DSH 进程里取数据、读文件、写缓存，页面那一半负责画界面，两边用只读接口传数据。装、停、回滚在插件管理器里点一点，不碰主程序。</p>
+<p>更关键的是它能碰到「脑子」：Grok 除了侧栏聊天，还进了主对话的模型选择。这些插件不是我一个个敲的——我说清需求，小深写、装、测，刷新就能用。20:02 我提「把微信读书接进来」，20:15 面板就能看书架；20:21 提「在下面关联 B 站」，六分四十四秒后装好了。一个晚上，五个入口。</p>
+<h2>二、五个入口</h2>
+<p><strong>微信读书</strong>是一块只读的阅读面板：书架、笔记、统计、设置四个页签。322 本书，有笔记 7 本；统计页里是 846 天、约 340 小时。密钥只存本机，点「同步」才拉一次。</p>
+<p><strong>B 站</strong>是它的邻居：选中一本书，右边先看它的划线、想法、书签和读到哪儿，再按「书评 / 解读 / 作者 / 书名」四种方式搜视频。视频能直接在内嵌播放器里看，点星标收进本地片单；不登录 B 站，只用公开接口。</p>
+<p><strong>我的课题</strong>收的是本机工作区里做出来的东西：18 件作品、7 个立项课题，电子书、程序、研究、学习都在里面；卡片上有状态、路径和 B 站搜索按钮，课题表有「下一步」，哪个停着一眼看得见。<strong>每日总结</strong>是同一个插件的第二个入口，翻每天 23:59 归档的工作日报。</p>
+<figure class="note-figure">
+  <img src="../assets/img/notes/2026-11-05-dsh-workbench-02.webp" alt="我的课题：18 件作品、7 个立项课题，卡片上带状态、下一步与 B 站搜索按钮" loading="lazy">
+  <figcaption>图 2 · 我的课题：18 件作品、7 个立项课题，状态、下一步和 B 站搜索都收在一张卡片上。</figcaption>
+</figure>
+<h2>三、书、课题、视频：连成一条线</h2>
+<p>真正有意思的不是入口，而是它们能互相找到。书是「问题」的入口：322 本书不是收藏，是待办，划线和想法是线索。课题是「沉淀」：立项表和工作区目录是一回事的两面，标题和关键词随时能换回一批视频。B 站是「外延」：书评看评价，解读看梗概，作者访谈认人，书名找讲座和课程。四种搜法对应四种想听的东西，比在大搜索框里碰运气准。</p>
+<p>今晚：书架上翻到《叙利亚：权力交汇下的破碎之地》，想摸背景就去旁边的 B 站——书评、高清文明史、两百年独立挣扎的解读、巴沙尔最后影像，再加一个 29 分钟的中东局势。点星标收两三个，回到工作区继续写。</p>
+<p>这条线是：在书架上遇见问题，在课题里放下问题，在 B 站上听见别人的回答，回到自己的稿子里写下来。</p>
+<p>写这篇手记时，我又点开 B 站的关联书架：刚才那本书旁边排着 19 个视频，往左是它的位置，再往左是我的课题。书还在书架上，视频还在 B 站，课题还在文件夹里，只是它们现在都在同一扇窗里。</p>
+    </div>
+
+    <a class="note-back" href="https://shuzidiantang.com/notes/">← 返回手记列表</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>劳伦斯实验室 · 手记</p>
+  <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
+</footer>
+</body>
+</html>
