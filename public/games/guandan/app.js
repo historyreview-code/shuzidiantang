@@ -195,7 +195,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     }catch(e){paused=true;toast(e.message);render();}
   },heroFinished()?60:delay);}
   function takeAction(a,human=true,decision=null){if(!human&&takePartner&&current().turn===2){return;}if(human)window.GuandanMetrics.track('started',record);const before=states.at(-1);let next;try{next=G.apply(before,a);}catch(err){try{window.GuandanMetrics.error('play',err.message,{stack:err.stack});}catch(e){}throw err;}const stored=a.kind==='play'?{seat:before.turn,kind:'play',move:next.lastActions[before.turn].move}:{seat:before.turn,kind:'pass'};stored.origin=human?'human':'bot';if(!human&&decision)stored.decision=G.decisionTrace(decision);battle.cancel();if(human&&hintSeen)stored.assisted=true;hintSeen=false;record.events.push(stored);states.push(next);cursor=record.events.length;selected=[];declarationKey='';showHint=false;try{if(next.over&&next.result&&next.result.team===0)celebrateWin();}catch(e){}
-    if(next.over){autoHero=false;archive();window.GuandanMetrics.track('finished',record);try{window.GuandanMetrics.result(record,{win:next.result?.team===0,dbl:!!next.result?.doubleDown,undo:undoCount});}catch(e){}}save();announce(S.actionText(stored,next));render();if(window.GuandanEffects.shouldCelebrate(before,next,!review))window.GuandanEffects.celebrate();}
+    if(next.over){autoHero=false;archive();window.GuandanMetrics.track('finished',record);try{uploadRecord(record);}catch(e){}try{window.GuandanMetrics.result(record,{win:next.result?.team===0,dbl:!!next.result?.doubleDown,undo:undoCount});}catch(e){}}save();announce(S.actionText(stored,next));render();if(window.GuandanEffects.shouldCelebrate(before,next,!review))window.GuandanEffects.celebrate();}
   function doPlay(){if(!myTurn())return;const m=selectedMoves().find(x=>x.key===declarationKey);if(!m){toast('请选择合法牌型后再出牌。');return;}
   // 红心级牌不能单出（手里还有其它牌时）
   if(m.type==='single'&&current().hands[ctrlSeat()].length>1){const c=G.INDEX[m.ids[0]];if(c.s==='H'&&c.r===current().level){toast('红心级牌不能单出：它可以当任意牌配成对子/顺子/炸弹');return;}}
@@ -225,6 +225,18 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   }
   function branchStep(){if(current().turn===0&&!current().over)return cursor;for(let i=cursor-1;i>=0;i--)if(states[i].turn===0&&!states[i].over)return i;return -1;}
   function branch(step){if(step<0)return;const parent=record.id;archive();const r=createRecord(G.clone(record.start),G.clone(record.events.slice(0,step)),record.lessonId);r.notes=Object.fromEntries(Object.entries(record.notes||{}).filter(([k])=>+k<step));r.branchOf=parent;if(record.perspective)r.perspective={...record.perspective,atStep:Math.min(step,record.perspective.atStep)};r.title=record.title+' · 分支';setRecord(r);toast(`已从第 ${step} 步后另开分支，原局保留在档案中。`);}
+  function uploadRecord(r){
+    try{
+      if(!r||!r.start||r.start.kind!=='full'||r.branchOf)return;
+      if(db.recordUpload===false)return;
+      let uploaded=[];try{uploaded=JSON.parse(localStorage.getItem('gdUploaded')||'[]');}catch(e){}
+      if(uploaded.includes(r.id))return;
+      let device='';try{device=localStorage.getItem('gdFeedbackDevice')||'';if(!device){device=crypto.randomUUID();localStorage.setItem('gdFeedbackDevice',device);}}catch(e){return;}
+      const base=document.querySelector('meta[name=guandan-api-base]')?.content||'/api';
+      const payload={id:r.id,start:{level:r.start.level,lead:r.start.lead,hands:r.start.hands.map(h=>h.map(c=>({id:c.id})))},events:(r.events||[]).map(e=>e.kind==='pass'?{kind:'pass',seat:e.seat}:{kind:'play',seat:e.seat,move:{ids:e.move.ids}})};
+      fetch(base+'/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({device,record:payload})}).then(res=>{if(res.ok){uploaded.push(r.id);localStorage.setItem('gdUploaded',JSON.stringify(uploaded.slice(-80)));}}).catch(()=>{});
+    }catch(e){}
+  }
   function copyRecord(r){
     const text=JSON.stringify(r);
     const done=ok=>{openModal(`<h2>牌谱数据</h2><p>${ok?'已复制到剪贴板，可直接粘贴发送。':'自动复制受限，请长按下面文本框全选复制。'}</p><textarea readonly style="width:100%;height:180px;font:12px/1.4 monospace;background:#0b1626;color:#e9eefb;border:1px solid #35516d;border-radius:10px;padding:8px">${esc(text)}</textarea><div class="actions"><button class="button primary" data-action="closeModal">关闭</button></div>`);};
@@ -244,7 +256,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     </div>
     <details class="secondary-details"><summary>记录与设置</summary>
       <label class="setting-row"><span>语音播报</span><input id="speech-enabled" type="checkbox" aria-label="语音播报" ${v.enabled?'checked':''}></label>
-      <button class="button small" data-action="nav" data-view="archive">历史牌局</button>
+      <label class="setting-row"><span>匿名牌谱回传（仅发牌与出牌序列）</span><input id="record-upload" type="checkbox" ${db.recordUpload!==false?'checked':''}></label><button class="button small" data-action="nav" data-view="archive">历史牌局</button>
       <button class="button small" data-action="exitHand">退出本局</button>
       <div class="menu-actions"><button class="button small" data-action="export">导出当前牌谱</button><button class="button small" data-action="copyRecord">复制牌谱到剪贴板</button><button class="button small" data-action="import">导入牌谱</button></div>
       <p class="subtle" data-usage-stats>正在读取体验数据…</p><p class="subtle" data-app-version>版本 ${G.STRATEGY_VERSION}</p>
@@ -401,7 +413,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'nextRoundRestart':startProgression();break;
     case 'summaryReview':closeModal();goto(0);break;
   }}catch(err){toast(err.message||'操作未完成，请检查选择。');}});
-  document.addEventListener('change',e=>{if(e.target.name==='rotate-seat')updateRotateChoice();if(e.target.id==='hand-sort'&&H.modes.includes(e.target.value)){handMode=e.target.value;save();render();}if(e.target.id==='bot-mode'){botMode='local';battle.cancel();save();render();}if(e.target.id==='speech-enabled'){db.speechEnabled=e.target.checked;narrator.enable(e.target.checked);save();render();settingsModal();}if(e.target.id==='feedback-text'){const c=$('#feedback-count');if(c)c.textContent=(e.target.value||'').length+' / 300';}if(e.target.id==='speech-rate'){narrator.setRate(+e.target.value);db.speechRate=narrator.snapshot().rate;save();render();settingsModal();}if(e.target.id==='declaration'){declarationKey=e.target.value;render();}if(e.target.id==='speed'){delay=+e.target.value;render();}if(e.target.id==='timeline-range')goto(+e.target.value);});
+  document.addEventListener('change',e=>{if(e.target.name==='rotate-seat')updateRotateChoice();if(e.target.id==='hand-sort'&&H.modes.includes(e.target.value)){handMode=e.target.value;save();render();}if(e.target.id==='bot-mode'){botMode='local';battle.cancel();save();render();}if(e.target.id==='speech-enabled'){db.speechEnabled=e.target.checked;narrator.enable(e.target.checked);save();render();settingsModal();}if(e.target.id==='record-upload'){db.recordUpload=!!e.target.checked;save();}if(e.target.id==='feedback-text'){const c=$('#feedback-count');if(c)c.textContent=(e.target.value||'').length+' / 300';}if(e.target.id==='speech-rate'){narrator.setRate(+e.target.value);db.speechRate=narrator.snapshot().rate;save();render();settingsModal();}if(e.target.id==='declaration'){declarationKey=e.target.value;render();}if(e.target.id==='speed'){delay=+e.target.value;render();}if(e.target.id==='timeline-range')goto(+e.target.value);});
   document.addEventListener('toggle',e=>{if(e.target.matches?.('.practice-tools')&&e.target.isConnected)toolsOpen=e.target.open;if(e.target.matches?.('[data-tool=flush]')&&e.target.open&&myTurn())hintSeen=true;},true);
   document.addEventListener('input',e=>{if(e.target.id==='decision-note'){record.notes=record.notes||{};record.notes[e.target.dataset.step]=e.target.value.slice(0,1000);const saved=db.records.find(r=>r.id===record.id);if(saved)saved.notes=G.clone(record.notes);save();}});
   $('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>2*1024*1024)throw Error('牌谱文件上限为 2 MB');const r=G.importRecord(JSON.parse(await file.text()));archive();closeModal();setRecord(r,true);archive();toast('牌谱校验通过，已进入逐步回放。');}catch(err){toast(`导入失败：${err.message}`);}finally{e.target.value='';}});
