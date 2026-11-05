@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,shedSmallLead:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,shedSmallLead:1,bombLeadHold:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -799,10 +799,19 @@
     // 手里有控制牌（级牌/王/配牌）且只剩几手时：先把小单张走掉，留着控制牌回收
     if(W.shedSmallLead && !o.trick && !rows.some(r=>r.finish) && o.hand.length<=8){
       const oppMinS=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
-      const hasControl=o.hand.some(c=>c.r>=16||c.r===o.level||wild(c,o.level));
+      const handCounts={};for(const c of o.hand)handCounts[c.r]=(handCounts[c.r]||0)+1;
+      const hasControl=o.hand.some(c=>c.r>=16||c.r===o.level||wild(c,o.level))||Object.values(handCounts).some(n=>n>=4);
       if(hasControl&&oppMinS>2){
         const lowSingles=rows.filter(r=>r.move&&r.move.type==='single'&&r.move.power<=8);
         if(lowSingles.length)rows=lowSingles;
+      }
+    }
+    // 炸弹留着关键局：手里还有不少牌、对手不急着走时，领出优先普通牌（先把散牌处理掉）
+    if(W.bombLeadHold && !o.trick && !rows.some(r=>r.finish) && o.hand.length>5 && rows.length>1){
+      const oppMinB2=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
+      if(oppMinB2>3){
+        const plain=rows.filter(r=>r.move&&bombTier(r.move)===0);
+        if(plain.length)rows=plain;
       }
     }
     const best=rows[0];
