@@ -237,7 +237,7 @@
     // team-plan-v8 candidates: per-objective multipliers (neutral defaults)
     objHeadTurns:1,objHeadFeed:0,objHeadSteal:0,objLossTurns:1,objLossBomb:1,
     // v8 role action items (default 0 = off)
-    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
+    objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,shedSmallLead:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
     bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
@@ -764,7 +764,7 @@
     }
     // 残局领出：手里只剩几手牌时，先用“大一点的多张组”保持牌权，而不是先甩小单张把牌权送人
     if(W.endgameHold && !o.trick && o.hand.length<=6 && !rows.some(r=>r.finish)){
-      const strong=rows.filter(r=>r.move&&r.move.ids.length>=2&&r.move.power>=10&&!(r.move.type==='bomb'&&r.move.ids.length<4)&&r.move.ids.filter(id=>INDEX[id].r===o.level).length<2);
+      const strong=rows.filter(r=>r.move&&r.move.ids.length>=2&&r.move.power>=10&&!(r.move.type==='bomb'&&r.move.ids.length<4)&&r.move.ids.filter(id=>INDEX[id].r===o.level).length<2&&!r.move.ids.some(id=>wild(INDEX[id],o.level)));
       if(strong.length){
         const keep=strong.filter(r=>r.move.ids.length>=2);
         if(keep.length)rows=keep;
@@ -788,6 +788,21 @@
       if(candidates.length>1){
         candidates.sort((a,b)=>(a.finish?-999:0)+(cost(a))-((b.finish?-999:0)+cost(b)));
         rows=candidates;
+      }
+    }
+    // 配牌要省着用：领出时不用配牌去凑对子/三张/三带二（除非能走完或搭档快出完）
+    if(W.reserveWild && !o.trick && !rows.some(r=>r.finish) && o.hand.length>4 && o.counts[(o.seat+2)%4]>3 && rows.length>1){
+      const burnsWild=r=>r.move&&bombTier(r.move)===0&&['pair','triple','full'].includes(r.move.type)&&r.move.ids.some(id=>wild(INDEX[id],o.level));
+      const keep=rows.filter(r=>!burnsWild(r));
+      if(keep.length)rows=keep;
+    }
+    // 手里有控制牌（级牌/王/配牌）且只剩几手时：先把小单张走掉，留着控制牌回收
+    if(W.shedSmallLead && !o.trick && !rows.some(r=>r.finish) && o.hand.length<=8){
+      const oppMinS=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
+      const hasControl=o.hand.some(c=>c.r>=16||c.r===o.level||wild(c,o.level));
+      if(hasControl&&oppMinS>2){
+        const lowSingles=rows.filter(r=>r.move&&r.move.type==='single'&&r.move.power<=8);
+        if(lowSingles.length)rows=lowSingles;
       }
     }
     const best=rows[0];
