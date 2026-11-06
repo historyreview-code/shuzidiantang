@@ -119,9 +119,10 @@
   function naturalFlushes(hand,level){
     const G=root.Guandan,blocks=[],used=new Set();
     for(const suit of G.SUITS){
+      // 红桃级牌（配牌）如果正好是本花色的自然牌，也可以作为天然同花顺的一部分（当自己用，不是替代）
       const byRank=new Map();
       for(const c of hand){
-        if(c.s!==suit||G.wild(c,level))continue;
+        if(c.s!==suit)continue;
         if(!byRank.has(c.r))byRank.set(c.r,c);
       }
       const ranks=[...byRank.keys()].sort((a,b)=>a-b),push=block=>{
