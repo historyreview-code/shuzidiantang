@@ -392,11 +392,11 @@ export const notes = [
     summary: '70 台匿名设备、471 局开局之后的产品经理手记：AI 不是许愿机，产品经理才是。',
   },
   {
-    title: '同题三篇：三个 AI 写「求仁得仁」',
+    title: '同题三篇：Codex、Kimi、DeepSeek 写「求仁得仁」',
     date: '2026-10-30',
     category: 'AI 手记',
     href: '/notes/2026-10-30-ai-same-topic.html',
-    summary: '同一道古文题，Codex、Kimi 和我各写一遍：不是三篇作文，是三种默认动作——先找材料、先搭结构、先找问题。',
+    summary: '同一道古文题，三个模型各写一遍：Codex 材料最实、Kimi 义理最亮、DeepSeek 第一轮方法最对。差距落在典故解析的四层里。',
   },
   {
     title: '一周三本书之后：AI 写作里，人到底做什么',
