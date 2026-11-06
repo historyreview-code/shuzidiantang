@@ -89,5 +89,72 @@
     const result=current.filter(id=>!selected.has(id));
     result.splice(result.indexOf(targetId)+(after?1:0),0,...moving);return result;
   }
-  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split,normaliseOrder,orderedCards,insertCard,insertCards};
+  // 牌桌「叠牌」分组：同花色连续 5+ 张（同花顺）、混花色连续 5+ 张（顺子）、同点数 2+ 张（对子/三张）。
+  // 点数方向不敏感：手牌默认按点数从大到小排列，不能只认升序。
+  function runAt(cards,start,sameSuit){
+    if(start+1>=cards.length)return 0;
+    const dir=cards[start+1].r-cards[start].r;
+    if(Math.abs(dir)!==1)return 0;
+    if(sameSuit&&cards[start+1].s!==cards[start].s)return 0;
+    let k=start+1;
+    while(k+1<cards.length&&cards[k+1].r-cards[k].r===dir&&(!sameSuit||cards[k+1].s===cards[start].s))k++;
+    return k-start+1;
+  }
+  function groupCards(cards){
+    const out=[];let i=0;
+    while(i<cards.length){
+      let run=runAt(cards,i,true);
+      if(run>=5){out.push(cards.slice(i,i+run));i+=run;continue;}
+      run=runAt(cards,i,false);
+      if(run>=5){out.push(cards.slice(i,i+run));i+=run;continue;}
+      let j=i;
+      while(j+1<cards.length&&cards[j+1].r===cards[i].r)j++;
+      if(j-i+1>=2){out.push(cards.slice(i,j+1));i=j+1;continue;}
+      out.push([cards[i]]);i++;
+    }
+    return out;
+  }
+  // 天然同花顺（同花色连续 5+ 张，不需要配牌替代）：A 可接 2-3-4-5 之后，也可作最高牌。
+  // 配牌组成的同花顺不自动归组——那要玩家自己选一种替代，交给「同花顺助手 → 试排」。
+  function naturalFlushes(hand,level){
+    const G=root.Guandan,blocks=[],used=new Set();
+    for(const suit of G.SUITS){
+      const byRank=new Map();
+      for(const c of hand){
+        if(c.s!==suit||G.wild(c,level))continue;
+        if(!byRank.has(c.r))byRank.set(c.r,c);
+      }
+      const ranks=[...byRank.keys()].sort((a,b)=>a-b),push=block=>{
+        if(block.some(c=>used.has(c.id)))return;
+        block.forEach(c=>used.add(c.id));blocks.push(block);
+      };
+      let i=0;
+      while(i<ranks.length){
+        let j=i;
+        while(j+1<ranks.length&&ranks[j+1]===ranks[j]+1)j++;
+        if(j-i+1>=5)push(ranks.slice(i,j+1).map(r=>byRank.get(r)));
+        i=j+1;
+      }
+      if(byRank.has(14)&&[2,3,4,5].every(r=>byRank.has(r)))push([2,3,4,5].map(r=>byRank.get(r)).concat(byRank.get(14)));
+    }
+    return blocks;
+  }
+  // 把天然同花顺捋成一组：按点数升序紧挨着，放在最早一张牌出现的位置；其余牌顺序不变。
+  function flushOrder(order,hand,level){
+    const cards=normaliseOrder(order,hand).map(id=>hand.find(c=>c.id===id)).filter(Boolean);
+    const blocks=naturalFlushes(hand,level);
+    if(!blocks.length)return cards.map(c=>c.id);
+    const blockOf=new Map();blocks.forEach((block,index)=>block.forEach(c=>blockOf.set(c.id,index)));
+    const emitted=new Set(),seen=new Set(),out=[];
+    for(const card of cards){
+      const index=blockOf.get(card.id);
+      if(index===undefined){out.push(card.id);seen.add(card.id);continue;}
+      if(emitted.has(index))continue;
+      emitted.add(index);
+      for(const member of blocks[index]){out.push(member.id);seen.add(member.id);}
+    }
+    for(const card of hand)if(!seen.has(card.id))out.push(card.id);
+    return out;
+  }
+  root.GuandanLayout={modes,normalise,collect,move,sections,materialise,transfer,reorder,split,normaliseOrder,orderedCards,insertCard,insertCards,groupCards,naturalFlushes,flushOrder};
 })(typeof globalThis!=='undefined'?globalThis:this);

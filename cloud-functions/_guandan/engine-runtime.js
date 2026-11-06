@@ -219,7 +219,9 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-plan-v8';
+  const STRATEGY_VERSION='team-plan-v8.1';
+  // team-plan-v8.1: 2026-11-06 组牌原则修复——残局「先走小单张」不再拆同点数对子/三张/炸弹，
+  // 也不再拆炸弹/同花顺或烧配牌；只走真·散单张。原始打分（三张7 218 vs 单7 49）不变，仅去掉误伤。
   // Hand-set weights, exposed so tuning can be measured instead of guessed.
   // Every value equals the pre-tuning constant; `analyse()` without arguments is unchanged.
   // team-plan-v7: adds 牌权/顺牌经济学 (takeLead=50, shedLead=50): following a trick to shed and
@@ -806,12 +808,16 @@
       if(keep.length)rows=keep;
     }
     // 手里有控制牌（级牌/王/配牌）且只剩几手时：先把小单张走掉，留着控制牌回收
+    // 组牌原则：同点数的对子/三张/炸弹默认作为一个单元，只有真正散在外面的单张才先走。
+    // 要拆组必须先有充分理由（这一手能直接走完、对手马上跑掉等）；本规则不提供这种理由，所以一律不拆。
     if(W.shedSmallLead && !o.trick && !rows.some(r=>r.finish) && o.hand.length<=8){
       const oppMinS=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
       const handCounts={};for(const c of o.hand)handCounts[c.r]=(handCounts[c.r]||0)+1;
       const hasControl=o.hand.some(c=>c.r>=16||c.r===o.level||wild(c,o.level))||Object.values(handCounts).some(n=>n>=4);
       if(hasControl&&oppMinS>2){
-        const lowSingles=rows.filter(r=>r.move&&r.move.type==='single'&&r.move.power<=8);
+        const lowSingles=rows.filter(r=>r.move&&r.move.type==='single'&&r.move.power<=8
+          &&r.move.ids.every(id=>handCounts[INDEX[id].r]===1)
+          &&!(r.breakBomb>0)&&!(r.breakFlush)&&!r.usedWild);
         if(lowSingles.length)rows=lowSingles;
       }
     }

@@ -94,12 +94,22 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     if(arrangeMode){arrangeSelected=arrangeSelected.includes(id)?arrangeSelected.filter(x=>x!==id):[...arrangeSelected,id];render();return;}
     if(!myTurn())return;selected=selected.includes(id)?selected.filter(x=>x!==id):[...selected,id];render();
   }
-  function finishArranging(){toast('理牌完成；可用右上「叠牌显示/展开显示」切换外观');if(dealWaiting)window.GuandanMetrics.track('started',record);arrangeMode=false;dealWaiting=false;arrangeSelected=[];selected=[];declarationKey='';save();announce(S.turnText(current()));render();}
+  function autoGroupFlushes(){
+    try{
+      const hand=current().hands[ctrlSeat()];if(!hand||hand.length<5)return false;
+      const order=displayedOrder(),next=H.flushOrder(order,hand,current().level);
+      if(!next.length||next.join('|')===order.join('|'))return false;
+      layoutUndo.push({mode:handMode,order});layoutUndo=layoutUndo.slice(-20);
+      db.handOrders[orderKey()]=H.normaliseOrder(next,hand);handMode='groups';db.handMode='groups';
+      return true;
+    }catch(e){return false;}
+  }
+  function finishArranging(){const grouped=autoGroupFlushes();toast(grouped?'理牌完成 · 同花顺已自动归为一组；可用右上「叠牌显示/展开显示」切换外观':'理牌完成；可用右上「叠牌显示/展开显示」切换外观');if(dealWaiting)window.GuandanMetrics.track('started',record);arrangeMode=false;dealWaiting=false;arrangeSelected=[];selected=[];declarationKey='';save();announce(S.turnText(current()));render();}
   function handHTML(){const s=current(),canArrange=canArrangeHand(),mode=handMode;
     const stacked=!arrangeMode&&stackDisplay;
     const toolbar=`<div class="hand-order-toolbar"><strong>${ctrlSeat()===2?'搭档的手牌（接管中）':'我的手牌'} <b>${s.hands[ctrlSeat()].length}</b> 张</strong>${!arrangeMode?`<button class="text-control" data-action="toggleStack">${stackDisplay?'展开显示':'叠牌显示'}</button>`:''}${arrangeMode?`<label class="sr-only" for="hand-sort">手牌顺序</label><select id="hand-sort">${[['rank','点数'],['suit','花色'],['groups','自由']].map(([key,label])=>`<option value="${key}" ${mode===key?'selected':''}>${label}</option>`).join('')}</select>`:''}${canArrange?`${layoutUndo.length?'<button class="text-control" data-action="undoLayout">撤销</button>':''}`:' '}</div>`;
     const cards=displayedHand();
-    const groups=handGroups(cards);
+    const groups=H.groupCards(cards);
     const unitHTML=(c,idx)=>`<div class="hand-card-unit" data-layout-card="${c.id}" data-rank="${c.r}" style="z-index:${idx}">${cardHTML(c,{selectable:!review&&!s.over,draggable:canArrange})}</div>`;
     const body=stacked?groups.map((g,gi)=>`<div class="hand-group${g.length<2?' single':''}" data-group="${gi}">${g.map((c,ci)=>unitHTML(c,handIndex(c))).join('')}</div>`).join(''):cards.map((c,idx)=>unitHTML(c,idx)).join('');
     return toolbar+`<div class="flat-hand ${stacked?'stacked':'full'}" aria-label="${stacked?'叠放手牌，露出每张左侧的数字与花色':'完整牌面'}">${body||'<p class="subtle">你已走完，继续观察搭档。</p>'}</div>${arrangeMode?'<p class="flat-hand-tip">点选多张，拖动任一选中牌一起换位。</p>':''}`;
@@ -136,22 +146,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
   function hintHTML(x,i,interactive){return `<div class="hint-card"><div class="head"><strong>${x.move?G.describe(x.move):'过牌，保留手牌'}</strong><span class="index">0${i+1}</span></div><p>${esc(x.facts[0])}</p><p>${esc(x.reasons[0])}</p>${interactive?`<button class="button small" data-action="pickHint" data-index="${i}">${x.move?'选中这组牌':'选择过牌'}</button>`:''}</div>`;}
   function archivePage(){return `<div class="inline-note">最近 20 副记录保存在当前浏览器。跨设备使用前请导出 JSON 牌谱；导入会重新检查每一步是否合法。分支保留父局编号，不能把不同分支的胜负当成稳定胜率。</div><div class="archive-grid">${db.records.map(r=>{let end;try{end=G.replay(r.start,r.events).at(-1);}catch{return '';}return `<article class="panel archive-card"><div class="archive-icon">${r.lessonId?'◈':'♠'}</div><div class="archive-info"><h2>${esc(r.title)} ${r.branchOf?'<span class="tag gold">分支</span>':''}</h2><p>${esc(new Date(r.created).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}))} · ${r.events.length} 步 · ${end.over?(end.result.team===0?'你方胜':'对方胜'):'尚未结束'}<br>发牌编号 ${esc(r.start.seed)} · ${r.start.kind==='full'?'完整 108 张发牌':'精选教学局面'}</p></div><div class="archive-actions"><button class="button primary small" data-action="openRecord" data-id="${esc(r.id)}">逐步复盘</button><details class="archive-more"><summary>更多</summary><button class="button small" data-action="exportRecord" data-id="${esc(r.id)}">导出牌谱</button></details></div></article>`;}).join('')||'<div class="panel empty"><div class="suit-watermark">♧</div>完成一副或另开分支后，记录会出现在这里。<br>当前进度会自动保存。</div>'}</div>`;}
   const handIndex=c=>displayedHand().findIndex(x=>x.id===c.id);
-  function handGroups(cards){
-    const out=[];let i=0;
-    while(i<cards.length){
-      let j=i;
-      while(j+1<cards.length&&cards[j+1].s===cards[i].s&&cards[j+1].r===cards[j].r+1)j++;
-      if(j-i+1>=5){out.push(cards.slice(i,j+1));i=j+1;continue;}
-      j=i;
-      while(j+1<cards.length&&cards[j+1].r===cards[j].r+1)j++;
-      if(j-i+1>=5){out.push(cards.slice(i,j+1));i=j+1;continue;}
-      j=i;
-      while(j+1<cards.length&&cards[j+1].r===cards[i].r)j++;
-      if(j-i+1>=2){out.push(cards.slice(i,j+1));i=j+1;continue;}
-      out.push([cards[i]]);i++;
-    }
-    return out;
-  }
+  // 叠牌分组逻辑在 hand-layout.js 的 H.groupCards：同点数成组、顺子/同花顺不分升序降序都算一组。
   function fitHand(){
     const el=document.querySelector('.flat-hand.stacked');if(!el)return;
     const groups=[...el.querySelectorAll('.hand-group')];if(!groups.length)return;
