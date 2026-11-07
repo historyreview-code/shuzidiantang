@@ -219,7 +219,10 @@
     const counts={};for(const c of hand)if(!wild(c,level))counts[c.r]=(counts[c.r]||0)+1;
     return {singles:Object.entries(counts).filter(([,n])=>n===1).map(([r])=>+r),pairs:Object.values(counts).filter(n=>n===2).length,triples:Object.values(counts).filter(n=>n===3).length,bombs:Object.values(counts).filter(n=>n>=4).length,wilds:hand.filter(c=>wild(c,level)).length,counts};
   }
-  const STRATEGY_VERSION='team-plan-v8.1';
+  const STRATEGY_VERSION='team-plan-v8.2';
+  // team-plan-v8.2: 2026-11-07 修复 2026-10-27 引入的回归——打分里的结构/炸弹惩罚
+  // (拆炸弹/拆组/炸弹消耗/拆同花顺) 因分号截断从未生效；修复后 1200 副新种子 δ=+0.085
+  // (CI [0.029,0.137], |δ|>MDE)，heldout δ=+0.194、confirm δ=+0.173，方向一致。
   // team-plan-v8.1: 2026-11-06 组牌原则修复——残局「先走小单张」不再拆同点数对子/三张/炸弹，
   // 也不再拆炸弹/同花顺或烧配牌；只走真·散单张。原始打分（三张7 218 vs 单7 49）不变，仅去掉误伤。
   // Hand-set weights, exposed so tuning can be measured instead of guessed.
@@ -250,7 +253,9 @@
     // v8 role action items (default 0 = off)
     objHeadEscortBomb:0,objHeadYield:0,objLossRush:0,objLossBlock:0,duBlock:0,duBreak:0,duHold:0,duEscort:0,duTarget:0,markAvoidType:0,markBaitType:0,cardsEarlyMul:1,powerEarlyMul:1,controlRiskK:0,structureBlend:0,partnerHold:1,antiRunout:1,jokerHold:1,carryCost:6,escortLead:22,reserveBomb:1,reserveWild:1,reserveLevel:1,levelCost:30,flushUpgrade:9,freeRide:1,bombSave:3.2,patience:6,flushHold:1,smallLeft:7,endgameHold:1,levelPairHold:1,flushCounter:1,shedSmallLead:1,bombLeadHold:1,patientPass:1,retakeBonus:14,flushDominance:1,urgentBeat:1,followPowerMul:1.2,
     // v9 candidates: opponent bomb/joker risk from the public unseen pool (default off)
-    bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30});
+    bombRiskPenalty:0,bombProvenBonus:0,kingLeadRisk:0,bombRiskK:30,
+    // 2026-11-07 回归修复开关：1 = 复刻 2026-10-27~11-07 的 bug（结构/炸弹惩罚不生效），仅供对照
+    legacyDeadPenalties:0});
   // The pre-tuning table, kept so old runs stay reproducible and new work has a control.
   const LEGACY_WEIGHTS_V4=Object.freeze({turns:18,cards:1.5,power:.35,wild:3,breakBomb:15,breakGroup:4,bombUse:19,breakFlush:16,
     lostReserve:20,strongestDrop:14,controlExit:75,bombSupport:18,bombQuiet:8,bombSupportDanger:24,
@@ -412,7 +417,7 @@
         const urgent=nextOppC<=2;
         if(!urgent) powerW *= W.followPowerMul;
       }
-      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-carryPen
+      let score=W.turns*(beforeTurns-remainingTurns)+m.ids.length*cardsW-m.power*powerW-carryPen;
       // 级牌分级代价：顺子/同花顺用级牌划算，钢板最亏，三带二/三连对居中
       if(W.reserveLevel && m.type!=='bomb' && m.type!=='flush' && m.type!=='kings'){
         const usedLv=m.ids.filter(id=>INDEX[id].r===o.level).length;
@@ -420,7 +425,9 @@
         score-=usedLv*W.levelCost*factor;
       }
       // 拆炸弹组同花顺去压对手的炸弹/同花顺：值得，额外加分
-      if(o.trick && bombTier(o.trick.move)>0 && m.type==='flush' && bombTier(m)>bombTier(o.trick.move)) score+=W.flushUpgrade;-usedWild*W.wild-breakBomb*W.breakBomb-breakGroup*W.breakGroup-(isBomb?effBombUse:0)-(breakFlush?W.breakFlush:0);
+      if(o.trick && bombTier(o.trick.move)>0 && m.type==='flush' && bombTier(m)>bombTier(o.trick.move)) score+=W.flushUpgrade;
+      // 2026-10-27 的编辑事故把下面这组惩罚变成了“只计算不赋值”，此处恢复（legacyDeadPenalties=1 可复刻 bug 做对照）
+      if(!W.legacyDeadPenalties) score-=usedWild*W.wild+breakBomb*W.breakBomb+breakGroup*W.breakGroup+(isBomb?effBombUse:0)+(breakFlush?W.breakFlush:0);
       // 隐忍：对手都还远，自己不急着抢牌权时，不为普通牌型消耗 K/A/级牌/王 或拆结构
       if(W.patience&&o.trick&&bombTier(o.trick.move)===0&&!finish&&threat>10&&o.hand.length>9){
         const spend=m.ids.filter(id=>power(INDEX[id].r,o.level)>=13).length;
@@ -830,14 +837,18 @@
       }
     }
     // 隐忍过牌：对手出中档牌型、局面不急时，不为了压住而过度消耗大牌/拆结构，让对手先出
-    if(W.patientPass && o.trick && o.trick.seat%2!==o.seat%2 && bombTier(o.trick.move)===0 && o.trick.move.power>=10 && o.trick.move.power<=13 && o.hand.length>8 && !rows.some(r=>r.finish)){
+    // 变体开关（默认 0 = 线上行为不变）：
+    //   patientPassNoForce=1  只优先便宜接牌，不因为“没有便宜牌”而强制过牌
+    //   patientPassMinHand=N  要求手牌数 > N（默认 8）
+    //   patientPassMaxPower=N 桌面牌力上限（默认 13，可降到 12 以排除 K）
+    if(W.patientPass && o.trick && o.trick.seat%2!==o.seat%2 && bombTier(o.trick.move)===0 && o.trick.move.power>=10 && o.trick.move.power<=(W.patientPassMaxPower||13) && o.hand.length>(W.patientPassMinHand??8) && !rows.some(r=>r.finish)){
       const oppMinP=Math.min(...o.counts.filter((c,i)=>i%2!==o.seat%2&&c>0),99);
       if(oppMinP>5){
         const beats=rows.filter(r=>r.move&&bombTier(r.move)===0);
         const cheap=beats.filter(r=>!bigPlay(r.move,o.level)&&!(r.breakBomb>0)&&!(r.breakFlush));
         if(cheap.length){
           rows=cheap.concat(rows.filter(r=>!cheap.includes(r)));
-        }else if(beats.length){
+        }else if(beats.length&&!W.patientPassNoForce){
           const passRow=rows.find(r=>!r.move);
           if(passRow)rows=[passRow];
         }
