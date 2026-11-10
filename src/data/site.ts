@@ -371,6 +371,13 @@ export const travelSeries = [
 
 export const notes = [
   {
+    title: '飞上冰川，谁在为它买单？拆解一次冰川飞行',
+    date: '2026-11-10',
+    category: '旅行手记',
+    href: '/notes/2026-11-10-glacier-helicopter-bilibili.html',
+    summary: '库克山冰川直升机观光：起飞由谁决定、二十五分钟卖的是什么、风险与气候账怎么记。B站横屏完整版，封面为冰川雪地着陆点。',
+  },
+  {
     title: 'DSH 工作台：把书、课题和 B 站收进一扇窗',
     date: '2026-11-05',
     category: 'AI 手记',

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞上冰川，谁在为它买单？拆解一次冰川飞行 · 劳伦斯实验室</title>
+<meta name="description" content="站在库克山机场，低云压顶时起飞由谁决定？二十五分钟空中观光与雪地着陆，卖的是风景还是象征性接触？高海拔、裂隙与旺季机队约束如何改写行程？当冰川在退，飞行碳责任又落在谁头上。">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.45; margin: 34px 0 12px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  blockquote p { margin: 6px 0; }
+  .cta { margin: 26px 0; padding: 14px 18px; border: 1px solid rgba(180,85,30,.3); border-radius: 10px;
+    background: rgba(180,85,30,.05); }
+  .cta p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 22px 0; font-size: .9rem; line-height: 1.6; }
+  th, td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; }
+  th { background: rgba(38,34,26,.05); font-weight: 600; white-space: nowrap; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+    h1 { font-size: 1.55rem; }
+    table { font-size: .82rem; }
+    th, td { padding: 7px 8px; }
+  }
+
+  .hero { margin: 4px 0 22px; }
+  .hero img { width: 100%; max-width: 520px; display: block; margin: 0 auto; border-radius: 12px; border: 1px solid var(--line); }
+  .hero figcaption { text-align: center; color: var(--ink-3); font-size: .82rem; margin-top: 8px; }
+  .video-wrap { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 20px 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #000; }
+  .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .taglist { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 6px; }
+  .taglist span { font-family: var(--mono); font-size: .78rem; color: var(--ink-2); background: rgba(38,34,26,.05); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
+  .sources { margin-top: 26px; padding: 14px 18px; border: 1px dashed var(--line-strong); border-radius: 10px; font-size: .88rem; color: var(--ink-2); }
+  .sources ol { margin: 8px 0 0 20px; }
+  .sources li { margin: 6px 0; }
+  .disclaimer { margin-top: 22px; padding: 12px 16px; border-left: 3px solid var(--amber); background: rgba(180,85,30,.06); color: var(--ink-2); font-size: .9rem; }
+  .site-footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 40px; border-top: 1px solid var(--line-strong);
+    color: var(--ink-3); font-size: .85rem; }
+  .site-footer .icp a { color: var(--ink-3); text-decoration: none; }
+  .site-footer .icp a:hover { color: var(--amber); }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span><strong>劳伦斯实验室</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+<main>
+  <article>
+    <h1>飞上冰川，谁在为它买单？</h1>
+    <p class="meta">2026-11-10 · 分类：旅行手记 · 视频</p>
+
+    <figure class="hero">
+      <img src="/notes/og/2026-11-10-glacier-helicopter-bilibili-cover.jpg" width="768" height="1376" alt="新西兰库克山冰川上的红色直升机与雪地着陆点">
+      <figcaption>库克山冰川的雪地着陆点：一趟二十五分钟的观光，要穿过天气、规则与气候三道门。</figcaption>
+    </figure>
+
+    <p>站在库克山机场，低云压顶时起飞由谁决定？二十五分钟空中观光与雪地着陆，卖的是风景还是象征性接触？高海拔、裂隙与旺季机队约束如何改写行程？当冰川在退，飞行碳责任又落在谁头上。</p>
+
+    <p>这一期把「飞上冰川」拆成四件事：谁放行、卖什么、风险写在哪、气候账怎么记。下面是这期视频的入口。</p>
+
+    <h2>看视频</h2>
+    <div class="video-wrap">
+      <iframe src="//player.bilibili.com/player.html?bvid=BV1LbWu6mEv2&page=1&high_quality=1&danmaku=0" allowfullscreen="true" scrolling="no" frameborder="0" title="飞上冰川，谁在为它买单？拆解一次冰川飞行"></iframe>
+    </div>
+    <p><a href="https://www.bilibili.com/video/BV1LbWu6mEv2/" target="_blank" rel="noopener">在 B 站打开完整版 ↗</a> · 横屏完整版，AI 合成双主持</p>
+
+    <h2>这一趟的关键判断</h2>
+    <p>起飞与否由运营商按当日云底高度、风速和降水判断，雪地着陆点还要单独满足能见度条件；取消后的退改分档，更像一场「看天吃饭」的预约，而不是标准化商品。</p>
+    <p>雪地着陆那几分钟，乘客能活动的范围有限，「踩上冰川」与「看见冰川」的差别，更多是象征意义——着陆点预先踩点、避开裂隙和雪桥，这种接触是被高度控制的。</p>
+    <p>开阔地形利于贴近冰面起降，但高海拔会降低旋翼效率，冰面有裂隙、雪桥和冰崩，安全记录缺少公开量化统计，把个案当整体安全水平是常见陷阱。</p>
+    <p>机队规模不大、旺季运力紧张，你买到的可能是一个高不确定性的时段。冰川在退，单趟排放不是主因，但「把气候变化的后果做成商品」的象征意义真实存在；而排放交易体系对国内航空有免费配额，观光飞行缺少专项碳约束——账本上还没有这一栏。</p>
+
+    <h2>六个章节</h2>
+    <table>
+      <thead><tr><th>时间</th><th>章节</th><th>这一节在问什么</th></tr></thead>
+      <tbody>
+        <tr><td>00:00</td><td>起飞前先看天</td><td>低云压顶时，起飞到底由谁放行？</td></tr>
+        <tr><td>01:03</td><td>二十五分钟怎么花</td><td>空中观光与雪地着陆，卖的是什么？</td></tr>
+        <tr><td>01:53</td><td>冰面上的安全账</td><td>高海拔、裂隙和雪桥，风险写在哪？</td></tr>
+        <tr><td>02:46</td><td>小机队与旺季</td><td>运力约束怎样把体验变成高不确定性？</td></tr>
+        <tr><td>03:29</td><td>冰川在退，航班在飞</td><td>单趟飞行与冰川退缩，因果怎么算？</td></tr>
+        <tr><td>04:25</td><td>规则空白处</td><td>没有专项碳约束，责任落在谁头上？</td></tr>
+      </tbody>
+    </table>
+
+    <h2>话题标签</h2>
+    <div class="taglist"><span>#冰川旅游</span><span>#直升机观光</span><span>#新西兰库克山</span><span>#旅行播客</span><span>#安全与规则</span></div>
+
+    <div class="sources">
+      <strong>来源与口径</strong>
+      <ol>
+        <li>库克山直升机观光常见产品为 25 至 45 分钟，含高山或冰川着陆；运营高度依赖天气，取消与改线规则由运营商自定；机队主力包括空客 H125/AS350 系列与罗宾逊 R44。<small>（模型知识，未验证）</small></li>
+        <li>新西兰排放交易体系对国内航空存在免费配额安排，观光飞行缺少专项碳约束；气候辩论注意力更多集中在农业甲烷。<small>（分析判断）</small></li>
+        <li>安全记录没有公开可量化的统一统计，只能区分监管框架与个案事件两层；把个案当作整体安全水平是常见叙事陷阱。<small>（分析判断）</small></li>
+      </ol>
+    </div>
+
+    <div class="disclaimer">
+      说明：本期音频与视频为 AI 合成人声（双主持），内容基于模型知识与公开资料整理，未逐条核验；涉及政策与安全的部分请以官方发布为准。
+    </div>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+</main>
+
+<footer class="site-footer">
+  <p>劳伦斯实验室 · 手记</p>
+  <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
+</footer>
+</body>
+</html>
