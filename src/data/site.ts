@@ -371,6 +371,13 @@ export const travelSeries = [
 
 export const notes = [
   {
+    title: 'Claude Code 内部实践精读：10 个团队怎么用 AI 干活',
+    date: '2026-11-11',
+    category: 'AI 手记',
+    href: '/notes/2026-11-11-claude-code-internal-practice.html',
+    summary: 'Anthropic 官方 23 页内部手册的中文精读：10 个团队的一手用法、10 条可复用方法论、3 个能套用到自己工作的步骤，以及全部关键数字和七个坑。',
+  },
+  {
     title: '飞上冰川，谁在为它买单？拆解一次冰川飞行',
     date: '2026-11-10',
     category: '旅行手记',
