@@ -136,6 +136,16 @@ export const catalog: CatalogGroup[] = [
     more: { label: '全部专题', href: '/research/' },
   },
   {
+    id: 'literature', title: '文学馆 · 历史小说', navLabel: '文学馆', english: 'LITERATURE', icon: 'book', color: 'terracotta',
+    description: '据《左传》《史记》创作的春秋故事：一场关于“该不该打”的战争。',
+    items: [{
+      id: 'xiaoshan-novel', title: '崤山 · 北门之管', href: '/novels/xiaoshan/',
+      summary: '秦穆公袭郑、弦高犒师、殽之战、文嬴请三帅。十节，全文可读。',
+      meta: '历史小说 · 短篇 · 3,431 字', icon: 'book',
+    }],
+    more: { label: '进入文学馆', href: '/novels/' },
+  },
+  {
     id: 'travel', title: '城市悠游', english: 'CITY WALKS', icon: 'compass', color: 'blue',
     description: '六座城市、六段交互漫游；点进去再选城市。',
     items: [cityWalksItem],
