@@ -41,6 +41,7 @@
 - 前端源代码：`public/practice/`。规则 `engine.js`，交互 `app.js`，布局 `styles.css`，理牌 `hand-layout.js`，对战 `battle.js`，点评 `ai.js`，语音 `speech.js` / `remote-speech.js`，经验 `experience.js`，统计 `metrics.js`。
 - 正式仓库：`historyreview-code/shuzidiantang`。正式前端为 `public/games/guandan/`，接口为 `/api/guandan/{battle,review,speech,metrics}`，后端为 `cloud-functions/_guandan/` 与 `cloud-functions/api/guandan/`。
 - `/private/tmp/shuzidiantang-guandan` 是本次临时发布工作树，封箱后已清理。正式集成源码、对应 commit 和恢复步骤已归档。
+- 2026-11-19 起 `GET /api/guandan/metrics` 多披露一个 `todayPlayers`（本日设备数：按北京时间当日有开局/完成记录的去重设备，覆盖写 `day/<day>/players/<device>` 后按前缀计数），供数字看板与桌面伴侣展示；游戏页「菜单 → 更多」第一行仍是累计口径，未改。
 - 本地密钥仅在忽略的 `.dev.vars`；生产密钥使用 GitHub secret / EdgeOne 后端 `GUANDAN_MINIMAX_API_KEY`。封箱包不含密钥与生产 Blob 数据。
 - Sites 已停用并移除 API 密钥，此前旧 API 已验收到 410；本次外部重验返回 403，详细缺口见封箱快照。未经用户明确要求恢复，不再同步运行版到 Sites。
 
