@@ -8,8 +8,6 @@ export function createMetricsRepository(store,{now=Date.now,ttl=60000}={}){
  async function count(prefix){let c=0,cursor;for(let page=0;page<100;page++){const r=await store.list({prefix,cursor,limit:1000,paginate:false});c+=r.blobs.length;if(!r.cursor)return {count:c,partial:false};cursor=r.cursor;}return {count:c,partial:true};}
  // 本日设备：直接按当日 start/finish 的键去重取设备段，今天之前的记录也能回填，不依赖额外写入。
  async function distinctDevices(prefixes){const seen=new Set();let partial=false;for(const prefix of prefixes){let cursor;for(let page=0;page<100;page++){const r=await store.list({prefix,cursor,limit:1000,paginate:false});for(const blob of r.blobs){const device=String(blob.key||'').split('/')[3];if(device)seen.add(device);}if(!r.cursor)break;cursor=r.cursor;if(page===99)partial=true;}}return {count:seen.size,partial};}
- // 临时诊断：按设备段统计局数分布（只输出聚合计数，不含设备 id）。
- async function deviceCounts(prefixes,deviceIndex){const counts=new Map();for(const prefix of prefixes){let cursor;for(let page=0;page<100;page++){const r=await store.list({prefix,cursor,limit:1000,paginate:false});for(const blob of r.blobs){const device=String(blob.key||'').split('/')[deviceIndex];if(device)counts.set(device,(counts.get(device)||0)+1);}if(!r.cursor)break;cursor=r.cursor;}}return counts;}
  async function put(kind,device,game,extra={}){await store.setJSON(`${kind}/${device}/${game}`,{schema:2,...extra,at:new Date(now()).toISOString()});}
  function buckets(){
    const t=new Date(now()+SITE_OFFSET_MS);
@@ -57,14 +55,6 @@ export function createMetricsRepository(store,{now=Date.now,ttl=60000}={}){
     const hourPrefixes=Array.from({length:24},(_,h)=>`hour/${day}/${String(h).padStart(2,'0')}/finished/`);
     const all=[...cumulative,...dayPrefixes,...hourPrefixes];
     const [results,todayDevices]=await Promise.all([Promise.all(all.map(count)),distinctDevices([`day/${day}/started/`,`day/${day}/finished/`])]);
-    const [diagToday,diagAll,diagHours]=await Promise.all([
-      deviceCounts([`day/${day}/started/`],3),
-      deviceCounts(['started/'],1),
-      Promise.all(Array.from({length:24},(_,h)=>deviceCounts([`hour/${day}/${String(h).padStart(2,'0')}/started/`],4).then(m=>m.size))),
-    ]);
-    const sortedCounts=m=>[...m.values()].sort((a,b)=>b-a);
-    const quantile=(list,q)=>list.length?list[Math.min(list.length-1,Math.max(0,Math.round((list.length-1)*q)))]:0;
-    const todaySorted=sortedCounts(diagToday),allSorted=sortedCounts(diagAll);
     const pick=i=>results[i];
     const partial=results.some(x=>x.partial)||todayDevices.partial;
     const value={
@@ -73,16 +63,6 @@ export function createMetricsRepository(store,{now=Date.now,ttl=60000}={}){
       todayStarted:pick(9).count,todayFinished:pick(10).count,todayWin:pick(11).count,todayLoss:pick(12).count,todayDoubleUp:pick(13).count,todayErrors:pick(14).count,
       todayPlayers:todayDevices.count,
       hourlyFinished:results.slice(15).map(x=>x.count),
-      diag:{
-        todayDevices:todaySorted.length,
-        todayPerDeviceTop:todaySorted.slice(0,10),
-        todayHourlyDevices:diagHours,
-        allDevices:allSorted.length,
-        allPerDeviceTop:allSorted.slice(0,12),
-        allMedian:quantile(allSorted,0.5),
-        allGe10:allSorted.filter(x=>x>=10).length,
-        allEq1:allSorted.filter(x=>x===1).length,
-      },
       partial,
       asOf:new Date(now()).toISOString(),
       definition:'参与设备数按当前浏览器匿名标识去重；本日设备数为北京时间当日有开局/完成记录的去重设备数；完成局数仅统计新版上线后的完整实战；胜负与双上统计自埋点版上线起；今日与小时分布按北京时间切分，非实名人数，数据可能延迟一分钟。'
