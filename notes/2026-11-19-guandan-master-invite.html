@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>掼蛋大师 2.0：一个人能练，朋友来了能一起打 · 劳伦斯实验室</title>
+<meta name="description" content="给牌友的一封邀请：创建房间、把邀请链接发到群里，点开就能一起打；一个人时有三档 AI 陪练、逐手可重打的复盘。文末附开房三步和现在的真实数据。">
+<link rel="canonical" href="https://shuzidiantang.com/notes/2026-11-19-guandan-master-invite.html">
+<meta property="og:title" content="掼蛋大师 2.0：一个人能练，朋友来了能一起打">
+<meta property="og:description" content="给牌友的一封邀请：创建房间、把邀请链接发到群里，点开就能一起打；一个人时有三档 AI 陪练、逐手可重打的复盘。文末附开房三步和现在的真实数据。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://shuzidiantang.com/notes/2026-11-19-guandan-master-invite.html">
+<meta property="og:image" content="https://shuzidiantang.com/notes/og/2026-11-19-guandan-master-invite.png">
+<meta property="article:published_time" content="2026-11-19T18:30:00+08:00">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuzidiantang.com/notes/og/2026-11-19-guandan-master-invite.png">
+<meta name="theme-color" content="#f6f1e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23f6f1e5'/%3E%3Crect x='16' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3Crect x='40' y='36' width='20' height='28' rx='5' fill='%23b4551e'/%3E%3Crect x='64' y='36' width='20' height='28' rx='5' fill='none' stroke='%2326221a' stroke-width='6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --paper: #f6f1e5; --card: #fcf8ee;
+    --ink: #26221a; --ink-2: #514a39; --ink-3: #857b68;
+    --amber: #b4551e; --line: rgba(38,34,26,.13); --line-strong: rgba(38,34,26,.3);
+    --serif: "Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono: "SF Mono",Consolas,monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); color: var(--ink);
+    background: radial-gradient(1000px 600px at 15% -8%, #fbf6e9, transparent 60%), var(--paper);
+    line-height: 1.9;
+  }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; max-width: 1040px; margin: 0 auto; padding: 14px 24px;
+    background: rgba(246,241,229,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+  }
+  .brand { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color: var(--ink); }
+  .brand small { display:block; color: var(--ink-3); font-family: var(--mono); font-size:.6rem; letter-spacing:.14em; }
+  .site-nav { display:flex; gap:4px; }
+  .site-nav a { padding:8px 12px; color: var(--ink-2); text-decoration:none; font-size:.9rem; white-space:nowrap; }
+  .site-nav a:hover, .site-nav a.active { color: var(--amber); }
+  main { max-width: 760px; margin: 0 auto; padding: 30px 24px 80px; }
+  h1 { font-family: var(--serif); font-size: 1.9rem; line-height: 1.35; margin: 10px 0 8px; }
+  h2 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.45; margin: 34px 0 12px; }
+  .meta { color: var(--ink-3); font-size: .85rem; margin-bottom: 26px; }
+  p { margin: 14px 0; }
+  a { color: var(--amber); }
+  blockquote { border-left: 3px solid var(--amber); background: rgba(180,85,30,.06);
+    padding: 12px 16px; color: var(--ink-2); margin: 18px 0; }
+  blockquote p { margin: 6px 0; }
+  .cta { margin: 26px 0; padding: 14px 18px; border: 1px solid rgba(180,85,30,.3); border-radius: 10px;
+    background: rgba(180,85,30,.05); }
+  .cta p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 22px 0; font-size: .9rem; line-height: 1.6; }
+  th, td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; }
+  th { background: rgba(38,34,26,.05); font-weight: 600; white-space: nowrap; }
+  .note-back { display:inline-block; margin-top: 40px; color: var(--ink-3);
+    font-family: var(--mono); font-size: .8rem; text-decoration: none; padding: 8px 0; }
+  .note-back:hover { color: var(--amber); }
+  @media (max-width: 640px) {
+    .site-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .site-nav { width: 100%; overflow-x: auto; }
+    h1 { font-size: 1.55rem; }
+    table { font-size: .82rem; }
+    th, td { padding: 7px 8px; }
+  }
+  .site-footer { max-width: 760px; margin: 0 auto; padding: 26px 24px 40px; border-top: 1px solid var(--line-strong);
+    color: var(--ink-3); font-size: .85rem; }
+  .site-footer .icp a { color: var(--ink-3); text-decoration: none; }
+  .site-footer .icp a:hover { color: var(--amber); }
+  h3 { font-family: var(--serif); font-size: 1.08rem; line-height: 1.5; margin: 26px 0 10px; }
+  .article-copy ul, .article-copy ol { margin: 16px 0 16px 1.5em; }
+  .article-copy li { margin: 7px 0; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap table { min-width: 520px; }
+  .table-compact-first td:first-child, .table-compact-first th:first-child { white-space: nowrap; }
+  .article-copy code { font-family: var(--mono); font-size: .86em; background: rgba(38,34,26,.07); padding: 1px 5px; border-radius: 4px; }
+  .article-copy hr { border: 0; border-top: 1px solid var(--line); margin: 34px 0; }
+  .article-copy blockquote p { margin: 8px 0; }
+  .article-copy blockquote p:first-child { margin-top: 0; }
+  .article-copy blockquote p:last-child { margin-bottom: 0; }
+
+  .note-figure { margin: 26px 0; }
+  .note-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .note-figure figcaption { margin-top: 8px; color: var(--ink-3); font-size: .82rem; line-height: 1.65; text-align: center; }
+
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">
+    <span><strong>劳伦斯实验室</strong><small>数字 · AI · 探索 · DIGITAL · AI · EXPLORATION</small></span>
+  </a>
+  <nav class="site-nav">
+    <a href="/">首页</a>
+    <a href="/works/">作品</a>
+    <a class="active" href="/notes/">手记</a>
+    <a href="/about/">关于</a>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>掼蛋大师 2.0：一个人能练，朋友来了能一起打</h1>
+    <p class="meta"><time datetime="2026-11-19">2026-11-19</time> · 约 1,100 字 · 分类：游戏手记</p>
+    <div class="article-copy">
+<p>牌友群里最常被问的一句是：这个能一起打吗。能。这篇文章写清楚三件事——怎么开一间好友房、一个人怎么练、以及它现在的真实水平。</p>
+
+<h2>一、开房，三步</h2>
+<ol>
+<li>打开<a href="https://shuzidiantang.com/games/guandan/?from=notes" target="_blank" rel="noopener">掼蛋大师 2.0</a>，右上角「菜单 → 好友联机」。</li>
+<li>点「创建房间」，房号可以自己填一个好记的。</li>
+<li>复制邀请链接，发到牌友群或私聊。朋友点开自动进房，也可以在大厅的「房间列表」里加入或观战。</li>
+</ol>
+<p>人没凑齐也不影响：缺的位置电脑补上，先坐下的可以先打，中途有人来随时补位。联机按真实规则进贡还贡，不用谁去做裁判。</p>
+
+<h2>二、一个人练，三件顺手的工具</h2>
+<p><strong>出牌两档速度。</strong>「快速出牌」用本地规则，点完就出，用来练牌感和节奏；「智能对战」会等模型想一手，适合练关键决策。同一个入口，随时切。</p>
+<p><strong>语音播报。</strong>沉稳的中文音色念出每家的动作和下一位是谁，可以关；关不掉的只有你自己的手感。</p>
+<p><strong>理牌与同花顺助手。</strong>有多种配牌解释时，它会告诉你差哪张、怎么排能成组。桌上的叠牌只按你理好的相邻顺序认组——系统不替你挪牌，因为自动归组经常毁掉你为别的组合做的排序。想成组，就把这几张拉到一起。</p>
+
+<h2>三、复盘：把「再来一局」变成「重来这一步」</h2>
+<p>打完最常听见的一句是「刚才那手是不是错了」。只能重开一局是重复，能回到那一手换个选择，才叫练习。所以有了：原座重打、换座重打（接手搭档或对手）、从头或任意一步接手、四家明牌、连续撤销、牌谱导入导出。</p>
+<p>界面上明确写着「明牌仅用于研究牌局」。它不是作弊，是学习工具：先看清当时有哪些选择，再自己决定。</p>
+
+<h2>四、现在是什么水平</h2>
+<p>跑了两个多星期：累计开局一千二百多局、完成一千一百多局，来自 120 台匿名浏览器设备——其中大部分是我自己在练，所以特别想请牌友来打几局真人的。完成率约 91%，异常上报累计 2 条。</p>
+<p>设备数是匿名浏览器标识，同一个浏览器算一台，换浏览器、无痕窗口都会算成新设备。这些数字看趋势可以，别当人数看。</p>
+<p>边界也写清楚：联机房间的持久化和掉线托管还有限；真机触控和扬声器还没做系统验收；这不是商业产品，没有账号体系，也没有防作弊。它就是个给牌友练牌的小工具。</p>
+
+<h2>五、怎么开始</h2>
+<ul>
+<li><strong>想自己练：</strong>打开就有一桌，输了就复盘那一手。</li>
+<li><strong>想叫朋友：</strong>菜单 → 好友联机 → 创建房间 → 复制邀请链接发群。</li>
+<li><strong>想提意见：</strong>游戏里有「意见反馈」。朋友说过的每条「这手打得怪」，后来都变成了规则——大牌经济学、牌权判断、带牌取最小对子，都是这么来的。</li>
+</ul>
+
+<figure class="note-figure">
+  <img src="../games/guandan/og-cover.png" alt="掼蛋大师 2.0 分享卡片：单机陪练、好友联机、AI 复盘重打" loading="lazy">
+  <figcaption>发给牌友的分享卡片：单机陪练 · 好友联机 · AI 复盘重打。</figcaption>
+</figure>
+
+    </div>
+
+    <div class="cta">
+      <p>🎮 <a href="https://shuzidiantang.com/games/guandan/?from=notes" target="_blank" rel="noopener">打开「掼蛋大师 2.0」玩一局 ↗</a></p>
+      <p>👥 <a href="https://room.shuzidiantang.com/room.html" target="_blank" rel="noopener">直接进好友联机大厅 ↗</a></p>
+      <p>一个人练，或者开个房间把牌友叫进来。</p>
+    </div>
+
+    <a class="note-back" href="/notes/">← 返回手记列表</a>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>劳伦斯实验室 · 手记</p>
+  <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
+</footer>
+</body>
+</html>
