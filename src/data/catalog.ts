@@ -153,8 +153,8 @@ export const catalog: CatalogGroup[] = [
     layout: 'entry',
   },
   {
-    id: 'notes', title: '创作手记', english: 'FIELD NOTES', icon: 'pen', color: 'olive',
-    description: '记录实践中的问题、选择，以及做成一件事的过程。',
+    id: 'notes', title: '手记', english: 'FIELD NOTES', icon: 'pen', color: 'olive',
+    description: '创作手记：记录实践中的问题、选择，以及做成一件事的过程。',
     items: noteItems,
     more: { label: '全部手记', href: '/notes/' },
   },
