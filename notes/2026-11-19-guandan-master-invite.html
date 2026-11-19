@@ -160,5 +160,6 @@
   <p>劳伦斯实验室 · 手记</p>
   <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026042531号</a></p>
 </footer>
+<script>/* 把手记链接上的 from 转发给游戏入口，便于按渠道归因 */(function(){try{var q=new URLSearchParams(location.search);var from=(q.get('from')||q.get('src')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);if(!from)return;document.querySelectorAll('a[href*="games/guandan/"]').forEach(function(a){var u=new URL(a.href);u.searchParams.set('from',from);a.href=u.toString();});}catch(e){}})();</script>
 </body>
 </html>

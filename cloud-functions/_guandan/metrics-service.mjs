@@ -60,18 +60,6 @@ export function createMetricsRepository(store,{now=Date.now,ttl=60000}={}){
      return;
    }
   },
-  // 一次性回填：从既有 day/ 键推算每台设备最早的活跃日，补写 first/ 与 newdev/ 标记（幂等）。
-  async backfillFirstSeen(){
-   const firstDay=new Map();let cursor;
-   for(let page=0;page<100;page++){const r=await store.list({prefix:'day/',cursor,limit:1000,paginate:false});for(const blob of r.blobs){const parts=String(blob.key||'').split('/');const d=parts[1],device=parts[3];if(d&&device){const cur=firstDay.get(device);if(!cur||d<cur)firstDay.set(device,d);}}if(!r.cursor)break;cursor=r.cursor;}
-   let written=0,skipped=0;
-   for(const [device,d] of firstDay){
-    let isNew=false;
-    try{await store.setJSON(`first/${device}`,{at:`${d}T00:00:00+08:00`,backfill:true},{onlyIfNew:true});isNew=true;}catch{}
-    if(isNew){await store.setJSON(`newdev/${d}/${device}`,{backfill:true});written++;}else skipped++;
-   }
-   return {devices:firstDay.size,written,skipped};
-  },
   async stats(){
    if(cached&&cached.until>now())return cached.value;
    if(pending)return pending;
@@ -110,7 +98,7 @@ export function createMetricsRepository(store,{now=Date.now,ttl=60000}={}){
       hourlyFinished:results.slice(15).map(x=>x.count),
       partial,
       asOf:new Date(now()).toISOString(),
-      definition:'参与设备数按当前浏览器匿名标识去重；本日设备数为北京时间当日有开局/完成记录的去重设备数；今日新增=当日首次出现的设备，今日回访=当日活跃且此前已出现过；d1Retention=昨日新增设备中今日仍活跃的百分比；bySourceToday 按事件携带的 from 渠道标签统计；完成局数仅统计新版上线后的完整实战；胜负与双上统计自埋点版上线起；今日与小时分布按北京时间切分，非实名人数，数据可能延迟一分钟。'
+      definition:'参与设备数按当前浏览器匿名标识去重；本日设备数为北京时间当日有开局/完成记录的去重设备数；今日新增=当日首次出现的设备（自 2026-11-05 按天埋点起统计，此前活跃过的设备可能被计为新增），今日回访=当日活跃且此前已出现过；d1Retention=昨日新增设备中今日仍活跃的百分比；bySourceToday 按事件携带的 from 渠道标签统计；完成局数仅统计新版上线后的完整实战；胜负与双上统计自埋点版上线起；今日与小时分布按北京时间切分，非实名人数，数据可能延迟一分钟。'
     };
     cached={until:now()+ttl,value};return value;
    })();
@@ -119,11 +107,6 @@ export function createMetricsRepository(store,{now=Date.now,ttl=60000}={}){
  };
 }
 export async function handleMetrics(request,{repository,env={}}){const json=(x,status=200)=>Response.json(x,{status,headers:{'Cache-Control':'no-store'}});try{
- const reqUrl=new URL(request.url);
- if(request.method==='GET'&&reqUrl.searchParams.get('backfill')==='first-seen'){
-  if(reqUrl.searchParams.get('token')!=='bf-7f3c9a2e')return json({error:'forbidden'},403);
-  return json(await repository.backfillFirstSeen());
- }
  if(request.method==='GET')return json(await repository.stats());
  if(request.method!=='POST')return json({error:'不支持此方法。'},405);
  if(!sameOrigin(request,env))return json({error:'请从本站发起。'},403);
