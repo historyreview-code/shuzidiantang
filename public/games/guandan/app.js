@@ -228,6 +228,14 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     const fallback=()=>{try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();const ok=document.execCommand('copy');ta.remove();done(ok);}catch(e){done(false);}};
     if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(()=>done(true)).catch(fallback);}else fallback();
   }
+  // 分享：复制带来源标记的游戏链接（新设备首触归到 ?from=wx，方便看朋友圈带来的量）。
+  function shareGame(){
+    const url='https://shuzidiantang.com/games/guandan/?from=wx';
+    const text='掼蛋大师 2.0：单机陪练 + 好友联机。创建房间把邀请链接发群里，就能和朋友一起打。 '+url;
+    const done=ok=>toast(ok?'链接已复制，粘到朋友圈或群里即可。':'复制受限，请手动复制：'+url);
+    const fallback=()=>{try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();const ok=document.execCommand('copy');ta.remove();done(ok);}catch(e){done(false);}};
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(()=>done(true)).catch(fallback);}else fallback();
+  }
   function exportRecord(r){const blob=new Blob([JSON.stringify(r,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`掼蛋牌谱-${r.start.seed}-${r.id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('牌谱已导出，可在此程序中重新导入。');}
   function openModal(content){stop();ai.stopReading();narrator.cancel();$('#modal-root').innerHTML=`<div class="modal-shade"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-action="closeModal" aria-label="关闭">×</button>${content}</div></div>`;$('#modal-root button, #modal-root input')?.focus();}
   function closeModal(){ai.stopReading();narrator.cancel();$('#modal-root').innerHTML='';if(view==='practice'&&!paused)announce(announcement());schedule();}
@@ -237,6 +245,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     <div class="menu-cards">
       <button class="menu-card" data-action="new"><b>单人练习</b><span>与三位电脑玩家对局，可随时复盘</span></button>
       <button class="menu-card gold" data-action="multiplayer"><b>好友联机</b><span>创建房间，邀请朋友一起打</span></button>
+      <button class="menu-card" data-action="share"><b>分享给朋友</b><span>复制游戏链接，发到朋友圈或群里</span></button>
       <button class="menu-card" data-action="reviewStart"><b>复盘</b><span>逐步回看本局，可展开全部明牌</span></button>
     </div>
     <details class="secondary-details"><summary>记录与设置</summary>
@@ -392,6 +401,7 @@ let difficulty='expert'; // 难度固定为最高（专家/高手），不提供
     case 'summary':summaryModal();break;
     case 'startProgression':startProgression();break;
     case 'multiplayer':window.open('https://room.shuzidiantang.com/room.html','_blank','noopener');break;
+    case 'share':shareGame();break;
     case 'freeDeal':closeModal();archive();setRecord(createRecord(G.deal(freshSeed(),2,0)));toast('开始自由练习（打 2）');break;
     case 'nextRound':nextRoundChooser();break;
     case 'nextRoundGo':nextProgressionRound();break;
