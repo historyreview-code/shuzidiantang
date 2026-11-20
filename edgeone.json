@@ -63,6 +63,16 @@
       "source": "/notes/2026-11-19-guandan-master-invite.html",
       "destination": "/notes/",
       "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-11-18-82-twh-fa762e.html",
+      "destination": "/notes/",
+      "statusCode": 301
+    },
+    {
+      "source": "/notes/2026-11-19-3d4d2a.html",
+      "destination": "/notes/",
+      "statusCode": 301
     }
   ]
 }
