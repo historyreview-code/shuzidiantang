@@ -135,6 +135,22 @@ export const historyBookReports: ResearchReport[] = [
 
 export const research: ResearchReport[] = [
   {
+    slug: 'npl-handbook',
+    title: '不良资产买方实务手册',
+    subtitle: '从收购债权到抵债过户',
+    summary: '沿买方时间线核对债权受让、司法拍卖、执行分配、补差、产权登记与实际交付。结合五宗实名交易、现金流试算和逐页可查的资料附件。',
+    date: '2026-11-21',
+    evidenceDate: '2026-11-21',
+    href: '/research/npl-handbook/',
+    pdf: '/research/npl-handbook/handbook.pdf',
+    coverImage: '/research/npl-handbook/cover.png',
+    coverBackground: '#e9eee6',
+    kind: '法律与财务 · 买方实务',
+    tags: ['不良债权', '司法拍卖', '抵债过户'],
+    format: '19页 PDF · 在线手册 · 案例附件',
+    pages: 19,
+  },
+  {
     slug: 'russian-far-east',
     title: '俄罗斯远东的形成与变迁',
     subtitle: '疆界 · 人口 · 开发与军事',
