@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10363d"><title>算力中心融资测算 · 数字殿堂</title><link rel="stylesheet" href="model.css"></head>
+<body><header><div class="wrap bar"><a class="brand" href="/"><span class="mark" aria-hidden="true">▥</span>数字殿堂</a><span class="divider"></span><span>投资研究</span><nav><a href="report.html">研究报告</a><a class="excel" href="10mw-monthly-model.xlsx" download>下载 Excel</a></nav></div></header>
+<main class="wrap"><div class="mast"><div><h1>算力中心融资测算</h1><p>包电托管项目 · 按月测算建设、运营与债务偿还</p></div><div class="stamp"><span>测算区间</span><strong id="period">—</strong></div></div>
+<div class="layout"><aside><div class="sectiontitle"><h2>模型参数</h2><button id="reset" class="plain">恢复默认</button></div>
+<div id="controls"></div><details id="overbox"><summary>逐月覆盖上架率与电价</summary><div class="body"><p class="hint">按运营月覆盖。空白沿用曲线，0 为有效输入。</p><div id="overrides"></div><button id="addOverride">添加运营月</button></div></details><p id="invalid" role="alert"></p>
+</aside><section id="results" aria-label="实时测算结果"><div class="kpis">
+<div class="kpi primary"><span>险资可投上限</span><div><b id="limit">—</b><small>万元</small></div><p id="bound">—</p></div>
+<div class="kpi"><span>申请方案峰值缺口</span><div><b id="gap">—</b><small>万元</small></div><p id="gapDate">—</p></div>
+<div class="kpi"><span>限额方案峰值缺口</span><div><b id="limitedGap">—</b><small>万元</small></div><p id="limitedDate">—</p></div>
+<div class="kpi"><span>最低月度偿债覆盖倍数</span><div><b id="minDSCR">—</b><small>倍</small></div><p id="stressMetric">—</p></div></div>
+<section class="plot"><div class="plothead"><div><h2 id="chartTitle">累计现金余额</h2><p id="plotunit">金额 · 万元</p></div><select id="chartMode" aria-label="图表指标"><option value="cash">现金余额</option><option value="cf">偿债现金流</option></select></div><div id="legend"></div><canvas aria-label="逐月现金走势，完整数值见下方逐月明细" id="chart"></canvas><div class="readout" id="chartRead"></div><input aria-label="选择查看月份" id="cursor" type="range" min="0" value="0"></section>
+<section class="detail"><div class="sectiontitle"><div><h2>逐月明细</h2><p class="hint" id="months"></p></div><select id="tableMode" aria-label="明细类型"><option value="cash">资金收支</option><option value="op">项目经营</option><option value="loan">债务偿还</option></select></div><div class="scroller" tabindex="0" aria-label="可横向和纵向滚动的逐月明细"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section>
+<details class="notes"><summary>可投上限与资金缺口的计算口径</summary><div class="body"><p>可投上限取基准现金流支持本金、组合压力现金流支持本金及建设贷待置换本金的最低值。逐月以偿债现金流除以覆盖要求和每元本金月供，取整个险资还款期的最低额。压力假设在当月上架率和电价上叠加。</p><p id="limits"></p><p>峰值资金缺口为基准经营下，计入已落实资本金及对应融资后的最大累计现金短缺。负现金保留，追加资金由股东另行安排。建设贷款每月付息，置换后次月起险资按月等额本息。覆盖倍数仅统计有险资本息的月份。</p></div></details>
+</section></div><footer><span>模型与报告 · 2026 年 11 月</span><a href="report.html">HTML 报告</a><a href="report.pdf">PDF 报告</a><a href="10mw-monthly-model.xlsx" download>原始 Excel 模型</a></footer></main><script src="finance.js"></script><script src="interface.js"></script></body></html>
